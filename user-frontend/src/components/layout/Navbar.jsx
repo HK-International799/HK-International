@@ -1,182 +1,255 @@
-import { Link } from "react-router-dom";
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [coursesOpen, setCoursesOpen] = useState(false);
 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 40);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <nav className="fixed top-0 w-full z-50 backdrop-blur-lg bg-white/70 border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-        
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-3">
-          <img
-            src="/images/hk_logo.png"
-            alt="HK International"
-            className="h-10 w-auto"
-          />
+    <>
+      {/* Scroll Progress Bar */}
+      <motion.div
+        className="fixed top-0 left-0 h-1 bg-gradient-to-r from-orange-500 to-indigo-600 z-[60]"
+        style={{ width: "100%" }}
+        initial={{ scaleX: 0 }}
+        animate={{ scaleX: scrolled ? 1 : 0 }}
+        transition={{ duration: 0.4 }}
+      />
 
-          <span className="text-xl font-bold text-gray-900">
-            HK International
-          </span>
-        </Link>
+      {/* NAVBAR */}
 
-        {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium">
+      <motion.nav
+        initial={{ y: -80 }}
+        animate={{ y: 0 }}
+        transition={{ type: "spring", stiffness: 120 }}
+        className={`fixed w-full z-50 transition-all duration-100 ${
+          scrolled
+            ? "backdrop-blur-lg bg-white/70 shadow-md py-3"
+            : "bg-gradient-to-b from-white to-transparent py-5"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
 
-          <Link to="/" className="hover:text-amber-500 transition">
-            Home
-          </Link>
+          {/* LOGO */}
 
-          {/* Courses Dropdown */}
-          <div
-            className="relative"
-            onMouseEnter={() => setCoursesOpen(true)}
-            onMouseLeave={() => setCoursesOpen(false)}
+          <motion.div
+            whileHover={{ scale: 1.04 }}
+            className="flex items-center gap-3 cursor-pointer"
+            onClick={() => navigate("/")}
           >
-            <button className="flex items-center gap-1 hover:text-amber-500 transition">
-              Courses
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
+            <img
+              src="/images/hk_logo.png"
+              alt="HK International"
+              className="h-16 w-auto object-contain"
+            />
+
+            <span className="hidden sm:block font-bold text-lg text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-orange-500">
+              HK International
+            </span>
+          </motion.div>
+
+          {/* DESKTOP MENU */}
+
+          <ul className="hidden md:flex gap-10 items-center font-medium">
+
+            {/* Home */}
+            <li className="relative group">
+              <Link
+                to="/"
+                className="text-gray-800 hover:text-orange-600 transition"
               >
-                <path d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
+                Home
+              </Link>
+              <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-gradient-to-r from-indigo-600 to-orange-500 group-hover:w-full transition-all duration-300"></span>
+            </li>
 
-            {coursesOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="absolute top-10 left-0 bg-white shadow-xl border rounded-xl p-4 w-64"
-              >
-                <Link
-                  to="/courses/iosh"
-                  className="block px-3 py-2 hover:bg-gray-100 rounded"
-                >
-                  IOSH Certifications
-                </Link>
+            {/* Courses Dropdown */}
 
-                <Link
-                  to="/courses/nebosh"
-                  className="block px-3 py-2 hover:bg-gray-100 rounded"
-                >
-                  NEBOSH Programs
-                </Link>
-
-                <Link
-                  to="/courses/iso"
-                  className="block px-3 py-2 hover:bg-gray-100 rounded"
-                >
-                  ISO Lead Auditor
-                </Link>
-
-                <Link
-                  to="/courses/osha"
-                  className="block px-3 py-2 hover:bg-gray-100 rounded"
-                >
-                  OSHA Training
-                </Link>
-              </motion.div>
-            )}
-          </div>
-
-          <Link to="/about" className="hover:text-amber-500 transition">
-            About
-          </Link>
-
-          <Link to="/contact" className="hover:text-amber-500 transition">
-            Contact
-          </Link>
-
-          {/* LMS Buttons */}
-          <div className="flex items-center gap-3 ml-4">
-            <Link
-              to="/login"
-              className="text-gray-700 hover:text-amber-500 transition"
+            <li
+              className="relative"
+              onMouseEnter={() => setCoursesOpen(true)}
+              onMouseLeave={() => setCoursesOpen(false)}
             >
-              Login
-            </Link>
+              <button className="text-gray-800 hover:text-orange-600 transition flex items-center gap-1">
+                Courses
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
 
-            <motion.div whileHover={{ scale: 1.05 }}>
+              <AnimatePresence>
+                {coursesOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute top-10 left-0 bg-white shadow-xl border rounded-xl p-4 w-64"
+                  >
+                    <Link
+                      to="/courses/iosh"
+                      className="block px-3 py-2 hover:bg-gray-100 rounded"
+                    >
+                      IOSH Certifications
+                    </Link>
+
+                    <Link
+                      to="/courses/iso"
+                      className="block px-3 py-2 hover:bg-gray-100 rounded"
+                    >
+                      ISO Lead Auditor
+                    </Link>
+
+                    <Link
+                      to="/courses/osha"
+                      className="block px-3 py-2 hover:bg-gray-100 rounded"
+                    >
+                      OSHA Training
+                    </Link>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </li>
+
+            {/* About */}
+
+            <li className="relative group">
+              <Link
+                to="/about"
+                className="text-gray-800 hover:text-orange-600 transition"
+              >
+                About
+              </Link>
+
+              <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-gradient-to-r from-indigo-600 to-orange-500 group-hover:w-full transition-all duration-300"></span>
+            </li>
+
+            {/* Contact */}
+
+            <li className="relative group">
+              <Link
+                to="/contact"
+                className="text-gray-800 hover:text-orange-600 transition"
+              >
+                Contact
+              </Link>
+
+              <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-gradient-to-r from-indigo-600 to-orange-500 group-hover:w-full transition-all duration-300"></span>
+            </li>
+
+            {/* LMS LOGIN */}
+
+            <li>
+              <Link
+                to="/login"
+                className="text-gray-700 hover:text-orange-600 transition"
+              >
+                Login
+              </Link>
+            </li>
+
+            {/* CTA BUTTON */}
+
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/register"
-                className="bg-amber-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-amber-600 transition"
+                className="relative bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-2 rounded-lg shadow-lg overflow-hidden transition-all hover:rounded-3xl"
               >
-                Start Learning
+                <span className="relative z-10">Start Learning</span>
+
+                <span className="absolute inset-0 bg-white opacity-20 blur-xl animate-pulse"></span>
               </Link>
             </motion.div>
+
+          </ul>
+
+          {/* MOBILE ICON */}
+
+          <div
+            className="md:hidden text-3xl cursor-pointer text-gray-800"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <HiOutlineX /> : <HiOutlineMenu />}
           </div>
         </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            {menuOpen ? (
-              <path d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
-        </button>
-      </div>
+        {/* MOBILE MENU */}
 
-      {/* Mobile Menu */}
-      {menuOpen && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          className="md:hidden bg-white border-t px-6 pb-6"
-        >
-          <div className="flex flex-col gap-4 pt-4">
-
-            <Link to="/" onClick={() => setMenuOpen(false)}>
-              Home
-            </Link>
-
-            <Link to="/courses" onClick={() => setMenuOpen(false)}>
-              Courses
-            </Link>
-
-            <Link to="/about" onClick={() => setMenuOpen(false)}>
-              About
-            </Link>
-
-            <Link to="/contact" onClick={() => setMenuOpen(false)}>
-              Contact
-            </Link>
-
-            <Link
-              to="/login"
-              className="border rounded-lg py-2 text-center"
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -40 }}
+              transition={{ duration: 0.3 }}
+              className="md:hidden bg-white/95 backdrop-blur-lg shadow-xl py-6 px-6"
             >
-              Login
-            </Link>
+              <ul className="flex flex-col gap-6 font-medium text-lg">
 
-            <Link
-              to="/register"
-              className="bg-amber-500 text-white py-2 rounded-lg text-center"
-            >
-              Start Learning
-            </Link>
-          </div>
-        </motion.div>
-      )}
+                <li>
+                  <Link to="/" onClick={() => setIsOpen(false)}>
+                    Home
+                  </Link>
+                </li>
 
-    </nav>
+                <li>
+                  <Link to="/courses" onClick={() => setIsOpen(false)}>
+                    Courses
+                  </Link>
+                </li>
+
+                <li>
+                  <Link to="/about" onClick={() => setIsOpen(false)}>
+                    About
+                  </Link>
+                </li>
+
+                <li>
+                  <Link to="/contact" onClick={() => setIsOpen(false)}>
+                    Contact
+                  </Link>
+                </li>
+
+                <li>
+                  <Link to="/login" onClick={() => setIsOpen(false)}>
+                    Login
+                  </Link>
+                </li>
+
+                <motion.div whileTap={{ scale: 0.95 }}>
+                  <Link
+                    to="/register"
+                    className="bg-orange-600 text-white px-5 py-2 rounded-lg w-full text-center block shadow-md"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Start Learning
+                  </Link>
+                </motion.div>
+
+              </ul>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.nav>
+    </>
   );
 }
