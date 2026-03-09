@@ -12,7 +12,7 @@ export default function WhatsAppButton() {
 
       {/* Button */}
       <a
-        href="https://wa.me/917991845638"
+        href="https://whatsapp.com/channel/0029VbCdy5D8kyyNaJ53EW47"
         target="_blank"
         rel="noopener noreferrer"
         className="
@@ -20,8 +20,8 @@ export default function WhatsAppButton() {
         flex
         items-center
         justify-center
-        w-20
-        h-20
+        w-16
+        h-16
         bg-gradient-to-br
         from-green-500
         to-green-600
@@ -63,7 +63,7 @@ export default function WhatsAppButton() {
         duration-300
         "
       >
-        Chat with us
+        Join Channel
       </span>
     </div>
   );

@@ -17,14 +17,14 @@ export default function Header() {
 
   return (
     <section
-      className="bg-linear-to-r from-orange-50 to-indigo-200 border-b border-gray-200 pt-[55px] overflow-hidden "
+      className="bg-linear-to-r from-orange-50 to-indigo-200 border-b border-gray-200 pt-[60px] overflow-hidden  "
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-6 py-6 ">
 
         {/* Title */}
-        <p className="text-center text-sm md:text-base text-gray-600 font-semibold mb-6 tracking-wide">
+        <p className="text-center text-sm md:text-base text-gray-600 font-semibold mb-6 tracking-wide border-t border-orange-600">
           Accredited By Leading Global Certification Bodies
         </p>
 

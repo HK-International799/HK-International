@@ -43,7 +43,6 @@ export default function Navbar() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-
           {/* LOGO */}
 
           <motion.div
@@ -65,8 +64,7 @@ export default function Navbar() {
           {/* DESKTOP MENU */}
 
           <ul className="hidden md:flex gap-10 items-center font-medium">
-
-            {/* Home */}
+            {/* HOME */}
             <li className="relative group">
               <Link
                 to="/"
@@ -74,17 +72,19 @@ export default function Navbar() {
               >
                 Home
               </Link>
-              <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-gradient-to-r from-indigo-600 to-orange-500 group-hover:w-full transition-all duration-300"></span>
             </li>
 
-            {/* Courses Dropdown */}
+            {/* COURSES */}
 
             <li
               className="relative"
               onMouseEnter={() => setCoursesOpen(true)}
               onMouseLeave={() => setCoursesOpen(false)}
             >
-              <button className="text-gray-800 hover:text-orange-600 transition flex items-center gap-1">
+              <button
+                onClick={() => navigate("/courses")}
+                className="text-gray-800 hover:text-orange-600 transition flex items-center gap-1"
+              >
                 Courses
                 <svg
                   className="w-4 h-4"
@@ -97,6 +97,8 @@ export default function Navbar() {
                 </svg>
               </button>
 
+              {/* DROPDOWN */}
+
               <AnimatePresence>
                 {coursesOpen && (
                   <motion.div
@@ -106,57 +108,60 @@ export default function Navbar() {
                     className="absolute top-10 left-0 bg-white shadow-xl border rounded-xl p-4 w-64"
                   >
                     <Link
-                      to="/courses/iosh"
+                      to="/course/1"
                       className="block px-3 py-2 hover:bg-gray-100 rounded"
                     >
-                      IOSH Certifications
+                      IOSH Managing Safely
                     </Link>
 
                     <Link
-                      to="/courses/iso"
+                      to="/course/2"
                       className="block px-3 py-2 hover:bg-gray-100 rounded"
                     >
-                      ISO Lead Auditor
+                      Display Screen Equipment
                     </Link>
 
                     <Link
-                      to="/courses/osha"
+                      to="/course/3"
                       className="block px-3 py-2 hover:bg-gray-100 rounded"
                     >
-                      OSHA Training
+                      Workstation Risk Assessment
+                    </Link>
+
+                    <Link
+                      to="/courses"
+                      className="block px-3 py-2 text-blue-600 hover:bg-gray-100 rounded"
+                    >
+                      View All Courses →
                     </Link>
                   </motion.div>
                 )}
               </AnimatePresence>
             </li>
 
-            {/* About */}
+            {/* ABOUT */}
 
-            <li className="relative group">
+            <li>
               <Link
                 to="/about"
                 className="text-gray-800 hover:text-orange-600 transition"
               >
                 About
               </Link>
-
-              <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-gradient-to-r from-indigo-600 to-orange-500 group-hover:w-full transition-all duration-300"></span>
             </li>
 
-            {/* Contact */}
+            {/* CONTACT */}
 
-            <li className="relative group">
+            <li>
               <Link
                 to="/contact"
                 className="text-gray-800 hover:text-orange-600 transition"
               >
                 Contact
               </Link>
-
-              <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-gradient-to-r from-indigo-600 to-orange-500 group-hover:w-full transition-all duration-300"></span>
             </li>
 
-            {/* LMS LOGIN */}
+            {/* LOGIN */}
 
             <li>
               <Link
@@ -175,11 +180,8 @@ export default function Navbar() {
                 className="relative bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-2 rounded-lg shadow-lg overflow-hidden transition-all hover:rounded-3xl"
               >
                 <span className="relative z-10">Start Learning</span>
-
-                <span className="absolute inset-0 bg-white opacity-20 blur-xl animate-pulse"></span>
               </Link>
             </motion.div>
-
           </ul>
 
           {/* MOBILE ICON */}
@@ -204,7 +206,6 @@ export default function Navbar() {
               className="md:hidden bg-white/95 backdrop-blur-lg shadow-xl py-6 px-6"
             >
               <ul className="flex flex-col gap-6 font-medium text-lg">
-
                 <li>
                   <Link to="/" onClick={() => setIsOpen(false)}>
                     Home
@@ -244,7 +245,6 @@ export default function Navbar() {
                     Start Learning
                   </Link>
                 </motion.div>
-
               </ul>
             </motion.div>
           )}

@@ -1,22 +1,19 @@
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
 import {
   FaFacebookF,
   FaLinkedinIn,
   FaInstagram,
   FaTwitter,
   FaEnvelope,
-  FaArrowRight
-} from "react-icons/fa"
+  FaArrowRight,
+} from "react-icons/fa";
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-950 text-gray-300 pt-16 pb-8 mt-20 border-t border-slate-800">
-
+    <footer className="bg-slate-950 text-gray-300 pt-16 pb-8 mt-10 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-6">
-
         {/* Top Grid */}
         <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-10">
-
           {/* Company Info */}
           <div>
             <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">
@@ -31,35 +28,37 @@ export default function Footer() {
 
             {/* Social Icons */}
             <div className="flex gap-4 mt-6 text-lg">
-
               <a
-                href="#"
+                target="_blank"
+                href="https://www.facebook.com/profile.php?id=61578676434716"
                 className="bg-slate-800 p-3 rounded-lg hover:bg-blue-600 transition"
               >
                 <FaFacebookF />
               </a>
 
               <a
-                href="#"
+                target="_blank"
+                href="https://www.linkedin.com/company/hk-international-uk/?viewAsMember=true"
                 className="bg-slate-800 p-3 rounded-lg hover:bg-blue-500 transition"
               >
                 <FaLinkedinIn />
               </a>
 
               <a
-                href="#"
+                target="_blank"
+                href="https://www.instagram.com/hkinternational.uk/"
                 className="bg-slate-800 p-3 rounded-lg hover:bg-pink-500 transition"
               >
                 <FaInstagram />
               </a>
 
               <a
+                target="_blank"
                 href="#"
                 className="bg-slate-800 p-3 rounded-lg hover:bg-sky-500 transition"
               >
                 <FaTwitter />
               </a>
-
             </div>
           </div>
 
@@ -68,7 +67,6 @@ export default function Footer() {
             <h4 className="text-white font-semibold mb-5">Quick Links</h4>
 
             <ul className="space-y-3 text-gray-400">
-
               <li>
                 <Link to="/" className="hover:text-white transition">
                   Home
@@ -98,7 +96,6 @@ export default function Footer() {
                   Student Login
                 </Link>
               </li>
-
             </ul>
           </div>
 
@@ -127,10 +124,7 @@ export default function Footer() {
 
           {/* Newsletter / Contact */}
           <div>
-
-            <h4 className="text-white font-semibold mb-5">
-              Stay Updated
-            </h4>
+            <h4 className="text-white font-semibold mb-5">Stay Updated</h4>
 
             <p className="text-gray-400 mb-4">
               Subscribe to receive course updates, certifications and industry
@@ -139,7 +133,6 @@ export default function Footer() {
 
             {/* Email Input */}
             <div className="flex items-center bg-slate-800 rounded-lg overflow-hidden border border-slate-700">
-
               <FaEnvelope className="ml-3 text-gray-400" />
 
               <input
@@ -151,7 +144,6 @@ export default function Footer() {
               <button className="bg-blue-600 px-4 py-3 hover:bg-blue-700 transition">
                 <FaArrowRight />
               </button>
-
             </div>
 
             <p className="text-gray-400 mt-4 text-sm">
@@ -163,24 +155,18 @@ export default function Footer() {
                 info@hkinternational.uk
               </a>
             </p>
-
           </div>
-
         </div>
-
 
         {/* Divider */}
         <div className="border-t border-slate-800 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
-
           <p>
             © {new Date().getFullYear()} HK International. All Rights Reserved.
           </p>
 
           {/* Credit */}
           <p className="mt-3 md:mt-0">
-
             Designed & Developed by{" "}
-
             <a
               href="https://anurag-pandey.vercel.app"
               target="_blank"
@@ -189,12 +175,9 @@ export default function Footer() {
             >
               Anurag Pandey
             </a>
-
           </p>
-
         </div>
-
       </div>
     </footer>
-  )
+  );
 }
