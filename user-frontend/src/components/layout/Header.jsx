@@ -17,27 +17,35 @@ export default function Header() {
 
   return (
     <section
-      className="bg-linear-to-r from-orange-50 to-indigo-200 border-b border-gray-200 pt-[60px] overflow-hidden  "
+      className="relative bg-gradient-to-r from-orange-50 via-white to-indigo-100 border-b border-gray-200 pt-[50px] overflow-hidden"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div className="max-w-7xl mx-auto px-6 py-6 ">
+      <div className="max-w-7xl  mx-auto px-6 py-8">
 
         {/* Title */}
-        <p className="text-center text-sm md:text-base text-gray-600 font-semibold mb-6 tracking-wide border-t border-orange-600">
-          Accredited By Leading Global Certification Bodies
-        </p>
+        <div className="text-center mb-4">
+          <h2 className="text-sm md:text-xl font-semibold text-gray-800 tracking-wide">
+            Trusted & Accredited By
+          </h2>
+
+          <p className="text-xs  text-gray-500 mt-1">
+            Leading Global Certification Bodies
+          </p>
+
+          {/* <div className="w-20 h-1 bg-orange-500 mx-auto mt-3 rounded-full"></div> */}
+        </div>
 
         {/* Logo Slider */}
         <div className="relative w-full overflow-hidden">
 
           {/* LEFT FADE */}
-          <div className="absolute left-0 top-0 h-full w-20 bg-gradient-to-r from-slate-50 to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute left-0 top-0 h-full w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
 
           {/* RIGHT FADE */}
-          <div className="absolute right-0 top-0 h-full w-20 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute right-0 top-0 h-full w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
 
-          {/* Scrolling Logos */}
+          {/* Logos */}
           <div
             className="flex gap-12 animate-marquee"
             style={{
@@ -47,23 +55,34 @@ export default function Header() {
             {[...logos, ...logos].map((logo, index) => (
               <div
                 key={index}
-                className="flex items-center justify-center min-w-[140px] "
+                className="flex items-center justify-center min-w-[160px]"
               >
-                <img
-                  src={logo}
-                  alt="Certification Logo"
+                <div
                   className="
-                    h-16 md:h-20 object-contain
-                    grayscale opacity-80
-                    transition-all duration-300 ease-in-out
-                    hover:grayscale-0 hover:opacity-100 hover:scale-110
-                    rounded-2xl
+                    bg-white/70 backdrop-blur-md
+                    p-1 rounded-2xl
+                    shadow-md
+                    hover:shadow-xl
+                    transition-all duration-300
+                    hover:scale-110
+                    border border-gray-100
                   "
-                />
+                >
+                  <img
+                    src={logo}
+                    alt="Certification Logo"
+                    className="
+                      h-20 md:h-24
+                      object-contain
+                      transition-all duration-300
+                    "
+                  />
+                </div>
               </div>
             ))}
           </div>
         </div>
+
       </div>
     </section>
   );

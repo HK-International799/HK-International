@@ -11,7 +11,6 @@ export default function Login() {
   return (
     <MainLayout>
       <div className="relative min-h-screen grid lg:grid-cols-2 overflow-hidden bg-gray-50">
-
         {/* BACKGROUND BLOBS */}
 
         <div className="absolute -top-20 -left-20 w-96 h-96 bg-indigo-400 opacity-30 rounded-full blur-3xl animate-pulse"></div>
@@ -20,7 +19,6 @@ export default function Login() {
         {/* LEFT SECTION */}
 
         <div className="hidden lg:flex relative flex-col justify-center items-center bg-gradient-to-br from-indigo-800 via-blue-700 to-indigo-900 text-white p-16 overflow-hidden">
-
           {/* subtle overlay pattern */}
           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_white,_transparent_60%)]"></div>
 
@@ -35,15 +33,13 @@ export default function Login() {
             </h1>
 
             <p className="mt-6 text-lg opacity-90">
-              Access globally recognized safety certifications and advance
-              your professional career with our internationally accredited
-              programs.
+              Access globally recognized safety certifications and advance your
+              professional career with our internationally accredited programs.
             </p>
 
             {/* STATS */}
 
             <div className="mt-12 grid grid-cols-2 gap-8 text-left">
-
               <div>
                 <h3 className="text-3xl font-bold text-orange-400">10K+</h3>
                 <p className="text-sm opacity-80">Students trained globally</p>
@@ -63,7 +59,6 @@ export default function Login() {
                 <h3 className="text-3xl font-bold text-orange-400">98%</h3>
                 <p className="text-sm opacity-80">Success rate</p>
               </div>
-
             </div>
           </motion.div>
         </div>
@@ -71,14 +66,12 @@ export default function Login() {
         {/* RIGHT LOGIN SECTION */}
 
         <div className="flex items-center justify-center p-8">
-
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.5 }}
             className="w-full max-w-md backdrop-blur-xl bg-white/80 shadow-2xl border border-white/40 rounded-2xl p-8"
           >
-
             <h2 className="text-3xl font-bold text-gray-800">
               Login to your account
             </h2>
@@ -90,7 +83,6 @@ export default function Login() {
             {/* FORM */}
 
             <form className="mt-8 space-y-6">
-
               {/* EMAIL */}
 
               <div className="relative group">
@@ -153,7 +145,6 @@ export default function Login() {
 
                 <span className="absolute inset-0 bg-white opacity-10 blur-xl group-hover:opacity-20 transition"></span>
               </motion.button>
-
             </form>
 
             {/* DIVIDER */}
@@ -193,9 +184,7 @@ export default function Login() {
                 Create account
               </Link>
             </p>
-
           </motion.div>
-
         </div>
       </div>
     </MainLayout>

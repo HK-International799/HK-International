@@ -94,8 +94,8 @@ export default function Home() {
       type: "International Certification",
     },
     {
-      title: "NEBOSH International Certificate",
-      provider: "NEBOSH UK",
+      title: "OTHM",
+      provider: "OTHM Qualifications",
       badge: "Trending",
       type: "Global Safety Qualification",
     },
@@ -115,13 +115,12 @@ export default function Home() {
             <div>
 
               <span className="bg-indigo-100 text-indigo-700 px-4 py-1 rounded-full text-xs font-semibold">
-                International HSE Certifications
+                1A HK International
               </span>
-
-              <h1 className="text-5xl lg:text-5xl font-extrabold text-blue-900 mt-6 leading-tight">
-                Global Health & Safety
-                <span className="text-orange-500"> Training</span>
+              <h1 className="text-5xl lg:text-5xl font-extrabold text-blue-900 mt-4 leading-tight">
+                Where Safety and Excellence Leads
               </h1>
+                <h1 className="text-orange-500 text-lg lg:text-lg font-bold"> 1A HK International, Our Name Reflects our Mission</h1>
 
               <p className="text-slate-600 mt-6 text-lg max-w-xl">
                 HK International is a global training and consultancy
@@ -158,7 +157,7 @@ export default function Home() {
                 Popular Certifications
               </h3>
 
-              {["IOSH", "ISO 45001", "NEBOSH"].map((course, i) => (
+              {["IOSH", "ISO 45001", "OTHM"].map((course, i) => (
                 <div key={i} className="mb-5">
 
                   <div className="flex justify-between text-sm mb-2">

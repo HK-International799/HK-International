@@ -57,7 +57,7 @@ export default function Navbar() {
             />
 
             <span className="hidden sm:block font-bold text-lg text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-orange-500">
-              HK International
+             1A HK International
             </span>
           </motion.div>
 
