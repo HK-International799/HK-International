@@ -7,6 +7,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [coursesOpen, setCoursesOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(null);
 
   const navigate = useNavigate();
 
@@ -19,6 +20,72 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const courseMenu = [
+    {
+      title: "IOSH UK",
+      courses: [
+        { name: "IOSH Managing Safely", id: "iosh-managing-safely" },
+        // { name: "IOSH Working Safely", id: "iosh-working-safely" },
+        { name: "IOSH Level 3 Certificate", id: "iosh-level3" },
+      ],
+    },
+
+    {
+      title: "OTHM UK",
+      courses: [{ name: "OTHM Level 6 Diploma in OHS", id: "othm-level6" }],
+    },
+
+    {
+      title: "PECB (Canada)",
+      courses: [
+        { name: "ISO 45001 Lead Auditor", id: "iso45001-auditor" },
+        { name: "ISO 45001 Lead Implementer", id: "iso45001-implementer" },
+      ],
+    },
+
+    {
+      title: "CIEH UK",
+      courses: [{ name: "Level 3 Health & Safety", id: "cieh-level3" }],
+    },
+
+    {
+      title: "OSHA USA",
+      courses: [
+        { name: "OSHA 30 Hour Construction Certificate (PECB Certified-Canada)", id: "osha-construction" },
+        { name: "OSHA 30 Hour General Industry Certificate", id: "osha-general" },
+      ],
+    },
+
+    {
+      title: "European Safety Council",
+      courses: [
+        { name: "European Safety council Level 6 Diploma in IDHSE (OPQUAL-UK)", id: "esc-l6-d-idhse"},
+        { name: "European Safety Council Level 7 Diploma in OSH (OFQUAL-UK) ", id: "esc-l7-d-osh"},
+        { name: "European Safety Council Level 7 Diploma in PSM (OFQUAL-UK) ", id: "esc-l7-d-psm"},
+      ],
+    },
+
+    {
+      title: "BCRSP Canada",
+      courses: [{ name: "", id: "crsp-certification" }],
+    },
+
+    {
+      title: "EOSH UK",
+      courses: [{ name: "EOSH Train The Trainer Certificate", id: "eosh-level3" }],
+    },
+
+    {
+      title: "HSE Training Courses",
+      courses: [
+        { name:"SHE/HSE Plan Training", id:"hse-training"},
+        { name: "Behaviour-Based Safety (BBS) Traning", id: "bbs-training" },
+        { name: "Confined Space Safety Traning", id: "css-training" },
+        { name: "Permit to Work Traning", id: "pw-training" },
+        { name: "E-Waste Management Training ", id: "ewaste-training" },
+      ],
+    },
+  ];
   return (
     <>
       {/* Scroll Progress Bar */}
@@ -57,7 +124,7 @@ export default function Navbar() {
             />
 
             <span className="hidden sm:block font-bold text-lg text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-orange-500">
-             1A HK International
+              1A HK International
             </span>
           </motion.div>
 
@@ -79,25 +146,19 @@ export default function Navbar() {
             <li
               className="relative"
               onMouseEnter={() => setCoursesOpen(true)}
-              onMouseLeave={() => setCoursesOpen(false)}
+              onMouseLeave={() => {
+                setCoursesOpen(false);
+                setActiveCategory(null);
+              }}
             >
               <button
-                onClick={() => navigate("/courses")}
-                className="text-gray-800 hover:text-orange-600 transition flex items-center gap-1"
+                onClick={() => {
+                  navigate("/courses");
+                }}
+                className="text-gray-800 hover:text-orange-600 flex items-center gap-1"
               >
                 Courses
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M19 9l-7 7-7-7" />
-                </svg>
               </button>
-
-              {/* DROPDOWN */}
 
               <AnimatePresence>
                 {coursesOpen && (
@@ -105,40 +166,47 @@ export default function Navbar() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    className="absolute top-10 left-0 bg-white shadow-xl border rounded-xl p-4 w-64"
+                    className="absolute top-10 left-0 bg-white shadow-xl border rounded-xl w-64"
                   >
-                    <Link
-                      to="/course/1"
-                      className="block px-3 py-2 hover:bg-gray-100 rounded"
-                    >
-                      IOSH Managing Safely
-                    </Link>
+                    {courseMenu.map((category, i) => (
+                      <div
+                        key={i}
+                        className="relative"
+                        onMouseEnter={() => setActiveCategory(i)}
+                      >
+                        <div className="flex justify-between items-center px-4 py-2 hover:bg-orange-200 cursor-pointer rounded-xl">
+                          <span className="text-gray-700 text-sm">
+                            {category.title}
+                          </span>
 
-                    <Link
-                      to="/course/2"
-                      className="block px-3 py-2 hover:bg-gray-100 rounded"
-                    >
-                      Display Screen Equipment
-                    </Link>
+                          {/* <span className="text-gray-400">▶</span> */}
+                        </div>
 
-                    <Link
-                      to="/course/3"
-                      className="block px-3 py-2 hover:bg-gray-100 rounded"
-                    >
-                      Workstation Risk Assessment
-                    </Link>
+                        {/* SUB DROPDOWN */}
 
-                    <Link
-                      to="/courses"
-                      className="block px-3 py-2 text-blue-600 hover:bg-gray-100 rounded"
-                    >
-                      View All Courses →
-                    </Link>
+                        {activeCategory === i && (
+                          <motion.div
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="absolute top-0 left-full ml-1 bg-orange-200 shadow-xl border rounded-xl w-64"
+                          >
+                            {category.courses.map((course, j) => (
+                              <Link
+                                key={j}
+                                to={`/course/${course.id}`}
+                                className="block px-4 py-2 text-sm text-gray-900 hover:bg-white hover:text-orange-600 rounded-xl"
+                              >
+                                {course.name}
+                              </Link>
+                            ))}
+                          </motion.div>
+                        )}
+                      </div>
+                    ))}
                   </motion.div>
                 )}
               </AnimatePresence>
             </li>
-
             {/* ABOUT */}
 
             <li>
