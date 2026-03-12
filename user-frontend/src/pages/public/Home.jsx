@@ -85,10 +85,10 @@ export default function Home() {
   const navigate = useNavigate();
 
   const stats = [
-    { number: "10K+", label: "Professionals Trained" },
-    { number: "50+", label: "Countries Served" },
-    { number: "100+", label: "Corporate Clients" },
-    { number: "500+", label: "Training Programs Delivered" },
+    { number: "2100+", label: "International Courses Conducted" },
+    { number: "195+", label: "Nationalities Trained" },
+    { number: "192+", label: "Empowered HKians Trained" },
+    { number: "2400+", label: "Projects Delivered Globally" },  
   ];
 
   const courses = [

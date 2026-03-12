@@ -12,7 +12,7 @@ export default function MainLayout({ children }) {
 
       <main className="">{children}</main>
 
-     <WhatsAppButton/>
+     {/* <WhatsAppButton/> */}
 
       <Footer />
     </>

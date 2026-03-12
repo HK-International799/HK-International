@@ -55,7 +55,7 @@ export default function CoursePage() {
             <img
               src={course.image}
               alt={course.title}
-              className="rounded-xl shadow-xl"
+              className="rounded-xl shadow-xl w-96"
             />
           </div>
         </section>

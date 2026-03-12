@@ -130,80 +130,80 @@ export const courses = [
 
     level: "Level 3 Professional Certification",
 
-    image: "/courses/iosh-level3.jpg",
+    image: "/logos/2-iosh_ATP.png",
 
-    // overview:
-    //   "The IOSH Level 3 Certificate in Occupational Safety and Health is a highly respected Ofqual (UK Government) regulated qualification designed for individuals who want to begin or advance their professional career in occupational safety and health. The programme develops the knowledge, competence and practical skills required to manage workplace risks, investigate incidents and improve safety performance within organisations.",
+    overview:
+      "The IOSH Level 3 Certificate in Occupational Safety and Health is a highly respected Ofqual (UK Government) regulated qualification designed for individuals who want to begin or advance their professional career in occupational safety and health. The programme develops the knowledge, competence and practical skills required to manage workplace risks, investigate incidents and improve safety performance within organisations.",
 
-    // importance:
-    //   "Because the qualification is regulated by Ofqual in the United Kingdom, it follows strict academic and quality assurance standards and is recognised by employers across many industries worldwide. The certificate issued upon successful completion carries the Ofqual logo confirming that the qualification is part of the UK Regulated Qualifications Framework (RQF).",
+    importance:
+      "Because the qualification is regulated by Ofqual in the United Kingdom, it follows strict academic and quality assurance standards and is recognised by employers across many industries worldwide. The certificate issued upon successful completion carries the Ofqual logo confirming that the qualification is part of the UK Regulated Qualifications Framework (RQF).",
 
-    // learningOutcomes: [
-    //   "Apply occupational safety and health management systems",
-    //   "Identify workplace hazards and conduct professional risk assessments",
-    //   "Investigate incidents and determine root causes",
-    //   "Implement effective risk control measures",
-    //   "Promote positive safety behaviour and culture within organisations",
-    // ],
+    learningOutcomes: [
+      "Apply occupational safety and health management systems",
+      "Identify workplace hazards and conduct professional risk assessments",
+      "Investigate incidents and determine root causes",
+      "Implement effective risk control measures",
+      "Promote positive safety behaviour and culture within organisations",
+    ],
 
-    // modules: [
-    //   {
-    //     title: "Fundamentals of Occupational Safety and Health",
-    //     topics: [
-    //       "Understanding safety principles",
-    //       "Legal frameworks and compliance requirements",
-    //       "Introduction to occupational safety management systems",
-    //     ],
-    //   },
+    modules: [
+      {
+        title: "Fundamentals of Occupational Safety and Health",
+        topics: [
+          "Understanding safety principles",
+          "Legal frameworks and compliance requirements",
+          "Introduction to occupational safety management systems",
+        ],
+      },
 
-    //   {
-    //     title: "Principles and Application of OSH Risk Management",
-    //     topics: [
-    //       "Hazard identification techniques",
-    //       "Risk evaluation and analysis",
-    //       "Implementing effective risk control measures",
-    //     ],
-    //   },
+      {
+        title: "Principles and Application of OSH Risk Management",
+        topics: [
+          "Hazard identification techniques",
+          "Risk evaluation and analysis",
+          "Implementing effective risk control measures",
+        ],
+      },
 
-    //   {
-    //     title: "Principles and Application of Incident Management",
-    //     topics: [
-    //       "Incident investigation techniques",
-    //       "Root cause analysis",
-    //       "Preventing recurrence of workplace incidents",
-    //     ],
-    //   },
+      {
+        title: "Principles and Application of Incident Management",
+        topics: [
+          "Incident investigation techniques",
+          "Root cause analysis",
+          "Preventing recurrence of workplace incidents",
+        ],
+      },
 
-    //   {
-    //     title:
-    //       "Improving Occupational Safety and Health Performance and Culture",
-    //     topics: [
-    //       "Leadership in safety management",
-    //       "Communication and safety engagement",
-    //       "Behaviour-based safety approaches",
-    //       "Building a positive organisational safety culture",
-    //     ],
-    //   },
-    // ],
+      {
+        title:
+          "Improving Occupational Safety and Health Performance and Culture",
+        topics: [
+          "Leadership in safety management",
+          "Communication and safety engagement",
+          "Behaviour-based safety approaches",
+          "Building a positive organisational safety culture",
+        ],
+      },
+    ],
 
-    // whoShouldAttend: [
-    //   "Individuals beginning their career in Occupational Safety and Health",
-    //   "Professionals responsible for workplace safety duties",
-    //   "Supervisors, team leaders and operational managers",
-    //   "Employees preparing to move into health and safety roles",
-    //   "Professionals seeking an internationally recognised safety qualification",
-    // ],
+    whoShouldAttend: [
+      "Individuals beginning their career in Occupational Safety and Health",
+      "Professionals responsible for workplace safety duties",
+      "Supervisors, team leaders and operational managers",
+      "Employees preparing to move into health and safety roles",
+      "Professionals seeking an internationally recognised safety qualification",
+    ],
 
-    // certification:
-    //   "Successful learners receive the IOSH Level 3 Certificate in Occupational Safety and Health regulated by Ofqual (UK). The qualification is part of the UK Regulated Qualifications Framework (RQF) and is recognised internationally by employers and professional bodies.",
+    certification:
+      "Successful learners receive the IOSH Level 3 Certificate in Occupational Safety and Health regulated by Ofqual (UK). The qualification is part of the UK Regulated Qualifications Framework (RQF) and is recognised internationally by employers and professional bodies.",
 
-    // careerBenefits: [
-    //   "Eligibility for IOSH Technical Membership (TechIOSH)",
-    //   "Strong foundation for a professional career in occupational safety",
-    //   "Recognition by employers across multiple industries worldwide",
-    //   "Career advancement into safety leadership and compliance roles",
-    //   "Pathway towards Chartered IOSH membership with further development",
-    // ],
+    careerBenefits: [
+      "Eligibility for IOSH Technical Membership (TechIOSH)",
+      "Strong foundation for a professional career in occupational safety",
+      "Recognition by employers across multiple industries worldwide",
+      "Career advancement into safety leadership and compliance roles",
+      "Pathway towards Chartered IOSH membership with further development",
+    ],
   },
 
   {
