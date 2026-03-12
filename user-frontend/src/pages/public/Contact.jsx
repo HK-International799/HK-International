@@ -1,171 +1,178 @@
 import { motion } from "framer-motion";
-import { FaEnvelope, FaPhoneAlt, FaMapMarkerAlt } from "react-icons/fa";
+import { FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 import MainLayout from "../../components/layout/MainLayout";
 
 export default function Contact() {
+  const offices = [
+    {
+      name: "UK Office",
+      address: `Office 108A 182-184 High Street North Area 1/1
+East Ham London E6 2JA
+United Kingdom`,
+      map: "https://maps.google.com/maps?q=East%20Ham%20London%20E6%202JA&t=&z=15&ie=UTF8&iwloc=&output=embed",
+    },
+
+    {
+      name: "Portugal Office",
+      address: `1A HK International
+Rua Hermano Neves 18, Piso 3, Escritório 7
+1600-477 Lisboa (Lisbon)
+Portugal`,
+      map: "https://maps.google.com/maps?q=Rua%20Hermano%20Neves%2018%20Lisbon&t=&z=15&ie=UTF8&iwloc=&output=embed",
+    },
+
+    {
+      name: "Mumbai Office (India)",
+      address: `VO-258, Raheja Platinum
+Off Andheri-Kurla Road, Sag Baug
+Marol, Andheri East
+Mumbai, Maharashtra 400059`,
+      map: "https://maps.google.com/maps?q=Raheja%20Platinum%20Andheri%20East%20Mumbai&t=&z=15&ie=UTF8&iwloc=&output=embed",
+    },
+  ];
+
   return (
     <MainLayout>
       <div className="bg-slate-50 min-h-screen">
-        {/* HERO SECTION */}
+        {/* HERO */}
 
-        <section className="pt-40 pb-20 px-6 text-center max-w-5xl mx-auto">
+        <section className="pt-10 pb-10 text-center max-w-4xl mx-auto px-6">
           <motion.h1
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-4xl md:text-5xl font-bold text-indigo-900"
+            className="text-4xl md:text-5xl font-bold text-orange-700"
           >
             Contact HK International
           </motion.h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mt-6 text-gray-600 text-lg"
-          >
-            Have questions about our internationally accredited safety and
-            professional certification programs? Our team is here to help you
-            choose the right course and guide your learning journey.
-          </motion.p>
+          <p className="mt-4 text-gray-600 text-lg leading-relaxed">
+            Get in touch with our international team for guidance on globally
+            accredited occupational health & safety certifications and
+            professional training programs.
+          </p>
         </section>
 
-        {/* CONTACT CARDS */}
+        {/* CONTACT INFO */}
 
-        <section className="max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-8 pb-20">
-          {/* EMAIL */}
+        <section className="max-w-6xl mx-auto px-2 mb-16 flex justify-center">
+          <div className=" bg-linear-to-r from-white hover:from-indigo-600 hover:to-orange-600 hover:text-white rounded-2xl shadow-md border p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 text-xl">
+                <FaEnvelope />
+              </div>
 
-          <motion.div
-            whileHover={{ y: -6 }}
-            className="bg-white rounded-2xl shadow-lg p-8 text-center border border-gray-100 hover:shadow-xl transition"
-          >
-            <div className="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-indigo-100 text-indigo-700 text-2xl mb-5">
-              <FaEnvelope />
+              <div>
+                <h3 className="font-semibold text-lg">Email Us</h3>
+                <p className="">info@hkinternational.uk</p>
+              </div>
             </div>
+          </div>
+        </section>
 
-            <h3 className="font-semibold text-lg text-indigo-900">Email Us</h3>
+        {/* OFFICES */}
 
-            <p className="text-gray-600 mt-2">info@hkinternational.com</p>
-          </motion.div>
+        <section className="max-w-7xl mx-auto px-6 pb-24 space-y-16">
+          {offices.map((office, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.2 }}
+              viewport={{ once: true }}
+              className="grid md:grid-cols-2 bg-white rounded-3xl shadow-lg overflow-hidden border"
+            >
+              {/* ADDRESS */}
 
-          {/* PHONE */}
+              <div className="p-10 flex flex-col justify-center">
+                <div className="flex items-center gap-3 mb-4 text-indigo-700">
+                  <FaMapMarkerAlt />
+                  <h3 className="text-2xl font-bold">{office.name}</h3>
+                </div>
 
-          <motion.div
-            whileHover={{ y: -6 }}
-            className="bg-white rounded-2xl shadow-lg p-8 text-center border border-gray-100 hover:shadow-xl transition"
-          >
-            <div className="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-orange-100 text-orange-600 text-2xl mb-5">
-              <FaPhoneAlt />
-            </div>
+                <p className="text-gray-600 leading-relaxed whitespace-pre-line">
+                  {office.address}
+                </p>
+              </div>
 
-            <h3 className="font-semibold text-lg text-indigo-900">Call Us</h3>
+              {/* MAP */}
 
-            <p className="text-gray-600 mt-2">+91 79918 45638</p>
-          </motion.div>
-
-          {/* LOCATION */}
-
-          <motion.div
-            whileHover={{ y: -6 }}
-            className="bg-white rounded-2xl shadow-lg p-8 text-center border border-gray-100 hover:shadow-xl transition"
-          >
-            <div className="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-amber-100 text-amber-600 text-2xl mb-5">
-              <FaMapMarkerAlt />
-            </div>
-
-            <h3 className="font-semibold text-lg text-indigo-900">Visit Us</h3>
-
-            <p className="text-gray-600 mt-2">Marol, Andheri East, Mumbai, Maharahstra, India</p>
-          </motion.div>
+              <iframe
+                src={office.map}
+                className="w-full h-[320px] md:h-full border-0"
+                loading="lazy"
+              ></iframe>
+            </motion.div>
+          ))}
         </section>
 
         {/* CONTACT FORM */}
 
-        <section className="max-w-6xl mx-auto px-6 pb-24">
+        <section className="max-w-6xl mx-auto px-6 pb-32">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="bg-white shadow-xl rounded-3xl grid md:grid-cols-2 overflow-hidden"
+            className="grid md:grid-cols-2 bg-white rounded-3xl shadow-xl overflow-hidden"
           >
-            {/* LEFT CONTENT */}
+            {/* LEFT SIDE */}
 
-            <div className="bg-gradient-to-br from-indigo-700 to-indigo-900 text-white p-12">
+            <div className="bg-gradient-to-br from-blue-900 to-indigo-950 text-white p-12">
               <h2 className="text-3xl font-bold mb-6">
-                Let's Talk About Your Career
+                Start Your Global Safety Career
               </h2>
 
               <p className="text-indigo-100 leading-relaxed">
-                HK International offers globally recognized certification
-                courses in occupational health & safety, environmental
-                management, auditing and compliance training. Contact us to
-                learn how our programs can help you build a successful
-                international career.
+                HK International provides internationally accredited training
+                programs designed to help professionals build a strong career in
+                occupational health & safety, environmental management, and
+                compliance auditing.
               </p>
 
-              <div className="mt-10 space-y-4 text-indigo-100">
+              <div className="mt-10 space-y-3 text-indigo-100">
                 <p>✔ IOSH Certified Courses</p>
-                <p>✔ OTHM Professional Qualifications</p>
-                <p>✔ ISO Lead Auditor Training</p>
-                <p>✔ ProQual & PECB Certifications</p>
+                <p>✔ ISO Lead Auditor Programs</p>
+                <p>✔ OTHM Professional Diplomas</p>
+                <p>✔ Global HSE Certifications</p>
               </div>
             </div>
 
             {/* FORM */}
 
-            <div className="p-10">
+            <div className="p-10 bg-linear-to-br from-transparent to-orange-200">
               <form className="space-y-6">
                 <input
                   type="text"
                   placeholder="Full Name"
-                  className="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border rounded-lg px-4 py-3 focus:ring-1 focus:ring-indigo-700 outline-none"
                 />
 
                 <input
                   type="email"
                   placeholder="Email Address"
-                  className="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border rounded-lg px-4 py-3 focus:ring-1 focus:ring-indigo-700 outline-none"
                 />
 
                 <input
                   type="text"
                   placeholder="Subject"
-                  className="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border rounded-lg px-4 py-3 focus:ring-1 focus:ring-indigo-700 outline-none"
                 />
 
                 <textarea
                   rows="5"
                   placeholder="Your Message"
-                  className="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border rounded-lg px-4 py-3 focus:ring-1 focus:ring-indigo-700 outline-none"
                 ></textarea>
 
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.96 }}
-                  className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 rounded-lg font-medium shadow-md hover:shadow-lg transition"
+                  className="w-full bg-orange-600 hover:bg-orange-700 text-white py-3 rounded-lg font-semibold shadow-md transition"
                 >
                   Send Message
                 </motion.button>
               </form>
             </div>
-          </motion.div>
-        </section>
-
-        {/* MAP SECTION */}
-
-        <section className="px-6 pb-24">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="max-w-6xl mx-auto rounded-2xl overflow-hidden shadow-xl"
-          >
-            <iframe
-              title="location"
-              src="https://maps.google.com/maps?q=marol&t=&z=13&ie=UTF8&iwloc=&output=embed"
-              className="w-full h-[420px] border-0"
-            ></iframe>
           </motion.div>
         </section>
       </div>
