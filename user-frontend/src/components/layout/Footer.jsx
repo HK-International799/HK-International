@@ -17,11 +17,11 @@ export default function Footer() {
           {/* Company Info */}
           <div>
             <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">
-              HK International
+              1A HK International
             </h3>
 
             <p className="mt-4 text-gray-400 leading-relaxed">
-              HK International provides globally recognized Health, Safety &
+              1A HK International provides globally recognized Health, Safety &
               Environment qualifications designed to help professionals grow
               their careers with internationally accredited training.
             </p>
@@ -161,7 +161,13 @@ export default function Footer() {
         {/* Divider */}
         <div className="border-t border-slate-800 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
           <p>
-            © {new Date().getFullYear()} HK International. All Rights Reserved.
+            © {new Date().getFullYear()} 1A HK International. All Rights
+            Reserved.
+          </p>
+
+          {/* policies */}
+          <p>
+            Policies
           </p>
 
           {/* Credit */}

@@ -42,7 +42,7 @@ Mumbai, Maharashtra 400059`,
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-5xl font-bold text-orange-700"
           >
-            Contact HK International
+            Contact 1A HK International
           </motion.h1>
 
           <p className="mt-4 text-gray-600 text-lg leading-relaxed">
@@ -122,7 +122,7 @@ Mumbai, Maharashtra 400059`,
               </h2>
 
               <p className="text-indigo-100 leading-relaxed">
-                HK International provides internationally accredited training
+                1A HK International provides internationally accredited training
                 programs designed to help professionals build a strong career in
                 occupational health & safety, environmental management, and
                 compliance auditing.

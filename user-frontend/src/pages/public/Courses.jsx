@@ -22,8 +22,8 @@ const courseMenu = [
   {
     title: "PECB (Canada)",
     courses: [
-      { name: "ISO 45001 Lead Auditor", id: "iso45001-auditor" },
-      { name: "ISO 45001 Lead Implementer", id: "iso45001-implementer" },
+      { name: "ISO 45001 Lead Auditor Certificate", id: "iso-45001-auditor" },
+      { name: "ISO 9001 Lead Auditor Certificate", id: "iso-9001-auditor" },
     ],
   },
 
@@ -35,14 +35,8 @@ const courseMenu = [
   {
     title: "OSHA USA",
     courses: [
-      {
-        name: "OSHA 30 Hour Construction Certificate",
-        id: "osha-construction",
-      },
-      {
-        name: "OSHA 30 Hour General Industry Certificate",
-        id: "osha-general",
-      },
+      { name: "OSHA 30 Hour Construction Certificate", id: "osha-construction"},
+      { name: "OSHA 30 Hour General Industry Certificate", id: "osha-general"},
     ],
   },
 
@@ -72,18 +66,18 @@ const courseMenu = [
   {
     title: "EOSH UK",
     courses: [
-      { name: "EOSH Train The Trainer Certificate", id: "eosh-level3" },
+      { name: "EOSH Train The Trainer Certificate", id: "eosh-train-the-trainer" },
     ],
   },
 
   {
     title: "HSE Training Courses",
     courses: [
-      { name: "SHE / HSE Plan Training", id: "hse-training" },
+      { name: "SHE / HSE Plan Training", id: "she-hse-plan-training" },
       { name: "Behaviour-Based Safety (BBS)", id: "bbs-training" },
-      { name: "Confined Space Safety", id: "css-training" },
-      { name: "Permit To Work", id: "pw-training" },
-      { name: "E-Waste Management", id: "ewaste-training" },
+      { name: "Confined Space Safety", id: "confined-space-safety" },
+      { name: "Permit To Work", id: "permit-to-work" },
+      { name: "E-Waste Management", id: "e-waste-management" },
     ],
   },
 ];
@@ -127,7 +121,7 @@ export default function Courses() {
 
             <p className="max-w-2xl mx-auto text-lg mb-8">
               Upgrade your career with internationally recognized safety
-              certifications from HK International.
+              certifications from 1A HK International.
             </p>
 
             {/* SEARCH */}

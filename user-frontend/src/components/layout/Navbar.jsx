@@ -38,8 +38,8 @@ export default function Navbar() {
     {
       title: "PECB (Canada)",
       courses: [
-        { name: "ISO 45001 Lead Auditor", id: "iso45001-auditor" },
-        { name: "ISO 45001 Lead Implementer", id: "iso45001-implementer" },
+        { name: "ISO 45001 Lead Auditor Certificate", id: "iso-45001-auditor" },
+        { name: "ISO 9001 Lead Auditor Certificate", id: "iso-9001-auditor" },
       ],
     },
 
@@ -72,17 +72,17 @@ export default function Navbar() {
 
     {
       title: "EOSH UK",
-      courses: [{ name: "EOSH Train The Trainer Certificate", id: "eosh-level3" }],
+      courses: [{ name: "EOSH Train The Trainer Certificate", id: "eosh-train-the-trainer" }],
     },
 
     {
       title: "HSE Training Courses",
       courses: [
-        { name:"SHE/HSE Plan Training", id:"hse-training"},
+        { name:"SHE/HSE Plan Training", id:"she-hse-plan-training"},
         { name: "Behaviour-Based Safety (BBS) Traning", id: "bbs-training" },
-        { name: "Confined Space Safety Traning", id: "css-training" },
-        { name: "Permit to Work Traning", id: "pw-training" },
-        { name: "E-Waste Management Training ", id: "ewaste-training" },
+        { name: "Confined Space Safety Traning", id: "confined-space-safety" },
+        { name: "Permit to Work Traning", id: "permit-to-work" },
+        { name: "E-Waste Management Training ", id: "e-waste-management" },
       ],
     },
   ];
@@ -119,7 +119,7 @@ export default function Navbar() {
           >
             <img
               src="/images/hk_logo.png"
-              alt="HK International"
+              alt="1A HK International"
               className="h-16 w-auto object-contain"
             />
 

@@ -207,7 +207,7 @@ export default function About() {
         </h2>
 
         <p className="mt-4 max-w-2xl mx-auto">
-          Partner with HK International to strengthen workplace
+          Partner with 1A HK International to strengthen workplace
           safety culture and develop world-class professionals.
         </p>
 
