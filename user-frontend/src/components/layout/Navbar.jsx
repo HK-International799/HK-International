@@ -244,7 +244,7 @@ export default function Navbar() {
 
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
-                to="/register"
+                to="/student/dashboard"
                 className="relative bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-2 rounded-lg shadow-lg overflow-hidden transition-all hover:rounded-3xl"
               >
                 <span className="relative z-10">Start Learning</span>

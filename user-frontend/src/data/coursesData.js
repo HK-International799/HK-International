@@ -1329,6 +1329,485 @@ export const courses = [
 
   
 
+{
+    id: "eosh-train-the-trainer",
+
+    title: "EOSH Train The Trainer Certificate",
+
+    organization: "EOSH UK – Environmental Occupational Safety and Health",
+
+    accreditation: "EOSH UK Certified International Qualification",
+
+    duration: "7 – 10 Days Training Program",
+
+    mode: [
+      "Online Instructor-Led Training",
+      "Classroom Training",
+      "Corporate Training Programs",
+    ],
+
+    level: "Professional Trainer Certification",
+
+    image: "/courses/eosh-train-the-trainer.jpg",
+
+    overview:
+      "The EOSH Train The Trainer Certificate is an internationally recognised professional qualification designed for individuals who want to become certified trainers in occupational health, safety and environmental (HSE) disciplines. The course equips participants with the knowledge, instructional techniques and leadership skills required to design, deliver and evaluate effective safety training programs. Participants learn how to apply adult learning principles, develop structured training materials and deliver engaging safety sessions that improve workplace safety awareness and compliance.",
+
+    importance:
+      "Effective safety training plays a critical role in preventing workplace accidents and promoting a strong organisational safety culture. Organisations rely on competent trainers who can communicate safety procedures clearly and ensure employees understand health and safety responsibilities. This certification enables professionals to become qualified HSE trainers capable of developing training programs, improving workforce competency and supporting compliance with occupational safety regulations across industries.",
+
+    learningOutcomes: [
+      "Understand the principles of adult learning and training methodologies",
+      "Develop and design professional HSE training programs",
+      "Deliver effective training sessions using interactive teaching techniques",
+      "Apply health and safety regulations and risk management principles in training",
+      "Evaluate learner performance and continuously improve training effectiveness",
+    ],
+
+    modules: [
+      {
+        title: "Introduction to Health, Safety and Environment Training",
+        topics: [
+          "Importance of HSE training in organisations",
+          "Roles and responsibilities of safety trainers",
+          "Overview of occupational safety and environmental management",
+        ],
+      },
+
+      {
+        title: "Adult Learning Principles and Training Techniques",
+        topics: [
+          "Understanding adult learning theories",
+          "Different learning styles and training strategies",
+          "Developing interactive and engaging training sessions",
+        ],
+      },
+
+      {
+        title: "Communication and Presentation Skills",
+        topics: [
+          "Effective communication techniques for trainers",
+          "Public speaking and presentation skills",
+          "Facilitating group discussions and learner engagement",
+        ],
+      },
+
+      {
+        title: "Training Needs Analysis and Course Design",
+        topics: [
+          "Identifying training needs in organisations",
+          "Designing structured training programs",
+          "Developing training materials and lesson plans",
+        ],
+      },
+
+      {
+        title: "Health and Safety Management Fundamentals",
+        topics: [
+          "Hazard identification and workplace risk assessment",
+          "Occupational health and safety regulations",
+          "Emergency response planning and incident prevention",
+        ],
+      },
+
+      {
+        title: "Training Delivery and Classroom Management",
+        topics: [
+          "Conducting effective training sessions",
+          "Using visual aids and practical demonstrations",
+          "Managing classroom dynamics and participant interaction",
+        ],
+      },
+
+      {
+        title: "Assessment and Evaluation of Training Programs",
+        topics: [
+          "Assessing learner performance and competency",
+          "Conducting tests, quizzes and practical evaluations",
+          "Improving training programs through feedback and evaluation",
+        ],
+      },
+
+      {
+        title: "Continuous Improvement and Professional Development",
+        topics: [
+          "Maintaining training quality standards",
+          "Continuous improvement of safety training programs",
+          "Professional development for HSE trainers",
+        ],
+      },
+    ],
+
+    whoShouldAttend: [
+      "Health and Safety professionals who want to become certified trainers",
+      "HSE managers and supervisors responsible for employee training",
+      "Safety consultants and training professionals",
+      "Engineers and technical staff involved in workplace safety programs",
+      "Professionals interested in developing a career in safety training",
+    ],
+
+    certification:
+      "Participants who successfully complete the programme and pass the assessment receive the EOSH Train The Trainer Certificate issued by EOSH UK. The certification confirms that the holder has the competence and instructional skills required to design and deliver professional health and safety training programs.",
+
+    careerBenefits: [
+      "Opportunity to work as a professional HSE trainer or safety instructor",
+      "Enhanced leadership skills in workplace safety training and development",
+      "Improved career opportunities in safety consulting and training institutes",
+      "Ability to conduct internal safety training programs within organisations",
+      "Recognition as a qualified trainer in occupational health and safety disciplines",
+    ],
+  },
+
+  {
+    id: "osha-construction",
+
+    title: "OSHA 30 Hours Construction Certificate (PECB Canada)",
+
+    organization: "OSHA – Occupational Safety and Health Administration",
+
+    accreditation: "PECB Certified Canada",
+
+    duration: "30 Hours Training Program",
+
+    mode: [
+      "Online Instructor-Led Training",
+      "Classroom Training",
+      "Corporate Training Programs",
+    ],
+
+    level: "Professional Construction Safety Certification",
+
+    image: "/courses/osha-30-construction.jpg",
+
+    overview:
+      "The OSHA 30 Hours Construction Certificate is an internationally recognised safety training program designed for supervisors, engineers and workers responsible for safety in construction environments. The course provides comprehensive knowledge of workplace hazards, OSHA safety regulations and industry best practices required to prevent accidents and injuries on construction sites. Participants gain the skills required to recognise hazards, implement effective safety controls and ensure compliance with occupational safety standards.",
+
+    importance:
+      "The construction industry is one of the most hazardous sectors worldwide. Workplace incidents such as falls, electrocution and equipment accidents can lead to severe injuries or fatalities. The OSHA 30-hour construction training programme equips professionals with the knowledge and practical safety management techniques necessary to identify risks, enforce safety procedures and create safer work environments across construction projects.",
+
+    learningOutcomes: [
+      "Understand OSHA regulations and safety standards for the construction industry",
+      "Identify and prevent common construction site hazards",
+      "Apply effective risk control measures and safety procedures",
+      "Implement workplace safety programs and accident prevention strategies",
+      "Promote a proactive safety culture within construction teams",
+    ],
+
+    modules: [
+      {
+        title: "Introduction to OSHA and Workplace Safety",
+        topics: [
+          "Overview of OSHA regulations and safety standards",
+          "Worker rights and employer responsibilities",
+          "Importance of safety compliance in construction environments",
+        ],
+      },
+
+      {
+        title: "Managing Safety and Health Programs",
+        topics: [
+          "Developing effective safety management systems",
+          "Hazard identification and job hazard analysis",
+          "Safety policies and documentation",
+        ],
+      },
+
+      {
+        title: "OSHA Focus Four Hazards",
+        topics: [
+          "Fall hazards and fall protection systems",
+          "Electrocution hazards and electrical safety",
+          "Struck-by hazards from equipment and materials",
+          "Caught-in or caught-between hazards",
+        ],
+      },
+
+      {
+        title: "Personal Protective Equipment (PPE)",
+        topics: [
+          "Selection and use of appropriate protective equipment",
+          "Maintenance and inspection of PPE",
+          "Employer and employee responsibilities",
+        ],
+      },
+
+      {
+        title: "Health Hazards in Construction",
+        topics: [
+          "Exposure to hazardous chemicals and materials",
+          "Respiratory protection and ventilation systems",
+          "Occupational illnesses and prevention strategies",
+        ],
+      },
+
+      {
+        title: "Construction Equipment and Tools Safety",
+        topics: [
+          "Safe use of hand and power tools",
+          "Equipment inspection and maintenance",
+          "Machine guarding and equipment safety procedures",
+        ],
+      },
+
+      {
+        title: "Scaffolding, Ladders and Elevated Work",
+        topics: [
+          "Safe scaffold construction and inspection",
+          "Ladder safety and fall prevention",
+          "Working at heights and fall protection strategies",
+        ],
+      },
+
+      {
+        title: "Excavation and Trenching Safety",
+        topics: [
+          "Identifying excavation hazards",
+          "Trench collapse prevention methods",
+          "Protective systems and soil classification",
+        ],
+      },
+
+      {
+        title: "Cranes, Lifting Equipment and Material Handling",
+        topics: [
+          "Safe operation of cranes and lifting equipment",
+          "Rigging practices and load control",
+          "Material storage and handling safety",
+        ],
+      },
+
+      {
+        title: "Fire Prevention and Emergency Preparedness",
+        topics: [
+          "Identifying fire hazards on construction sites",
+          "Fire prevention strategies and emergency response",
+          "Evacuation procedures and incident management",
+        ],
+      },
+
+      {
+        title: "Safety Leadership and Workplace Culture",
+        topics: [
+          "Promoting safety awareness among workers",
+          "Incident reporting and investigation",
+          "Continuous improvement in construction safety performance",
+        ],
+      },
+    ],
+
+    whoShouldAttend: [
+      "Construction supervisors and site managers",
+      "Engineers and project managers involved in construction projects",
+      "Safety officers and HSE professionals",
+      "Construction workers responsible for workplace safety",
+      "Professionals seeking internationally recognised construction safety training",
+    ],
+
+    certification:
+      "Participants who successfully complete the training receive the OSHA 30 Hours Construction Certificate recognised internationally and issued in collaboration with PECB Canada. The certification demonstrates competence in construction safety management and hazard prevention.",
+
+    careerBenefits: [
+      "Improved knowledge of OSHA safety regulations and compliance",
+      "Enhanced career opportunities in construction safety management",
+      "Recognition as a trained safety professional in construction environments",
+      "Ability to implement workplace safety programs and hazard prevention strategies",
+      "Improved safety leadership and risk management skills in construction projects",
+    ],
+  },
+
+  {
+    id: "osha-general",
+
+    title: "OSHA 30 Hours General Industry Certificate",
+
+    organization: "OSHA – Occupational Safety and Health Administration",
+
+    accreditation: "PECB Certified Canada",
+
+    duration: "30 Hours Training Program",
+
+    mode: [
+      "Online Instructor-Led Training",
+      "Classroom Training",
+      "Corporate Training Programs",
+    ],
+
+    level: "Professional Workplace Safety Certification",
+
+    image: "/courses/osha-30-general-industry.jpg",
+
+    overview:
+      "The OSHA 30 Hours General Industry Certificate is a comprehensive occupational safety training program designed for supervisors, managers and professionals responsible for workplace safety across various industries. The course provides detailed knowledge of OSHA regulations, workplace hazard recognition and effective safety management practices. Participants learn how to identify risks, implement safety controls and promote a proactive safety culture within organisations.",
+
+    importance:
+      "Workplace injuries and occupational illnesses can significantly impact employees and organisational productivity. OSHA safety training equips professionals with the knowledge required to identify hazards, implement preventive measures and ensure compliance with safety regulations. This course helps organisations strengthen their safety management systems and reduce workplace incidents across industries such as manufacturing, healthcare, logistics and warehousing.",
+
+    learningOutcomes: [
+      "Understand OSHA safety standards and regulatory requirements",
+      "Identify workplace hazards and apply effective risk control measures",
+      "Implement safety management systems and workplace safety programs",
+      "Improve workplace safety culture through training and leadership",
+      "Conduct hazard communication and emergency preparedness planning",
+    ],
+
+    modules: [
+      {
+        title: "Introduction to OSHA and Workplace Safety",
+        topics: [
+          "History and mission of OSHA",
+          "Worker rights and employer responsibilities",
+          "Overview of OSHA safety regulations and standards",
+        ],
+      },
+
+      {
+        title: "Managing Safety and Health Programs",
+        topics: [
+          "Developing workplace safety management systems",
+          "Hazard identification and job hazard analysis",
+          "Implementing safety policies and procedures",
+        ],
+      },
+
+      {
+        title: "Walking and Working Surfaces",
+        topics: [
+          "Slip, trip and fall hazards",
+          "Safe use of ladders and working platforms",
+          "Preventive measures for fall-related injuries",
+        ],
+      },
+
+      {
+        title: "Emergency Action Plans and Fire Prevention",
+        topics: [
+          "Emergency evacuation procedures",
+          "Fire hazards and fire prevention strategies",
+          "Workplace emergency preparedness planning",
+        ],
+      },
+
+      {
+        title: "Electrical Safety",
+        topics: [
+          "Electrical hazards and risk identification",
+          "Safe working practices around electrical equipment",
+          "Electrical safety regulations and protective measures",
+        ],
+      },
+
+      {
+        title: "Personal Protective Equipment (PPE)",
+        topics: [
+          "Types of personal protective equipment",
+          "Proper use, maintenance and inspection of PPE",
+          "Employer and employee responsibilities for PPE",
+        ],
+      },
+
+      {
+        title: "Hazard Communication and Chemical Safety",
+        topics: [
+          "Understanding hazard communication standards",
+          "Safety Data Sheets (SDS) and chemical labelling",
+          "Managing chemical hazards in the workplace",
+        ],
+      },
+
+      {
+        title: "Materials Handling and Storage",
+        topics: [
+          "Safe manual handling practices",
+          "Material storage and handling procedures",
+          "Preventing workplace injuries during material movement",
+        ],
+      },
+
+      {
+        title: "Machine Guarding and Equipment Safety",
+        topics: [
+          "Machine guarding requirements",
+          "Safe operation of machinery and equipment",
+          "Preventing mechanical injuries",
+        ],
+      },
+
+      {
+        title: "Permit Required Confined Spaces",
+        topics: [
+          "Understanding confined space hazards",
+          "Permit-required confined space procedures",
+          "Emergency response and rescue planning",
+        ],
+      },
+
+      {
+        title: "Lockout / Tagout (LOTO)",
+        topics: [
+          "Energy control procedures",
+          "Preventing accidental equipment start-up",
+          "Lockout / tagout safety practices",
+        ],
+      },
+
+      {
+        title: "Industrial Hygiene and Occupational Health",
+        topics: [
+          "Exposure to hazardous substances",
+          "Workplace monitoring and hazard prevention",
+          "Controlling occupational health risks",
+        ],
+      },
+
+      {
+        title: "Ergonomics and Workplace Design",
+        topics: [
+          "Understanding ergonomic hazards",
+          "Preventing musculoskeletal disorders",
+          "Designing safer work environments",
+        ],
+      },
+
+      {
+        title: "Welding, Cutting and Hot Work Safety",
+        topics: [
+          "Hot work hazards and control measures",
+          "Safe welding and cutting procedures",
+          "Fire prevention during hot work activities",
+        ],
+      },
+
+      {
+        title: "Safety Leadership and Incident Investigation",
+        topics: [
+          "Promoting workplace safety culture",
+          "Incident reporting and investigation methods",
+          "Continuous improvement in safety performance",
+        ],
+      },
+    ],
+
+    whoShouldAttend: [
+      "Supervisors and managers responsible for workplace safety",
+      "Safety officers and HSE professionals",
+      "Employees working in manufacturing, warehousing or logistics",
+      "Engineers and operational managers responsible for workplace compliance",
+      "Professionals seeking internationally recognised safety certification",
+    ],
+
+    certification:
+      "Participants who successfully complete the training programme receive the OSHA 30 Hours General Industry Certificate recognised internationally and issued in collaboration with PECB Canada. The certification demonstrates professional knowledge in workplace safety management and hazard prevention.",
+
+    careerBenefits: [
+      "Improved understanding of OSHA safety regulations and workplace compliance",
+      "Enhanced career opportunities in occupational health and safety",
+      "Recognition as a trained safety professional in general industry sectors",
+      "Ability to implement effective workplace safety programs",
+      "Improved risk management and accident prevention skills",
+    ],
+  },
+
+
   {},
   {},
   {},
