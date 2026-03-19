@@ -52,102 +52,94 @@ export default function AdminRegister() {
       alert("User Registered Successfully");
 
       navigate("/login");
-
     } catch (err) {
       console.error("Register Error:", err);
 
-      setError(
-        err.response?.data?.message || "Something went wrong"
-      );
+      setError(err.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white p-8 rounded-xl shadow w-96">
+        <form className="" onSubmit={handleSubmit}>
+          <h2 className="text-2xl font-bold mb-6 text-center">
+            Register (Admin / Tutor)
+          </h2>
 
-      <form
-        className="bg-white p-8 rounded-xl shadow w-96"
-        onSubmit={handleSubmit}
-      >
-        <h2 className="text-2xl font-bold mb-6 text-center">
-          Register (Admin / Tutor)
-        </h2>
+          {/* Error Message */}
+          {error && <p className="text-red-500 mb-3 text-sm">{error}</p>}
 
-        {/* Error Message */}
-        {error && (
-          <p className="text-red-500 mb-3 text-sm">{error}</p>
-        )}
-
-        <input
-          placeholder="Name"
-          className="w-full p-2 mb-3 border rounded"
-          onChange={(e) =>
-            setForm({ ...form, name: e.target.value })
-          }
-        />
-
-        <input
-          placeholder="Email"
-          className="w-full p-2 mb-3 border rounded"
-          onChange={(e) =>
-            setForm({ ...form, email: e.target.value })
-          }
-        />
-
-        <input
-          placeholder="Password"
-          type="password"
-          className="w-full p-2 mb-3 border rounded"
-          onChange={(e) =>
-            setForm({ ...form, password: e.target.value })
-          }
-        />
-
-        {/* Role Selection */}
-        <div className="flex gap-4 mb-3">
-
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={form.role === "admin"}
-              onChange={() => handleCheckboxChange("admin")}
-            />
-            Admin
-          </label>
-
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={form.role === "tutor"}
-              onChange={() => handleCheckboxChange("tutor")}
-            />
-            Tutor
-          </label>
-
-        </div>
-
-        {/* Admin Secret ID (only if admin selected) */}
-        {form.role === "admin" && (
           <input
-            placeholder="Admin Secret ID"
+            placeholder="Name"
             className="w-full p-2 mb-3 border rounded"
-            onChange={(e) =>
-              setForm({ ...form, adminLoginId: e.target.value })
-            }
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
-        )}
 
+          <input
+            placeholder="Email"
+            className="w-full p-2 mb-3 border rounded"
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+          />
+
+          <input
+            placeholder="Password"
+            type="password"
+            className="w-full p-2 mb-3 border rounded"
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+          />
+
+          {/* Role Selection */}
+          <div className="flex gap-4 mb-3">
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={form.role === "admin"}
+                onChange={() => handleCheckboxChange("admin")}
+              />
+              Admin
+            </label>
+
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={form.role === "tutor"}
+                onChange={() => handleCheckboxChange("tutor")}
+              />
+              Tutor
+            </label>
+          </div>
+
+          {/* Admin Secret ID (only if admin selected) */}
+          {form.role === "admin" && (
+            <input
+              placeholder="Admin Secret ID"
+              className="w-full p-2 mb-3 border rounded"
+              onChange={(e) =>
+                setForm({ ...form, adminLoginId: e.target.value })
+              }
+            />
+          )}
+
+          <button
+            disabled={loading}
+            className="w-full bg-black text-white py-2 mt-2 rounded hover:opacity-90"
+          >
+            {loading ? "Registering..." : "Register"}
+          </button>
+        </form>
         <button
-          disabled={loading}
-          className="w-full bg-black text-white py-2 mt-2 rounded hover:opacity-90"
+          className="pt-3 mt-2"
+          onClick={() => {
+            navigate("/login");
+          }}
         >
-          {loading ? "Registering..." : "Register"}
+          Already have an account?{" "}
+          <span className="text-blue-700 cursor-pointer">Login</span>
         </button>
-
-      </form>
+      </div>
     </div>
   );
 }

@@ -28,7 +28,6 @@ export default function AdminLogin() {
       login(res.data);
 
       navigate("/admin/dashboard"); // ✅ correct
-
     } catch (err) {
       console.error(err.response?.data);
       alert(err.response?.data?.message || "Login failed");
@@ -36,36 +35,39 @@ export default function AdminLogin() {
   };
 
   return (
-    
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-xl shadow w-96"
-      >
-        <h2 className="text-2xl font-bold mb-6">Admin Login</h2>
+      <div className="bg-white p-8 rounded-xl shadow w-96">
+        <form onSubmit={handleSubmit} className="">
+          <h2 className="text-2xl font-bold mb-6">Admin Login</h2>
 
-        <input
-          type="text"
-          placeholder="Admin Login ID"
-          className="w-full p-2 mb-4 border rounded"
-          onChange={(e) =>
-            setForm({ ...form, adminLoginId: e.target.value })
-          }
-        />
+          <input
+            type="text"
+            placeholder="Admin Login ID"
+            className="w-full p-2 mb-4 border rounded"
+            onChange={(e) => setForm({ ...form, adminLoginId: e.target.value })}
+          />
 
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full p-2 mb-4 border rounded"
-          onChange={(e) =>
-            setForm({ ...form, password: e.target.value })
-          }
-        />
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full p-2 mb-4 border rounded"
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+          />
 
-        <button className="w-full bg-black text-white py-2 rounded">
-          Login
+          <button className="w-full bg-black text-white py-2 rounded">
+            Login
+          </button>
+        </form>
+        <button
+          className="pt-3 mt-2"
+          onClick={() => {
+            navigate("/register");
+          }}
+        >
+          Don't have an account?{" "}
+          <span className="text-blue-700 cursor-pointer">Sign up</span>
         </button>
-      </form>
+      </div>
     </div>
   );
 }
