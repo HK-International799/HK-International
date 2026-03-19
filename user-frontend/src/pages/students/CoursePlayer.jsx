@@ -1,46 +1,68 @@
 import { useParams } from "react-router-dom";
-import { lessons } from "../../mock/studentData";
+import { useEffect, useState } from "react";
+import { getCourseById } from "../../services/courseService";
 
 export default function CoursePlayer() {
+
   const { id } = useParams();
-  const courseLessons = lessons[id] || [];
+  const [course, setCourse] = useState(null);
+
+  useEffect(() => {
+
+    const loadCourse = async () => {
+      const data = await getCourseById(id);
+      setCourse(data);
+    };
+
+    loadCourse();
+
+  }, [id]);
+
+  if (!course) return <div>Loading...</div>;
 
   return (
-    <div className="grid md:grid-cols-4 min-h-screen">
+    <div className="flex">
 
-      {/* Video */}
+      {/* Lesson List */}
+      <div className="w-1/4 border-r p-4">
 
-      <div className="md:col-span-3 p-6">
-
-        <iframe
-          width="100%"
-          height="500"
-          src={courseLessons[0]?.video}
-          title="lesson"
-          allowFullScreen
-          className="rounded-xl"
-        ></iframe>
-
-        <h2 className="text-2xl font-semibold mt-4">
-          {courseLessons[0]?.title}
+        <h2 className="font-bold mb-4">
+          Lessons
         </h2>
+
+        {course.sections?.map((section) => (
+
+          <div key={section._id} className="mb-4">
+
+            <h3 className="font-semibold">
+              {section.title}
+            </h3>
+
+            {section.lessons?.map((lesson) => (
+
+              <div
+                key={lesson._id}
+                className="ml-3 text-sm text-gray-600"
+              >
+                {lesson.title}
+              </div>
+
+            ))}
+
+          </div>
+
+        ))}
 
       </div>
 
-      {/* Lesson List */}
+      {/* Video Player */}
+      <div className="flex-1 p-6">
 
-      <div className="border-l p-6 bg-white">
+        <h1 className="text-2xl font-bold mb-4">
+          {course.title}
+        </h1>
 
-        <h3 className="font-semibold mb-4">Lessons</h3>
-
-        {courseLessons.map((lesson) => (
-          <div
-            key={lesson.id}
-            className="p-3 border rounded-lg mb-3 cursor-pointer hover:bg-gray-100"
-          >
-            {lesson.title}
-          </div>
-        ))}
+        <p>{course.description}</p>
 
       </div>
 

@@ -112,3 +112,7 @@ temp/
 *.tgz
 *.bak
 *.swp
+
+/admin-dashboard.zip
+/server.zip
+/user-frontend.zip
