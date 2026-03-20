@@ -3,48 +3,56 @@ import { createContext, useContext, useState, useEffect } from "react";
 const AdminAuthContext = createContext();
 
 export const AdminAuthProvider = ({ children }) => {
-  const [token, setToken] = useState(localStorage.getItem("adminToken"));
+  const [token, setToken] = useState(localStorage.getItem("authToken"));
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // ✅ NEW
+  const [loading, setLoading] = useState(true);
 
-  // ✅ Load user from localStorage
+  /**
+   * ✅ Load user from localStorage
+   */
   useEffect(() => {
-    const storedUser = localStorage.getItem("adminUser");
+    const storedUser = localStorage.getItem("authUser");
 
     if (storedUser && storedUser !== "undefined") {
       try {
         setUser(JSON.parse(storedUser));
       } catch (err) {
         console.error("Invalid user in localStorage");
-        localStorage.removeItem("adminUser");
+        localStorage.removeItem("authUser");
       }
     }
 
-    setLoading(false); // ✅ IMPORTANT
+    setLoading(false);
   }, []);
 
-  // ✅ Sync token
+  /**
+   * ✅ Sync token
+   */
   useEffect(() => {
-    if (token) localStorage.setItem("adminToken", token);
-    else localStorage.removeItem("adminToken");
+    if (token) localStorage.setItem("authToken", token);
+    else localStorage.removeItem("authToken");
   }, [token]);
 
+  /**
+   * ✅ Login
+   */
   const login = (data) => {
-    console.log("LOGIN DATA:", data); // 🔍 DEBUG
-
     setToken(data.token);
     setUser(data.user);
 
-    localStorage.setItem("adminToken", data.token);
-    localStorage.setItem("adminUser", JSON.stringify(data.user));
+    localStorage.setItem("authToken", data.token);
+    localStorage.setItem("authUser", JSON.stringify(data.user));
   };
 
+  /**
+   * ✅ Logout
+   */
   const logout = () => {
     setToken(null);
     setUser(null);
 
-    localStorage.removeItem("adminToken");
-    localStorage.removeItem("adminUser");
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("authUser");
   };
 
   return (

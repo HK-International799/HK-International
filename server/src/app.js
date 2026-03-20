@@ -1,7 +1,9 @@
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
-import connectDB from "./config/db.js";
+import helmet from "helmet";
+import compression from "compression";
+import rateLimit from "express-rate-limit";
 import errorMiddleware from "./middleware/errorMiddleware.js";
 
 // Import routes
@@ -17,43 +19,70 @@ import lessonRoutes from "./routes/lessonRoutes.js";
 
 const app = express();
 
-// Connect to MongoDB
-connectDB();
+// ─── Security headers ───────────────────────────────────────────────────────
+app.use(helmet());
 
-// Allowed origins for CORS
-const allowedOrigins = [
-  "http://localhost:5173", // user-frontend
-  "http://localhost:5174", // tutor-frontend
-  "http://localhost:5175", // admin-dashboard
-  // "https://user.myapp.com",   // production user frontend
-  // "https://tutor.myapp.com",  // production tutor frontend
-  // "https://admin.myapp.com"   // production admin dashboard
-];
+// ─── CORS ───────────────────────────────────────────────────────────────────
+const allowedOrigins = process.env.NODE_ENV === "production"
+  ? [
+      process.env.CLIENT_URL_STUDENT,   // e.g. https://student.hk-lms.com
+      process.env.CLIENT_URL_TUTOR,     // e.g. https://tutor.hk-lms.com
+      process.env.CLIENT_URL_ADMIN,     // e.g. https://admin.hk-lms.com
+    ].filter(Boolean)
+  : [
+      "http://localhost:5173",  // student frontend
+      "http://localhost:5174",  // tutor dashboard
+      "http://localhost:5175",  // admin dashboard
+    ];
 
-// Core middlewares
 app.use(cors({
-  origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps, curl)
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      return callback(new Error("Not allowed by CORS"));
-    }
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error("Not allowed by CORS"));
   },
-  credentials: true, // allow cookies/authorization headers
+  credentials: true,
 }));
 
-app.use(express.json());
-app.use(morgan("dev"));
+// ─── Rate limiting ───────────────────────────────────────────────────────────
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many requests, please try again later." },
+});
 
-// Health check route
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20, // stricter limit for login/register
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many auth attempts, please try again later." },
+});
+
+app.use(globalLimiter);
+
+// ─── Body parsers ────────────────────────────────────────────────────────────
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+// ─── Compression ─────────────────────────────────────────────────────────────
+app.use(compression());
+
+// ─── HTTP logging (dev only) ─────────────────────────────────────────────────
+if (process.env.NODE_ENV !== "production") {
+  app.use(morgan("dev"));
+}
+
+// ─── Health check ────────────────────────────────────────────────────────────
 app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "OK", message: "Server running" });
 });
 
-// API routes
-app.use("/api/auth", authRoutes);
+// ─── API routes ──────────────────────────────────────────────────────────────
+app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/assignments", assignmentRoutes);
 app.use("/api/submissions", submissionRoutes);
@@ -63,7 +92,12 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/lessons", lessonRoutes);
 
-// Error handler (last middleware)
+// ─── 404 handler ─────────────────────────────────────────────────────────────
+app.use((req, res) => {
+  res.status(404).json({ message: `Route ${req.originalUrl} not found` });
+});
+
+// ─── Global error handler (must be last) ─────────────────────────────────────
 app.use(errorMiddleware);
 
 export default app;

@@ -5,25 +5,41 @@ import {
   Navigate,
 } from "react-router-dom";
 
-import { AdminAuthProvider } from "./contexts/AdminAuthContext";
-import { useAdminAuth } from "./contexts/AdminAuthContext";
+import { AdminAuthProvider, useAdminAuth } from "./contexts/AdminAuthContext";
 
-import Login from "./pages/Login";
-import Register from "./pages/AdminRegister";
-import DashboardPage from "./pages/DashboardPage";
-import UsersPage from "./pages/UsersPage";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/AdminRegister";
+
+import Dashboard from "./pages/adminManagement/Dashboard";
+import Users from "./pages/adminManagement/Users";
+import CreateUser from "./pages/adminManagement/CreateUser";
+import EnrollStudent from "./pages/adminManagement/EnrollStudent";
+
+// course Pages
+import Courses from "./pages/courseManagement/Courses";
+import CourseDetails from "./pages/courseManagement/CourseDetails";
+import CreateCourse from "./pages/courseManagement/CreateCourse";
+import EditCourse from "./pages/courseManagement/EditCourse";
+import AssignTutor from "./pages/courseManagement/AssignTutor";
+
 import AnalyticsPage from "./pages/AnalyticsPage";
 import CertificatesPage from "./pages/CertificatesPage";
 import OrdersPage from "./pages/OrdersPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
-import CreateUserPage from "./pages/CreateUserPage";
+import { Activity } from "react";
+import EditUser from "./pages/adminManagement/EditUser";
+import ManageSections from "./pages/courseManagement/ManageSections";
 
-// ✅ Improved Redirect Logic
+/**
+ * ✅ Smart Root Redirect
+ */
 const RootRedirect = () => {
-  const { token } = useAdminAuth();
+  const { token, user, loading } = useAdminAuth();
 
-  if (!token) {
+  if (loading) return <p>Loading...</p>;
+
+  if (!token || !user) {
     return <Navigate to="/login" replace />;
   }
 
@@ -35,19 +51,19 @@ function App() {
     <AdminAuthProvider>
       <Router>
         <Routes>
-          {/* Root Redirect */}
+          {/* Root */}
           <Route path="/" element={<RootRedirect />} />
 
-          {/* Public Routes */}
+          {/* Public */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* Protected Admin Routes */}
+          {/* 🔐 Admin Protected Routes */}
           <Route
             path="/admin/dashboard"
             element={
               <ProtectedRoute>
-                <DashboardPage />
+                <Dashboard />
               </ProtectedRoute>
             }
           />
@@ -56,11 +72,30 @@ function App() {
             path="/admin/users"
             element={
               <ProtectedRoute>
-                <UsersPage />
+                <Users />
               </ProtectedRoute>
             }
           />
 
+          <Route
+            path="/admin/create-user"
+            element={
+              <ProtectedRoute>
+                <CreateUser />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/enroll"
+            element={
+              <ProtectedRoute>
+                <EnrollStudent />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Optional Existing Pages */}
           <Route
             path="/admin/analytics"
             element={
@@ -89,10 +124,69 @@ function App() {
           />
 
           <Route
-            path="/admin/create-user"
+            path="/admin/edit-user/:id"
             element={
               <ProtectedRoute>
-                <CreateUserPage />
+                <EditUser />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/activity"
+            element={
+              <ProtectedRoute>
+                <Activity />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/courses"
+            element={
+              <ProtectedRoute>
+                <Courses />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/courses/:id"
+            element={
+              <ProtectedRoute>
+                <CourseDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/create-course"
+            element={
+              <ProtectedRoute>
+                <CreateCourse />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/edit-course/:id"
+            element={
+              <ProtectedRoute>
+                <EditCourse />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/assign-tutor"
+            element={
+              <ProtectedRoute>
+                <AssignTutor />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/courses/:id/sections"
+            element={
+              <ProtectedRoute>
+                <ManageSections />
               </ProtectedRoute>
             }
           />

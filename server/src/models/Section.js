@@ -1,3 +1,37 @@
+// import mongoose from "mongoose";
+
+// const sectionSchema = new mongoose.Schema(
+//   {
+//     title: {
+//       type: String,
+//       required: true,
+//     },
+
+//     courseId: {
+//       type: mongoose.Schema.Types.ObjectId,
+//       ref: "Course",
+//       required: true,
+//     },
+
+//     lessons: [
+//       {
+//         type: mongoose.Schema.Types.ObjectId,
+//         ref: "Lesson",
+//       },
+//     ],
+
+//     order: {
+//       type: Number,
+//       default: 0,
+//     },
+//   },
+//   { timestamps: true }
+// );
+
+// export default mongoose.model("Section", sectionSchema);
+
+
+
 import mongoose from "mongoose";
 
 const sectionSchema = new mongoose.Schema(
@@ -5,6 +39,7 @@ const sectionSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
+      trim: true,
     },
 
     courseId: {
@@ -14,10 +49,7 @@ const sectionSchema = new mongoose.Schema(
     },
 
     lessons: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Lesson",
-      },
+      { type: mongoose.Schema.Types.ObjectId, ref: "Lesson" },
     ],
 
     order: {

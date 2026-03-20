@@ -15,3 +15,9 @@
   animation: marquee 25s linear infinite;
 }
 
+
+body {
+  user-select: none;
+}
+
+

@@ -2,31 +2,34 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
 const authMiddleware = async (req, res, next) => {
-  let token;
+  const authHeader = req.headers.authorization;
 
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    try {
-      token = req.headers.authorization.split(" ")[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "No token provided" });
+  }
 
-      const user = await User.findById(decoded.id).select("-passwordHash");
-      if (!user) {
-        return res.status(404).json({ msg: "User not found" });
-      }
+  const token = authHeader.split(" ")[1];
 
-      req.user = user; // full user document with _id
-      next();
-    } catch (err) {
-      if (err.name === "TokenExpiredError") {
-        return res.status(401).json({ msg: "Token expired" });
-      }
-      return res.status(401).json({ msg: "Invalid token" });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Fetch fresh user from DB (ensures user still exists and role hasn't changed)
+    const user = await User.findById(decoded.id).select("-passwordHash");
+
+    if (!user) {
+      return res.status(401).json({ message: "User no longer exists" });
     }
-  } else {
-    return res.status(401).json({ msg: "No token provided" });
+
+    req.user = user; // full Mongoose document — use req.user._id, req.user.role etc.
+    next();
+  } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      return res.status(401).json({ message: "Token expired, please log in again" });
+    }
+    if (err.name === "JsonWebTokenError") {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+    return res.status(401).json({ message: "Authentication failed" });
   }
 };
 

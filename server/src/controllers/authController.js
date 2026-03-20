@@ -1,167 +1,604 @@
+// // import User from "../models/User.js";
+// // import bcrypt from "bcryptjs";
+// // import jwt from "jsonwebtoken";
+
+// // // Admin-only: Register new user
+// // export const registerUser = async (req, res) => {
+// //   const { name, email, password, role, adminLoginId } = req.body;
+
+// //   try {
+// //     if (password.length < 8) {
+// //       return res.status(400).json({
+// //         message: "Password must be at least 8 characters",
+// //       });
+// //     }
+
+// //     // Admin registration validation
+// //     if (role === "admin") {
+// //       console.log("Admin registration (DEV MODE)");
+// //     }
+
+// //     const userExists = await User.findOne({ email });
+// //     if (userExists) {
+// //       return res.status(400).json({ message: "User already exists" });
+// //     }
+
+// //     const hashedPassword = await bcrypt.hash(password, 10);
+
+// //     const user = await User.create({
+// //       name,
+// //       email,
+// //       passwordHash: hashedPassword,
+// //       role: role || "student",
+// //       adminLoginId: role === "admin" ? adminLoginId : undefined,
+// //       isFirstLogin: role === "admin" ? false : true, // 🔥 IMPORTANT FIX
+// //     });
+
+// //     res.status(201).json({
+// //       message: "User created successfully",
+// //       user: {
+// //         id: user._id,
+// //         name: user.name,
+// //         email: user.email,
+// //         role: user.role,
+// //       },
+// //       generatedPassword: password, // 🔥 IMPORTANT (send once)
+// //     });
+// //   } catch (err) {
+// //     res.status(500).json({
+// //       message: "Error registering user",
+// //       errorMessage: err.message,
+// //     });
+// //   }
+// // };
+
+// // // Login
+// // export const loginUser = async (req, res) => {
+// //   const { email, password, adminLoginId } = req.body;
+
+// //   if (!password) {
+// //     return res.status(400).json({ message: "Password is required" });
+// //   }
+
+// //   try {
+// //     let user;
+
+// //     console.log("Login Body:", req.body);
+
+// //     // 🔥 Flexible login
+// //     if (adminLoginId) {
+// //       user = await User.findOne({
+// //         $or: [
+// //           { adminLoginId: adminLoginId },
+// //           { email: adminLoginId }, // fallback
+// //         ],
+// //         role: "admin",
+// //       });
+// //     } else if (email) {
+// //       user = await User.findOne({ email });
+// //     }
+
+// //     if (!user) {
+// //       return res.status(400).json({
+// //         message: "User not found",
+// //       });
+// //     }
+
+// //     const isMatch = await bcrypt.compare(password, user.passwordHash);
+
+// //     if (!isMatch) {
+// //       return res.status(400).json({
+// //         message: "Incorrect password",
+// //       });
+// //     }
+
+// //     const token = jwt.sign(
+// //       { id: user._id, role: user.role },
+// //       process.env.JWT_SECRET,
+// //       { expiresIn: "7d" },
+// //     );
+
+// //     res.json({
+// //       token,
+// //       user: {
+// //         id: user._id,
+// //         name: user.name,
+// //         email: user.email,
+// //         role: user.role,
+// //       },
+// //     });
+// //   } catch (err) {
+// //     console.error("Login Error:", err);
+// //     res.status(500).json({ message: "Error logging in" });
+// //   }
+// // };
+
+// // // Change Password (first login or user-initiated)
+// // export const changePassword = async (req, res) => {
+// //   const { oldPassword, newPassword } = req.body;
+
+// //   try {
+// //     if (!req.user) {
+// //       return res.status(401).json({ message: "Not authorized" });
+// //     }
+
+// //     if (!oldPassword || !newPassword) {
+// //       return res
+// //         .status(400)
+// //         .json({ message: "Old password and new password are required" });
+// //     }
+
+// //     const user = await User.findById(req.user.id);
+// //     if (!user) return res.status(404).json({ message: "User not found" });
+
+// //     const isMatch = await bcrypt.compare(oldPassword, user.passwordHash);
+// //     if (!isMatch) {
+// //       return res.status(400).json({ message: "Old password is incorrect" });
+// //     }
+
+// //     const hashedPassword = await bcrypt.hash(newPassword, 10);
+// //     user.passwordHash = hashedPassword;
+// //     user.isFirstLogin = false;
+
+// //     await user.save();
+
+// //     res.status(200).json({ message: "Password changed successfully" });
+// //   } catch (err) {
+// //     res.status(500).json({
+// //       message: "Error changing password",
+// //       error: err.message,
+// //     });
+// //   }
+// // };
+
+// // export const getMe = async (req, res) => {
+// //   try {
+// //     const user = await User.findById(req.user._id)
+// //       .select("-passwordHash")
+// //       .populate("enrolledCourses");
+
+// //     res.json(user);
+// //   } catch (err) {
+// //     res.status(500).json({
+// //       message: "Error fetching user",
+// //       error: err.message,
+// //     });
+// //   }
+// // };
+
+// import User from "../models/User.js";
+// import bcrypt from "bcryptjs";
+// import jwt from "jsonwebtoken";
+
+// // Admin-only: Register new user
+// export const registerUser = async (req, res) => {
+//   const { name, email, password, role, adminLoginId } = req.body;
+
+//   try {
+//     if (password.length < 8) {
+//       return res.status(400).json({
+//         message: "Password must be at least 8 characters",
+//       });
+//     }
+
+//     // Admin registration validation
+//     if (role === "admin") {
+//       console.log("Admin registration (DEV MODE)");
+//     }
+
+//     const userExists = await User.findOne({ email });
+//     if (userExists) {
+//       return res.status(400).json({ message: "User already exists" });
+//     }
+
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//     const user = await User.create({
+//       name,
+//       email,
+//       passwordHash: hashedPassword,
+//       role: role || "student",
+//       adminLoginId: role === "admin" ? adminLoginId : undefined,
+//       isFirstLogin: role === "admin" ? false : true, // 🔥 IMPORTANT FIX
+//     });
+
+//     res.status(201).json({
+//       message: "User created successfully",
+//       user: {
+//         id: user._id,
+//         name: user.name,
+//         email: user.email,
+//         role: user.role,
+//       },
+//       generatedPassword: password, // 🔥 IMPORTANT (send once)
+//     });
+//   } catch (err) {
+//     res.status(500).json({
+//       message: "Error registering user",
+//       errorMessage: err.message,
+//     });
+//   }
+// };
+
+// // Login
+// export const loginUser = async (req, res) => {
+//   const { email, password, adminLoginId } = req.body;
+
+//   if (!password) {
+//     return res.status(400).json({ message: "Password is required" });
+//   }
+
+//   try {
+//     let user;
+
+//     console.log("Login Body:", req.body);
+
+//     // 🔥 Flexible login
+//     if (adminLoginId) {
+//       user = await User.findOne({
+//         $or: [
+//           { adminLoginId: adminLoginId },
+//           { email: adminLoginId }, // fallback
+//         ],
+//         role: "admin",
+//       });
+//     } else if (email) {
+//       user = await User.findOne({ email });
+//     }
+
+//     if (!user) {
+//       return res.status(400).json({
+//         message: "User not found",
+//       });
+//     }
+
+//     const isMatch = await bcrypt.compare(password, user.passwordHash);
+
+//     if (!isMatch) {
+//       return res.status(400).json({
+//         message: "Incorrect password",
+//       });
+//     }
+
+//     const token = jwt.sign(
+//       { id: user._id, role: user.role },
+//       process.env.JWT_SECRET,
+//       { expiresIn: "7d" },
+//     );
+
+//     res.json({
+//       token,
+//       user: {
+//         id: user._id,
+//         name: user.name,
+//         email: user.email,
+//         role: user.role,
+//       },
+//     });
+//   } catch (err) {
+//     console.error("Login Error:", err);
+//     res.status(500).json({ message: "Error logging in" });
+//   }
+// };
+
+// // Change Password (first login or user-initiated)
+// export const changePassword = async (req, res) => {
+//   const { oldPassword, newPassword } = req.body;
+
+//   try {
+//     if (!req.user) {
+//       return res.status(401).json({ message: "Not authorized" });
+//     }
+
+//     if (!oldPassword || !newPassword) {
+//       return res
+//         .status(400)
+//         .json({ message: "Old password and new password are required" });
+//     }
+
+//     const user = await User.findById(req.user.id);
+//     if (!user) return res.status(404).json({ message: "User not found" });
+
+//     const isMatch = await bcrypt.compare(oldPassword, user.passwordHash);
+//     if (!isMatch) {
+//       return res.status(400).json({ message: "Old password is incorrect" });
+//     }
+
+//     const hashedPassword = await bcrypt.hash(newPassword, 10);
+//     user.passwordHash = hashedPassword;
+//     user.isFirstLogin = false;
+
+//     await user.save();
+
+//     res.status(200).json({ message: "Password changed successfully" });
+//   } catch (err) {
+//     res.status(500).json({
+//       message: "Error changing password",
+//       error: err.message,
+//     });
+//   }
+// };
+
+// export const getMe = async (req, res) => {
+//   try {
+//     const user = await User.findById(req.user._id)
+//       .select("-passwordHash")
+//       .populate("enrolledCourses");
+
+//     res.json(user);
+//   } catch (err) {
+//     res.status(500).json({
+//       message: "Error fetching user",
+//       error: err.message,
+//     });
+//   }
+// };
+
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-// Admin-only: Register new user
+/**
+ * Register new user (Admin only)
+ * POST /api/auth/register
+ * Body: { name, email, password, role, adminLoginId }
+ */
 export const registerUser = async (req, res) => {
   const { name, email, password, role, adminLoginId } = req.body;
 
   try {
-    if (password.length < 8) {
+    // Validate password length
+    if (!password || password.length < 8) {
       return res.status(400).json({
         message: "Password must be at least 8 characters",
       });
     }
 
-    // Admin registration validation
-    if (role === "admin") {
-      console.log("Admin registration (DEV MODE)");
+    // Validate role
+    if (role && !["student", "tutor", "admin"].includes(role)) {
+      return res.status(400).json({
+        message: "Invalid role. Must be student, tutor, or admin",
+      });
     }
 
-    const userExists = await User.findOne({ email });
+    // Validate name
+    if (!name || name.trim().length === 0) {
+      return res.status(400).json({
+        message: "Name is required",
+      });
+    }
+
+    // Validate email
+    if (!email || !email.includes("@")) {
+      return res.status(400).json({
+        message: "Valid email is required",
+      });
+    }
+
+    // Check if user already exists (case-insensitive)
+    const userExists = await User.findOne({ email: email.toLowerCase() });
     if (userExists) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(409).json({
+        message: "User with this email already exists",
+      });
     }
 
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Create user
     const user = await User.create({
-      name,
-      email,
+      name: name.trim(),
+      email: email.toLowerCase(),
       passwordHash: hashedPassword,
       role: role || "student",
       adminLoginId: role === "admin" ? adminLoginId : undefined,
-      isFirstLogin: role === "admin" ? false : true, // 🔥 IMPORTANT FIX
+      isFirstLogin: role === "admin" ? false : true,
     });
 
     res.status(201).json({
-      message: "User created successfully",
+      message: "User registered successfully",
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
+        isFirstLogin: user.isFirstLogin,
       },
-      generatedPassword: password, // 🔥 IMPORTANT (send once)
     });
   } catch (err) {
+    console.error("Registration error:", err);
     res.status(500).json({
       message: "Error registering user",
-      errorMessage: err.message,
+      error: process.env.NODE_ENV === "development" ? err.message : undefined,
     });
   }
 };
 
-// Login
+/**
+ * Login user
+ * POST /api/auth/login
+ * Body: { email, password } or { adminLoginId, password }
+ */
 export const loginUser = async (req, res) => {
   const { email, password, adminLoginId } = req.body;
 
-  if (!password) {
-    return res.status(400).json({ message: "Password is required" });
-  }
-
   try {
-    let user;
+    // Validate password
+    if (!password) {
+      return res.status(400).json({
+        message: "Password is required",
+      });
+    }
 
-    console.log("Login Body:", req.body);
+    let user = null;
 
-    // 🔥 Flexible login
+    // Find user by adminLoginId (for admin) or email
     if (adminLoginId) {
       user = await User.findOne({
         $or: [
           { adminLoginId: adminLoginId },
-          { email: adminLoginId }, // fallback
+          { email: adminLoginId.toLowerCase() },
         ],
         role: "admin",
       });
     } else if (email) {
-      user = await User.findOne({ email });
+      user = await User.findOne({ email: email.toLowerCase() });
+    } else {
+      return res.status(400).json({
+        message: "Email or adminLoginId is required",
+      });
     }
 
+    // Check if user exists
     if (!user) {
-      return res.status(400).json({
-        message: "User not found",
+      return res.status(401).json({
+        message: "Invalid credentials",
       });
     }
 
-    const isMatch = await bcrypt.compare(password, user.passwordHash);
-
-    if (!isMatch) {
-      return res.status(400).json({
-        message: "Incorrect password",
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        message: "Invalid credentials",
       });
     }
 
+    // Generate JWT token
     const token = jwt.sign(
-      { id: user._id, role: user.role },
+      { id: user._id, role: user.role, email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: "7d" },
     );
 
     res.json({
+      message: "Login successful",
       token,
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
+        isFirstLogin: user.isFirstLogin,
+        avatar: user.avatar,
       },
     });
   } catch (err) {
-    console.error("Login Error:", err);
-    res.status(500).json({ message: "Error logging in" });
+    console.error("Login error:", err);
+    res.status(500).json({
+      message: "Error logging in",
+      error: process.env.NODE_ENV === "development" ? err.message : undefined,
+    });
   }
 };
 
-// Change Password (first login or user-initiated)
+/**
+ * Change password (after first login)
+ * POST /api/auth/change-password
+ * Headers: { Authorization: Bearer token }
+ * Body: { oldPassword, newPassword }
+ */
 export const changePassword = async (req, res) => {
   const { oldPassword, newPassword } = req.body;
 
   try {
-    if (!req.user) {
-      return res.status(401).json({ message: "Not authorized" });
+    // Verify user is authenticated
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({
+        message: "Not authorized",
+      });
     }
 
+    // Validate inputs
     if (!oldPassword || !newPassword) {
-      return res
-        .status(400)
-        .json({ message: "Old password and new password are required" });
+      return res.status(400).json({
+        message: "Old password and new password are required",
+      });
     }
 
-    const user = await User.findById(req.user.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (newPassword.length < 8) {
+      return res.status(400).json({
+        message: "New password must be at least 8 characters",
+      });
+    }
 
+    if (oldPassword === newPassword) {
+      return res.status(400).json({
+        message: "New password must be different from old password",
+      });
+    }
+
+    // Find user
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    // Verify old password
     const isMatch = await bcrypt.compare(oldPassword, user.passwordHash);
     if (!isMatch) {
-      return res.status(400).json({ message: "Old password is incorrect" });
+      return res.status(401).json({
+        message: "Old password is incorrect",
+      });
     }
 
+    // Hash new password and update
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.passwordHash = hashedPassword;
     user.isFirstLogin = false;
-
     await user.save();
 
-    res.status(200).json({ message: "Password changed successfully" });
+    res.status(200).json({
+      message: "Password changed successfully",
+    });
   } catch (err) {
+    console.error("Change password error:", err);
     res.status(500).json({
       message: "Error changing password",
-      error: err.message,
+      error: process.env.NODE_ENV === "development" ? err.message : undefined,
     });
   }
 };
 
+/**
+ * Get current logged-in user profile
+ * GET /api/auth/me
+ * Headers: { Authorization: Bearer token }
+ */
 export const getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id)
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({
+        message: "Not authorized",
+      });
+    }
+
+    const user = await User.findById(req.user.id)
       .select("-passwordHash")
-      .populate("enrolledCourses");
+      .populate({
+        path: "enrolledCourses",
+        select: "title description thumbnail status",
+      })
+      .populate({
+        path: "assignedCourses",
+        select: "title description thumbnail status",
+      });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
 
     res.json(user);
   } catch (err) {
+    console.error("Get me error:", err);
     res.status(500).json({
-      message: "Error fetching user",
-      error: err.message,
+      message: "Error fetching user profile",
+      error: process.env.NODE_ENV === "development" ? err.message : undefined,
     });
   }
 };
