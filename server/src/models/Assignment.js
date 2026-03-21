@@ -1,18 +1,3 @@
-// import mongoose from "mongoose";
-
-// const assignmentSchema = new mongoose.Schema({
-//   title: { type: String, required: true },
-//   description: String,
-//   courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course", required: true },
-//   dueDate: Date,
-//   questions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
-//   totalMarks: Number,
-//   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // tutor/admin
-// }, { timestamps: true });
-
-// export default mongoose.model("Assignment", assignmentSchema);
-
-
 import mongoose from "mongoose";
 
 const assignmentSchema = new mongoose.Schema(
@@ -45,13 +30,16 @@ const assignmentSchema = new mongoose.Schema(
       type: Date,
     },
 
-    questions: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "Question" },
-    ],
+    questions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
 
     totalMarks: {
       type: Number,
       default: 0,
+    },
+
+    file: {
+      url: String,
+      originalName: String,
     },
 
     // Allow tutors to draft before releasing to students
@@ -65,7 +53,7 @@ const assignmentSchema = new mongoose.Schema(
       ref: "User", // tutor or admin
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("Assignment", assignmentSchema);

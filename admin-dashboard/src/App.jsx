@@ -31,6 +31,14 @@ import { Activity } from "react";
 import EditUser from "./pages/adminManagement/EditUser";
 import ManageSections from "./pages/courseManagement/ManageSections";
 
+//assignments
+import Assignments from "./pages/adminManagement/Assignments";
+import CreateAssignment from "./pages/adminManagement/CreateAssignment";
+import AdminLayout from "./components/layout/AdminLayout";
+import AssignmentDetails from "./pages/adminManagement/AssignmentDetails";
+import AssignmentsByCourse from "./pages/adminManagement/AssignmentsByCourse";
+// import EditAssignment from "./assignmentManagement/EditAssignment";
+
 /**
  * ✅ Smart Root Redirect
  */
@@ -190,6 +198,59 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Assignmaest */}
+          <Route
+            path="/admin/assignments"
+            element={
+              <ProtectedRoute>
+                <AdminLayout>
+                  <Assignments />
+                </AdminLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/create-assignment"
+            element={
+              <ProtectedRoute>
+                <AdminLayout>
+                  <CreateAssignment />
+                </AdminLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/assignment/:id"
+            element={
+              <ProtectedRoute>
+                <AdminLayout>
+                  <AssignmentDetails />
+                </AdminLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/assignments-by-course"
+            element={
+              <ProtectedRoute>
+                <AdminLayout>
+                  <AssignmentsByCourse />
+                </AdminLayout>
+              </ProtectedRoute>
+            }
+          />
+          
+          {/* <Route
+            path="/admin/edit-assignment/:id"
+            element={
+              <ProtectedRoute>
+                <AdminLayout>
+                  <EditAssignment />
+                </AdminLayout>
+              </ProtectedRoute>
+            }
+          /> */}
 
           {/* Catch All */}
           <Route path="*" element={<Navigate to="/" replace />} />

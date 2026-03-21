@@ -12,7 +12,7 @@ import courseRoutes from "./routes/courseRoutes.js";
 import assignmentRoutes from "./routes/assignmentRoutes.js";
 import submissionRoutes from "./routes/submissionRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
+import studentRoutes from "./routes/studentRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import lessonRoutes from "./routes/lessonRoutes.js";
@@ -82,15 +82,15 @@ app.get("/api/health", (req, res) => {
 });
 
 // ─── API routes ──────────────────────────────────────────────────────────────
-app.use("/api/auth", authLimiter, authRoutes);
-app.use("/api/courses", courseRoutes);
-app.use("/api/assignments", assignmentRoutes);
-app.use("/api/submissions", submissionRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/messages", messageRoutes);
-app.use("/api/notifications", notificationRoutes);
-app.use("/api/lessons", lessonRoutes);
+app.use("/api/auth", authLimiter, authRoutes);   // ----completed ---UI
+app.use("/api/courses", courseRoutes);           // --- completed ---UI
+app.use("/api/assignments", assignmentRoutes);  // ----- completed --
+app.use("/api/submissions", submissionRoutes);  // ----- completed
+app.use("/api/admin", adminRoutes);             //----- completed ---UI
+app.use("/api/users", studentRoutes);           // ----- completed 
+// app.use("/api/messages", messageRoutes);
+// app.use("/api/notifications", notificationRoutes);
+// app.use("/api/lessons", lessonRoutes);
 
 // ─── 404 handler ─────────────────────────────────────────────────────────────
 app.use((req, res) => {

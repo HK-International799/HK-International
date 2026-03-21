@@ -3,6 +3,11 @@ dotenv.config(); // Must be first — loads env vars before anything else import
 
 import app from "./app.js";
 import connectDB from "./config/db.js";
+import express from "express";
+
+
+
+app.use("/uploads", express.static("uploads"));
 
 const PORT = process.env.PORT || 5000;
 

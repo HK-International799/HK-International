@@ -87,8 +87,10 @@ export default function Sidebar() {
             {navItem("/admin/assign-tutor", "Assign Tutor", UserCheck)}
             {navItem("/admin/enroll", "Enroll Student", GraduationCap)}
             {navItem("/admin/assignments", "Assignments", ClipboardList)}
+            {navItem("/admin/create-assignment", "Create Assignment", PlusSquare)}
           </div>
         </div>
+        
       </div>
 
       {/* 🔻 FIXED BOTTOM */}
