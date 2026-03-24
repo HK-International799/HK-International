@@ -1,0 +1,12 @@
+import express from "express";
+import { createFeedback, getAllFeedback, updateFeedbackStatus, deleteFeedback, getFeedbackStats } from "../controllers/feedbackController.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+import roleMiddleware from "../middleware/roleMiddleware.js";
+const router = express.Router();
+router.use(authMiddleware);
+router.post("/", createFeedback);
+router.get("/", roleMiddleware(["admin", "tutor"]), getAllFeedback);
+router.get("/stats", roleMiddleware(["admin"]), getFeedbackStats);
+router.patch("/:id/status", roleMiddleware(["admin"]), updateFeedbackStatus);
+router.delete("/:id", roleMiddleware(["admin"]), deleteFeedback);
+export default router;

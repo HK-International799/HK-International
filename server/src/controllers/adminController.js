@@ -5,6 +5,7 @@ import User from "../models/User.js";
 import Course from "../models/Course.js";
 import emailService from "../services/emailService.js";
 
+
 // Admin-only: Register new user (manual password)
 export const registerUser = async (req, res) => {
   const { name, email, password, mobile, role, adminLoginId } = req.body;

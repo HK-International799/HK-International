@@ -1,0 +1,14 @@
+import express from "express";
+import { createQuestionBank, getAllQuestionBanks, getQuestionBankById, updateQuestionBank, deleteQuestionBank, addQuestionToBank, removeQuestionFromBank } from "../controllers/questionBankController.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+import roleMiddleware from "../middleware/roleMiddleware.js";
+const router = express.Router();
+router.use(authMiddleware, roleMiddleware(["admin", "tutor"]));
+router.post("/", createQuestionBank);
+router.get("/", getAllQuestionBanks);
+router.get("/:id", getQuestionBankById);
+router.put("/:id", updateQuestionBank);
+router.delete("/:id", deleteQuestionBank);
+router.post("/:id/questions", addQuestionToBank);
+router.delete("/:id/questions/:questionId", removeQuestionFromBank);
+export default router;

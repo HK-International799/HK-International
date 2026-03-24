@@ -1,0 +1,12 @@
+import express from "express";
+import { issueCertificate, getAllCertificates, getCertificateById, revokeCertificate, deleteCertificate } from "../controllers/certificateController.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+import roleMiddleware from "../middleware/roleMiddleware.js";
+const router = express.Router();
+router.use(authMiddleware, roleMiddleware(["admin"]));
+router.post("/", issueCertificate);
+router.get("/", getAllCertificates);
+router.get("/:id", getCertificateById);
+router.patch("/:id/revoke", revokeCertificate);
+router.delete("/:id", deleteCertificate);
+export default router;

@@ -1,0 +1,12 @@
+import express from "express";
+import { createLiveClass, getAllLiveClasses, getLiveClassById, updateLiveClass, deleteLiveClass } from "../controllers/liveClassController.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+import roleMiddleware from "../middleware/roleMiddleware.js";
+const router = express.Router();
+router.use(authMiddleware, roleMiddleware(["admin", "tutor"]));
+router.post("/", createLiveClass);
+router.get("/", getAllLiveClasses);
+router.get("/:id", getLiveClassById);
+router.put("/:id", updateLiveClass);
+router.delete("/:id", deleteLiveClass);
+export default router;

@@ -1,0 +1,10 @@
+import express from "express";
+import { getDashboardStats, getAnalyticsOverview, getReportsData } from "../controllers/analyticsController.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+import roleMiddleware from "../middleware/roleMiddleware.js";
+const router = express.Router();
+router.use(authMiddleware, roleMiddleware(["admin", "tutor"]));
+router.get("/dashboard", getDashboardStats);
+router.get("/overview", getAnalyticsOverview);
+router.get("/reports", getReportsData);
+export default router;

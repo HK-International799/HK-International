@@ -1,0 +1,11 @@
+import express from "express";
+import { getSettings, upsertSetting, deleteSetting, bulkUpdateSettings } from "../controllers/settingsController.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+import roleMiddleware from "../middleware/roleMiddleware.js";
+const router = express.Router();
+router.use(authMiddleware, roleMiddleware(["admin"]));
+router.get("/", getSettings);
+router.post("/", upsertSetting);
+router.put("/bulk", bulkUpdateSettings);
+router.delete("/:id", deleteSetting);
+export default router;

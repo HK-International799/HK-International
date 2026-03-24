@@ -1,0 +1,14 @@
+import express from "express";
+import { createBatch, getAllBatches, getBatchById, updateBatch, deleteBatch, addStudentToBatch, removeStudentFromBatch } from "../controllers/batchController.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+import roleMiddleware from "../middleware/roleMiddleware.js";
+const router = express.Router();
+router.use(authMiddleware, roleMiddleware(["admin", "tutor"]));
+router.post("/", createBatch);
+router.get("/", getAllBatches);
+router.get("/:id", getBatchById);
+router.put("/:id", updateBatch);
+router.delete("/:id", deleteBatch);
+router.post("/:id/add-student", addStudentToBatch);
+router.post("/:id/remove-student", removeStudentFromBatch);
+export default router;

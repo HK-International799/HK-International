@@ -1,0 +1,13 @@
+import express from "express";
+import { createExam, getAllExams, getExamById, updateExam, deleteExam, getExamAttempts } from "../controllers/examController.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+import roleMiddleware from "../middleware/roleMiddleware.js";
+const router = express.Router();
+router.use(authMiddleware, roleMiddleware(["admin", "tutor"]));
+router.post("/", createExam);
+router.get("/", getAllExams);
+router.get("/:id", getExamById);
+router.put("/:id", updateExam);
+router.delete("/:id", deleteExam);
+router.get("/:id/attempts", getExamAttempts);
+export default router;

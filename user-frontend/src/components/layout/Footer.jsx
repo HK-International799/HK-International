@@ -16,7 +16,7 @@ export default function Footer() {
     <footer className="bg-slate-950 text-gray-300 pt-16 pb-8 mt-10 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-6">
         {/* Top Grid */}
-        <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-10">
+        <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-10 pl-16">
           {/* Company Info */}
           <div>
             <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">
@@ -162,7 +162,7 @@ export default function Footer() {
         </div>
 
         {/* Divider */}
-        <div className="border-t border-slate-800 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+        <div className="border-t border-slate-800 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500 px-16">
           <p>
             © {new Date().getFullYear()} 1A HK International. All Rights
             Reserved.

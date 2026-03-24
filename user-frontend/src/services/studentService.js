@@ -1,97 +1,4 @@
-// import api from "./api";
-
-// /**
-//  * Student Dashboard
-//  * GET /api/students/dashboard
-//  */
-// export const getDashboard = async () => {
-//   try {
-//     const { data } = await api.get("/students/dashboard");
-//     return data;
-//   } catch (error) {
-//     throw error.response?.data || { message: "Failed to load dashboard" };
-//   }
-// };
-
-// /**
-//  * Enrolled Courses
-//  * GET /api/students/courses
-//  */
-// export const getEnrolledCourses = async () => {
-//   try {
-//     const { data } = await api.get("/students/courses");
-//     return data;
-//   } catch (error) {
-//     throw error.response?.data || { message: "Failed to load courses" };
-//   }
-// };
-
-// /**
-//  * Student Assignments
-//  * GET /api/students/assignments
-//  */
-// export const getAssignments = async () => {
-//   try {
-//     const { data } = await api.get("/students/assignments");
-//     return data;
-//   } catch (error) {
-//     throw error.response?.data || { message: "Failed to load assignments" };
-//   }
-// };
-
-// /**
-//  * Student Certificates
-//  * GET /api/students/certificates
-//  */
-// export const getCertificates = async () => {
-//   try {
-//     const { data } = await api.get("/students/certificates");
-//     return data;
-//   } catch (error) {
-//     throw error.response?.data || { message: "Failed to load certificates" };
-//   }
-// };
-
-// /**
-//  * Student Profile
-//  * GET /api/students/profile
-//  */
-// export const getProfile = async () => {
-//   try {
-//     const { data } = await api.get("/students/profile");
-//     return data;
-//   } catch (error) {
-//     throw error.response?.data || { message: "Failed to load profile" };
-//   }
-// };
-
-// /**
-//  * Submit Assignment
-//  * POST /api/students/assignments/:id/submit
-//  */
-// export const submitAssignment = async (assignmentId, payload) => {
-//   try {
-//     const { data } = await api.post(
-//       `/students/assignments/${assignmentId}/submit`,
-//       payload
-//     );
-//     return data;
-//   } catch (error) {
-//     throw error.response?.data || { message: "Failed to submit assignment" };
-//   }
-// };
-
 import api from "./api";
-
-// ─── Dashboard ────────────────────────────────────────────────────────────────
-export const getDashboard = async () => {
-  try {
-    const { data } = await api.get("/students/dashboard");
-    return data;
-  } catch (error) {
-    throw error.response?.data || { message: "Failed to load dashboard" };
-  }
-};
 
 // ─── Courses ──────────────────────────────────────────────────────────────────
 export const getEnrolledCourses = async () => {
@@ -100,45 +7,6 @@ export const getEnrolledCourses = async () => {
     return data;
   } catch (error) {
     throw error.response?.data || { message: "Failed to load courses" };
-  }
-};
-
-// ─── Assignments ──────────────────────────────────────────────────────────────
-export const getAssignments = async () => {
-  try {
-    const { data } = await api.get("/students/assignments");
-    return data;
-  } catch (error) {
-    throw error.response?.data || { message: "Failed to load assignments" };
-  }
-};
-
-// ─── Submissions ──────────────────────────────────────────────────────────────
-export const submitAssignment = async (payload) => {
-  try {
-    const { data } = await api.post("/submissions", payload);
-    return data;
-  } catch (error) {
-    throw error.response?.data || { message: "Failed to submit assignment" };
-  }
-};
-
-export const getMySubmissions = async () => {
-  try {
-    const { data } = await api.get("/submissions/my");
-    return data;
-  } catch (error) {
-    throw error.response?.data || { message: "Failed to load submissions" };
-  }
-};
-
-export const getSubmissionForAssignment = async (assignmentId) => {
-  try {
-    const { data } = await api.get(`/submissions/assignment/${assignmentId}/my`);
-    return data;
-  } catch (error) {
-    if (error.response?.status === 404) return null;
-    throw error.response?.data || { message: "Failed to load submission" };
   }
 };
 
@@ -202,30 +70,161 @@ export const getCertificates = async () => {
   }
 };
 
+// ─── Messages / Chat ──────────────────────────────────────────────────────────
+export const sendMessage = async (payload) => {
+  const { data } = await api.post("/messages", payload);
+  return data;
+};
+
+export const getMessages = async (courseId) => {
+  const { data } = await api.get("/messages", { params: { courseId } });
+  return data;
+};
+
+export const markMessageRead = async (id) => {
+  const { data } = await api.put(`/messages/${id}/read`);
+  return data;
+};
+
+// ─── Feedback ─────────────────────────────────────────────────────────────────
+export const createFeedback = async (payload) => {
+  const { data } = await api.post("/feedback", payload);
+  return data;
+};
+
+// ─── Live Classes ─────────────────────────────────────────────────────────────
+export const getLiveClasses = async () => {
+  const { data } = await api.get("/live-classes");
+  return data;
+};
+
+export const getLiveClassById = async (id) => {
+  const { data } = await api.get(`/live-classes/${id}`);
+  return data;
+};
+
+// ─── Documents ────────────────────────────────────────────────────────────────
+export const uploadDocument = async (payload) => {
+  const { data } = await api.post("/documents", payload);
+  return data;
+};
+
+export const getMyDocuments = async () => {
+  const { data } = await api.get("/documents");
+  return data;
+};
+
+export const getDocumentById = async (id) => {
+  const { data } = await api.get(`/documents/${id}`);
+  return data;
+};
+
+// ─── Question Banks (read-only for students) ──────────────────────────────────
+export const getQuestionBanks = async () => {
+  const { data } = await api.get("/question-banks");
+  return data;
+};
+
+export const getQuestionBankById = async (id) => {
+  const { data } = await api.get(`/question-banks/${id}`);
+  return data;
+};
+
+// ─── Assignments (detailed) ───────────────────────────────────────────────────
+export const getAssignmentById = async (id) => {
+  const { data } = await api.get(`/assignments/${id}`);
+  return data;
+};
+
+export const getAssignments = async (courseId) => {
+  const params = courseId ? { courseId } : {};
+  const { data } = await api.get("/assignments", { params });
+  return data;
+};
+
 // ─── Notifications ────────────────────────────────────────────────────────────
 export const getNotifications = async (params = {}) => {
-  try {
-    const { data } = await api.get("/notifications", { params });
-    return data;
-  } catch (error) {
-    throw error.response?.data || { message: "Failed to load notifications" };
-  }
+  const { data } = await api.get("/notifications", { params });
+  return data;
 };
 
 export const markNotificationRead = async (id) => {
-  try {
-    const { data } = await api.patch(`/notifications/${id}/read`);
-    return data;
-  } catch (error) {
-    throw error.response?.data || { message: "Failed to mark notification" };
-  }
+  const { data } = await api.patch(`/notifications/${id}/read`);
+  return data;
 };
 
 export const markAllNotificationsRead = async () => {
+  const { data } = await api.patch("/notifications/mark-all/read");
+  return data;
+};
+
+export const getUnreadNotificationCount = async () => {
+  const { data } = await api.get("/notifications/unread/count");
+  return data;
+};
+
+// ─── Submissions ──────────────────────────────────────────────────────────────
+export const submitAssignment = async (payload) => {
+  const { data } = await api.post("/submissions", payload);
+  return data;
+};
+
+export const getMySubmissions = async () => {
+  const { data } = await api.get("/submissions/my");
+  return data;
+};
+
+export const getSubmissionForAssignment = async (assignmentId) => {
   try {
-    const { data } = await api.patch("/notifications/mark-all/read");
+    const { data } = await api.get(
+      `/submissions/assignment/${assignmentId}/my`,
+    );
     return data;
-  } catch (error) {
-    throw error.response?.data || { message: "Failed to mark all read" };
+  } catch (err) {
+    if (err.response?.status === 404) return null;
+    throw err;
   }
+};
+
+export const getSubmissionById = async (id) => {
+  const { data } = await api.get(`/submissions/${id}`);
+  return data;
+};
+
+// ─── Profile & Auth ───────────────────────────────────────────────────────────
+export const getMe = async () => {
+  const { data } = await api.get("/auth/me");
+  return data;
+};
+
+export const changePassword = async (payload) => {
+  const { data } = await api.put("/auth/change-password", payload);
+  return data;
+};
+
+// ─── Courses ──────────────────────────────────────────────────────────────────
+export const getCourses = async () => {
+  const { data } = await api.get("/courses");
+  return data;
+};
+
+export const getCourseById = async (id) => {
+  const { data } = await api.get(`/courses/${id}`);
+  return data;
+};
+
+// ─── Student Dashboard ────────────────────────────────────────────────────────
+export const getDashboard = async () => {
+  const { data } = await api.get("/students/dashboard");
+  return data;
+};
+
+export const getStudentCourses = async () => {
+  const { data } = await api.get("/students/courses");
+  return data;
+};
+
+export const getStudentAssignments = async () => {
+  const { data } = await api.get("/students/assignments");
+  return data;
 };
