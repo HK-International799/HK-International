@@ -22,7 +22,7 @@ import Feedback from "../pages/students/Feedback";
 import Notifications from "../pages/students/Notifications";
 import Settings from "../pages/students/Settings";
 import { useEffect } from "react";
-import ChangePassword from '../pages/students/ChangePassword';
+import ChangePassword from "../pages/students/ChangePassword";
 
 export default function AppRoutes() {
   function ScrollHandler() {
