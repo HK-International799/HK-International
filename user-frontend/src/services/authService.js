@@ -8,7 +8,12 @@ export const login = async (credentials) => {
     throw error.response?.data || { message: "Login failed" };
   }
 };
+
 export const changePassword = async (payload) => {
-  const { data } = await api.put("/auth/change-password", payload);
-  return data;
+  try {
+    const { data } = await api.put("/auth/change-password", payload);
+    return data;
+  } catch (error) {
+    throw error.response?.data || { message: "Failed to change password" };
+  }
 };

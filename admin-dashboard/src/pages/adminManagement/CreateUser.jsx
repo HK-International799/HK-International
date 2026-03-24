@@ -1,59 +1,47 @@
 import { useState } from "react";
-import api from "../../services/api";
+import { createUser } from "../../services/adminService"; // ✅ USE SERVICE
 import AdminLayout from "../../components/layout/AdminLayout";
 
 export default function CreateUserPage() {
   const [form, setForm] = useState({
     name: "",
     email: "",
+    mobile: "",
     role: "student",
   });
 
   const [loading, setLoading] = useState(false);
   const [credentials, setCredentials] = useState(null);
 
-  // 🔥 Generate random password
-  const generatePassword = () => {
-    return Math.random().toString(36).slice(-8);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.name || !form.email) {
+    if (!form.name || !form.email || !form.mobile) {
       return alert("All fields required");
     }
-
-    const password = generatePassword();
 
     try {
       setLoading(true);
 
-      const res = await api.post("/auth/register", {
-        ...form,
-        password,
-      });
+      const data = await createUser(form); // ✅ CLEAN CALL
 
-      setCredentials({
-        email: res.data.user.email,
-        password: res.data.generatedPassword,
-      });
+      setCredentials(data.credentials);
 
-      // Reset form
       setForm({
         name: "",
         email: "",
+        mobile: "",
         role: "student",
       });
+
     } catch (err) {
       console.error(err);
-      alert(err.response?.data?.message || "Error creating user");
+      alert(err?.response?.data?.msg || "Error creating user");
     } finally {
       setLoading(false);
     }
   };
 
-  // 📋 Copy to clipboard
   const copyCredentials = () => {
     const text = `Email: ${credentials.email}\nPassword: ${credentials.password}`;
     navigator.clipboard.writeText(text);
@@ -63,12 +51,14 @@ export default function CreateUserPage() {
   return (
     <AdminLayout>
       <div className="p-6">
-        <h1 className="text-2xl font-bold mb-6">Create New User</h1>
+        <h1 className="text-2xl font-bold mb-2">Create New User</h1>
 
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white p-6 rounded shadow w-full max-w-md"
-        >
+        <p className="text-sm text-gray-500 mb-6">
+          Default password will be the mobile number
+        </p>
+
+        <form className="bg-white p-6 rounded shadow w-full max-w-md" onSubmit={handleSubmit}>
+
           <input
             placeholder="Name"
             className="w-full p-2 mb-3 border rounded"
@@ -83,7 +73,13 @@ export default function CreateUserPage() {
             onChange={(e) => setForm({ ...form, email: e.target.value })}
           />
 
-          {/* Role Selection */}
+          <input
+            placeholder="Mobile Number"
+            className="w-full p-2 mb-3 border rounded"
+            value={form.mobile} // ✅ FIXED
+            onChange={(e) => setForm({ ...form, mobile: e.target.value })}
+          />
+
           <select
             className="w-full p-2 mb-3 border rounded"
             value={form.role}
@@ -101,17 +97,12 @@ export default function CreateUserPage() {
           </button>
         </form>
 
-        {/* ✅ Show Credentials */}
         {credentials && (
           <div className="mt-6 bg-green-100 p-4 rounded w-full max-w-md">
             <h2 className="font-bold mb-2">User Created 🎉</h2>
 
-            <p>
-              <strong>Email:</strong> {credentials.email}
-            </p>
-            <p>
-              <strong>Password:</strong> {credentials.password}
-            </p>
+            <p><strong>Email:</strong> {credentials.email}</p>
+            <p><strong>Password:</strong> {credentials.password}</p>
 
             <button
               onClick={copyCredentials}
@@ -125,55 +116,3 @@ export default function CreateUserPage() {
     </AdminLayout>
   );
 }
-
-
-
-// import { useState } from "react";
-// import { createUser } from "../../services/adminService";
-// import AdminLayout from "../../components/layout/AdminLayout";
-
-// const CreateUser = () => {
-//   const [form, setForm] = useState({
-//     name: "",
-//     email: "",
-//     password: "",
-//     role: "student",
-//   });
-
-//   const handleChange = (e) => {
-//     setForm({ ...form, [e.target.name]: e.target.value });
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     await createUser(form);
-//     alert("User Created");
-//   };
-
-//   return (
-//     <AdminLayout>
-//       <div>
-//         <h1>Create User</h1>
-
-//         <form onSubmit={handleSubmit}>
-//           <input name="name" placeholder="Name" onChange={handleChange} />
-//           <input name="email" placeholder="Email" onChange={handleChange} />
-//           <input
-//             name="password"
-//             placeholder="Password"
-//             onChange={handleChange}
-//           />
-
-//           <select name="role" onChange={handleChange}>
-//             <option value="student">Student</option>
-//             <option value="tutor">Tutor</option>
-//           </select>
-
-//           <button type="submit">Create</button>
-//         </form>
-//       </div>
-//     </AdminLayout>
-//   );
-// };
-
-// export default CreateUser;

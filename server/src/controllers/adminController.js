@@ -1,150 +1,3 @@
-// import crypto from "crypto";
-// import bcrypt from "bcrypt";
-// import User from "../models/User.js";
-// import Course from "../models/Course.js";
-// import emailService from "../services/emailService.js";
-
-// // Create student account
-// export const createUser = async (req, res) => {
-//   try {
-//     const { name, email, role } = req.body;
-
-//     // Validate role
-//     if (!["student", "tutor"].includes(role)) {
-//       return res.status(400).json({ msg: "Invalid role" });
-//     }
-
-//     // Generate random password
-//     const randomPassword = crypto.randomBytes(6).toString("hex");
-
-//     const passwordHash = await bcrypt.hash(randomPassword, 10);
-
-//     const user = new User({
-//       name,
-//       email,
-//       passwordHash,
-//       role, // ✅ dynamic role
-//       isFirstLogin: true,
-//     });
-
-//     await user.save();
-
-//     // Send email (optional but good)
-//     await emailService.sendWelcomeEmail(email, randomPassword);
-
-//     res.status(201).json({
-//       msg: "User created successfully",
-//       user,
-//       credentials: {
-//         email,
-//         password: randomPassword, // 🔥 send once to frontend
-//       },
-//     });
-
-//   } catch (err) {
-//     res.status(500).json({ msg: "Error creating user", error: err.message });
-//   }
-// };
-
-
-// // Enroll student into course
-// export const enrollStudent = async (req, res) => {
-//   try {
-//     const { studentId, courseId } = req.body;
-
-//     const student = await User.findById(studentId);
-//     const course = await Course.findById(courseId);
-
-//     if (!student || !course) {
-//       return res.status(404).json({ msg: "Student or course not found" });
-//     }
-
-//     student.enrolledCourses.push(course._id);
-//     await student.save();
-
-//     res.status(200).json({ msg: "Student enrolled successfully", student });
-//   } catch (err) {
-//     res
-//       .status(500)
-//       .json({ msg: "Error enrolling student", error: err.message });
-//   }
-// };
-
-// export const getAdminStats = async (req, res) => {
-//   try {
-//     const totalStudents = await User.countDocuments({ role: "student" });
-//     const totalTutors = await User.countDocuments({ role: "tutor" });
-//     const totalCourses = await Course.countDocuments();
-
-//     res.json({
-//       totalCourses,
-//       totalStudents,
-//       totalTutors,
-//     });
-//   } catch (err) {
-//     res.status(500).json({ message: "Error fetching stats" });
-//   }
-// };
-
-
-// export const getRecentActivity = async (req, res) => {
-//   res.json([
-//     { user: "Anurag", action: "Enrolled in React Course", date: "2 mins ago" },
-//     { user: "Rahul", action: "Submitted Assignment", date: "10 mins ago" },
-//   ]);
-// };
-
-// // Get all users for admin
-// export const getAllUsers = async (req, res) => {
-//   try {
-//     const users = await User.find().select('-passwordHash');
-//     res.json(users);
-//   } catch (err) {
-//     res.status(500).json({ msg: "Error fetching users", error: err.message });
-//   }
-// };
-
-// // Update user
-// export const updateUser = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const updates = req.body;
-//     const user = await User.findByIdAndUpdate(id, updates, { new: true }).select('-passwordHash');
-//     if (!user) return res.status(404).json({ msg: "User not found" });
-//     res.json(user);
-//   } catch (err) {
-//     res.status(500).json({ msg: "Error updating user", error: err.message });
-//   }
-// };
-
-// // Delete user
-// export const deleteUser = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     await User.findByIdAndDelete(id);
-//     res.json({ msg: "User deleted" });
-//   } catch (err) {
-//     res.status(500).json({ msg: "Error deleting user", error: err.message });
-//   }
-// };
-
-// // Update user role
-// export const updateUserRole = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const { role } = req.body;
-//     const user = await User.findByIdAndUpdate(id, { role }, { new: true }).select('-passwordHash');
-//     if (!user) return res.status(404).json({ msg: "User not found" });
-//     res.json(user);
-//   } catch (err) {
-//     res.status(500).json({ msg: "Error updating role", error: err.message });
-//   }
-// };
-
-
-
-
-
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -154,16 +7,22 @@ import emailService from "../services/emailService.js";
 
 // Admin-only: Register new user (manual password)
 export const registerUser = async (req, res) => {
-  const { name, email, password, role, adminLoginId } = req.body;
+  const { name, email, password, mobile, role, adminLoginId } = req.body;
 
   try {
     if (password && password.length < 8) {
-      return res.status(400).json({ message: "Password must be at least 8 characters" });
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 8 characters" });
     }
 
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: "User already exists" });
+    }
+
+    if (!/^[6-9]\d{9}$/.test(mobile)) { 
+      return res.status(400).json({ msg: "Invalid mobile number" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -172,6 +31,7 @@ export const registerUser = async (req, res) => {
       name,
       email,
       passwordHash: hashedPassword,
+      mobile: mobile,
       role: role || "student",
       adminLoginId: role === "admin" ? adminLoginId : undefined,
       isFirstLogin: role === "admin" ? false : true,
@@ -179,52 +39,80 @@ export const registerUser = async (req, res) => {
 
     res.status(201).json({
       message: "User created successfully",
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
-      generatedPassword: password,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        mobile: user.mobile,
+        role: user.role,
+      },
+      // generatedPassword: password,
     });
   } catch (err) {
-    res.status(500).json({ message: "Error registering user", errorMessage: err.message });
+    res
+      .status(500)
+      .json({ message: "Error registering user", errorMessage: err.message });
   }
 };
 
-// Admin creates student/tutor account (random password)
 export const createUser = async (req, res) => {
   try {
-    const { name, email, role } = req.body;
+    const { name, email, mobile, role } = req.body;
+
+    // ✅ VALIDATION
+    if (!name || !email || !mobile || !role) {
+      return res.status(400).json({ msg: "All fields are required" });
+    }
 
     if (!["student", "tutor"].includes(role)) {
       return res.status(400).json({ msg: "Invalid role" });
     }
 
+    // ✅ ONLY EMAIL CHECK (FIXED)
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({
+        msg: "User already exists with this email",
+      });
+    }
+
+    // 🔐 RANDOM PASSWORD
     const randomPassword = crypto.randomBytes(6).toString("hex");
+
     const passwordHash = await bcrypt.hash(randomPassword, 10);
 
-    const user = new User({
+    const user = await User.create({
       name,
       email,
+      mobile, // ✅ multiple users can have same mobile now
       passwordHash,
       role,
       isFirstLogin: true,
     });
 
-    await user.save();
-
+    // 📧 EMAIL (optional)
     try {
       await emailService.sendWelcomeEmail(email, randomPassword);
-    } catch (mailErr) {
-      console.warn("Email service failed:", mailErr.message);
+    } catch (err) {
+      console.warn("Email failed:", err.message);
     }
 
     res.status(201).json({
       msg: "User created successfully",
       user,
-      credentials: { email, password: randomPassword },
+      credentials: {
+        email,
+        password: randomPassword,
+      },
     });
   } catch (err) {
-    res.status(500).json({ msg: "Error creating user", error: err.message });
+    res.status(500).json({
+      msg: "Error creating user",
+      error: err.message,
+    });
   }
 };
-
 // Login
 export const loginUser = async (req, res) => {
   const { email, password, adminLoginId } = req.body;
@@ -243,15 +131,25 @@ export const loginUser = async (req, res) => {
     if (!user) return res.status(400).json({ message: "User not found" });
 
     const isMatch = await bcrypt.compare(password, user.passwordHash);
-    if (!isMatch) return res.status(400).json({ message: "Incorrect password" });
+    if (!isMatch)
+      return res.status(400).json({ message: "Incorrect password" });
 
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      },
+    );
 
     res.json({
       token,
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (err) {
     res.status(500).json({ message: "Error logging in", error: err.message });
@@ -272,7 +170,8 @@ export const changePassword = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const isMatch = await bcrypt.compare(oldPassword, user.passwordHash);
-    if (!isMatch) return res.status(400).json({ message: "Old password is incorrect" });
+    if (!isMatch)
+      return res.status(400).json({ message: "Old password is incorrect" });
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.passwordHash = hashedPassword;
@@ -281,17 +180,23 @@ export const changePassword = async (req, res) => {
 
     res.status(200).json({ message: "Password changed successfully" });
   } catch (err) {
-    res.status(500).json({ message: "Error changing password", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error changing password", error: err.message });
   }
 };
 
 // Get current user
 export const getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select("-passwordHash").populate("enrolledCourses");
+    const user = await User.findById(req.user._id)
+      .select("-passwordHash")
+      .populate("enrolledCourses");
     res.json(user);
   } catch (err) {
-    res.status(500).json({ message: "Error fetching user", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error fetching user", error: err.message });
   }
 };
 
@@ -302,14 +207,17 @@ export const enrollStudent = async (req, res) => {
     const student = await User.findById(studentId);
     const course = await Course.findById(courseId);
 
-    if (!student || !course) return res.status(404).json({ msg: "Student or course not found" });
+    if (!student || !course)
+      return res.status(404).json({ msg: "Student or course not found" });
 
     student.enrolledCourses.push(course._id);
     await student.save();
 
     res.status(200).json({ msg: "Student enrolled successfully", student });
   } catch (err) {
-    res.status(500).json({ msg: "Error enrolling student", error: err.message });
+    res
+      .status(500)
+      .json({ msg: "Error enrolling student", error: err.message });
   }
 };
 
@@ -349,7 +257,9 @@ export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
-    const user = await User.findByIdAndUpdate(id, updates, { new: true }).select("-passwordHash");
+    const user = await User.findByIdAndUpdate(id, updates, {
+      new: true,
+    }).select("-passwordHash");
     if (!user) return res.status(404).json({ msg: "User not found" });
     res.json(user);
   } catch (err) {
@@ -373,7 +283,11 @@ export const updateUserRole = async (req, res) => {
   try {
     const { id } = req.params;
     const { role } = req.body;
-    const user = await User.findByIdAndUpdate(id, { role }, { new: true }).select("-passwordHash");
+    const user = await User.findByIdAndUpdate(
+      id,
+      { role },
+      { new: true },
+    ).select("-passwordHash");
     if (!user) return res.status(404).json({ msg: "User not found" });
     res.json(user);
   } catch (err) {

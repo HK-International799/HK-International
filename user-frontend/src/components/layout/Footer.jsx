@@ -173,7 +173,7 @@ export default function Footer() {
             <li>
               <button
                 onClick={() => setActivePolicy("refund")}
-                className="hover:text-white transition"
+                className="hover:text-orange-600 transition"
               >
                 Refund & Cancellation Policy
               </button>
