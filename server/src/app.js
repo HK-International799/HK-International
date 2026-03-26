@@ -38,45 +38,59 @@ const allowedOrigins =
   process.env.NODE_ENV === "production"
     ? [
         process.env.CLIENT_URL_STUDENT,
-        process.env.CLIENT_URL_TUTOR,
         process.env.CLIENT_URL_ADMIN,
+        process.env.CLIENT_URL_TUTOR,
+        process.env.FRONTEND_URL,
+        process.env.BACKEND_URL,
       ].filter(Boolean)
     : [
         "http://localhost:5173",
         "http://localhost:5174",
         "http://localhost:5175",
-        "https://hkinternational.uk",
+        "http://localhost:3000",
+        "http://localhost:5000",
       ];
+
+const paymentGateways = [
+  process.env.EASEBUZZ_PAYMENT_URL,
+  process.env.EASEBUZZ_PAYMENT_INITIATE,
+].filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // ✅ Allow ALL requests with no origin (payment gateways, postman)
-      if (!origin) return callback(null, true);
+      // ✅ allow requests without origin (Postman, Easebuzz server, webhooks)
+      if (!origin) {
+        return callback(null, true);
+      }
 
-      // ✅ Allow localhost
+      // ✅ allow localhost
       if (origin.startsWith("http://localhost")) {
         return callback(null, true);
       }
 
-      // ✅ Allow your domains
+      // ✅ allow production domains
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
-      // ✅ Allow ALL Easebuzz requests safely
-      if (
-        origin.includes("easebuzz") ||
-        origin.includes("pay.easebuzz.in")
-      ) {
+      // ✅ allow Easebuzz
+      const isEasebuzz = paymentGateways.some((gateway) =>
+        origin.includes(gateway.replace("https://", "")),
+      );
+
+      if (isEasebuzz) {
         return callback(null, true);
       }
 
       console.log("Blocked by CORS:", origin);
-      return callback(null, true); // 🔥 IMPORTANT: don't block
+
+      return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
-  })
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
 );
 // app.use(cors());
 
