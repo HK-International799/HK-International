@@ -1,36 +1,82 @@
-import { X, ChevronLeft, ChevronRight, Inbox } from "lucide-react";
+import { useEffect } from "react";
+import { X, Inbox } from "lucide-react";
 
-// ──── Stat Card ──────────────────────────────────────────────────────────────
-export function StatCard({ title, value, icon: Icon, trend, color = "primary", className = "" }) {
-  const colorMap = {
-    primary: "from-primary/10 to-primary/5 text-primary",
-    success: "from-success/10 to-success/5 text-success",
-    warning: "from-warning/10 to-warning/5 text-warning",
-    danger: "from-danger/10 to-danger/5 text-danger",
-    accent: "from-accent/10 to-accent/5 text-accent",
-  };
-  const iconBg = {
-    primary: "bg-primary/10 text-primary",
-    success: "bg-success/10 text-success",
-    warning: "bg-warning/10 text-warning",
-    danger: "bg-danger/10 text-danger",
-    accent: "bg-accent/10 text-accent",
+/* =========================================================
+   COLOR SYSTEM
+========================================================= */
+
+const colors = {
+  primary: "bg-indigo-600 text-white hover:bg-indigo-700",
+  primarySoft: "bg-indigo-50 text-indigo-600",
+
+  accent: "bg-orange-500 text-white hover:bg-orange-600",
+  accentSoft: "bg-orange-50 text-orange-600",
+
+  success: "bg-emerald-500 text-white hover:bg-emerald-600",
+  successSoft: "bg-emerald-50 text-emerald-600",
+
+  danger: "bg-red-500 text-white hover:bg-red-600",
+  dangerSoft: "bg-red-50 text-red-600",
+
+  graySoft: "bg-gray-100 text-gray-700 hover:bg-gray-200",
+};
+
+/* =========================================================
+   STAT CARD
+========================================================= */
+
+export function StatCard({
+  title,
+  value,
+  icon: Icon,
+  trend,
+  color = "primary",
+  className = "",
+}) {
+  const iconColors = {
+    primary: "bg-indigo-50 text-indigo-600",
+    accent: "bg-orange-50 text-orange-600",
+    success: "bg-emerald-50 text-emerald-600",
+    danger: "bg-red-50 text-red-600",
   };
 
   return (
-    <div className={`bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow ${className}`}>
+    <div
+      className={`bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300 ${className}`}
+    >
       <div className="flex items-start justify-between">
+
         <div>
-          <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">{title}</p>
-          <p className="text-2xl font-bold text-gray-800 mt-1.5">{value ?? "—"}</p>
+          <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">
+            {title}
+          </p>
+
+          <h2 className="text-2xl font-bold text-gray-800 mt-1">
+            {value ?? "—"}
+          </h2>
+
           {trend !== undefined && (
-            <p className={`text-xs mt-1.5 font-medium ${trend >= 0 ? "text-success" : "text-danger"}`}>
-              {trend >= 0 ? "↑" : "↓"} {Math.abs(trend)}% from last month
+            <p
+              className={`text-xs mt-1 font-medium ${
+                trend >= 0
+                  ? "text-emerald-600"
+                  : "text-red-500"
+              }`}
+            >
+              {trend >= 0 ? "↑" : "↓"} {Math.abs(trend)}%
+              <span className="text-gray-400 ml-1">
+                from last month
+              </span>
             </p>
           )}
         </div>
+
         {Icon && (
-          <div className={`p-2.5 rounded-xl ${iconBg[color]}`}>
+          <div
+            className={`p-3 rounded-xl ${
+              iconColors[color]
+            }`}
+          >
             <Icon size={20} />
           </div>
         )}
@@ -39,104 +85,249 @@ export function StatCard({ title, value, icon: Icon, trend, color = "primary", c
   );
 }
 
-// ──── Badge ──────────────────────────────────────────────────────────────────
-export function Badge({ children, variant = "default" }) {
+/* =========================================================
+   BADGE
+========================================================= */
+
+export function Badge({
+  children,
+  variant = "default",
+}) {
   const styles = {
-    default: "bg-gray-100 text-gray-600",
-    primary: "bg-primary/10 text-primary",
-    success: "bg-success/10 text-success",
-    warning: "bg-warning/10 text-warning",
-    danger: "bg-danger/10 text-danger",
-    accent: "bg-accent/10 text-accent",
+    default:
+      "bg-gray-100 text-gray-600",
+    primary:
+      "bg-indigo-50 text-indigo-600",
+    accent:
+      "bg-orange-50 text-orange-600",
+    success:
+      "bg-emerald-50 text-emerald-600",
+    warning:
+      "bg-orange-100 text-orange-700",
+    danger:
+      "bg-red-50 text-red-600",
   };
+
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${styles[variant]}`}>
+    <span
+      className={`px-2.5 py-1 rounded-full text-xs font-medium ${styles[variant]}`}
+    >
       {children}
     </span>
   );
 }
 
-// ──── Modal ──────────────────────────────────────────────────────────────────
-export function Modal({ open, onClose, title, children, size = "md" }) {
+/* =========================================================
+   MODAL
+========================================================= */
+
+export function Modal({
+  open,
+  onClose,
+  title,
+  children,
+  size = "md",
+}) {
+  const widths = {
+    sm: "max-w-md",
+    md: "max-w-lg",
+    lg: "max-w-2xl",
+    xl: "max-w-4xl",
+  };
+
+  useEffect(() => {
+    if (!open) return;
+
+    const esc = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+
+    document.body.style.overflow =
+      "hidden";
+    window.addEventListener(
+      "keydown",
+      esc
+    );
+
+    return () => {
+      document.body.style.overflow =
+        "auto";
+      window.removeEventListener(
+        "keydown",
+        esc
+      );
+    };
+  }, [open]);
+
   if (!open) return null;
-  const widths = { sm: "max-w-md", md: "max-w-lg", lg: "max-w-2xl", xl: "max-w-4xl" };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className={`relative bg-white rounded-2xl shadow-2xl w-full ${widths[size]} max-h-[85vh] flex flex-col animate-scaleIn`}>
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-lg font-bold text-gray-800">{title}</h2>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
-            <X size={18} className="text-gray-400" />
+
+      <div
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      <div
+        className={`relative bg-white rounded-2xl shadow-2xl w-full ${widths[size]} max-h-[85vh] flex flex-col animate-scaleIn`}
+      >
+        <div className="flex items-center justify-between px-6 py-4 border-b">
+
+          <h2 className="text-lg font-bold text-gray-800">
+            {title}
+          </h2>
+
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-lg"
+          >
+            <X size={18} />
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto px-6 py-4">{children}</div>
+
+        <div className="flex-1 overflow-y-auto px-6 py-5">
+          {children}
+        </div>
       </div>
     </div>
   );
 }
 
-// ──── Page Header ────────────────────────────────────────────────────────────
-export function PageHeader({ title, subtitle, actions }) {
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+export function PageHeader({
+  title,
+  subtitle,
+  actions,
+}) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+
       <div>
-        <h1 className="text-2xl font-bold text-gray-800">{title}</h1>
-        {subtitle && <p className="text-sm text-gray-400 mt-1">{subtitle}</p>}
+        <h1 className="text-2xl font-bold text-gray-800">
+          {title}
+        </h1>
+
+        {subtitle && (
+          <p className="text-sm text-gray-400 mt-1">
+            {subtitle}
+          </p>
+        )}
       </div>
-      {actions && <div className="flex items-center gap-3">{actions}</div>}
+
+      {actions && (
+        <div className="flex gap-3">
+          {actions}
+        </div>
+      )}
     </div>
   );
 }
 
-// ──── Empty State ────────────────────────────────────────────────────────────
-export function EmptyState({ icon: Icon = Inbox, title = "No data found", subtitle, action }) {
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+export function EmptyState({
+  icon: Icon = Inbox,
+  title = "No data found",
+  subtitle,
+  action,
+}) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
-      <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
-        <Icon size={28} className="text-gray-400" />
+
+      <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center mb-4">
+        <Icon size={28} className="text-indigo-500" />
       </div>
-      <h3 className="text-lg font-semibold text-gray-600">{title}</h3>
-      {subtitle && <p className="text-sm text-gray-400 mt-1 max-w-sm">{subtitle}</p>}
-      {action && <div className="mt-4">{action}</div>}
+
+      <h3 className="text-lg font-semibold text-gray-700">
+        {title}
+      </h3>
+
+      {subtitle && (
+        <p className="text-sm text-gray-400 mt-1 max-w-sm">
+          {subtitle}
+        </p>
+      )}
+
+      {action && (
+        <div className="mt-4">
+          {action}
+        </div>
+      )}
     </div>
   );
 }
 
-// ──── Data Table ─────────────────────────────────────────────────────────────
-export function DataTable({ columns, data, onRowClick, emptyMessage = "No records found" }) {
+/* =========================================================
+   DATA TABLE
+========================================================= */
+
+export function DataTable({
+  columns,
+  data,
+  onRowClick,
+  emptyMessage = "No records found",
+}) {
   if (!data || data.length === 0) {
-    return <EmptyState title={emptyMessage} />;
+    return (
+      <EmptyState
+        title={emptyMessage}
+      />
+    );
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+
       <div className="overflow-x-auto">
+
         <table className="w-full">
-          <thead>
-            <tr className="bg-gray-50/80">
+
+          <thead className="bg-gray-50 sticky top-0">
+            <tr>
               {columns.map((col) => (
-                <th key={col.key} className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+                <th
+                  key={col.key}
+                  className="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase"
+                >
                   {col.label}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+
+          <tbody className="divide-y">
+
             {data.map((row, i) => (
               <tr
                 key={row._id || i}
-                onClick={() => onRowClick?.(row)}
-                className={`hover:bg-gray-50/50 transition-colors ${onRowClick ? "cursor-pointer" : ""}`}
+                onClick={() =>
+                  onRowClick?.(row)
+                }
+                className={`hover:bg-indigo-50/40 transition ${
+                  onRowClick
+                    ? "cursor-pointer"
+                    : ""
+                }`}
               >
                 {columns.map((col) => (
-                  <td key={col.key} className="px-5 py-3.5 text-sm text-gray-700">
-                    {col.render ? col.render(row) : row[col.key]}
+                  <td
+                    key={col.key}
+                    className="px-5 py-3.5 text-sm text-gray-700"
+                  >
+                    {col.render
+                      ? col.render(row)
+                      : row[col.key]}
                   </td>
                 ))}
               </tr>
             ))}
+
           </tbody>
         </table>
       </div>
@@ -144,16 +335,30 @@ export function DataTable({ columns, data, onRowClick, emptyMessage = "No record
   );
 }
 
-// ──── Button ─────────────────────────────────────────────────────────────────
-export function Button({ children, variant = "primary", size = "md", className = "", ...props }) {
-  const base = "inline-flex items-center justify-center gap-2 font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+/* =========================================================
+   BUTTON
+========================================================= */
+
+export function Button({
+  children,
+  variant = "primary",
+  size = "md",
+  loading = false,
+  className = "",
+  ...props
+}) {
   const variants = {
-    primary: "bg-primary text-white hover:bg-primary-dark focus:ring-primary shadow-sm",
-    secondary: "bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-300",
-    danger: "bg-danger text-white hover:bg-red-600 focus:ring-danger shadow-sm",
-    ghost: "text-gray-600 hover:bg-gray-100 focus:ring-gray-200",
-    outline: "border border-gray-200 text-gray-700 hover:bg-gray-50 focus:ring-gray-200",
+    primary: colors.primary,
+    accent: colors.accent,
+    success: colors.success,
+    danger: colors.danger,
+    secondary: colors.graySoft,
+    outline:
+      "border border-gray-200 text-gray-700 hover:bg-gray-50",
+    ghost:
+      "text-gray-600 hover:bg-gray-100",
   };
+
   const sizes = {
     sm: "px-3 py-1.5 text-xs",
     md: "px-4 py-2 text-sm",
@@ -161,53 +366,116 @@ export function Button({ children, variant = "primary", size = "md", className =
   };
 
   return (
-    <button className={`${base} ${variants[variant]} ${sizes[size]} ${className}`} {...props}>
-      {children}
+    <button
+      disabled={loading}
+      className={`inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-all ${variants[variant]} ${sizes[size]} ${className}`}
+      {...props}
+    >
+      {loading ? (
+        <span className="animate-pulse">
+          Loading...
+        </span>
+      ) : (
+        children
+      )}
     </button>
   );
 }
 
-// ──── Input ──────────────────────────────────────────────────────────────────
-export function Input({ label, error, className = "", ...props }) {
+/* =========================================================
+   INPUT
+========================================================= */
+
+export function Input({
+  label,
+  error,
+  className = "",
+  ...props
+}) {
   return (
     <div className={className}>
-      {label && <label className="block text-sm font-medium text-gray-600 mb-1.5">{label}</label>}
+
+      {label && (
+        <label className="text-sm font-medium text-gray-600 mb-1 block">
+          {label}
+        </label>
+      )}
+
       <input
-        className={`w-full px-3.5 py-2.5 bg-gray-50 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all ${
-          error ? "border-danger" : "border-gray-200"
+        className={`w-full px-3.5 py-2.5 bg-gray-50 border rounded-xl text-sm focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 transition ${
+          error
+            ? "border-red-500"
+            : "border-gray-200"
         }`}
         {...props}
       />
-      {error && <p className="text-xs text-danger mt-1">{error}</p>}
+
+      {error && (
+        <p className="text-xs text-red-500 mt-1">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
 
-// ──── Select ─────────────────────────────────────────────────────────────────
-export function Select({ label, options, className = "", ...props }) {
+/* =========================================================
+   SELECT
+========================================================= */
+
+export function Select({
+  label,
+  options,
+  className = "",
+  ...props
+}) {
   return (
     <div className={className}>
-      {label && <label className="block text-sm font-medium text-gray-600 mb-1.5">{label}</label>}
+
+      {label && (
+        <label className="text-sm font-medium text-gray-600 mb-1 block">
+          {label}
+        </label>
+      )}
+
       <select
-        className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
+        className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500"
         {...props}
       >
         {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>{opt.label}</option>
+          <option
+            key={opt.value}
+            value={opt.value}
+          >
+            {opt.label}
+          </option>
         ))}
       </select>
     </div>
   );
 }
 
-// ──── Textarea ───────────────────────────────────────────────────────────────
-export function Textarea({ label, className = "", ...props }) {
+/* =========================================================
+   TEXTAREA
+========================================================= */
+
+export function Textarea({
+  label,
+  className = "",
+  ...props
+}) {
   return (
     <div className={className}>
-      {label && <label className="block text-sm font-medium text-gray-600 mb-1.5">{label}</label>}
+
+      {label && (
+        <label className="text-sm font-medium text-gray-600 mb-1 block">
+          {label}
+        </label>
+      )}
+
       <textarea
-        className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
         rows={4}
+        className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 resize-none"
         {...props}
       />
     </div>

@@ -88,7 +88,7 @@ export default function Home() {
     { number: "2100+", label: "International Courses Conducted" },
     { number: "195+", label: "Nationalities Trained" },
     { number: "192+", label: "Empowered HKians Trained" },
-    { number: "2400+", label: "Projects Delivered Globally" },  
+    { number: "2400+", label: "Projects Delivered Globally" },
   ];
 
   const courses = [
@@ -370,8 +370,8 @@ export default function Home() {
             </h2>
 
             <p className="mt-4 text-white/80">
-              Partner with us today and experience why 1A HK International is the
-              top choice for corporates that refuse to compromise on safety.
+              Partner with us today and experience why 1A HK International is
+              the top choice for corporates that refuse to compromise on safety.
               Reach out to learn more about how we can align with your
               organization's goals and help you build an unbeatable culture of
               safety.
@@ -379,7 +379,7 @@ export default function Home() {
 
             <motion.button
               onClick={() => {
-                navigate("/contact");
+                navigate("/payment");
               }}
               whileHover={{ scale: 1.05 }}
               className="mt-8 bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-xl font-semibold"

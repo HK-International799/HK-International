@@ -1,191 +1,424 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "../../components/layout/AdminLayout";
-import { StatCard, Badge } from "../../components/ui";
 import { getDashboardStats } from "../../services/analyticsService";
+import { useNavigate } from "react-router-dom";
+
 import {
-  Users, BookOpen, Layers, GraduationCap, ClipboardList, FileCheck,
-  Award, Video, TrendingUp, ArrowUpRight,
+  Users,
+  BookOpen,
+  Layers,
+  GraduationCap,
+  ClipboardList,
+  FileCheck,
+  Award,
+  Video,
+  TrendingUp,
+  PlusCircle,
+  ArrowUpRight,
 } from "lucide-react";
+
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, AreaChart, Area, CartesianGrid, Legend,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  AreaChart,
+  Area,
+  CartesianGrid,
 } from "recharts";
 
-const COLORS = ["#6366f1", "#06b6d4", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
-
-// Mock data for demo when API isn't connected
-const mockStats = {
-  totalUsers: 1284, totalStudents: 980, totalTutors: 45, totalCourses: 32,
-  totalBatches: 18, totalAssignments: 96, totalExams: 24, totalCertificates: 312,
-  totalLiveClasses: 67, totalEnrollments: 2456,
-  recentUsers: [
-    { _id: "1", name: "Priya Sharma", email: "priya@demo.com", role: "student", createdAt: new Date().toISOString() },
-    { _id: "2", name: "Raj Patel", email: "raj@demo.com", role: "tutor", createdAt: new Date().toISOString() },
-    { _id: "3", name: "Ananya Gupta", email: "ananya@demo.com", role: "student", createdAt: new Date().toISOString() },
-  ],
-};
-
-const mockMonthly = [
-  { name: "Jul", users: 45 }, { name: "Aug", users: 62 }, { name: "Sep", users: 78 },
-  { name: "Oct", users: 91 }, { name: "Nov", users: 85 }, { name: "Dec", users: 110 },
-  { name: "Jan", users: 124 }, { name: "Feb", users: 138 }, { name: "Mar", users: 156 },
-];
-
-const mockPie = [
-  { name: "Students", value: 980 }, { name: "Tutors", value: 45 }, { name: "Admins", value: 5 },
-];
-
-const mockCourseEnroll = [
-  { name: "Web Dev", enrolled: 245 }, { name: "Data Science", enrolled: 198 },
-  { name: "UI/UX", enrolled: 167 }, { name: "Mobile Dev", enrolled: 143 },
-  { name: "DevOps", enrolled: 98 }, { name: "AI/ML", enrolled: 87 },
-];
+const COLORS = ["#6366f1", "#06b6d4", "#10b981"];
 
 export default function Dashboard() {
-  const [stats, setStats] = useState(mockStats);
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const load = async () => {
       try {
         setLoading(true);
+        setError(null);
+
         const data = await getDashboardStats();
-        if (data) setStats(data);
-      } catch {
-        // Use mock data on error
+
+        if (data) {
+          setStats(data);
+        } else {
+          setStats(null);
+        }
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load dashboard data");
       } finally {
         setLoading(false);
       }
     };
+
     load();
   }, []);
 
-  const statCards = [
-    { title: "Total Users", value: stats.totalUsers, icon: Users, color: "primary" },
-    { title: "Students", value: stats.totalStudents, icon: GraduationCap, color: "accent" },
-    { title: "Courses", value: stats.totalCourses, icon: BookOpen, color: "success" },
-    { title: "Batches", value: stats.totalBatches, icon: Layers, color: "warning" },
-    { title: "Assignments", value: stats.totalAssignments, icon: ClipboardList, color: "primary" },
-    { title: "Exams", value: stats.totalExams, icon: FileCheck, color: "danger" },
-    { title: "Live Classes", value: stats.totalLiveClasses, icon: Video, color: "accent" },
-    { title: "Certificates", value: stats.totalCertificates, icon: Award, color: "success" },
+  /* ---------------- Loading UI ---------------- */
+
+  if (loading) {
+    return (
+      <AdminLayout>
+        <div className="p-6 space-y-6">
+
+          <div className="h-8 w-60 bg-gray-200 rounded animate-pulse" />
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+            {[...Array(8)].map((_, i) => (
+              <div
+                key={i}
+                className="h-24 bg-gray-200 rounded-2xl animate-pulse"
+              />
+            ))}
+          </div>
+
+          <div className="grid lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 h-64 bg-gray-200 rounded-2xl animate-pulse" />
+            <div className="h-64 bg-gray-200 rounded-2xl animate-pulse" />
+          </div>
+
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  /* ---------------- Error UI ---------------- */
+
+  if (error) {
+    return (
+      <AdminLayout>
+        <div className="p-6">
+
+          <div className="bg-red-50 border border-red-200 text-red-600 p-6 rounded-xl">
+
+            <h2 className="text-lg font-semibold">
+              Failed to load dashboard
+            </h2>
+
+            <p className="text-sm mt-1">
+              {error}
+            </p>
+
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg"
+            >
+              Retry
+            </button>
+
+          </div>
+
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  /* ---------------- Empty UI ---------------- */
+
+  if (!stats) {
+    return (
+      <AdminLayout>
+        <div className="p-6 text-center text-gray-500">
+          No dashboard data available
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  /* ---------------- Cards ---------------- */
+
+  const cards = [
+    {
+      title: "Users",
+      value: stats?.totalUsers || 0,
+      icon: Users,
+      color: "from-indigo-500 to-indigo-600",
+    },
+    {
+      title: "Students",
+      value: stats?.totalStudents || 0,
+      icon: GraduationCap,
+      color: "from-cyan-500 to-cyan-600",
+    },
+    {
+      title: "Courses",
+      value: stats?.totalCourses || 0,
+      icon: BookOpen,
+      color: "from-emerald-500 to-emerald-600",
+    },
+    {
+      title: "Batches",
+      value: stats?.totalBatches || 0,
+      icon: Layers,
+      color: "from-amber-500 to-amber-600",
+    },
+    {
+      title: "Assignments",
+      value: stats?.totalAssignments || 0,
+      icon: ClipboardList,
+      color: "from-purple-500 to-purple-600",
+    },
+    {
+      title: "Exams",
+      value: stats?.totalExams || 0,
+      icon: FileCheck,
+      color: "from-red-500 to-red-600",
+    },
+    {
+      title: "Live Classes",
+      value: stats?.totalLiveClasses || 0,
+      icon: Video,
+      color: "from-pink-500 to-pink-600",
+    },
+    {
+      title: "Certificates",
+      value: stats?.totalCertificates || 0,
+      icon: Award,
+      color: "from-teal-500 to-teal-600",
+    },
   ];
 
   return (
     <AdminLayout>
-      <div className="space-y-6 animate-fadeIn">
+      <div className="p-6 space-y-6">
+
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
-          <p className="text-sm text-gray-400 mt-1">Welcome back! Here's your LMS overview.</p>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800">
+              Admin Dashboard
+            </h1>
+
+            <p className="text-gray-500 mt-1">
+              Welcome back 👋 Manage your LMS system efficiently
+            </p>
+          </div>
+
+          <div className="flex gap-3 mt-4 md:mt-0">
+
+            <button
+              onClick={() => navigate("/admin/courses")}
+              className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-xl hover:bg-indigo-700 transition"
+            >
+              <PlusCircle size={16} />
+              Add Course
+            </button>
+
+            <button
+              onClick={() => navigate("/admin/analytics")}
+              className="flex items-center gap-2 bg-white border px-4 py-2 rounded-xl hover:bg-gray-50 transition"
+            >
+              <TrendingUp size={16} />
+              Analytics
+            </button>
+
+          </div>
         </div>
 
         {/* Stat Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {statCards.map((card, i) => (
-            <div key={card.title} style={{ animationDelay: `${i * 50}ms` }} className="animate-fadeIn">
-              <StatCard {...card} />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+
+          {cards.map((card, i) => (
+            <div
+              key={i}
+              className={`p-5 rounded-2xl text-white shadow-md bg-gradient-to-br ${card.color} hover:scale-105 transition`}
+            >
+              <div className="flex justify-between">
+
+                <div>
+                  <p className="text-sm opacity-80">
+                    {card.title}
+                  </p>
+
+                  <h2 className="text-2xl font-bold mt-1">
+                    {card.value}
+                  </h2>
+                </div>
+
+                <card.icon className="opacity-80" />
+
+              </div>
+
+              <div className="flex items-center text-xs mt-4 opacity-90">
+                <ArrowUpRight size={14} className="mr-1" />
+                Live Data
+              </div>
             </div>
           ))}
+
         </div>
 
-        {/* Charts Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* User Growth Area Chart */}
-          <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-            <div className="flex items-center justify-between mb-6">
+        {/* Charts */}
+        <div className="grid lg:grid-cols-3 gap-6">
+
+          {/* User Growth */}
+          <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border">
+
+            <div className="flex justify-between mb-6">
+
               <div>
-                <h3 className="text-base font-bold text-gray-800">User Growth</h3>
-                <p className="text-xs text-gray-400 mt-0.5">Monthly registrations</p>
+                <h3 className="font-semibold text-gray-800">
+                  User Growth
+                </h3>
+
+                <p className="text-sm text-gray-400">
+                  Monthly registrations
+                </p>
               </div>
-              <div className="flex items-center gap-1 text-success text-sm font-medium">
-                <TrendingUp size={16} /> +12.5%
+
+              <div className="text-green-500 flex items-center">
+                <TrendingUp size={16} className="mr-1" />
+                Live
               </div>
+
             </div>
+
             <ResponsiveContainer width="100%" height={260}>
-              <AreaChart data={mockMonthly}>
-                <defs>
-                  <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.15} />
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 12, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-                <Tooltip
-                  contentStyle={{ borderRadius: "12px", border: "1px solid #e2e8f0", boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
+              <AreaChart data={stats?.monthlyUsers || []}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Area
+                  type="monotone"
+                  dataKey="users"
+                  stroke="#6366f1"
+                  fill="#6366f133"
                 />
-                <Area type="monotone" dataKey="users" stroke="#6366f1" strokeWidth={2.5} fill="url(#colorUsers)" />
               </AreaChart>
             </ResponsiveContainer>
+
           </div>
 
-          {/* Role Distribution Pie */}
-          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-            <h3 className="text-base font-bold text-gray-800 mb-1">User Distribution</h3>
-            <p className="text-xs text-gray-400 mb-4">By role</p>
-            <ResponsiveContainer width="100%" height={200}>
+          {/* Pie */}
+          <div className="bg-white p-6 rounded-2xl shadow-sm border">
+
+            <h3 className="font-semibold text-gray-800 mb-4">
+              User Distribution
+            </h3>
+
+            <ResponsiveContainer width="100%" height={220}>
               <PieChart>
-                <Pie data={mockPie} cx="50%" cy="50%" innerRadius={55} outerRadius={80} paddingAngle={4} dataKey="value">
-                  {mockPie.map((_, i) => (
-                    <Cell key={i} fill={COLORS[i]} />
+                <Pie
+                  data={stats?.roleDistribution || []}
+                  innerRadius={55}
+                  outerRadius={80}
+                  dataKey="value"
+                >
+                  {(stats?.roleDistribution || []).map((_, i) => (
+                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ borderRadius: "12px", border: "1px solid #e2e8f0" }} />
+                <Tooltip />
               </PieChart>
             </ResponsiveContainer>
-            <div className="flex flex-wrap justify-center gap-4 mt-2">
-              {mockPie.map((entry, i) => (
-                <div key={entry.name} className="flex items-center gap-2 text-xs text-gray-600">
-                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: COLORS[i] }} />
-                  {entry.name} ({entry.value})
-                </div>
-              ))}
-            </div>
+
           </div>
+
         </div>
 
-        {/* Bottom Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Course Enrollments Bar Chart */}
-          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-            <h3 className="text-base font-bold text-gray-800 mb-1">Top Courses by Enrollment</h3>
-            <p className="text-xs text-gray-400 mb-6">Student enrollment per course</p>
-            <ResponsiveContainer width="100%" height={240}>
-              <BarChart data={mockCourseEnroll} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
-                <XAxis type="number" tick={{ fontSize: 12, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-                <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: "#64748b" }} axisLine={false} tickLine={false} width={85} />
-                <Tooltip contentStyle={{ borderRadius: "12px", border: "1px solid #e2e8f0" }} />
-                <Bar dataKey="enrolled" fill="#6366f1" radius={[0, 6, 6, 0]} barSize={20} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+        {/* Bottom */}
+        <div className="grid lg:grid-cols-2 gap-6">
 
           {/* Recent Users */}
-          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-            <h3 className="text-base font-bold text-gray-800 mb-4">Recent Users</h3>
+          <div className="bg-white p-6 rounded-2xl shadow-sm border">
+
+            <h3 className="font-semibold mb-4">
+              Recent Users
+            </h3>
+
             <div className="space-y-3">
-              {(stats.recentUsers || []).map((u) => (
-                <div key={u._id} className="flex items-center justify-between p-3 rounded-xl bg-gray-50/80 hover:bg-gray-100 transition-colors">
+
+              {(stats?.recentUsers || []).map((u) => (
+
+                <div
+                  key={u._id}
+                  className="flex justify-between items-center p-3 rounded-xl hover:bg-gray-50 transition"
+                >
+
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-white text-sm font-bold">
-                      {u.name?.charAt(0)}
+
+                    <div className="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">
+                      {u?.name?.charAt(0)}
                     </div>
+
                     <div>
-                      <p className="text-sm font-medium text-gray-800">{u.name}</p>
-                      <p className="text-xs text-gray-400">{u.email}</p>
+                      <p className="font-medium">
+                        {u?.name}
+                      </p>
+                      <p className="text-sm text-gray-400">
+                        {u?.email}
+                      </p>
                     </div>
+
                   </div>
-                  <Badge variant={u.role === "admin" ? "danger" : u.role === "tutor" ? "warning" : "primary"}>
-                    {u.role}
-                  </Badge>
+
+                  <span className="text-xs px-3 py-1 bg-gray-100 rounded-full">
+                    {u?.role}
+                  </span>
+
                 </div>
               ))}
+
             </div>
+
           </div>
+
+          {/* Quick Actions */}
+          <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-6 rounded-2xl text-white shadow">
+
+            <h3 className="text-lg font-semibold mb-4">
+              Quick Actions
+            </h3>
+
+            <div className="grid grid-cols-2 gap-4">
+
+              <button
+                onClick={() => navigate("/admin/courses")}
+                className="bg-white/10 p-4 rounded-xl hover:bg-white/20 transition"
+              >
+                Add Course
+              </button>
+
+              <button
+                onClick={() => navigate("/admin/assignments")}
+                className="bg-white/10 p-4 rounded-xl hover:bg-white/20 transition"
+              >
+                Add Assignment
+              </button>
+
+              <button
+                onClick={() => navigate("/admin/tutors")}
+                className="bg-white/10 p-4 rounded-xl hover:bg-white/20 transition"
+              >
+                Add Tutor
+              </button>
+
+              <button
+                onClick={() => navigate("/admin/students")}
+                className="bg-white/10 p-4 rounded-xl hover:bg-white/20 transition"
+              >
+                Add Student
+              </button>
+
+            </div>
+
+          </div>
+
         </div>
+
       </div>
     </AdminLayout>
   );

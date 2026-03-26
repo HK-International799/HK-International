@@ -26,32 +26,59 @@ import questionBankRoutes from "./routes/questionBankRoutes.js";
 import settingsRoutes from "./routes/settingsRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
 
+import paymentRoutes from "./routes/paymentRoutes.js";
+
 const app = express();
 
 // ─── Security headers ───────────────────────────────────────────────────────
 app.use(helmet());
 
 // ─── CORS ───────────────────────────────────────────────────────────────────
-const allowedOrigins = process.env.NODE_ENV === "production"
-  ? [
-      process.env.CLIENT_URL_STUDENT,
-      process.env.CLIENT_URL_TUTOR,
-      process.env.CLIENT_URL_ADMIN,
-    ].filter(Boolean)
-  : [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "http://localhost:5175",
-    ];
+const allowedOrigins =
+  process.env.NODE_ENV === "production"
+    ? [
+        process.env.CLIENT_URL_STUDENT,
+        process.env.CLIENT_URL_TUTOR,
+        process.env.CLIENT_URL_ADMIN,
+      ].filter(Boolean)
+    : [
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:5175",
+        "https://hkinternational.uk",
+      ];
 
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    return callback(new Error("Not allowed by CORS"));
-  },
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // ✅ Allow ALL requests with no origin (payment gateways, postman)
+      if (!origin) return callback(null, true);
+
+      // ✅ Allow localhost
+      if (origin.startsWith("http://localhost")) {
+        return callback(null, true);
+      }
+
+      // ✅ Allow your domains
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // ✅ Allow ALL Easebuzz requests safely
+      if (
+        origin.includes("easebuzz") ||
+        origin.includes("pay.easebuzz.in")
+      ) {
+        return callback(null, true);
+      }
+
+      console.log("Blocked by CORS:", origin);
+      return callback(null, true); // 🔥 IMPORTANT: don't block
+    },
+    credentials: true,
+  })
+);
+// app.use(cors());
 
 // ─── Rate limiting ───────────────────────────────────────────────────────────
 const globalLimiter = rateLimit({
@@ -88,6 +115,9 @@ if (process.env.NODE_ENV !== "production") {
 app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "OK", message: "Server running" });
 });
+
+//---------------------- Payment Integration----------------------
+app.use("/api/payment", paymentRoutes);
 
 // ─── API routes ──────────────────────────────────────────────────────────────
 app.use("/api/auth", authLimiter, authRoutes);

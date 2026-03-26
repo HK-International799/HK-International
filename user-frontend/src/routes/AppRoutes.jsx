@@ -23,6 +23,9 @@ import Notifications from "../pages/students/Notifications";
 import Settings from "../pages/students/Settings";
 import { useEffect } from "react";
 import ChangePassword from "../pages/students/ChangePassword";
+import PaymentPage from "../pages/PaymentPage";
+import PaymentFailed from "../pages/PaymentFailed";
+import PaymentSuccess from "../pages/PaymentSuccess";
 
 export default function AppRoutes() {
   function ScrollHandler() {
@@ -52,6 +55,9 @@ export default function AppRoutes() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/courses" element={<Courses />} />
         <Route path="/course/:id" element={<CourseDetails />} />
+        <Route path="/payment" element={<PaymentPage />} />
+        <Route path="/payment-failed" element={<PaymentFailed />} />
+        <Route path="/success" element={<PaymentSuccess />} />
 
         {/* Student Protected */}
         <Route
