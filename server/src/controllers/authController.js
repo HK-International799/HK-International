@@ -18,6 +18,14 @@ export const registerUser = async (req, res) => {
       });
     }
 
+    if (role === "admin") {
+  if (adminSecretId !== process.env.ADMIN_SECRET_ID) {
+    return res.status(403).json({
+      message: "Invalid Admin Secret ID",
+    });
+  }
+}
+
     // Validate role
     if (role && !["student", "tutor", "admin"].includes(role)) {
       return res.status(400).json({
