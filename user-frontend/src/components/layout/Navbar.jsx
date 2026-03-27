@@ -150,7 +150,7 @@ export default function Navbar() {
               alt="1A HK International"
               className="h-16 w-auto object-contain"
             />
-            <span className="hidden sm:block font-bold text-lg text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-orange-500">
+            <span className="hidden sm:block font-bold text-lg text-transparent bg-clip-text bg-linear-to-r from-indigo-700 to-orange-500">
               1A HK International
             </span>
           </motion.div>
@@ -160,7 +160,7 @@ export default function Navbar() {
             <li>
               <Link
                 to="/"
-                className="text-gray-800 hover:text-orange-600 transition"
+                className="text-gray-800 hover:font-bold hover:text-transparent bg-clip-text hover:bg-linear-to-r from-indigo-700 to-orange-500 transition"
               >
                 Home
               </Link>
@@ -177,7 +177,7 @@ export default function Navbar() {
             >
               <button
                 onClick={() => navigate("/courses")}
-                className="text-gray-800 hover:text-orange-600 flex items-center gap-1"
+                className="text-gray-800 hover:font-bold hover:text-transparent bg-clip-text hover:bg-linear-to-r from-indigo-700 to-orange-500 flex items-center gap-1"
               >
                 Courses
               </button>
@@ -210,7 +210,7 @@ export default function Navbar() {
                               <Link
                                 key={j}
                                 to={`/course/${course.id}`}
-                                className="block px-4 py-2 text-sm text-gray-900 hover:bg-white hover:text-orange-600 rounded-xl"
+                                className="block px-4 py-2 text-sm text-gray-900 hover:bg-white hover:font-bold hover:text-transparent bg-clip-text hover:bg-linear-to-r from-indigo-700 to-orange-500 rounded-xl"
                               >
                                 {course.name}
                               </Link>
@@ -227,7 +227,7 @@ export default function Navbar() {
             <li>
               <Link
                 to="/about"
-                className="text-gray-800 hover:text-orange-600 transition"
+                className="text-gray-800 hover:font-bold hover:text-transparent bg-clip-text hover:bg-linear-to-r from-indigo-700 to-orange-500 transition"
               >
                 About
               </Link>
@@ -236,7 +236,7 @@ export default function Navbar() {
             <li>
               <Link
                 to="/contact"
-                className="text-gray-800 hover:text-orange-600 transition"
+                className="text-gray-800 hover:font-bold hover:text-transparent bg-clip-text hover:bg-linear-to-r from-indigo-700 to-orange-500 transition"
               >
                 Contact
               </Link>
@@ -244,9 +244,9 @@ export default function Navbar() {
             <li>
               <Link
                 to="/payment"
-                className="text-gray-800 hover:text-orange-600 transition"
+                className="text-gray-800 hover:font-bold hover:text-transparent bg-clip-text hover:bg-linear-to-r from-indigo-700 to-orange-500 transition"
               >
-                Purchase
+                Payments
               </Link>
             </li>
 
@@ -257,7 +257,7 @@ export default function Navbar() {
                 <li className="relative" ref={profileRef}>
                   <button
                     onClick={() => setProfileOpen(!profileOpen)}
-                    className="flex items-center gap-2 text-gray-800 hover:text-orange-600 transition"
+                    className="flex items-center gap-2 text-gray-800 hover:font-bold hover:text-transparent bg-clip-text hover:bg-linear-to-r from-indigo-700 to-orange-500 transition"
                   >
                     {user?.avatar ? (
                       <img
@@ -326,7 +326,7 @@ export default function Navbar() {
                   <li>
                     <Link
                       to="/login"
-                      className="text-gray-700 hover:text-orange-600 transition"
+                      className="text-gray-700 hover:font-bold hover:text-transparent bg-clip-text hover:bg-linear-to-r from-indigo-700 to-orange-500 transition"
                     >
                       Login
                     </Link>
@@ -398,28 +398,28 @@ export default function Navbar() {
                           <Link
                             to="/student/profile"
                             onClick={() => setIsOpen(false)}
-                            className="text-gray-700 hover:text-orange-600"
+                            className="text-gray-700 hover:font-bold hover:text-transparent bg-clip-text hover:bg-linear-to-r from-indigo-700 to-orange-500"
                           >
                             My Profile
                           </Link>
                           <Link
                             to="/student/dashboard"
                             onClick={() => setIsOpen(false)}
-                            className="text-gray-700 hover:text-orange-600"
+                            className="text-gray-700 hover:font-bold hover:text-transparent bg-clip-text hover:bg-linear-to-r from-indigo-700 to-orange-500"
                           >
                             Dashboard
                           </Link>
                           <Link
                             to="/student/courses"
                             onClick={() => setIsOpen(false)}
-                            className="text-gray-700 hover:text-orange-600"
+                            className="text-gray-700 hover:font-bold hover:text-transparent bg-clip-text hover:bg-linear-to-r from-indigo-700 to-orange-500"
                           >
                             My Courses
                           </Link>
                           <Link
                             to="/student/change-password"
                             onClick={() => setIsOpen(false)}
-                            className="text-gray-700 hover:text-orange-600"
+                            className="text-gray-700 hover:font-bold hover:text-transparent bg-clip-text hover:bg-linear-to-r from-indigo-700 to-orange-500"
                           >
                             Update Password
                           </Link>

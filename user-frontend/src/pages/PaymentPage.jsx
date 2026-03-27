@@ -42,7 +42,6 @@ const PaymentPage = () => {
 
   return (
     <MainLayout>
-      <h1 className="text-center bg-amber-300 text-red-600 text-xl font-bold">Please Connect with the Admin befor purchasing course.</h1>
       <div style={styles.container}>
         <div style={styles.card}>
           <h2 style={styles.title}>Make Payment</h2>
