@@ -43,6 +43,10 @@ const allowedOrigins = [
   "http://localhost:5000",
   "http://127.0.0.1:5173",
 
+  // direct links
+  "https://admin-hkinternational.vercel.app",
+  "https://hkinternational.uk/",
+
   // ✅ Production frontend
   process.env.CLIENT_URL_STUDENT,
   process.env.CLIENT_URL_ADMIN,
