@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { initiatePayment } from "../services/paymentService";
-import MainLayout from "./../components/layout/MainLayout";
+import MainLayout from "../components/layout/MainLayout";
+import { CreditCard } from "lucide-react";
 
 const PaymentPage = () => {
   const [form, setForm] = useState({
@@ -9,6 +10,7 @@ const PaymentPage = () => {
     phone: "",
     amount: "",
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -18,23 +20,19 @@ const PaymentPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
+    setError("");
 
     try {
       const data = await initiatePayment(form);
 
       if (data.success && data.paymentURL) {
-        // Redirect user to Easebuzz payment page
         window.location.href = data.paymentURL;
       } else {
-        setError(data.message || "Failed to initiate payment");
+        setError(data.message);
       }
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          "Something went wrong. Please try again.",
-      );
+      setError("Payment initiation failed");
     } finally {
       setLoading(false);
     }
@@ -42,69 +40,37 @@ const PaymentPage = () => {
 
   return (
     <MainLayout>
-      <div style={styles.container}>
-        <div style={styles.card}>
-          <h2 style={styles.title}>Make Payment</h2>
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-green-50 flex items-center justify-center p-6">
 
-          {error && <div style={styles.error}>{error}</div>}
+        <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
 
-          <form onSubmit={handleSubmit}>
-            <div style={styles.field}>
-              <label style={styles.label}>Full Name</label>
-              <input
-                type="text"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                required
-                style={styles.input}
-                placeholder="John Doe"
-              />
+          <div className="text-center mb-6">
+            <CreditCard size={40} className="mx-auto text-indigo-600" />
+            <h2 className="text-2xl font-bold mt-3">Make Payment</h2>
+            <p className="text-gray-500">Secure payment gateway</p>
+          </div>
+
+          {error && (
+            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-4">
+              {error}
             </div>
+          )}
 
-            <div style={styles.field}>
-              <label style={styles.label}>Email</label>
-              <input
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                required
-                style={styles.input}
-                placeholder="john@example.com"
-              />
-            </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
 
-            <div style={styles.field}>
-              <label style={styles.label}>Phone</label>
-              <input
-                type="tel"
-                name="phone"
-                value={form.phone}
-                onChange={handleChange}
-                required
-                style={styles.input}
-                placeholder="987654xxxx"
-              />
-            </div>
+            <Input name="name" placeholder="Full Name" value={form.name} onChange={handleChange} />
+            <Input name="email" placeholder="Email" value={form.email} onChange={handleChange} />
+            <Input name="phone" placeholder="Phone" value={form.phone} onChange={handleChange} />
+            <Input name="amount" placeholder="Amount" type="number" value={form.amount} onChange={handleChange} />
 
-            <div style={styles.field}>
-              <label style={styles.label}>Amount (INR)</label>
-              <input
-                type="number"
-                name="amount"
-                value={form.amount}
-                onChange={handleChange}
-                required
-                min="1"
-                style={styles.input}
-                placeholder="500"
-              />
-            </div>
-
-            <button type="submit" disabled={loading} style={styles.button}>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition"
+            >
               {loading ? "Processing..." : "Pay Now"}
             </button>
+
           </form>
         </div>
       </div>
@@ -112,70 +78,16 @@ const PaymentPage = () => {
   );
 };
 
-const styles = {
-  container: {
-    minHeight: "100vh",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#f5f5f5",
-    padding: "20px",
-  },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: "12px",
-    padding: "32px",
-    maxWidth: "420px",
-    width: "100%",
-    boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-  },
-  title: {
-    margin: "0 0 24px 0",
-    fontSize: "24px",
-    fontWeight: "600",
-    textAlign: "center",
-    color: "#1a1a1a",
-  },
-  field: {
-    marginBottom: "16px",
-  },
-  label: {
-    display: "block",
-    marginBottom: "6px",
-    fontSize: "14px",
-    fontWeight: "500",
-    color: "#333",
-  },
-  input: {
-    width: "100%",
-    padding: "10px 12px",
-    border: "1px solid #ddd",
-    borderRadius: "8px",
-    fontSize: "14px",
-    outline: "none",
-    boxSizing: "border-box",
-  },
-  button: {
-    width: "100%",
-    padding: "12px",
-    backgroundColor: "#2563eb",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
-    fontSize: "16px",
-    fontWeight: "600",
-    cursor: "pointer",
-    marginTop: "8px",
-  },
-  error: {
-    backgroundColor: "#fef2f2",
-    color: "#dc2626",
-    padding: "10px 14px",
-    borderRadius: "8px",
-    marginBottom: "16px",
-    fontSize: "14px",
-    textAlign: "center",
-  },
-};
+const Input = ({ name, placeholder, value, onChange, type = "text" }) => (
+  <input
+    type={type}
+    name={name}
+    value={value}
+    onChange={onChange}
+    placeholder={placeholder}
+    required
+    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-indigo-200 outline-none"
+  />
+);
 
 export default PaymentPage;

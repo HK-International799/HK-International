@@ -1,29 +1,44 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import jsPDF from "jspdf";
+import MainLayout from "../components/layout/MainLayout";
+import api from "../services/api";
+import { CheckCircle, Download, LayoutDashboard } from "lucide-react";
 
 const PaymentSuccess = () => {
-  // 👉 In real case, fetch this from backend using txnid
-  const transaction = {
-    name: "Anurag",
-    email: "anuhackerag799@gmail.com",
-    phone: "7991845638",
-    amount: "499",
-    txnid: "txn_123456789",
-    paymentId: "EZB123456",
-    status: "Success",
-    course: "MERN LMS Course",
-    date: new Date().toLocaleString(),
-    receiver: "HK International",
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  const txnid = searchParams.get("txnid");
+
+  const [transaction, setTransaction] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTransaction();
+  }, []);
+
+  const fetchTransaction = async () => {
+    try {
+      const { data } = await api.get(`/payment/transaction/${txnid}`);
+      setTransaction(data);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // 📄 Download Receipt
   const downloadReceipt = () => {
+    if (!transaction) return;
+
     const doc = new jsPDF();
 
     doc.setFontSize(18);
     doc.text("Payment Receipt", 20, 20);
 
     doc.setFontSize(12);
+
     let y = 40;
 
     Object.entries(transaction).forEach(([key, value]) => {
@@ -31,97 +46,110 @@ const PaymentSuccess = () => {
       y += 10;
     });
 
-    doc.save("receipt.pdf");
+    doc.save("payment-receipt.pdf");
   };
+
+  if (loading) {
+    return (
+      <MainLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-gray-500">Loading payment details...</div>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
-      <div style={styles.container}>
-        <div style={styles.card}>
-          <div style={styles.icon}>✅</div>
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-indigo-50 flex items-center justify-center p-6">
 
-          <h1 style={styles.title}>Payment Successful</h1>
-          <p style={styles.subtitle}>
-            Thank you! Your payment has been processed successfully.
-          </p>
+        <div className="max-w-xl w-full bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+
+          <div className="text-center">
+
+            <CheckCircle className="mx-auto text-green-500" size={60} />
+
+            <h1 className="text-2xl font-bold text-gray-800 mt-4">
+              Payment Successful 🎉
+            </h1>
+
+            <p className="text-gray-500 mt-2">
+              Your payment has been processed successfully
+            </p>
+
+          </div>
 
           {/* Transaction Details */}
-          <div style={styles.section}>
-            <h3 style={styles.sectionTitle}>Transaction Details</h3>
+          <div className="mt-8 space-y-4">
 
-            <div style={styles.row}>
-              <span>Transaction ID</span>
-              <span>{transaction.txnid}</span>
+            <div className="bg-gray-50 rounded-xl p-4">
+              <h3 className="font-semibold text-gray-700 mb-3">
+                Transaction Details
+              </h3>
+
+              <div className="space-y-2 text-sm">
+
+                <Row label="Transaction ID" value={transaction.txnid} />
+                <Row label="Payment ID" value={transaction.paymentId} />
+                <Row label="Status" value="Success" />
+                <Row label="Date" value={transaction.date} />
+
+              </div>
             </div>
 
-            <div style={styles.row}>
-              <span>Payment ID</span>
-              <span>{transaction.paymentId}</span>
+            <div className="bg-gray-50 rounded-xl p-4">
+              <h3 className="font-semibold text-gray-700 mb-3">
+                User Details
+              </h3>
+
+              <div className="space-y-2 text-sm">
+
+                <Row label="Name" value={transaction.name} />
+                <Row label="Email" value={transaction.email} />
+                <Row label="Phone" value={transaction.phone} />
+
+              </div>
             </div>
 
-            <div style={styles.row}>
-              <span>Status</span>
-              <span style={{ color: "green" }}>{transaction.status}</span>
+            <div className="bg-gray-50 rounded-xl p-4">
+              <h3 className="font-semibold text-gray-700 mb-3">
+                Payment Info
+              </h3>
+
+              <div className="space-y-2 text-sm">
+
+                <Row label="Course" value={transaction.course} />
+                <Row label="Receiver" value={transaction.receiver} />
+                <Row
+                  label="Amount"
+                  value={`₹${transaction.amount}`}
+                  highlight
+                />
+
+              </div>
             </div>
 
-            <div style={styles.row}>
-              <span>Date</span>
-              <span>{transaction.date}</span>
-            </div>
-          </div>
-
-          {/* User Info */}
-          <div style={styles.section}>
-            <h3 style={styles.sectionTitle}>User Details</h3>
-
-            <div style={styles.row}>
-              <span>Name</span>
-              <span>{transaction.name}</span>
-            </div>
-
-            <div style={styles.row}>
-              <span>Email</span>
-              <span>{transaction.email}</span>
-            </div>
-
-            <div style={styles.row}>
-              <span>Phone</span>
-              <span>{transaction.phone}</span>
-            </div>
-          </div>
-
-          {/* Payment Info */}
-          <div style={styles.section}>
-            <h3 style={styles.sectionTitle}>Payment Info</h3>
-
-            <div style={styles.row}>
-              <span>Course</span>
-              <span>{transaction.course}</span>
-            </div>
-
-            <div style={styles.row}>
-              <span>Paid To</span>
-              <span>{transaction.receiver}</span>
-            </div>
-
-            <div style={styles.row}>
-              <span>Amount</span>
-              <span style={styles.amount}>₹{transaction.amount}</span>
-            </div>
           </div>
 
           {/* Buttons */}
-          <div style={styles.actions}>
-            <button style={styles.downloadBtn} onClick={downloadReceipt}>
-              📄 Download Receipt
+          <div className="mt-6 space-y-3">
+
+            <button
+              onClick={downloadReceipt}
+              className="w-full py-3 bg-indigo-600 text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-indigo-700 transition"
+            >
+              <Download size={18} />
+              Download Receipt
             </button>
 
             <button
-              style={styles.dashboardBtn}
-              onClick={() => (window.location.href = "/student/dashboard")}
+              onClick={() => navigate("/student/dashboard")}
+              className="w-full py-3 bg-gray-900 text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-black transition"
             >
+              <LayoutDashboard size={18} />
               Go to Dashboard
             </button>
+
           </div>
         </div>
       </div>
@@ -129,81 +157,13 @@ const PaymentSuccess = () => {
   );
 };
 
-export default PaymentSuccess;
+const Row = ({ label, value, highlight }) => (
+  <div className="flex justify-between">
+    <span className="text-gray-500">{label}</span>
+    <span className={`font-medium ${highlight ? "text-green-600" : "text-gray-800"}`}>
+      {value}
+    </span>
+  </div>
+);
 
-const styles = {
-  container: {
-    minHeight: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    background: "linear-gradient(135deg, #ecfdf5, #d1fae5)",
-    padding: "20px",
-  },
-  card: {
-    width: "420px",
-    background: "#fff",
-    padding: "30px",
-    borderRadius: "16px",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
-    textAlign: "center",
-  },
-  icon: {
-    fontSize: "50px",
-    marginBottom: "10px",
-  },
-  title: {
-    fontSize: "24px",
-    marginBottom: "5px",
-  },
-  subtitle: {
-    fontSize: "14px",
-    color: "#555",
-    marginBottom: "20px",
-  },
-  section: {
-    textAlign: "left",
-    marginBottom: "20px",
-    background: "#f9fafb",
-    padding: "15px",
-    borderRadius: "10px",
-  },
-  sectionTitle: {
-    fontSize: "16px",
-    marginBottom: "10px",
-    fontWeight: "600",
-  },
-  row: {
-    display: "flex",
-    justifyContent: "space-between",
-    fontSize: "14px",
-    marginBottom: "6px",
-  },
-  amount: {
-    fontWeight: "bold",
-    color: "#16a34a",
-  },
-  actions: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
-  },
-  downloadBtn: {
-    padding: "12px",
-    border: "none",
-    borderRadius: "10px",
-    background: "#2563eb",
-    color: "#fff",
-    cursor: "pointer",
-    fontWeight: "600",
-  },
-  dashboardBtn: {
-    padding: "12px",
-    border: "none",
-    borderRadius: "10px",
-    background: "#111827",
-    color: "#fff",
-    cursor: "pointer",
-    fontWeight: "600",
-  },
-};
+export default PaymentSuccess;
