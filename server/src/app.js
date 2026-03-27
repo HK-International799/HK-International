@@ -39,7 +39,6 @@ const allowedOrigins =
     ? [
         process.env.CLIENT_URL_STUDENT,
         process.env.CLIENT_URL_ADMIN,
-        process.env.CLIENT_URL_TUTOR,
         process.env.FRONTEND_URL,
         process.env.BACKEND_URL,
       ].filter(Boolean)
@@ -49,9 +48,11 @@ const allowedOrigins =
         "http://localhost:5175",
         "http://localhost:3000",
         "http://localhost:5000",
-      ];
+        process.env.CLIENT_URL_STUDENT,
+        process.env.CLIENT_URL_ADMIN,
+      ].filter(Boolean);
 
-const paymentGateways = [
+const easebuzzDomains = [
   process.env.EASEBUZZ_PAYMENT_URL,
   process.env.EASEBUZZ_PAYMENT_INITIATE,
 ].filter(Boolean);
@@ -59,40 +60,44 @@ const paymentGateways = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      // ✅ allow requests without origin (Postman, Easebuzz server, webhooks)
+
+      // ✅ Allow Postman, Easebuzz server, webhooks
       if (!origin) {
         return callback(null, true);
       }
 
-      // ✅ allow localhost
-      if (origin.startsWith("http://localhost")) {
+      // ✅ Allow localhost in development
+      if (
+        process.env.NODE_ENV === "development" &&
+        origin.startsWith("http://localhost")
+      ) {
         return callback(null, true);
       }
 
-      // ✅ allow production domains
+      // ✅ Allow frontend/admin domains
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
-      // ✅ allow Easebuzz
-      const isEasebuzz = paymentGateways.some((gateway) =>
-        origin.includes(gateway.replace("https://", "")),
+      // ✅ Allow Easebuzz
+      const isEasebuzz = easebuzzDomains.some(domain =>
+        origin.includes(domain.replace("https://", ""))
       );
 
       if (isEasebuzz) {
         return callback(null, true);
       }
 
-      console.log("Blocked by CORS:", origin);
+      console.log("❌ Blocked by CORS:", origin);
 
-      return callback(new Error("Not allowed by CORS"));
+      return callback(new Error("CORS not allowed"));
     },
+
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
-  }),
+  })
 );
-// app.use(cors());
 
 // ─── Rate limiting ───────────────────────────────────────────────────────────
 const globalLimiter = rateLimit({
