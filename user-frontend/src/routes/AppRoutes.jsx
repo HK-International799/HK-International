@@ -57,7 +57,7 @@ export default function AppRoutes() {
         <Route path="/course/:id" element={<CourseDetails />} />
         <Route path="/payment" element={<PaymentPage />} />
         <Route path="/payment-failed" element={<PaymentFailed />} />
-        <Route path="/success" element={<PaymentSuccess />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
 
         {/* Student Protected */}
         <Route
