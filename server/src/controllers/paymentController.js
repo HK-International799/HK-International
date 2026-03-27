@@ -27,8 +27,8 @@ export const initiatePayment = async (req, res) => {
     const udf4 = "";
     const udf5 = "";
 
-    const surl = `${process.env.BACKEND_URL}/api/payment/success`;
-    const furl = `${process.env.BACKEND_URL}/api/payment/failure`;
+    const surl = `${process.env.BACKEND_URL}/payment/success`;
+    const furl = `${process.env.BACKEND_URL}/payment/failure`;
 
     // Generate hash: key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5||||||salt
     const hashString = `${key}|${txnid}|${amount}|${productinfo}|${name}|${email}|${udf1}|${udf2}|${udf3}|${udf4}|${udf5}||||||${salt}`;
