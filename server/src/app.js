@@ -34,23 +34,23 @@ const app = express();
 app.use(helmet());
 
 // ─── CORS ───────────────────────────────────────────────────────────────────
-const allowedOrigins =
-  process.env.NODE_ENV === "production"
-    ? [
-        process.env.CLIENT_URL_STUDENT,
-        process.env.CLIENT_URL_ADMIN,
-        process.env.FRONTEND_URL,
-        process.env.BACKEND_URL,
-      ].filter(Boolean)
-    : [
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "http://localhost:5175",
-        "http://localhost:3000",
-        "http://localhost:5000",
-        process.env.CLIENT_URL_STUDENT,
-        process.env.CLIENT_URL_ADMIN,
-      ].filter(Boolean);
+const allowedOrigins = [
+  // ✅ Localhost
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5175",
+  "http://localhost:3000",
+  "http://localhost:5000",
+  "http://127.0.0.1:5173",
+
+  // ✅ Production frontend
+  process.env.CLIENT_URL_STUDENT,
+  process.env.CLIENT_URL_ADMIN,
+  process.env.FRONTEND_URL,
+
+  // ✅ Backend (optional but fine)
+  process.env.BACKEND_URL,
+].filter(Boolean);
 
 const easebuzzDomains = [
   process.env.EASEBUZZ_PAYMENT_URL,
