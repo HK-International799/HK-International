@@ -128,14 +128,14 @@ export default function Home() {
       logo: "/logos/5-pecb.png",
     },
 
-    {
-      id: "hse-training",
-      title: "HSE Training Programs",
-      org: "International HSE Programs",
-      description:
-        "Practical health, safety, and environment training for industrial and corporate sectors.",
-      logo: "/logos/9-ibsp.png",
-    },
+    // {
+    //   id: "hse-training",
+    //   title: "HSE Training Programs",
+    //   org: "International HSE Programs",
+    //   description:
+    //     "Practical health, safety, and environment training for industrial and corporate sectors.",
+    //   logo: "/logos/9-ibsp.png",
+    // },
   ];
 
   const certifications = [

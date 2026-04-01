@@ -13,14 +13,14 @@ export default function HeroCarousel() {
       subtitle: "Learn internationally recognized occupational safety programs"
     },
     {
-      type: "video",
-      src: "/slides/safety-video.mp4",
+      type: "image",
+      src: "/slides/HSE_slideShow.jpg",
       title: "Practical Industrial Training",
       subtitle: "Real world HSE training programs for professionals"
     },
     {
       type: "image",
-      src: "/slides/iosh-training.jpg",
+      src: "/slides/osha_iosh_slideshow.webp",
       title: "IOSH & OSHA Certifications",
       subtitle: "Advance your career with globally recognized safety courses"
     }

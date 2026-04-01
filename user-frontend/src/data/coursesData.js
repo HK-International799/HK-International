@@ -1807,10 +1807,486 @@ export const courses = [
     ],
   },
 
+   // ================= IQA LEVEL 4 AWARD =================
+  {
+    id: "othm-iqa-award",
 
-  {},
-  {},
-  {},
-  {},
+    title: "OTHM Level 4 Award in Internal Quality Assurance",
+
+    organization: "OTHM Qualifications (UK)",
+
+    accreditation: "Ofqual Regulated (RQF Level 4)",
+
+    duration: "3–6 Months",
+
+    mode: [
+      "Online Learning",
+      "Blended Learning",
+      "Workplace-Based Assessment",
+    ],
+
+    level: "Level 4 (Equivalent to Year 1 UK Degree)",
+
+    image: "/courses/othm-iqa-award.jpg",
+
+    overview:
+      "The OTHM Level 4 Award in Internal Quality Assurance is designed for professionals responsible for monitoring the quality of assessment decisions. It provides essential knowledge and practical skills required to internally assure assessment processes and maintain consistency, fairness, and compliance within training organisations.",
+
+    importance:
+      "Quality assurance is critical in education and training to ensure reliability and standardisation of assessment. This qualification enables organisations to maintain high-quality assessment standards and meet regulatory and awarding body requirements.",
+
+    learningOutcomes: [
+      "Understand principles of internal quality assurance",
+      "Monitor and evaluate assessor performance",
+      "Ensure validity, reliability and fairness of assessments",
+      "Plan and implement IQA activities",
+      "Maintain compliance with regulatory standards",
+    ],
+
+    modules: [
+      {
+        title: "Understanding IQA Principles",
+        topics: [
+          "Principles of internal quality assurance",
+          "Roles and responsibilities of IQA",
+          "Legal and organisational requirements",
+        ],
+      },
+      {
+        title: "Internally Assuring Assessment",
+        topics: [
+          "Monitoring assessor decisions",
+          "Standardisation techniques",
+          "Ensuring consistency and fairness",
+        ],
+      },
+    ],
+
+    assignments: [
+      "Written assignment on IQA principles",
+      "IQA sampling plan",
+      "Assessor observation reports",
+      "Feedback and standardisation records",
+      "Reflective report on IQA decisions",
+    ],
+
+    whoShouldAttend: [
+      "Internal quality assurers",
+      "Assessors and trainers",
+      "Education and training professionals",
+    ],
+
+    certification:
+      "Learners receive an Ofqual-regulated OTHM Level 4 Award, demonstrating competence in internal quality assurance practices.",
+
+    careerBenefits: [
+      "Career progression into IQA roles",
+      "Improved assessment quality management skills",
+      "Recognition in training and education sector",
+    ],
+  },
+
+  // ================= IQA LEVEL 4 CERTIFICATE =================
+  {
+    id: "othm-iqa-certificate",
+
+    title: "OTHM Level 4 Certificate in Leading Internal Quality Assurance",
+
+    organization: "OTHM Qualifications (UK)",
+
+    accreditation: "Ofqual Regulated (RQF Level 4)",
+
+    duration: "4–8 Months",
+
+    mode: ["Online", "Blended", "Workplace-Based"],
+
+    level: "Level 4 (Supervisory Level)",
+
+    image: "/courses/othm-iqa-certificate.jpg",
+
+    overview:
+      "This qualification is designed for professionals responsible for leading and managing internal quality assurance systems within organisations.",
+
+    importance:
+      "It ensures organisations maintain consistent assessment quality through leadership, planning, and monitoring of IQA systems.",
+
+    learningOutcomes: [
+      "Lead IQA systems and teams",
+      "Plan and allocate work effectively",
+      "Monitor assessor performance",
+      "Ensure regulatory compliance",
+    ],
+
+    modules: [
+      {
+        title: "IQA Principles and Practice",
+        topics: [
+          "Quality assurance frameworks",
+          "Assessment monitoring",
+          "Standardisation",
+        ],
+      },
+      {
+        title: "Managing IQA Systems",
+        topics: [
+          "Work allocation",
+          "Performance monitoring",
+          "Quality improvement strategies",
+        ],
+      },
+    ],
+
+    assignments: [
+      "IQA portfolio evidence",
+      "Sampling and monitoring reports",
+      "Work allocation plan",
+      "Leadership reflection report",
+    ],
+
+    whoShouldAttend: [
+      "Lead IQAs",
+      "Training managers",
+      "Quality assurance managers",
+    ],
+
+    certification:
+      "OTHM Level 4 Certificate demonstrating leadership capability in quality assurance.",
+
+    careerBenefits: [
+      "Move into senior QA roles",
+      "Lead training and assessment teams",
+      "Improve organisational quality systems",
+    ],
+  },
+
+  // ================= LEVEL 5 LAW =================
+  {
+    id: "othm-level5-law",
+
+    title: "OTHM Level 5 Diploma in Law",
+
+    organization: "OTHM Qualifications (UK)",
+
+    accreditation: "Ofqual Regulated (RQF Level 5)",
+
+    duration: "6–12 Months",
+
+    mode: ["Online", "Blended"],
+
+    level: "Level 5 (Equivalent to Year 2 UK Degree)",
+
+    image: "/courses/othm-law.jpg",
+
+    overview:
+      "A comprehensive legal qualification covering core areas of UK and international law, focusing on legal reasoning, research, and writing.",
+
+    importance:
+      "Provides strong academic and practical foundation for legal careers and higher education progression.",
+
+    learningOutcomes: [
+      "Understand legal systems and principles",
+      "Develop legal research and writing skills",
+      "Analyse legal scenarios and cases",
+    ],
+
+    modules: [
+      {
+        title: "Company & Business Law",
+        topics: ["Corporate governance", "Legal structures", "Compliance"],
+      },
+      {
+        title: "Criminal Law",
+        topics: ["Offences", "Defences", "Legal procedures"],
+      },
+      {
+        title: "Property Law",
+        topics: ["Ownership", "Transfer of property", "Rights"],
+      },
+      {
+        title: "International Business Law",
+        topics: ["Global trade laws", "Contracts", "Disputes"],
+      },
+    ],
+
+    assignments: [
+      "Case study analysis",
+      "Legal research essay",
+      "Scenario-based problem solving",
+      "Legal writing tasks",
+    ],
+
+    whoShouldAttend: [
+      "Aspiring lawyers",
+      "Paralegals",
+      "Compliance professionals",
+    ],
+
+    certification:
+      "OTHM Level 5 Diploma supporting progression to final year UK degree.",
+
+    careerBenefits: [
+      "Legal career foundation",
+      "Progression to LLB top-up",
+      "Enhanced analytical skills",
+    ],
+  },
+
+  // ================= LEVEL 6 OHS =================
+  {
+    id: "othm-level6",
+
+    title: "OTHM Level 6 Diploma in Occupational Health and Safety",
+
+    organization: "OTHM Qualifications (UK)",
+
+    accreditation: "Ofqual Regulated (RQF Level 6)",
+
+    duration: "6–12 Months",
+
+    mode: ["Online", "Blended", "Workplace"],
+
+    level: "Level 6 (Equivalent to UK Bachelor’s Degree)",
+
+    image: "/courses/othm-ohs-level6.jpg",
+
+    overview:
+      "A professional qualification for developing expertise in workplace health and safety management and compliance.",
+
+    importance:
+      "Supports career advancement into HSE roles and aligns with IOSH academic requirements.",
+
+    learningOutcomes: [
+      "Implement HSE systems",
+      "Conduct risk assessments",
+      "Manage incidents and safety culture",
+    ],
+
+    modules: [
+      {
+        title: "Health & Safety Management Principles",
+        topics: ["Policy", "Systems", "Leadership"],
+      },
+      {
+        title: "Risk & Incident Management",
+        topics: ["Risk assessment", "Incident investigation"],
+      },
+      {
+        title: "Workplace Safety & Compliance",
+        topics: ["Legal requirements", "Audits"],
+      },
+    ],
+
+    assignments: [
+      "Risk assessment report",
+      "Incident investigation report",
+      "Safety policy review",
+      "Workplace audit",
+    ],
+
+    whoShouldAttend: [
+      "Safety officers",
+      "HSE professionals",
+      "Supervisors",
+    ],
+
+    certification:
+      "Recognised qualification aligned with IOSH Certified Membership (subject to criteria).",
+
+    careerBenefits: [
+      "Eligibility for IOSH membership",
+      "Career growth in HSE roles",
+      "Global safety recognition",
+    ],
+  },
+
+  // ================= LEVEL 7 OHS =================
+  {
+    id: "othm-level7-ohs",
+
+    title: "OTHM Level 7 Diploma in Occupational Health and Safety Management",
+
+    organization: "OTHM Qualifications (UK)",
+
+    accreditation: "Ofqual Regulated (RQF Level 7)",
+
+    duration: "6–12 Months",
+
+    mode: ["Online", "Blended"],
+
+    level: "Level 7 (Postgraduate Level)",
+
+    image: "/courses/othm-ohs-level7.jpg",
+
+    overview:
+      "A strategic-level qualification for senior professionals leading organisational health and safety.",
+
+    importance:
+      "Prepares professionals for leadership roles and international HSE standards like ISO 45001.",
+
+    learningOutcomes: [
+      "Lead safety strategy",
+      "Improve performance systems",
+      "Drive organisational safety culture",
+    ],
+
+    modules: [
+      {
+        title: "Strategic Safety Management",
+        topics: ["Leadership", "Policy", "Governance"],
+      },
+      {
+        title: "Performance Measurement",
+        topics: ["KPIs", "Audits", "Improvement"],
+      },
+    ],
+
+    assignments: [
+      "Strategic HSE plan",
+      "Performance evaluation report",
+      "Safety culture analysis",
+    ],
+
+    whoShouldAttend: [
+      "HSE managers",
+      "Consultants",
+      "Senior professionals",
+    ],
+
+    certification:
+      "Postgraduate-level diploma aligned with IOSH Certified Membership requirements.",
+
+    careerBenefits: [
+      "Senior leadership roles",
+      "Global HSE opportunities",
+      "Pathway to MSc / MBA",
+    ],
+  },
+
+  // ================= LEVEL 7 RISK =================
+  {
+    id: "othm-level7-risk",
+
+    title: "OTHM Level 7 Diploma in Risk Management",
+
+    organization: "OTHM Qualifications (UK)",
+
+    accreditation: "Ofqual Regulated (RQF Level 7)",
+
+    duration: "6–12 Months",
+
+    mode: ["Online"],
+
+    level: "Postgraduate Level",
+
+    image: "/courses/othm-risk.jpg",
+
+    overview:
+      "Develop expertise in enterprise risk management, governance, and resilience.",
+
+    importance:
+      "Helps organisations manage uncertainty and strategic decision-making.",
+
+    learningOutcomes: [
+      "Analyse and manage risk",
+      "Develop risk strategies",
+      "Implement governance systems",
+    ],
+
+    modules: [
+      {
+        title: "Risk Management Principles",
+        topics: ["Risk identification", "Evaluation"],
+      },
+      {
+        title: "Strategic Risk Management",
+        topics: ["Enterprise risk", "Governance"],
+      },
+    ],
+
+    assignments: [
+      "Risk register",
+      "Governance report",
+      "Risk modelling assignment",
+    ],
+
+    whoShouldAttend: [
+      "Risk managers",
+      "Compliance professionals",
+      "Leaders",
+    ],
+
+    certification:
+      "Level 7 diploma supporting senior roles and postgraduate progression.",
+
+    careerBenefits: [
+      "Leadership roles",
+      "Consulting opportunities",
+      "Improved decision-making skills",
+    ],
+  },
+
+  // ================= LEVEL 7 ENVIRONMENT =================
+  {
+    id: "othm-level7-environment",
+
+    title: "OTHM Level 7 Diploma in Environmental and Sustainability Management",
+
+    organization: "OTHM Qualifications (UK)",
+
+    accreditation: "Ofqual Regulated (RQF Level 7)",
+
+    duration: "6–12 Months",
+
+    mode: ["Online"],
+
+    level: "Postgraduate Level",
+
+    image: "/courses/othm-environment.jpg",
+
+    overview:
+      "A leadership programme in sustainability, ESG, and environmental governance.",
+
+    importance:
+      "Supports global sustainability goals and ESG compliance.",
+
+    learningOutcomes: [
+      "Develop sustainability strategies",
+      "Manage environmental risks",
+      "Implement ESG frameworks",
+    ],
+
+    modules: [
+      {
+        title: "Environmental Management",
+        topics: ["Systems", "Compliance"],
+      },
+      {
+        title: "Sustainability & ESG",
+        topics: ["Climate strategy", "Reporting"],
+      },
+    ],
+
+    assignments: [
+      "Sustainability strategy",
+      "ESG report",
+      "Environmental audit",
+    ],
+
+    whoShouldAttend: [
+      "Sustainability professionals",
+      "Environmental managers",
+      "Consultants",
+    ],
+
+    certification:
+      "Postgraduate diploma aligned with global ESG and sustainability frameworks.",
+
+    careerBenefits: [
+      "ESG leadership roles",
+      "Global career opportunities",
+      "Sustainability consulting",
+    ],
+  },
+
   {},
 ];

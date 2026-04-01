@@ -49,7 +49,18 @@ export default function Navbar() {
     },
     {
       title: "OTHM UK",
-      courses: [{ name: "OTHM Level 6 Diploma in OHS", id: "othm-level6" }],
+      courses: [
+        { name: "Level 4 IQA Award", id: "othm-iqa-award" },
+        { name: "Level 4 IQA Certificate", id: "othm-iqa-certificate" },
+        { name: "Level 5 Diploma in Law", id: "othm-level5-law" },
+        { name: "Level 6 Diploma in OHS", id: "othm-level6" },
+        { name: "Level 7 Diploma in OHS Management", id: "othm-level7-ohs" },
+        { name: "Level 7 Diploma in Risk Management", id: "othm-level7-risk" },
+        {
+          name: "Level 7 Diploma in Environmental Management",
+          id: "othm-level7-environment",
+        },
+      ],
     },
     {
       title: "PECB (Canada)",

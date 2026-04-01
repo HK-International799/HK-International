@@ -29,40 +29,7 @@ export default function Footer() {
               their careers with internationally accredited training.
             </p>
 
-            {/* Social Icons */}
-            <div className="flex gap-4 mt-6 text-lg">
-              <a
-                target="_blank"
-                href="https://www.facebook.com/profile.php?id=61578676434716"
-                className="bg-slate-800 p-3 rounded-lg hover:bg-blue-600 transition"
-              >
-                <FaFacebookF />
-              </a>
-
-              <a
-                target="_blank"
-                href="https://www.linkedin.com/company/hk-international-uk/?viewAsMember=true"
-                className="bg-slate-800 p-3 rounded-lg hover:bg-blue-500 transition"
-              >
-                <FaLinkedinIn />
-              </a>
-
-              <a
-                target="_blank"
-                href="https://www.instagram.com/hkinternational.uk/"
-                className="bg-slate-800 p-3 rounded-lg hover:bg-pink-500 transition"
-              >
-                <FaInstagram />
-              </a>
-
-              <a
-                target="_blank"
-                href="#"
-                className="bg-slate-800 p-3 rounded-lg hover:bg-sky-500 transition"
-              >
-                <FaTwitter />
-              </a>
-            </div>
+            
           </div>
 
           {/* Quick Links */}
@@ -94,11 +61,6 @@ export default function Footer() {
                 </Link>
               </li>
 
-              <li>
-                <Link to="/login" className="hover:text-white transition">
-                  Student Login
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -130,12 +92,12 @@ export default function Footer() {
             <h4 className="text-white font-semibold mb-5">Stay Updated</h4>
 
             <p className="text-gray-400 mb-4">
-              Subscribe to receive course updates, certifications and industry
+              Follow us on social media to receive course updates, and industry
               insights.
             </p>
 
             {/* Email Input */}
-            <div className="flex items-center bg-slate-800 rounded-lg overflow-hidden border border-slate-700">
+            {/* <div className="flex items-center bg-slate-800 rounded-lg overflow-hidden border border-slate-700">
               <FaEnvelope className="ml-3 text-gray-400" />
 
               <input
@@ -147,6 +109,41 @@ export default function Footer() {
               <button className="bg-blue-600 px-4 py-3 hover:bg-blue-700 transition">
                 <FaArrowRight />
               </button>
+            </div> */}
+
+            {/* Social Icons */}
+            <div className="flex gap-4 mt-6 text-lg">
+              <a
+                target="_blank"
+                href="https://www.facebook.com/profile.php?id=61578676434716"
+                className="bg-slate-800 p-3 rounded-lg hover:bg-blue-600 transition"
+              >
+                <FaFacebookF />
+              </a>
+
+              <a
+                target="_blank"
+                href="https://www.linkedin.com/company/hk-international-uk/?viewAsMember=true"
+                className="bg-slate-800 p-3 rounded-lg hover:bg-blue-500 transition"
+              >
+                <FaLinkedinIn />
+              </a>
+
+              <a
+                target="_blank"
+                href="https://www.instagram.com/hkinternational.uk/"
+                className="bg-slate-800 p-3 rounded-lg hover:bg-pink-500 transition"
+              >
+                <FaInstagram />
+              </a>
+
+              <a
+                target="_blank"
+                href="https://x.com/1a_hk85756"
+                className="bg-slate-800 p-3 rounded-lg hover:bg-sky-500 transition"
+              >
+                <FaTwitter />
+              </a>
             </div>
 
             <p className="text-gray-400 mt-4 text-sm">
@@ -193,12 +190,12 @@ export default function Footer() {
           <p className="mt-3 md:mt-0">
             Designed & Developed by{" "}
             <a
-              href="https://anurag-pandey.vercel.app"
+              href="https://hkinternational.uk"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-400 hover:text-blue-300 font-medium transition"
             >
-              Anurag Pandey
+              1A Hk International
             </a>
           </p>
         </div>

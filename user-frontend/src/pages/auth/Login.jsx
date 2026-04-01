@@ -133,12 +133,12 @@ export default function Login() {
               </motion.button>
             </form>
 
-            <p className="text-center text-sm text-gray-500 mt-7">
+            {/* <p className="text-center text-sm text-gray-500 mt-7">
               Don't have an account?{" "}
               <Link to="/register" className="text-indigo-600 hover:text-indigo-700 font-semibold">
                 Create account
               </Link>
-            </p>
+            </p> */}
           </motion.div>
         </div>
       </div>

@@ -1,9 +1,10 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { courses } from "../../data/coursesData";
 import { motion } from "framer-motion";
 import MainLayout from "../../components/layout/MainLayout";
 
 export default function CoursePage() {
+  const navigate = useNavigate();
   const { id } = useParams();
   const course = courses.find((c) => c.id === id);
   // console.log(course);
@@ -47,7 +48,12 @@ export default function CoursePage() {
                 </span>
               </div>
 
-              <button className="bg-orange-600 hover:bg-orange-700 px-6 py-3 rounded-lg font-semibold transition">
+              <button
+                className="bg-orange-600 hover:bg-orange-700 px-6 py-3 rounded-lg font-semibold transition"
+                onClick={() => {
+                  navigate("/contact");
+                }}
+              >
                 Enroll Now
               </button>
             </div>
@@ -176,7 +182,12 @@ export default function CoursePage() {
             Enroll in this internationally recognised safety certification.
           </p>
 
-          <button className="bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold">
+          <button
+            className="bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold"
+            onClick={() => {
+              navigate("/contact");
+            }}
+          >
             Enroll Now
           </button>
         </section>

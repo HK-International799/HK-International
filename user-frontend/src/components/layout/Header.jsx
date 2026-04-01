@@ -47,7 +47,7 @@ export default function Header() {
 
           {/* Logos */}
           <div
-            className="flex gap-12 animate-marquee"
+            className="flex  lg:gap-2 animate-marquee"
             style={{
               animationPlayState: isPaused ? "paused" : "running",
             }}

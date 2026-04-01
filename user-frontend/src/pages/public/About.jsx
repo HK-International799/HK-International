@@ -2,8 +2,10 @@ import { motion } from "framer-motion";
 import MainLayout from "../../components/layout/MainLayout";
 import Counter from "../../components/common/Counter";
 import FaqItem from "../../components/common/FaqItem";
+import { useNavigate } from "react-router-dom";
 
 export default function About() {
+  const navigate=useNavigate();
 
   const faqs = [
     {
@@ -86,8 +88,10 @@ export default function About() {
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
-            className="bg-gray-200 rounded-xl h-80"
-          />
+            className="bg-gray-200 rounded-xl h-80 "
+          >
+            <img src="/images/ourmissionandvision.jpg" alt=""  className="rounded-2xl"/>
+          </motion.div>
 
         </div>
       </section>
@@ -211,7 +215,9 @@ export default function About() {
           safety culture and develop world-class professionals.
         </p>
 
-        <button className="mt-8 bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold">
+        <button className="mt-8 bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold"
+        onClick={()=>{navigate("/courses")}}
+        >
           Explore Courses
         </button>
 
