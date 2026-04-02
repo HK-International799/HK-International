@@ -379,7 +379,7 @@ export default function Home() {
 
             <motion.button
               onClick={() => {
-                navigate("/payment");
+                navigate("/contact");
               }}
               whileHover={{ scale: 1.05 }}
               className="mt-8 bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-xl font-semibold"
