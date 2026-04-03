@@ -1,9 +1,31 @@
+// import api from "./api";
+
+// export const login = async (credentials) => {
+//   try {
+//     const { data } = await api.post("/auth/login", credentials);
+//     return data;
+//   } catch (error) {
+//     throw error.response?.data || { message: "Login failed" };
+//   }
+// };
+
+// export const changePassword = async (payload) => {
+//   try {
+//     const { data } = await api.put("/auth/change-password", payload);
+//     return data;
+//   } catch (error) {
+//     throw error.response?.data || { message: "Failed to change password" };
+//   }
+// };
+
+
 import api from "./api";
 
 export const login = async (credentials) => {
   try {
-    const { data } = await api.post("/auth/login", credentials);
-    return data;
+    const res = await api.post("/auth/login", credentials);
+
+    return res.data.data; // ✅ return only data object
   } catch (error) {
     throw error.response?.data || { message: "Login failed" };
   }
@@ -11,9 +33,12 @@ export const login = async (credentials) => {
 
 export const changePassword = async (payload) => {
   try {
-    const { data } = await api.put("/auth/change-password", payload);
-    return data;
+    const res = await api.put("/auth/change-password", payload);
+
+    return res.data;
   } catch (error) {
-    throw error.response?.data || { message: "Failed to change password" };
+    throw error.response?.data || {
+      message: "Failed to change password",
+    };
   }
 };
