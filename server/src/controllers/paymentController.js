@@ -1,103 +1,40 @@
 
-import Payment from "../models/Payment.js";
+
+
+
+
+
+import Razorpay from "razorpay";
 import crypto from "crypto";
-import fetch from "node-fetch";
-
-// export const initiatePayment = async (req, res) => {
-//   try {
-//     const { name, email, phone, amount } = req.body;
-
-//     if (!name || !email || !phone || !amount) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "All fields are required",
-//       });
-//     }
-
-//     const key = process.env.EASEBUZZ_KEY;
-//     const salt = process.env.EASEBUZZ_SALT;
-//     const env = process.env.EASEBUZZ_ENV || "test";
-
-//     const txnid = "txn_" + Date.now();
-//     const productinfo = "LMS Course Payment";
-
-//     const surl = `${process.env.BACKEND_URL}/api/payment/success`;
-//     const furl = `${process.env.BACKEND_URL}/api/payment/failure`;
-
-//     const hashString = `${key}|${txnid}|${amount}|${productinfo}|${name}|${email}|||||||||||${salt}`;
-
-//     const hash = crypto.createHash("sha512").update(hashString).digest("hex");
-
-//     const params = new URLSearchParams();
-
-//     params.append("key", key);
-//     params.append("txnid", txnid);
-//     params.append("amount", amount);
-//     params.append("productinfo", productinfo);
-//     params.append("firstname", name);
-//     params.append("email", email);
-//     params.append("phone", phone);
-//     params.append("surl", surl);
-//     params.append("furl", furl);
-//     params.append("hash", hash);
-
-//     const easebuzzURL =
-//       env === "prod"
-//         ? "https://pay.easebuzz.in/payment/initiateLink"
-//         : "https://testpay.easebuzz.in/payment/initiateLink";
-
-//     const response = await fetch(easebuzzURL, {
-//       method: "POST",
-//       body: params,
-//     });
-
-//     const result = await response.json();
-
-//     if (result.status === 1) {
-//       const paymentURL =
-//         env === "prod"
-//           ? `https://pay.easebuzz.in/pay/${result.data}`
-//           : `https://testpay.easebuzz.in/pay/${result.data}`;
-
-//       return res.json({
-//         success: true,
-//         txnid,
-//         paymentURL,
-//       });
-//     }
-
-//     res.status(400).json({
-//       success: false,
-//       message: result.data,
-//     });
-//   } catch (error) {
-//     console.error("Initiate payment error:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Payment initiation failed",
-//     });
-//   }
-// };
+import Payment from "../models/Payment.js";
 
 
+
+const getRazorpay = () => {
+  if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+    throw new Error("❌ Razorpay keys are missing in environment variables");
+  }
+  return new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+  });
+};
+
+/* ---------------- Create Order ---------------- */
 
 export const initiatePayment = async (req, res) => {
   try {
+    const razorpay = getRazorpay(); // ✅ called at request time — .env is loaded by now
+
     let { name, email, phone, amount } = req.body;
 
-    // 🔒 Basic Validation
     if (!name || !email || !phone || !amount) {
       return res.status(400).json({
         success: false,
-        message: "All fields are required",
+        message: "All fields required",
       });
     }
 
-    // 🔒 Clean Inputs
-    name = name.trim();
-    email = email.trim();
-
-    // 🔒 Phone Validation (10 digits only)
     if (!/^\d{10}$/.test(phone)) {
       return res.status(400).json({
         success: false,
@@ -105,94 +42,35 @@ export const initiatePayment = async (req, res) => {
       });
     }
 
-    // 🔥 Format Amount (IMPORTANT FOR PROD)
-    const formattedAmount = parseFloat(amount).toFixed(2);
+    const amountInPaise = Math.round(Number(amount) * 100);
 
-    const key = process.env.EASEBUZZ_KEY;
-    const salt = process.env.EASEBUZZ_SALT;
-    const env = process.env.EASEBUZZ_ENV || "test";
+    const order = await razorpay.orders.create({
+      amount: amountInPaise,
+      currency: "INR",
+      receipt: "rcpt_" + Date.now(),
+      notes: {
+        name,
+        email,
+        phone,
+      },
+    });
 
-    const txnid = "txn_" + Date.now();
-    const productinfo = "LMS Course Payment";
-
-    const surl = `${process.env.BACKEND_URL}/api/payment/success`;
-    const furl = `${process.env.BACKEND_URL}/api/payment/failure`;
-
-    // 🔥 Correct Hash (with formatted amount)
-    const hashString = `${key}|${txnid}|${formattedAmount}|${productinfo}|${name}|${email}|||||||||||${salt}`;
-
-    const hash = crypto
-      .createHash("sha512")
-      .update(hashString)
-      .digest("hex");
-
-    const params = new URLSearchParams();
-
-    params.append("key", key);
-    params.append("txnid", txnid);
-    params.append("amount", formattedAmount);
-    params.append("productinfo", productinfo);
-    params.append("firstname", name);
-    params.append("email", email);
-    params.append("phone", phone);
-    params.append("surl", surl);
-    params.append("furl", furl);
-    params.append("hash", hash);
-
-    // 🔥 REQUIRED IN PRODUCTION (VERY IMPORTANT)
-    params.append("udf1", "");
-    params.append("udf2", "");
-    params.append("udf3", "");
-    params.append("udf4", "");
-    params.append("udf5", "");
-
-    // 🔍 Debug log (remove in production later)
-    console.log("Payment Params:", {
-      key,
-      txnid,
-      amount: formattedAmount,
+    await Payment.create({
       name,
       email,
       phone,
-      surl,
-      furl,
+      amount,
+      orderId: order.id,
+      status: "created",
     });
 
-    const easebuzzURL =
-      env === "prod"
-        ? "https://pay.easebuzz.in/payment/initiateLink"
-        : "https://testpay.easebuzz.in/payment/initiateLink";
-
-    const response = await fetch(easebuzzURL, {
-      method: "POST",
-      body: params,
+    res.json({
+      success: true,
+      order,
+      key: process.env.RAZORPAY_KEY_ID,
     });
-
-    const result = await response.json();
-
-    // 🔍 Debug response
-    console.log("Easebuzz Response:", result);
-
-    if (result.status === 1) {
-      const paymentURL =
-        env === "prod"
-          ? `https://pay.easebuzz.in/pay/${result.data}`
-          : `https://testpay.easebuzz.in/pay/${result.data}`;
-
-      return res.json({
-        success: true,
-        txnid,
-        paymentURL,
-      });
-    }
-
-    return res.status(400).json({
-      success: false,
-      message: result.data || "Payment initiation failed",
-    });
-
   } catch (error) {
-    console.error("Initiate payment error:", error);
+    console.error("INITIATE ERROR:", error);
 
     res.status(500).json({
       success: false,
@@ -201,87 +79,106 @@ export const initiatePayment = async (req, res) => {
   }
 };
 
+/* ---------------- Verify Payment ---------------- */
 
-export const paymentSuccess = async (req, res) => {
+export const verifyPayment = async (req, res) => {
   try {
-    const data = req.body;
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+    } = req.body;
 
-    const key = process.env.EASEBUZZ_KEY;
-    const salt = process.env.EASEBUZZ_SALT;
-
-    const reverseHashString = `${salt}|${data.status}|||||||||||${data.email}|${data.firstname}|${data.productinfo}|${data.amount}|${data.txnid}|${key}`;
-
-    const generatedHash = crypto
-      .createHash("sha512")
-      .update(reverseHashString)
-      .digest("hex");
-
-    if (generatedHash !== data.hash) {
-      return res.redirect(
-        `${process.env.FRONTEND_URL}/payment-failed?reason=hash_mismatch`,
-      );
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing payment details",
+      });
     }
 
-    await Payment.create({
-      name: data.firstname,
-      email: data.email,
-      phone: data.phone,
-      amount: data.amount,
-      txnid: data.txnid,
-      paymentId: data.easepayid,
-      status: data.status,
-      date: new Date(),
-      easebuzzResponse: data,
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
+
+    const expectedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(body)
+      .digest("hex");
+
+    if (expectedSignature !== razorpay_signature) {
+      await Payment.findOneAndUpdate(
+        { orderId: razorpay_order_id },
+        { status: "failed" }
+      );
+
+      return res.status(400).json({
+        success: false,
+        message: "Invalid signature",
+      });
+    }
+
+    const payment = await Payment.findOne({
+      orderId: razorpay_order_id,
     });
 
-    res.redirect(
-      `${process.env.FRONTEND_URL}/payment-success?txnid=${data.txnid}`,
-    );
-  } catch (error) {
-    console.error(error);
+    if (!payment) {
+      return res.status(404).json({
+        success: false,
+        message: "Payment not found",
+      });
+    }
 
-    res.redirect(
-      `${process.env.FRONTEND_URL}/payment-failed?reason=server_error`,
-    );
+    if (payment.status === "success") {
+      return res.json({
+        success: true,
+        message: "Already verified",
+      });
+    }
+
+    payment.paymentId = razorpay_payment_id;
+    payment.signature = razorpay_signature;
+    payment.status = "success";
+    payment.razorpayResponse = req.body;
+
+    await payment.save();
+
+    res.json({
+      success: true,
+      message: "Payment verified successfully",
+      redirect: `${process.env.FRONTEND_URL}/dashboard`,
+    });
+  } catch (error) {
+    console.error("VERIFY ERROR:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Verification failed",
+    });
   }
 };
 
-export const paymentFailure = async (req, res) => {
-  try {
-    const data = req.body;
+/* ---------------- Get Transaction ---------------- */
 
-    await Payment.create({
-      name: data.firstname,
-      email: data.email,
-      phone: data.phone,
-      amount: data.amount,
-      txnid: data.txnid,
-      status: "failed",
-      date: new Date(),
-      easebuzzResponse: data,
-    });
-  } catch (error) {
-    console.error(error);
-  }
-
-  res.redirect(`${process.env.FRONTEND_URL}/payment-failed`);
-};
-
-export const getTransactionByTxnId = async (req, res) => {
+export const getTransactionByOrderId = async (req, res) => {
   try {
     const txn = await Payment.findOne({
-      txnid: req.params.txnid,
+      orderId: req.params.orderId,
     });
 
     if (!txn) {
       return res.status(404).json({
+        success: false,
         message: "Transaction not found",
       });
     }
 
-    res.json(txn);
+    res.json({
+      success: true,
+      data: txn,
+    });
   } catch (error) {
+    console.error("GET TXN ERROR:", error);
+
     res.status(500).json({
+      success: false,
       message: "Server error",
     });
   }

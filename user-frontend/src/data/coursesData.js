@@ -1327,9 +1327,7 @@ export const courses = [
     ],
   },
 
-  
-
-{
+  {
     id: "eosh-train-the-trainer",
 
     title: "EOSH Train The Trainer Certificate",
@@ -1807,7 +1805,7 @@ export const courses = [
     ],
   },
 
-   // ================= IQA LEVEL 4 AWARD =================
+  // ================= IQA LEVEL 4 AWARD =================
   {
     id: "othm-iqa-award",
 
@@ -1819,11 +1817,7 @@ export const courses = [
 
     duration: "3–6 Months",
 
-    mode: [
-      "Online Learning",
-      "Blended Learning",
-      "Workplace-Based Assessment",
-    ],
+    mode: ["Online Learning", "Blended Learning", "Workplace-Based Assessment"],
 
     level: "Level 4 (Equivalent to Year 1 UK Degree)",
 
@@ -2083,11 +2077,7 @@ export const courses = [
       "Workplace audit",
     ],
 
-    whoShouldAttend: [
-      "Safety officers",
-      "HSE professionals",
-      "Supervisors",
-    ],
+    whoShouldAttend: ["Safety officers", "HSE professionals", "Supervisors"],
 
     certification:
       "Recognised qualification aligned with IOSH Certified Membership (subject to criteria).",
@@ -2146,11 +2136,7 @@ export const courses = [
       "Safety culture analysis",
     ],
 
-    whoShouldAttend: [
-      "HSE managers",
-      "Consultants",
-      "Senior professionals",
-    ],
+    whoShouldAttend: ["HSE managers", "Consultants", "Senior professionals"],
 
     certification:
       "Postgraduate-level diploma aligned with IOSH Certified Membership requirements.",
@@ -2209,11 +2195,7 @@ export const courses = [
       "Risk modelling assignment",
     ],
 
-    whoShouldAttend: [
-      "Risk managers",
-      "Compliance professionals",
-      "Leaders",
-    ],
+    whoShouldAttend: ["Risk managers", "Compliance professionals", "Leaders"],
 
     certification:
       "Level 7 diploma supporting senior roles and postgraduate progression.",
@@ -2229,7 +2211,8 @@ export const courses = [
   {
     id: "othm-level7-environment",
 
-    title: "OTHM Level 7 Diploma in Environmental and Sustainability Management",
+    title:
+      "OTHM Level 7 Diploma in Environmental and Sustainability Management",
 
     organization: "OTHM Qualifications (UK)",
 
@@ -2246,8 +2229,7 @@ export const courses = [
     overview:
       "A leadership programme in sustainability, ESG, and environmental governance.",
 
-    importance:
-      "Supports global sustainability goals and ESG compliance.",
+    importance: "Supports global sustainability goals and ESG compliance.",
 
     learningOutcomes: [
       "Develop sustainability strategies",
@@ -2288,5 +2270,362 @@ export const courses = [
     ],
   },
 
+  // ================= LEVEL 1 FOOD SAFETY =================
+  {
+    id: "cieh-level1-food",
+
+    title: "CIEH Level 1 Certificate in Food Safety",
+
+    organization: "CIEH – Chartered Institute of Environmental Health (UK)",
+
+    accreditation: "Internationally Recognised Food Safety Certification",
+
+    duration: "1.5 Days Training Program",
+
+    mode: ["Classroom Training", "Online Instructor-Led", "Corporate Training"],
+
+    level: "Level 1 (Introductory)",
+
+    image: "/courses/cieh-level1-food.jpg",
+
+    overview:
+      "The CIEH Level 1 Certificate in Food Safety is an entry-level programme designed to introduce learners to the fundamentals of food hygiene and safe food handling practices. It builds awareness of contamination risks and ensures learners understand how to maintain basic hygiene standards in low-risk food environments.",
+
+    importance:
+      "Food safety awareness is critical in preventing foodborne illnesses and maintaining hygiene standards. This course helps organisations ensure that all entry-level staff understand their role in maintaining safe food environments and complying with hygiene standards.",
+
+    learningOutcomes: [
+      "Understand basic food hygiene principles",
+      "Identify types of food contamination",
+      "Maintain personal hygiene standards",
+      "Follow safe food handling practices",
+      "Support clean and safe food environments",
+    ],
+
+    modules: [
+      {
+        title: "Introduction to Food Safety",
+        topics: [
+          "Importance of food hygiene",
+          "Food safety risks and consequences",
+          "Basic legal awareness",
+        ],
+      },
+      {
+        title: "Personal Hygiene and Cleanliness",
+        topics: [
+          "Hand washing techniques",
+          "Protective clothing",
+          "Workplace cleanliness",
+        ],
+      },
+      {
+        title: "Food Contamination",
+        topics: [
+          "Biological, chemical, physical contamination",
+          "Cross-contamination prevention",
+          "Basic pest awareness",
+        ],
+      },
+    ],
+
+    assignments: [
+      "Short knowledge assessment (MCQ-based)",
+      "Practical hygiene scenario discussion",
+      "Basic contamination identification exercise",
+    ],
+
+    whoShouldAttend: [
+      "Beginners entering food industry",
+      "School students",
+      "Entry-level employees",
+    ],
+
+    certification:
+      "Participants receive the CIEH Level 1 Certificate in Food Safety, recognised across hospitality, retail, and food service sectors.",
+
+    careerBenefits: [
+      "Foundation for food safety careers",
+      "Improved workplace hygiene awareness",
+      "Eligibility for Level 2 Food Safety",
+    ],
+  },
+
+  // ================= LEVEL 2 FOOD SAFETY =================
+  {
+    id: "cieh-level2-food",
+
+    title: "CIEH Level 2 Certificate in Food Safety",
+
+    organization: "CIEH (UK)",
+
+    accreditation: "Internationally Recognised Food Safety Certification",
+
+    duration: "2 Days Training Program",
+
+    mode: ["Classroom", "Online", "Corporate Training"],
+
+    level: "Level 2 (Operational Level)",
+
+    image: "/courses/cieh-level2-food.jpg",
+
+    overview:
+      "The CIEH Level 2 Certificate in Food Safety is designed for individuals who handle food as part of their job role. It provides practical knowledge of food hygiene, contamination prevention, and compliance with food safety standards.",
+
+    importance:
+      "Ensures organisations meet hygiene compliance requirements and maintain high food safety standards across operations, reducing risks and improving audit readiness.",
+
+    learningOutcomes: [
+      "Understand food safety regulations",
+      "Apply safe food handling practices",
+      "Prevent contamination risks",
+      "Maintain hygiene standards",
+      "Support compliance during inspections",
+    ],
+
+    modules: [
+      {
+        title: "Food Safety Principles",
+        topics: [
+          "Food safety laws and responsibilities",
+          "Food hazards and controls",
+        ],
+      },
+      {
+        title: "Contamination & Prevention",
+        topics: ["Cross-contamination", "Temperature control", "Safe storage"],
+      },
+      {
+        title: "Cleaning & Pest Control",
+        topics: ["Cleaning procedures", "Waste management", "Pest prevention"],
+      },
+    ],
+
+    assignments: [
+      "Written knowledge test",
+      "Food safety scenario analysis",
+      "Temperature control exercise",
+    ],
+
+    whoShouldAttend: [
+      "Food handlers",
+      "Kitchen staff",
+      "Hospitality workers",
+      "Healthcare food staff",
+    ],
+
+    certification:
+      "CIEH Level 2 Food Safety Certificate recognised across food industry sectors.",
+
+    careerBenefits: [
+      "Mandatory compliance for food handlers",
+      "Improved job opportunities",
+      "Confidence during inspections",
+    ],
+  },
+
+  // ================= LEVEL 3 FOOD SAFETY =================
+  {
+    id: "cieh-level3-food",
+
+    title: "CIEH Level 3 Certificate in Food Safety",
+
+    organization: "CIEH (UK)",
+
+    accreditation: "Advanced Food Safety Certification",
+
+    duration: "3 Days Training Program",
+
+    mode: ["Classroom", "Corporate Training"],
+
+    level: "Level 3 (Supervisory Level)",
+
+    image: "/courses/cieh-level3-food.jpg",
+
+    overview:
+      "The CIEH Level 3 Certificate in Food Safety is designed for supervisors and managers responsible for implementing and monitoring food safety systems such as HACCP.",
+
+    importance:
+      "Helps organisations strengthen compliance, improve audit readiness, and build a proactive food safety culture.",
+
+    learningOutcomes: [
+      "Manage food safety systems",
+      "Implement HACCP",
+      "Conduct food safety audits",
+      "Supervise hygiene practices",
+    ],
+
+    modules: [
+      {
+        title: "Supervisory Role in Food Safety",
+        topics: ["Roles and responsibilities", "Legal accountability"],
+      },
+      {
+        title: "HACCP Implementation",
+        topics: [
+          "Hazard analysis",
+          "Critical control points",
+          "Monitoring systems",
+        ],
+      },
+      {
+        title: "Food Safety Management",
+        topics: [
+          "Audits and inspections",
+          "Risk assessment",
+          "Compliance monitoring",
+        ],
+      },
+    ],
+
+    assignments: [
+      "HACCP plan development",
+      "Food safety audit report",
+      "Risk assessment exercise",
+    ],
+
+    whoShouldAttend: ["Supervisors", "Kitchen managers", "Food safety leads"],
+
+    certification:
+      "CIEH Level 3 Food Safety Certificate for supervisory roles.",
+
+    careerBenefits: [
+      "Promotion to supervisory roles",
+      "Improved compliance management",
+      "Leadership in food safety",
+    ],
+  },
+
+  // ================= LEVEL 2 FIRST AID =================
+  {
+    id: "cieh-level2-firstaid",
+
+    title: "CIEH Level 2 Certificate in Emergency First Aid at Work",
+
+    organization: "CIEH (UK)",
+
+    accreditation: "Workplace First Aid Certification",
+
+    duration: "2 Days Training Program",
+
+    mode: ["Classroom", "On-site Training"],
+
+    level: "Level 2 (Basic First Aid)",
+
+    image: "/courses/cieh-firstaid-level2.jpg",
+
+    overview:
+      "This course equips learners with essential first aid skills to respond effectively to workplace emergencies until professional help arrives.",
+
+    importance:
+      "Immediate response to injuries and medical emergencies can save lives and reduce severity of incidents in workplaces.",
+
+    learningOutcomes: [
+      "Perform CPR and basic life support",
+      "Handle injuries and medical emergencies",
+      "Assess emergency situations",
+      "Communicate with emergency services",
+    ],
+
+    modules: [
+      {
+        title: "Basic Life Support",
+        topics: ["CPR techniques", "AED awareness"],
+      },
+      {
+        title: "Emergency Response",
+        topics: ["Bleeding, burns, fractures", "Seizures and fainting"],
+      },
+    ],
+
+    assignments: [
+      "Practical CPR demonstration",
+      "Emergency scenario simulation",
+      "First aid response assessment",
+    ],
+
+    whoShouldAttend: [
+      "Workplace first aiders",
+      "Employees",
+      "General workforce",
+    ],
+
+    certification:
+      "CIEH Emergency First Aid Certificate aligned with workplace safety standards.",
+
+    careerBenefits: [
+      "Life-saving skills",
+      "Workplace compliance",
+      "Emergency confidence",
+    ],
+  },
+
+  // ================= LEVEL 3 FIRST AID =================
+  {
+    id: "cieh-level3-firstaid",
+
+    title: "CIEH Level 3 Certificate in First Aid at Work",
+
+    organization: "CIEH (UK)",
+
+    accreditation: "Advanced Workplace First Aid Certification",
+
+    duration: "3 Days Training Program",
+
+    mode: ["Classroom", "On-site"],
+
+    level: "Level 3 (Advanced First Aid)",
+
+    image: "/courses/cieh-firstaid-level3.jpg",
+
+    overview:
+      "An advanced first aid programme designed for high-risk workplaces requiring skilled emergency response capability.",
+
+    importance:
+      "Critical for industries where serious injuries may occur, ensuring rapid and effective emergency response.",
+
+    learningOutcomes: [
+      "Handle major trauma and emergencies",
+      "Perform advanced CPR and AED use",
+      "Manage industrial injuries",
+      "Lead emergency response",
+    ],
+
+    modules: [
+      {
+        title: "Advanced First Aid Techniques",
+        topics: ["Trauma management", "Fractures and burns"],
+      },
+      {
+        title: "Industrial Emergency Response",
+        topics: [
+          "Chemical exposure",
+          "Electrical shock",
+          "Confined space incidents",
+        ],
+      },
+    ],
+
+    assignments: [
+      "Practical emergency drills",
+      "Incident response simulation",
+      "Advanced CPR assessment",
+    ],
+
+    whoShouldAttend: [
+      "HSE officers",
+      "Supervisors",
+      "High-risk industry workers",
+    ],
+
+    certification:
+      "CIEH Level 3 First Aid Certificate recognised for high-risk workplaces.",
+
+    careerBenefits: [
+      "Advanced emergency response skills",
+      "Leadership in safety situations",
+      "Higher employability in industrial sectors",
+    ],
+  },
   {},
 ];

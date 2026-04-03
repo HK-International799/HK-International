@@ -9,7 +9,8 @@ const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const txnid = searchParams.get("txnid");
+  // const txnid = searchParams.get("txnid");
+  const orderId = searchParams.get("orderId");
 
   const [transaction, setTransaction] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -20,7 +21,8 @@ const PaymentSuccess = () => {
 
   const fetchTransaction = async () => {
     try {
-      const { data } = await api.get(`/payment/transaction/${txnid}`);
+      // const { data } = await api.get(`/payment/transaction/${txnid}`);
+      const { data } = await api.get(`/payment/transaction/${orderId}`);
       setTransaction(data);
     } catch (err) {
       console.log(err);

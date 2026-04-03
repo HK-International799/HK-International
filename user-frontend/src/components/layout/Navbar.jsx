@@ -71,7 +71,13 @@ export default function Navbar() {
     },
     {
       title: "CIEH UK",
-      courses: [{ name: "Level 3 Health & Safety", id: "cieh-level3" }],
+      courses: [
+        { name: "Level 1 Food Safety", id: "cieh-level1-food" },
+        { name: "Level 2 Food Safety", id: "cieh-level2-food" },
+        { name: "Level 3 Food Safety", id: "cieh-level3-food" },
+        { name: "Level 2 First Aid at Work", id: "cieh-level2-firstaid" },
+        { name: "Level 3 First Aid at Work", id: "cieh-level3-firstaid" },
+      ],
     },
     {
       title: "OSHA USA",

@@ -59,11 +59,8 @@ export default function Learners() {
       const data =
         await getAllUsers();
 
-      setUsers(
-        Array.isArray(data)
-          ? data
-          : data.users || []
-      );
+      const list = data?.users || (Array.isArray(data) ? data : []);
+      setUsers(list);
     } catch {
       setUsers([]);
     } finally {

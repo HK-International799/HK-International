@@ -1,21 +1,35 @@
-const errorMiddleware = (err, req, res, next) => {
-  // Use the error's own statusCode if set, otherwise default to 500
-  const statusCode = err.statusCode || res.statusCode === 200 ? err.statusCode || 500 : res.statusCode;
+import ApiError from "../utils/ApiError.js";
 
-  // Log the full error server-side
-  console.error(`[${new Date().toISOString()}] ${statusCode} - ${err.message}`);
-  if (process.env.NODE_ENV !== "production") {
-    console.error(err.stack);
+const errorMiddleware = (err, req, res, _next) => {
+  // Mongoose validation error
+  if (err.name === "ValidationError") {
+    const messages = Object.values(err.errors).map((e) => e.message);
+    err = new ApiError(400, messages.join(", "));
   }
 
-  // In production, hide internal error details from clients
-  const message = process.env.NODE_ENV === "production" && statusCode === 500
-    ? "Internal server error"
-    : err.message || "Something went wrong";
+  // Mongoose duplicate key
+  if (err.code === 11000) {
+    const field = Object.keys(err.keyValue).join(", ");
+    err = new ApiError(409, `Duplicate value for: ${field}`);
+  }
+
+  // Mongoose bad ObjectId
+  if (err.name === "CastError" && err.kind === "ObjectId") {
+    err = new ApiError(400, `Invalid ID: ${err.value}`);
+  }
+
+  const statusCode = err.statusCode || 500;
+  const message =
+    process.env.NODE_ENV === "production" && statusCode === 500
+      ? "Internal server error"
+      : err.message || "Something went wrong";
+
+  console.error(`[${new Date().toISOString()}] ${statusCode} — ${err.message}`);
+  if (process.env.NODE_ENV !== "production") console.error(err.stack);
 
   res.status(statusCode).json({
+    success: false,
     message,
-    // Only send stack trace in development
     ...(process.env.NODE_ENV !== "production" && { stack: err.stack }),
   });
 };

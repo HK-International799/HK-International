@@ -1,3 +1,161 @@
+// // import dotenv from "dotenv";
+// // dotenv.config();
+
+// console.log(process.env.name)
+
+// import express from "express";
+// import cors from "cors";
+// import morgan from "morgan";
+// import helmet from "helmet";
+// import compression from "compression";
+// import rateLimit from "express-rate-limit";
+// import errorMiddleware from "./middleware/errorMiddleware.js";
+
+// // ── Routes ─────────────────────────────────────────
+// import authRoutes from "./routes/authRoutes.js";
+// import courseRoutes from "./routes/courseRoutes.js";
+// import assignmentRoutes from "./routes/assignmentRoutes.js";
+// import submissionRoutes from "./routes/submissionRoutes.js";
+// import adminRoutes from "./routes/adminRoutes.js";
+// import studentRoutes from "./routes/studentRoutes.js";
+// import messageRoutes from "./routes/messageRoutes.js";
+// import notificationRoutes from "./routes/notificationRoutes.js";
+// import lessonRoutes from "./routes/lessonRoutes.js";
+// import batchRoutes from "./routes/batchRoutes.js";
+// import liveClassRoutes from "./routes/liveClassRoutes.js";
+// import examRoutes from "./routes/examRoutes.js";
+// import feedbackRoutes from "./routes/feedbackRoutes.js";
+// import certificateRoutes from "./routes/certificateRoutes.js";
+// import questionBankRoutes from "./routes/questionBankRoutes.js";
+// import settingsRoutes from "./routes/settingsRoutes.js";
+// import analyticsRoutes from "./routes/analyticsRoutes.js";
+// import paymentRoutes from "./routes/paymentRoutes.js";
+
+// // New Modules
+// import orientationRoutes from "./routes/orientationRoutes.js";
+// import partnerInstituteRoutes from "./routes/partnerInstituteRoutes.js";
+// import aoRoutes from "./routes/aoRoutes.js";
+
+// const app = express();
+
+// /* ─── Security ───────────────────────────────────── */
+// app.use(helmet());
+
+// /* ─── CORS ───────────────────────────────────────── */
+
+// const allowedOrigins = [
+//   "http://localhost:5173",
+//   "http://localhost:5174",
+//   "http://localhost:5175",
+//   "http://127.0.0.1:5173",
+//   "https://hkinternational.uk",
+//   "https://admin-hkinternational.vercel.app",
+//   "https://checkout.razorpay.com", // ✅ IMPORTANT
+//   process.env.CLIENT_URL_STUDENT,
+//   process.env.CLIENT_URL_ADMIN,
+//   process.env.CLIENT_URL_PARTNER,
+//   process.env.CLIENT_URL_AO,
+//   process.env.FRONTEND_URL,
+// ].filter(Boolean);
+
+// app.use(
+//   cors({
+//     origin: function (origin, callback) {
+//       if (!origin) return callback(null, true);
+
+//       if (
+//         process.env.NODE_ENV === "development" &&
+//         origin.startsWith("http://localhost")
+//       ) {
+//         return callback(null, true);
+//       }
+
+//       if (allowedOrigins.includes(origin)) {
+//         return callback(null, true);
+//       }
+
+//       console.log("Blocked by CORS:", origin);
+//       return callback(new Error("CORS not allowed"));
+//     },
+//     credentials: true,
+//   })
+// );
+
+// app.options("*", cors());
+
+// /* ─── Rate Limiting ─────────────────────────────── */
+// app.use(
+//   rateLimit({
+//     windowMs: 15 * 60 * 1000,
+//     max: 200,
+//   })
+// );
+
+// /* ─── Body Parser ──────────────────────────────── */
+// app.use(express.json({ limit: "10mb" }));
+// app.use(express.urlencoded({ extended: true }));
+
+// /* ─── Other Middleware ─────────────────────────── */
+// app.use(compression());
+
+// if (process.env.NODE_ENV !== "production") {
+//   app.use(morgan("dev"));
+// }
+
+// /* ─── Health ───────────────────────────────────── */
+// app.get("/api/health", (_req, res) => {
+//   res.json({
+//     success: true,
+//     message: "Server running",
+//   });
+// });
+
+// /* ─── Payment Routes ───────────────────────────── */
+// app.use("/api/payment", paymentRoutes);
+
+// /* ─── API Routes ───────────────────────────────── */
+// app.use("/api/auth", authRoutes);
+// app.use("/api/courses", courseRoutes);
+// app.use("/api/assignments", assignmentRoutes);
+// app.use("/api/submissions", submissionRoutes);
+// app.use("/api/admin", adminRoutes);
+// app.use("/api/students", studentRoutes);
+// app.use("/api/messages", messageRoutes);
+// app.use("/api/notifications", notificationRoutes);
+// app.use("/api/lessons", lessonRoutes);
+// app.use("/api/batches", batchRoutes);
+// app.use("/api/live-classes", liveClassRoutes);
+// app.use("/api/exams", examRoutes);
+// app.use("/api/feedback", feedbackRoutes);
+// app.use("/api/certificates", certificateRoutes);
+// app.use("/api/question-banks", questionBankRoutes);
+// app.use("/api/settings", settingsRoutes);
+// app.use("/api/analytics", analyticsRoutes);
+
+// /* ─── New Modules ─────────────────────────────── */
+// app.use("/api/orientation", orientationRoutes);
+// app.use("/api/partner-institutes", partnerInstituteRoutes);
+// app.use("/api/ao", aoRoutes);
+
+// /* ─── 404 ─────────────────────────────────────── */
+// app.use((req, res) => {
+//   res.status(404).json({
+//     success: false,
+//     message: `Route ${req.originalUrl} not found`,
+//   });
+// });
+
+// /* ─── Error Handler ───────────────────────────── */
+// app.use(errorMiddleware);
+
+// export default app;
+
+
+// ✅ FIX: dotenv is already loaded in server.js (entry point).
+// Do NOT call dotenv.config() here — in ES Modules all imports are hoisted
+// and execute before any code, so a second dotenv.config() here is both
+// redundant and misleading. Keep it only in the entry point (server.js).
+
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
@@ -6,7 +164,7 @@ import compression from "compression";
 import rateLimit from "express-rate-limit";
 import errorMiddleware from "./middleware/errorMiddleware.js";
 
-// Import routes
+// ── Routes ─────────────────────────────────────────
 import authRoutes from "./routes/authRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import assignmentRoutes from "./routes/assignmentRoutes.js";
@@ -19,58 +177,45 @@ import lessonRoutes from "./routes/lessonRoutes.js";
 import batchRoutes from "./routes/batchRoutes.js";
 import liveClassRoutes from "./routes/liveClassRoutes.js";
 import examRoutes from "./routes/examRoutes.js";
-import documentRoutes from "./routes/documentRoutes.js";
 import feedbackRoutes from "./routes/feedbackRoutes.js";
 import certificateRoutes from "./routes/certificateRoutes.js";
 import questionBankRoutes from "./routes/questionBankRoutes.js";
 import settingsRoutes from "./routes/settingsRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
-
 import paymentRoutes from "./routes/paymentRoutes.js";
+
+// New Modules
+import orientationRoutes from "./routes/orientationRoutes.js";
+import partnerInstituteRoutes from "./routes/partnerInstituteRoutes.js";
+import aoRoutes from "./routes/aoRoutes.js";
 
 const app = express();
 
-// ─── Security headers ───────────────────────────────────────────────────────
+/* ─── Security ───────────────────────────────────── */
 app.use(helmet());
 
-// ─── CORS ───────────────────────────────────────────────────────────────────
+/* ─── CORS ───────────────────────────────────────── */
+
 const allowedOrigins = [
-  // ✅ Localhost
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:5175",
-  "http://localhost:3000",
-  "http://localhost:5000",
   "http://127.0.0.1:5173",
-
-  // direct links
+  "https://hkinternational.uk",
   "https://admin-hkinternational.vercel.app",
-  "https://hkinternational.uk/",
-
-  // ✅ Production frontend
+  "https://checkout.razorpay.com", // ✅ IMPORTANT
   process.env.CLIENT_URL_STUDENT,
   process.env.CLIENT_URL_ADMIN,
+  process.env.CLIENT_URL_PARTNER,
+  process.env.CLIENT_URL_AO,
   process.env.FRONTEND_URL,
-
-  // ✅ Backend (optional but fine)
-  process.env.BACKEND_URL,
-].filter(Boolean);
-
-const easebuzzDomains = [
-  process.env.EASEBUZZ_PAYMENT_URL,
-  process.env.EASEBUZZ_PAYMENT_INITIATE,
 ].filter(Boolean);
 
 app.use(
   cors({
-    origin: (origin, callback) => {
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
 
-      // ✅ Allow Postman, Easebuzz server, webhooks
-      if (!origin) {
-        return callback(null, true);
-      }
-
-      // ✅ Allow localhost in development
       if (
         process.env.NODE_ENV === "development" &&
         origin.startsWith("http://localhost")
@@ -78,72 +223,49 @@ app.use(
         return callback(null, true);
       }
 
-      // ✅ Allow frontend/admin domains
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
-      // ✅ Allow Easebuzz
-      const isEasebuzz = easebuzzDomains.some(domain =>
-        origin.includes(domain.replace("https://", ""))
-      );
-
-      if (isEasebuzz) {
-        return callback(null, true);
-      }
-
-      console.log("❌ Blocked by CORS:", origin);
-
+      console.log("Blocked by CORS:", origin);
       return callback(new Error("CORS not allowed"));
     },
-
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-// ─── Rate limiting ───────────────────────────────────────────────────────────
-const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 200,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { message: "Too many requests, please try again later." },
-});
+/* ─── Rate Limiting ─────────────────────────────── */
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 200,
+  })
+);
 
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 20,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { message: "Too many auth attempts, please try again later." },
-});
-
-app.use(globalLimiter);
-
-// ─── Body parsers ────────────────────────────────────────────────────────────
+/* ─── Body Parser ──────────────────────────────── */
 app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(express.urlencoded({ extended: true }));
 
-// ─── Compression ─────────────────────────────────────────────────────────────
+/* ─── Other Middleware ─────────────────────────── */
 app.use(compression());
 
-// ─── HTTP logging (dev only) ─────────────────────────────────────────────────
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
 
-// ─── Health check ────────────────────────────────────────────────────────────
-app.get("/api/health", (req, res) => {
-  res.status(200).json({ status: "OK", message: "Server running" });
+/* ─── Health ───────────────────────────────────── */
+app.get("/api/health", (_req, res) => {
+  res.json({
+    success: true,
+    message: "Server running",
+  });
 });
 
-//---------------------- Payment Integration----------------------
-app.use("/api/payment", paymentRoutes);
+/* ─── Payment Routes ───────────────────────────── */
+app.use("/api/payment", paymentRoutes); // ✅ FIX: was commented out — payment API was returning 404
 
-// ─── API routes ──────────────────────────────────────────────────────────────
-app.use("/api/auth", authLimiter, authRoutes);
+/* ─── API Routes ───────────────────────────────── */
+app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/assignments", assignmentRoutes);
 app.use("/api/submissions", submissionRoutes);
@@ -155,19 +277,26 @@ app.use("/api/lessons", lessonRoutes);
 app.use("/api/batches", batchRoutes);
 app.use("/api/live-classes", liveClassRoutes);
 app.use("/api/exams", examRoutes);
-app.use("/api/documents", documentRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/certificates", certificateRoutes);
 app.use("/api/question-banks", questionBankRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/analytics", analyticsRoutes);
 
-// ─── 404 handler ─────────────────────────────────────────────────────────────
+/* ─── New Modules ─────────────────────────────── */
+app.use("/api/orientation", orientationRoutes);
+app.use("/api/partner-institutes", partnerInstituteRoutes);
+app.use("/api/ao", aoRoutes);
+
+/* ─── 404 ─────────────────────────────────────── */
 app.use((req, res) => {
-  res.status(404).json({ message: `Route ${req.originalUrl} not found` });
+  res.status(404).json({
+    success: false,
+    message: `Route ${req.originalUrl} not found`,
+  });
 });
 
-// ─── Global error handler ────────────────────────────────────────────────────
+/* ─── Error Handler ───────────────────────────── */
 app.use(errorMiddleware);
 
 export default app;
