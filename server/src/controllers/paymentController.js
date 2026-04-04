@@ -1,19 +1,14 @@
-
-
-
-
-
-
 import Razorpay from "razorpay";
 import crypto from "crypto";
 import Payment from "../models/Payment.js";
 
-
+/* ---------------- Razorpay Instance ---------------- */
 
 const getRazorpay = () => {
   if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
     throw new Error("❌ Razorpay keys are missing in environment variables");
   }
+
   return new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET,
@@ -24,7 +19,7 @@ const getRazorpay = () => {
 
 export const initiatePayment = async (req, res) => {
   try {
-    const razorpay = getRazorpay(); // ✅ called at request time — .env is loaded by now
+    const razorpay = getRazorpay();
 
     let { name, email, phone, amount } = req.body;
 
@@ -79,7 +74,7 @@ export const initiatePayment = async (req, res) => {
   }
 };
 
-/* ---------------- Verify Payment ---------------- */
+/* ---------------- Verify Payment (Frontend Callback) ---------------- */
 
 export const verifyPayment = async (req, res) => {
   try {
@@ -143,7 +138,7 @@ export const verifyPayment = async (req, res) => {
     res.json({
       success: true,
       message: "Payment verified successfully",
-      redirect: `${process.env.FRONTEND_URL}/dashboard`,
+      redirect: `${process.env.FRONTEND_URL}/payment-success?orderId=${razorpay_order_id}`,
     });
   } catch (error) {
     console.error("VERIFY ERROR:", error);
@@ -151,6 +146,110 @@ export const verifyPayment = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Verification failed",
+    });
+  }
+};
+
+/* ---------------- Razorpay Webhook ---------------- */
+
+export const razorpayWebhook = async (req, res) => {
+  try {
+    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+
+    if (!webhookSecret) {
+      console.error("❌ Webhook secret missing");
+      return res.status(500).json({ success: false });
+    }
+
+    const razorpaySignature = req.headers["x-razorpay-signature"];
+
+    if (!razorpaySignature) {
+      return res.status(400).json({
+        success: false,
+        message: "Signature missing",
+      });
+    }
+
+    /* Verify webhook signature */
+
+    const expectedSignature = crypto
+      .createHmac("sha256", webhookSecret)
+      .update(req.body)
+      .digest("hex");
+
+    if (expectedSignature !== razorpaySignature) {
+      console.log("❌ Invalid webhook signature");
+
+      return res.status(400).json({
+        success: false,
+        message: "Invalid signature",
+      });
+    }
+
+    const payload = JSON.parse(req.body.toString());
+
+    const event = payload.event;
+
+    console.log("📩 Razorpay Webhook Event:", event);
+
+    /* ---------------- Payment Captured ---------------- */
+
+    if (event === "payment.captured") {
+      const paymentData = payload.payload.payment.entity;
+
+      await Payment.findOneAndUpdate(
+        { orderId: paymentData.order_id },
+        {
+          paymentId: paymentData.id,
+          status: "success",
+          razorpayResponse: paymentData,
+        }
+      );
+
+      console.log("✅ Payment captured:", paymentData.id);
+    }
+
+    /* ---------------- Payment Failed ---------------- */
+
+    if (event === "payment.failed") {
+      const paymentData = payload.payload.payment.entity;
+
+      await Payment.findOneAndUpdate(
+        { orderId: paymentData.order_id },
+        {
+          status: "failed",
+          razorpayResponse: paymentData,
+        }
+      );
+
+      console.log("❌ Payment failed:", paymentData.id);
+    }
+
+    /* ---------------- Order Paid ---------------- */
+
+    if (event === "order.paid") {
+      const orderData = payload.payload.order.entity;
+
+      await Payment.findOneAndUpdate(
+        { orderId: orderData.id },
+        {
+          status: "success",
+          razorpayResponse: orderData,
+        }
+      );
+
+      console.log("💰 Order paid:", orderData.id);
+    }
+
+    res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    console.error("WEBHOOK ERROR:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Webhook error",
     });
   }
 };
