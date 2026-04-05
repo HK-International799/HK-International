@@ -12,7 +12,7 @@ router.post("/initiate", initiatePayment);
 
 router.post("/verify", verifyPayment);
 
-/* Razorpay webhook (RAW body required) */
+/* Razorpay webhook requires RAW body */
 router.post(
   "/webhook",
   express.raw({ type: "application/json" }),

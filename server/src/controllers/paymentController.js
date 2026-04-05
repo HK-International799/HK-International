@@ -6,7 +6,7 @@ import Payment from "../models/Payment.js";
 
 const getRazorpay = () => {
   if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
-    throw new Error("❌ Razorpay keys are missing in environment variables");
+    throw new Error("Razorpay keys missing");
   }
 
   return new Razorpay({
@@ -21,7 +21,14 @@ export const initiatePayment = async (req, res) => {
   try {
     const razorpay = getRazorpay();
 
-    let { name, email, phone, amount } = req.body;
+    let {
+      name,
+      email,
+      phone,
+      amount,
+      currency = "INR",
+      country = "India",
+    } = req.body;
 
     if (!name || !email || !phone || !amount) {
       return res.status(400).json({
@@ -39,14 +46,17 @@ export const initiatePayment = async (req, res) => {
 
     const amountInPaise = Math.round(Number(amount) * 100);
 
+    const receipt = "rcpt_" + Date.now();
+
     const order = await razorpay.orders.create({
       amount: amountInPaise,
-      currency: "INR",
-      receipt: "rcpt_" + Date.now(),
+      currency,
+      receipt,
       notes: {
         name,
         email,
         phone,
+        country,
       },
     });
 
@@ -55,7 +65,10 @@ export const initiatePayment = async (req, res) => {
       email,
       phone,
       amount,
+      currency,
+      country,
       orderId: order.id,
+      receipt,
       status: "created",
     });
 
@@ -74,12 +87,15 @@ export const initiatePayment = async (req, res) => {
   }
 };
 
-/* ---------------- Verify Payment (Frontend Callback) ---------------- */
+/* ---------------- Verify Payment (Frontend) ---------------- */
 
 export const verifyPayment = async (req, res) => {
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-      req.body;
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+    } = req.body;
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return res.status(400).json({
@@ -98,7 +114,7 @@ export const verifyPayment = async (req, res) => {
     if (expectedSignature !== razorpay_signature) {
       await Payment.findOneAndUpdate(
         { orderId: razorpay_order_id },
-        { status: "failed" },
+        { status: "failed" }
       );
 
       return res.status(400).json({
@@ -134,7 +150,7 @@ export const verifyPayment = async (req, res) => {
 
     res.json({
       success: true,
-      message: "Payment verified successfully",
+      message: "Payment verified",
       redirect: `${process.env.FRONTEND_URL}/payment-success?orderId=${razorpay_order_id}`,
     });
   } catch (error) {
@@ -154,65 +170,49 @@ export const razorpayWebhook = async (req, res) => {
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
 
     if (!webhookSecret) {
-      console.error("❌ Webhook secret missing");
-      return res.status(500).json({ success: false });
-    }
-
-    const razorpaySignature = req.headers["x-razorpay-signature"];
-
-    if (!razorpaySignature) {
-      return res.status(400).json({
+      return res.status(500).json({
         success: false,
-        message: "Signature missing",
+        message: "Webhook secret missing",
       });
     }
 
-    /* Verify webhook signature */
+    const signature = req.headers["x-razorpay-signature"];
 
     const expectedSignature = crypto
       .createHmac("sha256", webhookSecret)
       .update(req.body)
       .digest("hex");
 
-    if (expectedSignature !== razorpaySignature) {
-      console.log("❌ Invalid webhook signature");
-
-      return res.status(400).json({
-        success: false,
-        message: "Invalid signature",
-      });
+    if (signature !== expectedSignature) {
+      console.log("Invalid webhook signature");
+      return res.status(400).send("Invalid signature");
     }
 
     const payload = JSON.parse(req.body.toString());
 
     const event = payload.event;
 
-    console.log("📩 Razorpay Webhook Event:", event);
+    console.log("Webhook Event:", event);
 
-    /* ---------------- Payment Captured ---------------- */
+    /* -------- Payment Captured -------- */
 
     if (event === "payment.captured") {
       const paymentData = payload.payload.payment.entity;
 
-      const existing = await Payment.findOne({
-        paymentId: paymentData.id,
-      });
+      await Payment.findOneAndUpdate(
+        { orderId: paymentData.order_id },
+        {
+          paymentId: paymentData.id,
+          status: "success",
+          webhookVerified: true,
+          razorpayResponse: paymentData,
+        }
+      );
 
-      if (!existing) {
-        await Payment.findOneAndUpdate(
-          { orderId: paymentData.order_id },
-          {
-            paymentId: paymentData.id,
-            status: "success",
-            razorpayResponse: paymentData,
-          },
-        );
-      }
-
-      console.log("✅ Payment captured:", paymentData.id);
+      console.log("Payment Captured:", paymentData.id);
     }
 
-    /* ---------------- Payment Failed ---------------- */
+    /* -------- Payment Failed -------- */
 
     if (event === "payment.failed") {
       const paymentData = payload.payload.payment.entity;
@@ -221,14 +221,15 @@ export const razorpayWebhook = async (req, res) => {
         { orderId: paymentData.order_id },
         {
           status: "failed",
+          webhookVerified: true,
           razorpayResponse: paymentData,
-        },
+        }
       );
 
-      console.log("❌ Payment failed:", paymentData.id);
+      console.log("Payment Failed:", paymentData.id);
     }
 
-    /* ---------------- Order Paid ---------------- */
+    /* -------- Order Paid -------- */
 
     if (event === "order.paid") {
       const orderData = payload.payload.order.entity;
@@ -237,15 +238,17 @@ export const razorpayWebhook = async (req, res) => {
         { orderId: orderData.id },
         {
           status: "success",
+          webhookVerified: true,
           razorpayResponse: orderData,
-        },
+        }
       );
 
-      console.log("💰 Order paid:", orderData.id);
+      console.log("Order Paid:", orderData.id);
     }
 
     res.status(200).json({
       success: true,
+      received: true,
     });
   } catch (error) {
     console.error("WEBHOOK ERROR:", error);
