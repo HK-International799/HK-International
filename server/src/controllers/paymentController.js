@@ -78,11 +78,8 @@ export const initiatePayment = async (req, res) => {
 
 export const verifyPayment = async (req, res) => {
   try {
-    const {
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature,
-    } = req.body;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+      req.body;
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return res.status(400).json({
@@ -101,7 +98,7 @@ export const verifyPayment = async (req, res) => {
     if (expectedSignature !== razorpay_signature) {
       await Payment.findOneAndUpdate(
         { orderId: razorpay_order_id },
-        { status: "failed" }
+        { status: "failed" },
       );
 
       return res.status(400).json({
@@ -197,14 +194,20 @@ export const razorpayWebhook = async (req, res) => {
     if (event === "payment.captured") {
       const paymentData = payload.payload.payment.entity;
 
-      await Payment.findOneAndUpdate(
-        { orderId: paymentData.order_id },
-        {
-          paymentId: paymentData.id,
-          status: "success",
-          razorpayResponse: paymentData,
-        }
-      );
+      const existing = await Payment.findOne({
+        paymentId: paymentData.id,
+      });
+
+      if (!existing) {
+        await Payment.findOneAndUpdate(
+          { orderId: paymentData.order_id },
+          {
+            paymentId: paymentData.id,
+            status: "success",
+            razorpayResponse: paymentData,
+          },
+        );
+      }
 
       console.log("✅ Payment captured:", paymentData.id);
     }
@@ -219,7 +222,7 @@ export const razorpayWebhook = async (req, res) => {
         {
           status: "failed",
           razorpayResponse: paymentData,
-        }
+        },
       );
 
       console.log("❌ Payment failed:", paymentData.id);
@@ -235,7 +238,7 @@ export const razorpayWebhook = async (req, res) => {
         {
           status: "success",
           razorpayResponse: orderData,
-        }
+        },
       );
 
       console.log("💰 Order paid:", orderData.id);
