@@ -3,6 +3,8 @@ import MainLayout from "../components/layout/MainLayout";
 import { CreditCard } from "lucide-react";
 import { initiatePayment, verifyPayment } from "../services/paymentService";
 import { useNavigate } from "react-router-dom";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 const PaymentPage = () => {
   const navigate = useNavigate();
@@ -19,6 +21,8 @@ const PaymentPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  /* ---------------- Handle Change ---------------- */
+
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -26,13 +30,29 @@ const PaymentPage = () => {
     });
   };
 
+  /* ---------------- Phone Change ---------------- */
+
+  const handlePhoneChange = (value, country) => {
+    setForm({
+      ...form,
+      phone: value,
+      country: country.name,
+    });
+  };
+
+  /* ---------------- Validation ---------------- */
+
   const validateForm = () => {
     if (!form.name || !form.email || !form.phone || !form.amount) {
-      return "All fields required";
+      return "All fields are required";
     }
 
-    if (!/^\d{10}$/.test(form.phone) && form.country === "India") {
-      return "Phone must be 10 digits";
+    if (!/^\S+@\S+\.\S+$/.test(form.email)) {
+      return "Invalid email";
+    }
+
+    if (form.phone.length < 8) {
+      return "Invalid phone number";
     }
 
     if (form.amount <= 0) {
@@ -41,6 +61,8 @@ const PaymentPage = () => {
 
     return null;
   };
+
+  /* ---------------- Submit ---------------- */
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,7 +75,7 @@ const PaymentPage = () => {
     }
 
     if (!window.Razorpay) {
-      setError("Razorpay SDK not loaded");
+      setError("Payment gateway not loaded");
       return;
     }
 
@@ -73,7 +95,7 @@ const PaymentPage = () => {
         key: data.key,
         amount: data.order.amount,
         currency: data.order.currency,
-        name: "HK International",
+        name: "1A HK International",
         description: "Course Payment",
         order_id: data.order.id,
 
@@ -85,9 +107,13 @@ const PaymentPage = () => {
           });
 
           if (verifyRes.success) {
-            navigate(`/payment-success?orderId=${response.razorpay_order_id}`);
+            navigate(
+              `/payment-success?orderId=${response.razorpay_order_id}`
+            );
           } else {
-            navigate("/payment-failed?reason=verification_failed");
+            navigate(
+              "/payment-failed?reason=verification_failed"
+            );
           }
         },
 
@@ -130,10 +156,19 @@ const PaymentPage = () => {
     <MainLayout>
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-green-50 flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+
+          {/* Header */}
+
           <div className="text-center mb-6">
             <CreditCard size={40} className="mx-auto text-indigo-600" />
-            <h2 className="text-2xl font-bold mt-3">Make Payment</h2>
-            <p className="text-gray-500">Secure Razorpay Payment</p>
+
+            <h2 className="text-2xl font-bold mt-3">
+              Make Payment
+            </h2>
+
+            <p className="text-gray-500">
+              Secure Global Razorpay Payment
+            </p>
           </div>
 
           {error && (
@@ -143,6 +178,7 @@ const PaymentPage = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+
             <Input
               name="name"
               placeholder="Full Name"
@@ -152,16 +188,24 @@ const PaymentPage = () => {
 
             <Input
               name="email"
-              placeholder="Email"
+              placeholder="Email Address"
               value={form.email}
               onChange={handleChange}
             />
 
-            <Input
-              name="phone"
-              placeholder="Phone"
+            {/* International Phone */}
+
+            <PhoneInput
+              country={"gb"}
               value={form.phone}
-              onChange={handleChange}
+              onChange={handlePhoneChange}
+              inputClass="!w-full !py-6"
+              containerClass="w-full"
+              enableSearch
+              inputProps={{
+                name: "phone",
+                required: true,
+              }}
             />
 
             <Input
@@ -173,26 +217,30 @@ const PaymentPage = () => {
             />
 
             {/* Currency */}
+
             <select
               name="currency"
               value={form.currency}
               onChange={handleChange}
               className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50"
             >
-              <option value="INR">INR (India)</option>
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
-              <option value="GBP">GBP</option>
-              <option value="AED">AED</option>
+              <option value="INR">INR - India</option>
+              <option value="USD">USD - United States</option>
+              <option value="EUR">EUR - Europe</option>
+              <option value="GBP">GBP - United Kingdom</option>
+              <option value="AED">AED - UAE</option>
             </select>
 
             {/* Country */}
+
             <Input
               name="country"
               placeholder="Country"
               value={form.country}
               onChange={handleChange}
             />
+
+            {/* Submit */}
 
             <button
               type="submit"
@@ -208,7 +256,13 @@ const PaymentPage = () => {
   );
 };
 
-const Input = ({ name, placeholder, value, onChange, type = "text" }) => (
+const Input = ({
+  name,
+  placeholder,
+  value,
+  onChange,
+  type = "text",
+}) => (
   <input
     type={type}
     name={name}

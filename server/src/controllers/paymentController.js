@@ -15,6 +15,18 @@ const getRazorpay = () => {
   });
 };
 
+/* ---------------- Email Validation ---------------- */
+
+const isValidEmail = (email) => {
+  return /^\S+@\S+\.\S+$/.test(email);
+};
+
+/* ---------------- Phone Validation (International) ---------------- */
+
+const isValidPhone = (phone) => {
+  return /^\+?[1-9]\d{7,14}$/.test(phone);
+};
+
 /* ---------------- Create Order ---------------- */
 
 export const initiatePayment = async (req, res) => {
@@ -30,23 +42,41 @@ export const initiatePayment = async (req, res) => {
       country = "India",
     } = req.body;
 
+    /* -------- Validation -------- */
+
     if (!name || !email || !phone || !amount) {
       return res.status(400).json({
         success: false,
-        message: "All fields required",
+        message: "All fields are required",
       });
     }
 
-    if (!/^\d{10}$/.test(phone)) {
+    if (!isValidEmail(email)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid phone number",
+        message: "Invalid email",
+      });
+    }
+
+    if (!isValidPhone(phone)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid international phone number",
+      });
+    }
+
+    if (Number(amount) <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid amount",
       });
     }
 
     const amountInPaise = Math.round(Number(amount) * 100);
 
-    const receipt = "rcpt_" + Date.now();
+    const receipt = `rcpt_${Date.now()}`;
+
+    /* -------- Create Razorpay Order -------- */
 
     const order = await razorpay.orders.create({
       amount: amountInPaise,
@@ -60,16 +90,19 @@ export const initiatePayment = async (req, res) => {
       },
     });
 
+    /* -------- Save in DB -------- */
+
     await Payment.create({
       name,
       email,
       phone,
-      amount,
+      amount: Number(amount),
       currency,
       country,
       orderId: order.id,
       receipt,
       status: "created",
+      gateway: "razorpay",
     });
 
     res.json({
@@ -77,6 +110,7 @@ export const initiatePayment = async (req, res) => {
       order,
       key: process.env.RAZORPAY_KEY_ID,
     });
+
   } catch (error) {
     console.error("INITIATE ERROR:", error);
 
@@ -87,7 +121,7 @@ export const initiatePayment = async (req, res) => {
   }
 };
 
-/* ---------------- Verify Payment (Frontend) ---------------- */
+/* ---------------- Verify Payment ---------------- */
 
 export const verifyPayment = async (req, res) => {
   try {
@@ -110,6 +144,8 @@ export const verifyPayment = async (req, res) => {
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(body)
       .digest("hex");
+
+    /* -------- Signature Check -------- */
 
     if (expectedSignature !== razorpay_signature) {
       await Payment.findOneAndUpdate(
@@ -153,6 +189,7 @@ export const verifyPayment = async (req, res) => {
       message: "Payment verified",
       redirect: `${process.env.FRONTEND_URL}/payment-success?orderId=${razorpay_order_id}`,
     });
+
   } catch (error) {
     console.error("VERIFY ERROR:", error);
 
@@ -169,13 +206,6 @@ export const razorpayWebhook = async (req, res) => {
   try {
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
 
-    if (!webhookSecret) {
-      return res.status(500).json({
-        success: false,
-        message: "Webhook secret missing",
-      });
-    }
-
     const signature = req.headers["x-razorpay-signature"];
 
     const expectedSignature = crypto
@@ -184,17 +214,13 @@ export const razorpayWebhook = async (req, res) => {
       .digest("hex");
 
     if (signature !== expectedSignature) {
-      console.log("Invalid webhook signature");
       return res.status(400).send("Invalid signature");
     }
 
     const payload = JSON.parse(req.body.toString());
-
     const event = payload.event;
 
     console.log("Webhook Event:", event);
-
-    /* -------- Payment Captured -------- */
 
     if (event === "payment.captured") {
       const paymentData = payload.payload.payment.entity;
@@ -208,11 +234,7 @@ export const razorpayWebhook = async (req, res) => {
           razorpayResponse: paymentData,
         }
       );
-
-      console.log("Payment Captured:", paymentData.id);
     }
-
-    /* -------- Payment Failed -------- */
 
     if (event === "payment.failed") {
       const paymentData = payload.payload.payment.entity;
@@ -225,11 +247,7 @@ export const razorpayWebhook = async (req, res) => {
           razorpayResponse: paymentData,
         }
       );
-
-      console.log("Payment Failed:", paymentData.id);
     }
-
-    /* -------- Order Paid -------- */
 
     if (event === "order.paid") {
       const orderData = payload.payload.order.entity;
@@ -242,14 +260,10 @@ export const razorpayWebhook = async (req, res) => {
           razorpayResponse: orderData,
         }
       );
-
-      console.log("Order Paid:", orderData.id);
     }
 
-    res.status(200).json({
-      success: true,
-      received: true,
-    });
+    res.status(200).json({ success: true });
+
   } catch (error) {
     console.error("WEBHOOK ERROR:", error);
 
@@ -279,6 +293,7 @@ export const getTransactionByOrderId = async (req, res) => {
       success: true,
       data: txn,
     });
+
   } catch (error) {
     console.error("GET TXN ERROR:", error);
 

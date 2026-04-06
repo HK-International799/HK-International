@@ -16,6 +16,11 @@ const PaymentSuccess = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!orderId) {
+      navigate("/");
+      return;
+    }
+
     fetchTransaction();
   }, []);
 
@@ -36,203 +41,203 @@ const PaymentSuccess = () => {
   /* ---------------- PDF Receipt ---------------- */
 
   const downloadReceipt = () => {
-  if (!transaction) return;
+    if (!transaction) return;
 
-  const doc = new jsPDF("p", "mm", "a4");
+    const doc = new jsPDF("p", "mm", "a4");
 
-  /* ---------------- Background ---------------- */
-  doc.setFillColor(245, 247, 250);
-  doc.rect(0, 0, 210, 297, "F");
+    /* ---------------- Background ---------------- */
+    doc.setFillColor(245, 247, 250);
+    doc.rect(0, 0, 210, 297, "F");
 
-  /* ---------------- Header ---------------- */
-  doc.setFillColor(255, 255, 255);
-  doc.roundedRect(10, 10, 190, 35, 3, 3, "F");
+    /* ---------------- Header ---------------- */
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(10, 10, 190, 35, 3, 3, "F");
 
-  // Logo
-// Get page width
-const pageWidth = doc.internal.pageSize.getWidth();
+    const pageWidth = doc.internal.pageSize.getWidth();
 
-// Set desired logo width (almost full width with margin)
-const logoWidth = pageWidth - 40; // 20 margin on both sides
-const logoHeight = 40; // adjust if needed
+    const logoWidth = 100;
+    const logoHeight = 40;
+    const x = (pageWidth - logoWidth) / 2;
 
-// Center position
-const x = (pageWidth - logoWidth) / 2;
+    doc.addImage(logo, "PNG", x, 5, logoWidth, logoHeight);
 
-doc.addImage(logo, "PNG", x, 5, logoWidth, logoHeight);
+    /* ---------------- Receipt Badge ---------------- */
 
+    doc.setFillColor(59, 130, 246);
+    doc.roundedRect(70, 42, 70, 10, 3, 3, "F");
 
-  /* ---------------- Receipt Badge ---------------- */
-  doc.setFillColor(59, 130, 246); // Blue
-  doc.roundedRect(70, 42, 70, 10, 3, 3, "F");
+    doc.setTextColor(255);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("PAYMENT RECEIPT", 105, 49, { align: "center" });
 
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(12);
-  doc.setFont("helvetica", "bold");
-  doc.text("PAYMENT RECEIPT", 105, 49, { align: "center" });
+    /* ---------------- Info Cards ---------------- */
 
-  /* ---------------- Info Cards ---------------- */
-  doc.setFillColor(255, 255, 255);
-  doc.roundedRect(10, 55, 90, 55, 3, 3, "F"); // Left box
-  doc.roundedRect(110, 55, 90, 55, 3, 3, "F"); // Right box
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(10, 55, 90, 60, 3, 3, "F");
+    doc.roundedRect(110, 55, 90, 60, 3, 3, "F");
 
-  /* ---------------- Transaction Info ---------------- */
-  doc.setTextColor(0, 0, 0);
-  doc.setFontSize(12);
-  doc.setFont("helvetica", "bold");
-  doc.text("Transaction Info", 15, 65);
+    /* ---------------- Transaction Info ---------------- */
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
+    doc.setTextColor(0);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("Transaction Info", 15, 65);
 
-  doc.text(`Order ID: ${transaction.orderId}`, 15, 73);
-  doc.text(`Payment ID: ${transaction.paymentId}`, 15, 80);
-  doc.text(
-    `Date: ${new Date(
-      transaction.createdAt || Date.now()
-    ).toLocaleDateString()}`,
-    15,
-    87
-  );
-  doc.text(`Currency: ${transaction.currency || "INR"}`, 15, 94);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
 
-  /* ---------------- Student Info ---------------- */
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(12);
-  doc.text("Student Info", 115, 65);
+    doc.text(`Order ID: ${transaction.orderId}`, 15, 73);
+    doc.text(`Payment ID: ${transaction.paymentId}`, 15, 80);
+    doc.text(
+      `Date: ${new Date(
+        transaction.createdAt || Date.now()
+      ).toLocaleDateString()}`,
+      15,
+      87
+    );
+    doc.text(`Currency: ${transaction.currency || "INR"}`, 15, 94);
+    doc.text(`Gateway: Razorpay`, 15, 101);
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
+    /* ---------------- Student Info ---------------- */
 
-  doc.text(`Name: ${transaction.name}`, 115, 73);
-  doc.text(`Email: ${transaction.email}`, 115, 80);
-  doc.text(`Phone: ${transaction.phone}`, 115, 87);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text("Student Info", 115, 65);
 
-  if (transaction.courseName) {
-    doc.text(`Course: ${transaction.courseName}`, 115, 94);
-  }
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
 
-  /* ---------------- Amount Section ---------------- */
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(13);
-  doc.text("Amount", 15, 125);
+    doc.text(`Name: ${transaction.name}`, 115, 73);
+    doc.text(`Email: ${transaction.email}`, 115, 80);
+    doc.text(`Phone: ${transaction.phone}`, 115, 87);
+    doc.text(`Country: ${transaction.country || "N/A"}`, 115, 94);
 
-  // Table Header
-  doc.setFillColor(240, 240, 240);
-  doc.roundedRect(15, 130, 180, 10, 2, 2, "F");
+    if (transaction.courseName) {
+      doc.text(`Course: ${transaction.courseName}`, 115, 101);
+    }
 
-  doc.setFontSize(11);
-  doc.setTextColor(0);
-  doc.text("Description", 20, 137);
-  doc.text("Amount", 170, 137, { align: "right" });
+    /* ---------------- Amount Section ---------------- */
 
-  // Table Row
-  doc.setFillColor(255, 255, 255);
-  doc.roundedRect(15, 140, 180, 12, 2, 2, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(13);
+    doc.text("Amount", 15, 130);
 
-  doc.setFont("helvetica", "normal");
-  doc.text("Course Payment", 20, 148);
+    doc.setFillColor(240, 240, 240);
+    doc.roundedRect(15, 135, 180, 10, 2, 2, "F");
 
-  doc.text(
-    `${transaction.currency || "INR"} ${transaction.amount}`,
-    170,
-    148,
-    { align: "right" }
-  );
+    doc.setFontSize(11);
+    doc.setTextColor(0);
+    doc.text("Description", 20, 142);
+    doc.text("Amount", 170, 142, { align: "right" });
 
-  /* ---------------- Total Paid Bar ---------------- */
-  doc.setFillColor(37, 99, 235); // Blue
-  doc.roundedRect(15, 160, 120, 14, 3, 3, "F");
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(15, 145, 180, 12, 2, 2, "F");
 
-  doc.setFillColor(249, 115, 22); // Orange
-  doc.roundedRect(135, 160, 60, 14, 3, 3, "F");
+    doc.setFont("helvetica", "normal");
+    doc.text("Course Payment", 20, 153);
 
-  doc.setTextColor(255, 255, 255);
-  doc.setFont("helvetica", "bold");
+    doc.text(
+      `${transaction.currency || "INR"} ${transaction.amount}`,
+      170,
+      153,
+      { align: "right" }
+    );
 
-  doc.text("Total Paid", 75, 169, { align: "center" });
+    /* ---------------- Total Paid ---------------- */
 
-  doc.text(
-    `${transaction.currency || "INR"} ${transaction.amount}`,
-    165,
-    169,
-    { align: "center" }
-  );
+    doc.setFillColor(37, 99, 235);
+    doc.roundedRect(15, 165, 120, 14, 3, 3, "F");
 
-  /* ---------------- Status ---------------- */
-  doc.setFillColor(220, 252, 231);
-  doc.roundedRect(70, 185, 70, 10, 3, 3, "F");
+    doc.setFillColor(249, 115, 22);
+    doc.roundedRect(135, 165, 60, 14, 3, 3, "F");
 
-  doc.setTextColor(22, 163, 74);
-  doc.setFontSize(12);
-  doc.text(
-    `STATUS: ${transaction.status.toUpperCase()}`,
-    105,
-    192,
-    { align: "center" }
-  );
+    doc.setTextColor(255);
+    doc.setFont("helvetica", "bold");
 
-  /* ---------------- Footer ---------------- */
-  doc.setDrawColor(200);
-  doc.line(20, 210, 190, 210);
+    doc.text("Total Paid", 75, 174, { align: "center" });
 
-  doc.setFontSize(9);
-  doc.setTextColor(120);
+    doc.text(
+      `${transaction.currency || "INR"} ${transaction.amount}`,
+      165,
+      174,
+      { align: "center" }
+    );
 
-  doc.text(
-    "This is a system generated payment receipt and does not require signature.",
-    105,
-    218,
-    { align: "center" }
-  );
+    /* ---------------- Status ---------------- */
 
-  doc.text("1A HK International | www.hkinternational.uk", 105, 224, {
-    align: "center",
-  });
+    doc.setFillColor(220, 252, 231);
+    doc.roundedRect(70, 190, 70, 10, 3, 3, "F");
 
-  // ✅ UPDATED EMAIL HERE
-  doc.text("Email: info@hkinternational.uk", 105, 230, {
-    align: "center",
-  });
+    doc.setTextColor(22, 163, 74);
+    doc.setFontSize(12);
 
-  /* ---------------- Save ---------------- */
-  doc.save(`HK_Receipt_${transaction.orderId}.pdf`);
-};
-  if (loading) return <div className="text-center mt-20">Loading...</div>;
+    doc.text(
+      `STATUS: ${transaction.status.toUpperCase()}`,
+      105,
+      197,
+      { align: "center" }
+    );
+
+    /* ---------------- Footer ---------------- */
+
+    doc.setDrawColor(200);
+    doc.line(20, 215, 190, 215);
+
+    doc.setFontSize(9);
+    doc.setTextColor(120);
+
+    doc.text(
+      "This is a system generated payment receipt and does not require signature.",
+      105,
+      223,
+      { align: "center" }
+    );
+
+    doc.text("1A HK International | www.hkinternational.uk", 105, 229, {
+      align: "center",
+    });
+
+    doc.text("Email: info@hkinternational.uk", 105, 235, {
+      align: "center",
+    });
+
+    doc.save(`HK_Receipt_${transaction.orderId}.pdf`);
+  };
+
+  if (loading)
+    return <div className="text-center mt-20">Loading...</div>;
 
   return (
     <MainLayout>
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="bg-white p-8 rounded-xl shadow-xl text-center w-[400px]">
-          <CheckCircle className="mx-auto text-green-500" size={60} />
 
-          <h1 className="text-2xl font-bold mt-4">Payment Successful 🎉</h1>
+          <CheckCircle
+            className="mx-auto text-green-500"
+            size={60}
+          />
 
-          <p className="text-gray-500 mt-2">Your payment has been completed</p>
+          <h1 className="text-2xl font-bold mt-4">
+            Payment Successful
+          </h1>
+
+          <p className="text-gray-500 mt-2">
+            Your payment has been completed
+          </p>
 
           {transaction && (
             <div className="mt-6 text-left space-y-2 text-sm">
-              <p>
-                <b>Order ID:</b> {transaction.orderId}
-              </p>
-              <p>
-                <b>Payment ID:</b> {transaction.paymentId}
-              </p>
-              <p>
-                <b>Name:</b> {transaction.name}
-              </p>
-              <p>
-                <b>Email:</b> {transaction.email}
-              </p>
-              <p>
-                <b>Phone:</b> {transaction.phone}
-              </p>
-              <p>
-                <b>Amount:</b> {transaction.currency} {transaction.amount}
-              </p>
-              <p>
-                <b>Status:</b> {transaction.status}
-              </p>
+              <p><b>Order ID:</b> {transaction.orderId}</p>
+              <p><b>Payment ID:</b> {transaction.paymentId}</p>
+              <p><b>Name:</b> {transaction.name}</p>
+              <p><b>Email:</b> {transaction.email}</p>
+              <p><b>Phone:</b> {transaction.phone}</p>
+              <p><b>Country:</b> {transaction.country}</p>
+              <p><b>Currency:</b> {transaction.currency}</p>
+              <p><b>Amount:</b> {transaction.currency} {transaction.amount}</p>
+              <p><b>Status:</b> {transaction.status}</p>
+              <p><b>Date:</b> {new Date(transaction.createdAt).toLocaleString()}</p>
             </div>
           )}
 

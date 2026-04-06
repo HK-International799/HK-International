@@ -3,17 +3,49 @@ import mongoose from "mongoose";
 const paymentSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    email: { type: String, required: true },
-    phone: { type: String, required: true },
 
-    amount: { type: Number, required: true },
-    currency: { type: String, default: "INR" },
-    country: { type: String, default: "India" },
+    email: {
+      type: String,
+      required: true,
+      lowercase: true,
+      trim: true,
+    },
 
-    orderId: { type: String, index: true },
-    paymentId: { type: String, index: true },
+    phone: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    amount: {
+      type: Number,
+      required: true,
+      min: 1,
+    },
+
+    currency: {
+      type: String,
+      default: "INR",
+      uppercase: true,
+    },
+
+    country: {
+      type: String,
+      default: "India",
+    },
+
+    orderId: {
+      type: String,
+      index: true,
+    },
+
+    paymentId: {
+      type: String,
+      index: true,
+    },
+
     signature: String,
-    txnid: String,
+
     receipt: String,
 
     status: {

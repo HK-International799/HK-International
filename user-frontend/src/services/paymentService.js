@@ -14,19 +14,27 @@ const paymentAPI = axios.create({
 
 export const initiatePayment = async (form) => {
   try {
-    const res = await paymentAPI.post("/payment/initiate", form);
+    const payload = {
+      name: form.name,
+      email: form.email,
+      phone: String(form.phone),
+      amount: Number(form.amount),
+      currency: form.currency,
+      country: form.country,
+    };
+
+    const res = await paymentAPI.post("/payment/initiate", payload);
+
     return res.data;
   } catch (error) {
     console.error("INITIATE ERROR:", error?.response?.data || error.message);
 
     return {
       success: false,
-      message:
-        error?.response?.data?.message || "Payment initiation failed",
+      message: error?.response?.data?.message || "Payment initiation failed",
     };
   }
 };
-
 /* ---------------- Verify Payment ---------------- */
 
 export const verifyPayment = async (paymentData) => {
@@ -38,8 +46,7 @@ export const verifyPayment = async (paymentData) => {
 
     return {
       success: false,
-      message:
-        error?.response?.data?.message || "Verification failed",
+      message: error?.response?.data?.message || "Verification failed",
     };
   }
 };
