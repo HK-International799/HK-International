@@ -85,9 +85,7 @@ const PaymentPage = () => {
           });
 
           if (verifyRes.success) {
-            navigate(
-              `/payment-success?orderId=${response.razorpay_order_id}`
-            );
+            navigate(`/payment-success?orderId=${response.razorpay_order_id}`);
           } else {
             navigate("/payment-failed?reason=verification_failed");
           }
@@ -132,7 +130,6 @@ const PaymentPage = () => {
     <MainLayout>
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-green-50 flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
-
           <div className="text-center mb-6">
             <CreditCard size={40} className="mx-auto text-indigo-600" />
             <h2 className="text-2xl font-bold mt-3">Make Payment</h2>
@@ -146,14 +143,34 @@ const PaymentPage = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              name="name"
+              placeholder="Full Name"
+              value={form.name}
+              onChange={handleChange}
+            />
 
-            <Input name="name" placeholder="Full Name" value={form.name} onChange={handleChange} />
+            <Input
+              name="email"
+              placeholder="Email"
+              value={form.email}
+              onChange={handleChange}
+            />
 
-            <Input name="email" placeholder="Email" value={form.email} onChange={handleChange} />
+            <Input
+              name="phone"
+              placeholder="Phone"
+              value={form.phone}
+              onChange={handleChange}
+            />
 
-            <Input name="phone" placeholder="Phone" value={form.phone} onChange={handleChange} />
-
-            <Input name="amount" placeholder="Amount" type="number" value={form.amount} onChange={handleChange} />
+            <Input
+              name="amount"
+              placeholder="Amount"
+              type="number"
+              value={form.amount}
+              onChange={handleChange}
+            />
 
             {/* Currency */}
             <select
@@ -184,7 +201,6 @@ const PaymentPage = () => {
             >
               {loading ? "Processing..." : "Pay Now"}
             </button>
-
           </form>
         </div>
       </div>
