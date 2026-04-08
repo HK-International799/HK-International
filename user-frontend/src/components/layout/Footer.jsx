@@ -60,6 +60,11 @@ export default function Footer() {
                   Contact
                 </Link>
               </li>
+              <li>
+                <Link to="/ao/login" className="hover:text-white transition">
+                  AO Login
+                </Link>
+              </li>
 
             </ul>
           </div>

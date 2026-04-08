@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -42,6 +41,7 @@ export default function MyCourses() {
     loadCourses();
   }, []);
 
+  console.log(courses)
   const filteredCourses = courses.filter((course) => {
     const matchesSearch = course.title
       ?.toLowerCase()
@@ -49,7 +49,9 @@ export default function MyCourses() {
     const matchesFilter =
       filterStatus === "all" ||
       (filterStatus === "completed" && course.isCompleted) ||
-      (filterStatus === "in-progress" && !course.isCompleted && course.progress > 0) ||
+      (filterStatus === "in-progress" &&
+        !course.isCompleted &&
+        course.progress > 0) ||
       (filterStatus === "not-started" && (course.progress || 0) === 0);
     return matchesSearch && matchesFilter;
   });
@@ -57,7 +59,8 @@ export default function MyCourses() {
   const totalProgress =
     courses.length > 0
       ? Math.round(
-          courses.reduce((sum, c) => sum + (c.progress || 0), 0) / courses.length
+          courses.reduce((sum, c) => sum + (c.progress || 0), 0) /
+            courses.length,
         )
       : 0;
 
@@ -77,7 +80,8 @@ export default function MyCourses() {
                 My Courses
               </h1>
               <p className="text-gray-500 mt-1 text-sm">
-                {courses.length} course{courses.length !== 1 ? "s" : ""} enrolled
+                {courses.length} course{courses.length !== 1 ? "s" : ""}{" "}
+                enrolled
                 {completedCount > 0 && ` · ${completedCount} completed`}
               </p>
             </div>
@@ -115,25 +119,27 @@ export default function MyCourses() {
                 />
               </div>
               <div className="flex gap-2">
-                {["all", "in-progress", "completed", "not-started"].map((status) => (
-                  <button
-                    key={status}
-                    onClick={() => setFilterStatus(status)}
-                    className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
-                      filterStatus === status
-                        ? "bg-indigo-600 text-white shadow-sm"
-                        : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
-                    }`}
-                  >
-                    {status === "all"
-                      ? "All"
-                      : status === "in-progress"
-                      ? "In Progress"
-                      : status === "completed"
-                      ? "Completed"
-                      : "Not Started"}
-                  </button>
-                ))}
+                {["all", "in-progress", "completed", "not-started"].map(
+                  (status) => (
+                    <button
+                      key={status}
+                      onClick={() => setFilterStatus(status)}
+                      className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
+                        filterStatus === status
+                          ? "bg-indigo-600 text-white shadow-sm"
+                          : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                      }`}
+                    >
+                      {status === "all"
+                        ? "All"
+                        : status === "in-progress"
+                          ? "In Progress"
+                          : status === "completed"
+                            ? "Completed"
+                            : "Not Started"}
+                    </button>
+                  ),
+                )}
               </div>
             </div>
           )}
@@ -180,10 +186,10 @@ export default function MyCourses() {
                 progress >= 100
                   ? "bg-green-500"
                   : progress >= 50
-                  ? "bg-blue-500"
-                  : progress > 0
-                  ? "bg-orange-500"
-                  : "bg-gray-300";
+                    ? "bg-blue-500"
+                    : progress > 0
+                      ? "bg-orange-500"
+                      : "bg-gray-300";
 
               return (
                 <Link
@@ -243,7 +249,9 @@ export default function MyCourses() {
                           <div className="flex items-center gap-1 text-white/70 text-xs">
                             <Clock className="w-3 h-3" />
                             <span>
-                              {new Date(course.lastAccessedAt).toLocaleDateString("en-GB", {
+                              {new Date(
+                                course.lastAccessedAt,
+                              ).toLocaleDateString("en-GB", {
                                 day: "2-digit",
                                 month: "short",
                               })}
@@ -274,14 +282,21 @@ export default function MyCourses() {
                       {/* Progress Bar */}
                       <div className="mt-4">
                         <div className="flex justify-between text-xs mb-1.5">
-                          <span className="text-gray-500 font-medium">Progress</span>
-                          <span className="font-bold text-gray-700">{progress}%</span>
+                          <span className="text-gray-500 font-medium">
+                            Progress
+                          </span>
+                          <span className="font-bold text-gray-700">
+                            {progress}%
+                          </span>
                         </div>
                         <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${progress}%` }}
-                            transition={{ duration: 0.8, delay: 0.2 + i * 0.05 }}
+                            transition={{
+                              duration: 0.8,
+                              delay: 0.2 + i * 0.05,
+                            }}
                             className={`h-full rounded-full ${progressColor}`}
                           />
                         </div>
@@ -293,8 +308,8 @@ export default function MyCourses() {
                           {course.isCompleted
                             ? "Review Course"
                             : progress > 0
-                            ? "Continue Learning"
-                            : "Start Course"}
+                              ? "Continue Learning"
+                              : "Start Course"}
                         </span>
                         <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-orange-500 group-hover:translate-x-1 transition-all" />
                       </div>

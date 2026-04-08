@@ -18,35 +18,26 @@ import {
   deleteUser,
 } from "../../services/adminService";
 
-import {
-  Plus,
-  Trash2,
-} from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 
 export default function Learners() {
-  const [users, setUsers] =
-    useState([]);
+  const [users, setUsers] = useState([]);
 
-  const [search, setSearch] =
-    useState("");
+  const [search, setSearch] = useState("");
 
-  const [roleFilter, setRoleFilter] =
-    useState("all");
+  const [roleFilter, setRoleFilter] = useState("all");
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const [showCreate, setShowCreate] =
-    useState(false);
+  const [showCreate, setShowCreate] = useState(false);
 
-  const [form, setForm] =
-    useState({
-      name: "",
-      email: "",
-      mobile: "",
-      password: "",
-      role: "student",
-    });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    mobile: "",
+    password: "",
+    role: "student",
+  });
 
   useEffect(() => {
     load();
@@ -56,8 +47,7 @@ export default function Learners() {
     try {
       setLoading(true);
 
-      const data =
-        await getAllUsers();
+      const data = await getAllUsers();
 
       const list = data?.users || (Array.isArray(data) ? data : []);
       setUsers(list);
@@ -70,7 +60,13 @@ export default function Learners() {
 
   const handleCreate = async () => {
     try {
-      await createUser(form);
+      const res = await createUser(form);
+
+      const credentials = res.data.credentials;
+
+      alert(
+        `User Created Successfully\n\nEmail: ${credentials.email}\nPassword: ${credentials.password}`,
+      );
 
       setShowCreate(false);
 
@@ -84,16 +80,11 @@ export default function Learners() {
 
       load();
     } catch (err) {
-      alert(
-        err.response?.data?.message ||
-          "Error"
-      );
+      alert(err.response?.data?.message || "Error creating user");
     }
   };
-
   const handleDelete = async (id) => {
-    if (!confirm("Delete user?"))
-      return;
+    if (!confirm("Delete user?")) return;
 
     try {
       await deleteUser(id);
@@ -101,29 +92,15 @@ export default function Learners() {
     } catch {}
   };
 
-  const filtered =
-    users.filter((u) => {
-      const matchSearch =
-        u.name
-          ?.toLowerCase()
-          .includes(
-            search.toLowerCase()
-          ) ||
-        u.email
-          ?.toLowerCase()
-          .includes(
-            search.toLowerCase()
-          );
+  const filtered = users.filter((u) => {
+    const matchSearch =
+      u.name?.toLowerCase().includes(search.toLowerCase()) ||
+      u.email?.toLowerCase().includes(search.toLowerCase());
 
-      const matchRole =
-        roleFilter === "all" ||
-        u.role === roleFilter;
+    const matchRole = roleFilter === "all" || u.role === roleFilter;
 
-      return (
-        matchSearch &&
-        matchRole
-      );
-    });
+    return matchSearch && matchRole;
+  });
 
   const roleColor = {
     student: "primary",
@@ -137,21 +114,14 @@ export default function Learners() {
       label: "User",
       render: (r) => (
         <div className="flex items-center gap-3">
-
           <div className="w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center text-sm font-bold">
-            {r.name
-              ?.charAt(0)
-              .toUpperCase()}
+            {r.name?.charAt(0).toUpperCase()}
           </div>
 
           <div>
-            <p className="font-medium text-gray-800">
-              {r.name}
-            </p>
+            <p className="font-medium text-gray-800">{r.name}</p>
 
-            <p className="text-xs text-gray-400">
-              {r.email}
-            </p>
+            <p className="text-xs text-gray-400">{r.email}</p>
           </div>
         </div>
       ),
@@ -160,31 +130,19 @@ export default function Learners() {
     {
       key: "mobile",
       label: "Mobile",
-      render: (r) =>
-        r.mobile || "—",
+      render: (r) => r.mobile || "—",
     },
 
     {
       key: "role",
       label: "Role",
-      render: (r) => (
-        <Badge
-          variant={
-            roleColor[r.role]
-          }
-        >
-          {r.role}
-        </Badge>
-      ),
+      render: (r) => <Badge variant={roleColor[r.role]}>{r.role}</Badge>,
     },
 
     {
       key: "createdAt",
       label: "Joined",
-      render: (r) =>
-        new Date(
-          r.createdAt
-        ).toLocaleDateString(),
+      render: (r) => new Date(r.createdAt).toLocaleDateString(),
     },
 
     {
@@ -194,16 +152,11 @@ export default function Learners() {
         <button
           onClick={(e) => {
             e.stopPropagation();
-            handleDelete(
-              r._id
-            );
+            handleDelete(r._id);
           }}
           className="p-2 rounded-lg hover:bg-red-50"
         >
-          <Trash2
-            size={16}
-            className="text-red-500"
-          />
+          <Trash2 size={16} className="text-red-500" />
         </button>
       ),
     },
@@ -211,18 +164,12 @@ export default function Learners() {
 
   return (
     <AdminLayout>
-
       <div className="animate-fadeIn">
-
         <PageHeader
           title="Learners & Users"
           subtitle={`${users.length} total users`}
           actions={
-            <Button
-              onClick={() =>
-                setShowCreate(true)
-              }
-            >
+            <Button onClick={() => setShowCreate(true)}>
               <Plus size={16} />
               Add User
             </Button>
@@ -230,51 +177,35 @@ export default function Learners() {
         />
 
         <div className="flex gap-3 mb-4">
-
           <Input
             placeholder="Search users..."
             value={search}
-            onChange={(e) =>
-              setSearch(
-                e.target.value
-              )
-            }
+            onChange={(e) => setSearch(e.target.value)}
             className="max-w-sm"
           />
 
           <Select
             value={roleFilter}
-            onChange={(e) =>
-              setRoleFilter(
-                e.target.value
-              )
-            }
+            onChange={(e) => setRoleFilter(e.target.value)}
             options={[
               {
                 value: "all",
                 label: "All",
               },
               {
-                value:
-                  "student",
-                label:
-                  "Students",
+                value: "student",
+                label: "Students",
               },
               {
-                value:
-                  "tutor",
-                label:
-                  "Tutors",
+                value: "tutor",
+                label: "Tutors",
               },
               {
-                value:
-                  "admin",
-                label:
-                  "Admins",
+                value: "admin",
+                label: "Admins",
               },
             ]}
           />
-
         </div>
 
         {loading ? (
@@ -289,21 +220,17 @@ export default function Learners() {
 
         <Modal
           open={showCreate}
-          onClose={() =>
-            setShowCreate(false)
-          }
+          onClose={() => setShowCreate(false)}
           title="Create User"
         >
           <div className="space-y-4">
-
             <Input
               label="Full Name"
               value={form.name}
               onChange={(e) =>
                 setForm({
                   ...form,
-                  name:
-                    e.target.value,
+                  name: e.target.value,
                 })
               }
             />
@@ -315,8 +242,7 @@ export default function Learners() {
               onChange={(e) =>
                 setForm({
                   ...form,
-                  email:
-                    e.target.value,
+                  email: e.target.value,
                 })
               }
             />
@@ -327,8 +253,7 @@ export default function Learners() {
               onChange={(e) =>
                 setForm({
                   ...form,
-                  mobile:
-                    e.target.value,
+                  mobile: e.target.value,
                 })
               }
             />
@@ -340,8 +265,7 @@ export default function Learners() {
               onChange={(e) =>
                 setForm({
                   ...form,
-                  password:
-                    e.target.value,
+                  password: e.target.value,
                 })
               }
             />
@@ -352,54 +276,31 @@ export default function Learners() {
               onChange={(e) =>
                 setForm({
                   ...form,
-                  role:
-                    e.target.value,
+                  role: e.target.value,
                 })
               }
               options={[
                 {
-                  value:
-                    "student",
-                  label:
-                    "Student",
+                  value: "student",
+                  label: "Student",
                 },
                 {
-                  value:
-                    "tutor",
-                  label:
-                    "Tutor",
+                  value: "tutor",
+                  label: "Tutor",
                 },
               ]}
             />
 
             <div className="flex justify-end gap-3 pt-2">
-
-              <Button
-                variant="secondary"
-                onClick={() =>
-                  setShowCreate(
-                    false
-                  )
-                }
-              >
+              <Button variant="secondary" onClick={() => setShowCreate(false)}>
                 Cancel
               </Button>
 
-              <Button
-                onClick={
-                  handleCreate
-                }
-              >
-                Create User
-              </Button>
-
+              <Button onClick={handleCreate}>Create User</Button>
             </div>
-
           </div>
         </Modal>
-
       </div>
-
     </AdminLayout>
   );
 }

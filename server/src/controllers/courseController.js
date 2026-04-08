@@ -1,40 +1,3 @@
-// import Course from "../models/Course.js";
-
-// export const getCourses = async (req, res) => {
-//   try {
-//     const courses = await Course.find()
-//       .populate({
-//         path: "sections",
-//         populate: { path: "lessons" }
-//       })
-//       .select("-__v");
-
-//     res.json(courses);
-//   } catch (err) {
-//     res.status(500).json({ message: "Error fetching courses" });
-//   }
-// };
-
-// export const getCourseById = async (req, res) => {
-//   try {
-//     const course = await Course.findById(req.params.id)
-//       .populate({
-//         path: "sections",
-//         populate: { path: "lessons" }
-//       })
-//       .select("-__v");
-
-//     if (!course) {
-//       return res.status(404).json({ message: "Course not found" });
-//     }
-
-//     res.json(course);
-
-//   } catch (err) {
-//     res.status(500).json({ message: "Error fetching course" });
-//   }
-// };
-
 import Course from "../models/Course.js";
 import Section from "../models/Section.js";
 import User from "../models/User.js";
@@ -68,7 +31,9 @@ export const getCourses = async (req, res) => {
 
     res.status(200).json(courses);
   } catch (err) {
-    res.status(500).json({ message: "Error fetching courses", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error fetching courses", error: err.message });
   }
 };
 
@@ -96,7 +61,7 @@ export const getCourseById = async (req, res) => {
     // Student access check
     if (req.user.role === "student") {
       const enrolled = (req.user.enrolledCourses || []).some(
-        (c) => c.toString() === id
+        (c) => c.toString() === id,
       );
       if (!enrolled) {
         return res.status(403).json({ message: "Not enrolled in this course" });
@@ -105,7 +70,9 @@ export const getCourseById = async (req, res) => {
 
     res.status(200).json(course);
   } catch (err) {
-    res.status(500).json({ message: "Error fetching course", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error fetching course", error: err.message });
   }
 };
 
@@ -133,7 +100,63 @@ export const createCourse = async (req, res) => {
       course,
     });
   } catch (err) {
-    res.status(500).json({ message: "Error creating course", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error creating course", error: err.message });
+  }
+};
+
+export const createFullCourse = async (req, res) => {
+  try {
+    const { title, description, status, sections } = req.body;
+
+    const course = await Course.create({
+      title,
+      description,
+      status,
+    });
+
+    for (const sec of sections) {
+      const section = await Section.create({
+        title: sec.title,
+        courseId: course._id,
+      });
+
+      course.sections.push(section._id);
+
+      for (const les of sec.lessons) {
+        const lesson = await Lesson.create({
+          title: les.title,
+          videoUrl: les.videoUrl,
+          sectionId: section._id,
+        });
+
+        section.lessons.push(lesson._id);
+
+        if (les.quiz) {
+          const quiz = await Quiz.create({
+            title: les.quiz.title,
+            questions: les.quiz.questions,
+          });
+
+          lesson.quizId = quiz._id;
+          await lesson.save();
+        }
+
+        if (les.materials) {
+          lesson.materials = les.materials;
+          await lesson.save();
+        }
+      }
+
+      await section.save();
+    }
+
+    await course.save();
+
+    res.status(201).json(course);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
@@ -158,7 +181,9 @@ export const updateCourse = async (req, res) => {
       req.user.role === "tutor" &&
       course.assignedTutor?.toString() !== req.user._id.toString()
     ) {
-      return res.status(403).json({ message: "Not authorized to update this course" });
+      return res
+        .status(403)
+        .json({ message: "Not authorized to update this course" });
     }
 
     const allowedFields = ["title", "description", "thumbnail", "status"];
@@ -176,7 +201,9 @@ export const updateCourse = async (req, res) => {
       course,
     });
   } catch (err) {
-    res.status(500).json({ message: "Error updating course", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error updating course", error: err.message });
   }
 };
 
@@ -199,7 +226,9 @@ export const deleteCourse = async (req, res) => {
 
     res.status(200).json({ message: "Course deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: "Error deleting course", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error deleting course", error: err.message });
   }
 };
 
@@ -244,7 +273,9 @@ export const assignTutor = async (req, res) => {
 
     res.status(200).json({ message: "Tutor assigned successfully", course });
   } catch (err) {
-    res.status(500).json({ message: "Error assigning tutor", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error assigning tutor", error: err.message });
   }
 };
 
@@ -281,7 +312,9 @@ export const addSection = async (req, res) => {
 
     res.status(201).json({ message: "Section added successfully", section });
   } catch (err) {
-    res.status(500).json({ message: "Error adding section", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error adding section", error: err.message });
   }
 };
 
@@ -306,7 +339,9 @@ export const updateSection = async (req, res) => {
 
     res.status(200).json({ message: "Section updated successfully", section });
   } catch (err) {
-    res.status(500).json({ message: "Error updating section", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error updating section", error: err.message });
   }
 };
 
@@ -332,6 +367,66 @@ export const deleteSection = async (req, res) => {
 
     res.status(200).json({ message: "Section deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: "Error deleting section", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error deleting section", error: err.message });
+  }
+};
+
+/**
+ * POST /api/courses/:id/enroll-student
+ */
+export const enrollStudent = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const { id } = req.params;
+    const { studentId } = req.body;
+
+    if (!isValidId(id) || !isValidId(studentId)) {
+      return res.status(400).json({ message: "Invalid ID" });
+    }
+
+    const course = await Course.findById(id).session(session);
+    if (!course) return res.status(404).json({ message: "Course not found" });
+
+    const student = await User.findById(studentId).session(session);
+    if (!student || student.role !== "student") {
+      return res.status(400).json({ message: "Invalid student" });
+    }
+
+    if (student.enrolledCourses.includes(course._id)) {
+      return res.status(400).json({
+        message: "Student already enrolled",
+      });
+    }
+
+    await User.findByIdAndUpdate(
+      studentId,
+      { $addToSet: { enrolledCourses: course._id } },
+      { session },
+    );
+
+    await Course.findByIdAndUpdate(
+      id,
+      { $addToSet: { enrolledStudents: student._id } },
+      { session },
+    );
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(200).json({
+      message: "Student enrolled successfully",
+    });
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
+
+    res.status(500).json({
+      message: "Enrollment failed",
+      error: err.message,
+    });
   }
 };

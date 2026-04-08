@@ -1,230 +1,1562 @@
-// import { useParams } from "react-router-dom";
+// import { useParams, Link } from "react-router-dom";
 // import { useEffect, useState } from "react";
-// import { getCourseById } from "../../services/courseService";
+// import { motion, AnimatePresence } from "framer-motion";
+// import {
+//   ArrowLeft,
+//   BookOpen,
+//   FileText,
+//   CheckCircle2,
+//   Lock,
+//   ChevronDown,
+//   ChevronRight,
+//   Download,
+//   HelpCircle,
+//   Loader2,
+//   AlertCircle,
+//   Trophy,
+//   XCircle,
+// } from "lucide-react";
+// import {
+//   getCourseChapters,
+//   submitChapterQuiz,
+//   getChapterQuiz,
+//   getCourseById,
+// } from "../../services/studentService";
 
-// export default function CoursePlayer() {
+// /* ── helper ── */
+// const API_BASE = import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
 
-//   const { id } = useParams();
-//   const [course, setCourse] = useState(null);
+// /* ======================================================
+//    QuizPanel – renders inside an open chapter
+// ====================================================== */
+// function QuizPanel({ chapterId, onComplete, onClose }) {
+//   const [quiz, setQuiz] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [answers, setAnswers] = useState({});       // { questionId: selectedOption }
+//   const [result, setResult] = useState(null);        // { score, totalMarks, passed, gradedAnswers }
+//   const [submitting, setSubmitting] = useState(false);
+//   const [error, setError] = useState(null);
 
 //   useEffect(() => {
+//     getChapterQuiz(chapterId)
+//       .then(({ quiz: q }) => setQuiz(q))
+//       .catch(() => setError("Failed to load quiz"))
+//       .finally(() => setLoading(false));
+//   }, [chapterId]);
 
-//     const loadCourse = async () => {
-//       const data = await getCourseById(id);
-//       setCourse(data);
-//     };
+//   const handleSelect = (questionId, option) => {
+//     if (result) return; // locked after submit
+//     setAnswers((prev) => ({ ...prev, [questionId]: option }));
+//   };
 
-//     loadCourse();
+//   const handleSubmit = async () => {
+//     const formattedAnswers = (quiz.questions || []).map((q) => ({
+//       questionId: q._id,
+//       selectedOption: answers[q._id] || "",
+//     }));
 
-//   }, [id]);
+//     setSubmitting(true);
+//     try {
+//       const res = await submitChapterQuiz(chapterId, formattedAnswers);
+//       setResult(res);
+//       if (res.passed) onComplete(); // notify parent to unlock next
+//     } catch (err) {
+//       setError(err.message || "Submission failed");
+//     } finally {
+//       setSubmitting(false);
+//     }
+//   };
 
-//   if (!course) return <div>Loading...</div>;
+//   const allAnswered =
+//     quiz?.questions?.length > 0 &&
+//     quiz.questions.every((q) => answers[q._id]);
 
-//   return (
-//     <div className="flex">
+//   /* Loading */
+//   if (loading) {
+//     return (
+//       <div className="flex items-center justify-center py-10">
+//         <Loader2 className="w-6 h-6 animate-spin text-orange-500" />
+//       </div>
+//     );
+//   }
 
-//       {/* Lesson List */}
-//       <div className="w-1/4 border-r p-4">
+//   /* No quiz */
+//   if (!quiz) {
+//     return (
+//       <div className="text-center py-8">
+//         <CheckCircle2 className="w-10 h-10 text-green-500 mx-auto mb-3" />
+//         <p className="text-gray-600 font-medium">No quiz for this chapter.</p>
+//         <p className="text-sm text-gray-400 mt-1">
+//           This chapter is already unlocked.
+//         </p>
+//         <button
+//           onClick={onComplete}
+//           className="mt-4 px-5 py-2.5 bg-green-500 text-white rounded-xl text-sm font-medium hover:bg-green-600"
+//         >
+//           Mark as Complete
+//         </button>
+//       </div>
+//     );
+//   }
 
-//         <h2 className="font-bold mb-4">
-//           Lessons
-//         </h2>
+//   /* Error */
+//   if (error) {
+//     return (
+//       <div className="text-center py-6">
+//         <AlertCircle className="w-8 h-8 text-red-400 mx-auto mb-2" />
+//         <p className="text-red-500 text-sm">{error}</p>
+//       </div>
+//     );
+//   }
 
-//         {course.sections?.map((section) => (
+//   /* Result screen */
+//   if (result) {
+//     return (
+//       <motion.div
+//         initial={{ opacity: 0, y: 10 }}
+//         animate={{ opacity: 1, y: 0 }}
+//         className="text-center py-6 space-y-4"
+//       >
+//         {result.passed ? (
+//           <Trophy className="w-14 h-14 text-yellow-500 mx-auto" />
+//         ) : (
+//           <XCircle className="w-14 h-14 text-red-400 mx-auto" />
+//         )}
+//         <div>
+//           <p className="text-xl font-bold text-gray-800">
+//             {result.passed ? "Great work! 🎉" : "Keep trying!"}
+//           </p>
+//           <p className="text-gray-500 text-sm mt-1">
+//             You scored{" "}
+//             <span className="font-bold text-gray-700">
+//               {result.score}/{result.totalMarks}
+//             </span>
+//           </p>
+//         </div>
 
-//           <div key={section._id} className="mb-4">
-
-//             <h3 className="font-semibold">
-//               {section.title}
-//             </h3>
-
-//             {section.lessons?.map((lesson) => (
-
+//         {/* Answer review */}
+//         <div className="text-left space-y-3 mt-4">
+//           {quiz.questions.map((q, idx) => {
+//             const graded = result.gradedAnswers?.find(
+//               (a) => a.questionId === q._id
+//             );
+//             const selectedOpt = answers[q._id];
+//             const isCorrect = graded?.correct ?? selectedOpt === q.correctAnswer;
+//             return (
 //               <div
-//                 key={lesson._id}
-//                 className="ml-3 text-sm text-gray-600"
+//                 key={q._id}
+//                 className={`p-3 rounded-xl border text-sm ${
+//                   isCorrect
+//                     ? "bg-green-50 border-green-200"
+//                     : "bg-red-50 border-red-200"
+//                 }`}
 //               >
-//                 {lesson.title}
+//                 <p className="font-medium text-gray-700 mb-1">
+//                   {idx + 1}. {q.prompt}
+//                 </p>
+//                 <p className="text-xs text-gray-500">
+//                   Your answer:{" "}
+//                   <span
+//                     className={
+//                       isCorrect ? "text-green-700 font-medium" : "text-red-600 font-medium"
+//                     }
+//                   >
+//                     {selectedOpt || "Not answered"}
+//                   </span>
+//                 </p>
+//                 {!isCorrect && (
+//                   <p className="text-xs text-green-600 mt-0.5">
+//                     Correct: {q.correctAnswer}
+//                   </p>
+//                 )}
 //               </div>
+//             );
+//           })}
+//         </div>
 
+//         {result.passed ? (
+//           <button
+//             onClick={onClose}
+//             className="w-full mt-4 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl font-medium text-sm hover:shadow-lg"
+//           >
+//             Continue to Next Chapter →
+//           </button>
+//         ) : (
+//           <button
+//             onClick={() => {
+//               setResult(null);
+//               setAnswers({});
+//             }}
+//             className="w-full mt-4 py-2.5 bg-orange-500 text-white rounded-xl font-medium text-sm hover:bg-orange-600"
+//           >
+//             Retry Quiz
+//           </button>
+//         )}
+//       </motion.div>
+//     );
+//   }
+
+//   /* Quiz questions */
+//   return (
+//     <div className="space-y-5">
+//       <div className="flex items-center justify-between">
+//         <h4 className="font-semibold text-gray-800 flex items-center gap-2">
+//           <HelpCircle className="w-4 h-4 text-orange-500" />
+//           {quiz.title || "Chapter Quiz"}
+//         </h4>
+//         <span className="text-xs text-gray-400">
+//           {quiz.questions?.length} question{quiz.questions?.length !== 1 ? "s" : ""}
+//           {quiz.totalMarks > 0 && ` · ${quiz.totalMarks} marks`}
+//         </span>
+//       </div>
+
+//       {quiz.questions?.map((q, idx) => (
+//         <div key={q._id} className="space-y-2">
+//           <p className="text-sm font-medium text-gray-700">
+//             {idx + 1}. {q.prompt}
+//           </p>
+//           <div className="grid gap-2">
+//             {q.options?.map((opt, i) => (
+//               <button
+//                 key={i}
+//                 onClick={() => handleSelect(q._id, opt)}
+//                 className={`text-left px-4 py-2.5 rounded-xl border text-sm transition-all ${
+//                   answers[q._id] === opt
+//                     ? "bg-orange-500 border-orange-500 text-white font-medium"
+//                     : "bg-white border-gray-200 text-gray-600 hover:border-orange-300 hover:bg-orange-50"
+//                 }`}
+//               >
+//                 {opt}
+//               </button>
 //             ))}
-
 //           </div>
+//         </div>
+//       ))}
 
-//         ))}
-
-//       </div>
-
-//       {/* Video Player */}
-//       <div className="flex-1 p-6">
-
-//         <h1 className="text-2xl font-bold mb-4">
-//           {course.title}
-//         </h1>
-
-//         <p>{course.description}</p>
-
-//       </div>
-
+//       <button
+//         onClick={handleSubmit}
+//         disabled={!allAnswered || submitting}
+//         className="w-full py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-semibold text-sm hover:from-orange-600 hover:to-orange-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg shadow-orange-200 flex items-center justify-center gap-2"
+//       >
+//         {submitting ? (
+//           <>
+//             <Loader2 className="w-4 h-4 animate-spin" />
+//             Submitting...
+//           </>
+//         ) : (
+//           "Submit Quiz"
+//         )}
+//       </button>
 //     </div>
 //   );
 // }
 
+// /* ======================================================
+//    ChapterCard – one chapter in the list
+// ====================================================== */
+// function ChapterCard({
+//   chapter,
+//   index,
+//   isCompleted,
+//   isLocked,
+//   isActive,
+//   onOpen,
+// }) {
+//   return (
+//     <motion.div
+//       initial={{ opacity: 0, y: 10 }}
+//       animate={{ opacity: 1, y: 0 }}
+//       transition={{ delay: index * 0.05 }}
+//       className={`rounded-2xl border transition-all ${
+//         isActive
+//           ? "border-orange-300 shadow-md shadow-orange-100"
+//           : isCompleted
+//           ? "border-green-200 bg-green-50/40"
+//           : isLocked
+//           ? "border-gray-100 bg-gray-50 opacity-60"
+//           : "border-gray-200 bg-white hover:border-orange-200 hover:shadow-sm"
+//       }`}
+//     >
+//       <button
+//         onClick={() => !isLocked && onOpen(chapter)}
+//         disabled={isLocked}
+//         className="w-full flex items-center gap-4 px-5 py-4 text-left"
+//       >
+//         {/* Number / status icon */}
+//         <div
+//           className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-sm ${
+//             isCompleted
+//               ? "bg-green-500 text-white"
+//               : isLocked
+//               ? "bg-gray-200 text-gray-400"
+//               : isActive
+//               ? "bg-orange-500 text-white"
+//               : "bg-indigo-50 text-indigo-600"
+//           }`}
+//         >
+//           {isCompleted ? (
+//             <CheckCircle2 className="w-5 h-5" />
+//           ) : isLocked ? (
+//             <Lock className="w-4 h-4" />
+//           ) : (
+//             index + 1
+//           )}
+//         </div>
+
+//         <div className="flex-1 min-w-0">
+//           <p
+//             className={`font-semibold truncate ${
+//               isLocked ? "text-gray-400" : "text-gray-800"
+//             }`}
+//           >
+//             {chapter.title}
+//           </p>
+//           {chapter.description && (
+//             <p className="text-xs text-gray-400 mt-0.5 truncate">
+//               {chapter.description}
+//             </p>
+//           )}
+//           <div className="flex items-center gap-3 mt-1">
+//             {chapter.documentUrl && (
+//               <span className="text-xs text-blue-500 flex items-center gap-1">
+//                 <FileText className="w-3 h-3" />
+//                 Document
+//               </span>
+//             )}
+//             {chapter.quizId && (
+//               <span className="text-xs text-orange-500 flex items-center gap-1">
+//                 <HelpCircle className="w-3 h-3" />
+//                 Quiz
+//               </span>
+//             )}
+//           </div>
+//         </div>
+
+//         <div className="flex-shrink-0">
+//           {isLocked ? (
+//             <Lock className="w-4 h-4 text-gray-300" />
+//           ) : isActive ? (
+//             <ChevronDown className="w-4 h-4 text-orange-500" />
+//           ) : (
+//             <ChevronRight className="w-4 h-4 text-gray-300" />
+//           )}
+//         </div>
+//       </button>
+
+//       {/* Expanded chapter content */}
+//       <AnimatePresence initial={false}>
+//         {isActive && (
+//           <motion.div
+//             initial={{ height: 0, opacity: 0 }}
+//             animate={{ height: "auto", opacity: 1 }}
+//             exit={{ height: 0, opacity: 0 }}
+//             transition={{ duration: 0.25 }}
+//             className="overflow-hidden"
+//           >
+//             <ChapterContent chapter={chapter} isCompleted={isCompleted} />
+//           </motion.div>
+//         )}
+//       </AnimatePresence>
+//     </motion.div>
+//   );
+// }
+
+// /* ======================================================
+//    ChapterContent – document + quiz inside expanded card
+// ====================================================== */
+// function ChapterContent({ chapter, isCompleted }) {
+//   const [showQuiz, setShowQuiz] = useState(false);
+//   const [chapterDone, setChapterDone] = useState(isCompleted);
+
+//   const docUrl = chapter.documentUrl
+//     ? `${API_BASE}${chapter.documentUrl}`
+//     : null;
+
+//   const handleQuizComplete = () => {
+//     setChapterDone(true);
+//     setShowQuiz(false);
+//   };
+
+//   return (
+//     <div className="border-t border-gray-100 px-5 py-5 space-y-5">
+//       {/* Document section */}
+//       {docUrl ? (
+//         <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 space-y-3">
+//           <div className="flex items-center gap-2">
+//             <FileText className="w-4 h-4 text-blue-600" />
+//             <p className="font-semibold text-blue-800 text-sm">
+//               Chapter Material
+//             </p>
+//           </div>
+//           <p className="text-xs text-blue-600">
+//             {chapter.documentName || "Study document"}
+//           </p>
+//           <div className="flex gap-3">
+//             <a
+//               href={docUrl}
+//               target="_blank"
+//               rel="noopener noreferrer"
+//               className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-medium hover:bg-blue-700 transition"
+//             >
+//               <FileText className="w-3.5 h-3.5" />
+//               View Document
+//             </a>
+//             <a
+//               href={docUrl}
+//               download
+//               className="flex items-center gap-1.5 px-4 py-2 bg-white border border-blue-200 text-blue-600 rounded-xl text-xs font-medium hover:bg-blue-50 transition"
+//             >
+//               <Download className="w-3.5 h-3.5" />
+//               Download
+//             </a>
+//           </div>
+//         </div>
+//       ) : (
+//         <div className="bg-gray-50 border border-dashed border-gray-200 rounded-2xl p-4 text-center text-sm text-gray-400">
+//           No document uploaded for this chapter
+//         </div>
+//       )}
+
+//       {/* Quiz / Complete section */}
+//       {chapterDone ? (
+//         <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-2xl px-4 py-3">
+//           <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+//           <p className="text-sm text-green-700 font-medium">
+//             Chapter completed! Next chapter is unlocked.
+//           </p>
+//         </div>
+//       ) : chapter.quizId ? (
+//         <div className="space-y-3">
+//           {!showQuiz ? (
+//             <button
+//               onClick={() => setShowQuiz(true)}
+//               className="w-full py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-semibold text-sm hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg shadow-orange-200 flex items-center justify-center gap-2"
+//             >
+//               <HelpCircle className="w-4 h-4" />
+//               Take Chapter Quiz to Unlock Next
+//             </button>
+//           ) : (
+//             <div className="bg-white border border-gray-200 rounded-2xl p-5">
+//               <QuizPanel
+//                 chapterId={chapter._id}
+//                 onComplete={handleQuizComplete}
+//                 onClose={() => setShowQuiz(false)}
+//               />
+//             </div>
+//           )}
+//         </div>
+//       ) : (
+//         /* No quiz: mark complete freely */
+//         <div className="bg-gray-50 border border-dashed border-gray-200 rounded-2xl px-4 py-3 text-center text-sm text-gray-500">
+//           No quiz for this chapter — it is always accessible
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+
+// /* ======================================================
+//    Main: CoursePlayer (Chapter view)
+// ====================================================== */
+// export default function CoursePlayer() {
+//   const { id: courseId } = useParams();
+
+//   const [course, setCourse] = useState(null);
+//   const [chapters, setChapters] = useState([]);
+//   const [completedIds, setCompletedIds] = useState(new Set());
+//   const [activeChapterId, setActiveChapterId] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+
+//   /* ── Load everything ── */
+//   const loadAll = async () => {
+//     try {
+//       const [courseData, chapterData] = await Promise.all([
+//         getCourseById(courseId),
+//         getCourseChaptersWithProgress(courseId),
+//       ]);
+//       setCourse(courseData);
+//       setChapters(chapterData.chapters || []);
+//       setCompletedIds(new Set(chapterData.completedChapters || []));
+
+//       // Auto-open first incomplete chapter
+//       const firstIncomplete = (chapterData.chapters || []).find(
+//         (c) => !(chapterData.completedChapters || []).includes(c._id)
+//       );
+//       if (firstIncomplete) setActiveChapterId(firstIncomplete._id);
+//       else if (chapterData.chapters?.length > 0) {
+//         setActiveChapterId(chapterData.chapters[0]._id);
+//       }
+//     } catch (err) {
+//       setError(err.message || "Failed to load course");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     loadAll();
+//   }, [courseId]);
+
+//   /* Re-fetch chapters (and completed list) after a quiz is submitted */
+//   const refreshProgress = async () => {
+//     try {
+//       const data = await getCourseChaptersWithProgress(courseId);
+//       setCompletedIds(new Set(data.completedChapters || []));
+//       setChapters(data.chapters || []);
+//     } catch {
+//       /* silent */
+//     }
+//   };
+
+//   /* Determines if a chapter is locked:
+//      Chapter index 0 is always open.
+//      Chapter N is open if chapter N-1 is completed OR chapter N-1 has no quiz. */
+//   const isChapterLocked = (index) => {
+//     if (index === 0) return false;
+//     const prev = chapters[index - 1];
+//     if (!prev) return false;
+//     // If previous has no quiz it is freely completable — treat as unlocked
+//     if (!prev.quizId) return false;
+//     return !completedIds.has(prev._id);
+//   };
+
+//   const handleOpenChapter = (chapter) => {
+//     setActiveChapterId((prev) =>
+//       prev === chapter._id ? null : chapter._id
+//     );
+//   };
+
+//   const completedCount = chapters.filter((c) => completedIds.has(c._id)).length;
+//   const progressPercent =
+//     chapters.length > 0
+//       ? Math.round((completedCount / chapters.length) * 100)
+//       : 0;
+
+//   /* ── Loading ── */
+//   if (loading) {
+//     return (
+//       <div className="min-h-screen flex items-center justify-center bg-gray-50">
+//         <div className="flex items-center gap-3 text-gray-500">
+//           <Loader2 className="w-6 h-6 animate-spin text-orange-500" />
+//           <span className="font-medium">Loading course...</span>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   /* ── Error ── */
+//   if (error) {
+//     return (
+//       <div className="min-h-screen flex items-center justify-center bg-gray-50">
+//         <div className="text-center">
+//           <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-3" />
+//           <p className="text-red-600 font-medium">{error}</p>
+//           <Link
+//             to="/student/courses"
+//             className="mt-4 inline-flex items-center gap-2 text-sm text-orange-600 hover:text-orange-700"
+//           >
+//             <ArrowLeft className="w-4 h-4" /> Back to Courses
+//           </Link>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="min-h-screen bg-gray-50">
+//       {/* ── Header ── */}
+//       <header className="sticky top-0 z-20 bg-white border-b border-gray-200 shadow-sm">
+//         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+//           <div className="flex items-center gap-3 min-w-0">
+//             <Link
+//               to="/student/courses"
+//               className="flex items-center gap-1.5 text-gray-500 hover:text-gray-800 transition text-sm flex-shrink-0"
+//             >
+//               <ArrowLeft className="w-4 h-4" />
+//               <span className="hidden sm:inline">My Courses</span>
+//             </Link>
+//             <span className="text-gray-300 hidden sm:inline">|</span>
+//             <div className="flex items-center gap-2 min-w-0">
+//               <BookOpen className="w-4 h-4 text-indigo-500 flex-shrink-0" />
+//               <h1 className="font-semibold text-gray-800 text-sm truncate">
+//                 {course?.title}
+//               </h1>
+//             </div>
+//           </div>
+
+//           {/* Progress pill */}
+//           <div className="flex items-center gap-3 flex-shrink-0">
+//             <div className="hidden sm:flex items-center gap-2">
+//               <div className="w-28 h-2 bg-gray-200 rounded-full overflow-hidden">
+//                 <motion.div
+//                   initial={{ width: 0 }}
+//                   animate={{ width: `${progressPercent}%` }}
+//                   transition={{ duration: 0.6 }}
+//                   className={`h-full rounded-full ${
+//                     progressPercent >= 100 ? "bg-green-500" : "bg-orange-500"
+//                   }`}
+//                 />
+//               </div>
+//               <span className="text-xs font-semibold text-gray-600">
+//                 {progressPercent}%
+//               </span>
+//             </div>
+//             <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">
+//               {completedCount}/{chapters.length} done
+//             </span>
+//           </div>
+//         </div>
+//       </header>
+
+//       {/* ── Body ── */}
+//       <main className="max-w-4xl mx-auto px-4 py-8 space-y-4">
+//         {/* Course info banner */}
+//         {course?.description && (
+//           <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm mb-6">
+//             <p className="text-gray-600 text-sm leading-relaxed">
+//               {course.description}
+//             </p>
+//           </div>
+//         )}
+
+//         {/* Chapter heading */}
+//         <div className="flex items-center justify-between mb-2">
+//           <h2 className="font-bold text-gray-800 flex items-center gap-2">
+//             <BookOpen className="w-5 h-5 text-indigo-500" />
+//             Course Chapters
+//           </h2>
+//           <p className="text-sm text-gray-400">
+//             Complete each chapter's quiz to unlock the next
+//           </p>
+//         </div>
+
+//         {/* Empty state */}
+//         {chapters.length === 0 && (
+//           <div className="text-center py-16 bg-white rounded-2xl border">
+//             <BookOpen className="w-12 h-12 text-gray-200 mx-auto mb-3" />
+//             <p className="text-gray-500 font-medium">No chapters yet</p>
+//             <p className="text-sm text-gray-400 mt-1">
+//               Your instructor hasn't added any chapters to this course.
+//             </p>
+//           </div>
+//         )}
+
+//         {/* Chapter list */}
+//         {chapters.map((chapter, idx) => {
+//           const locked = isChapterLocked(idx);
+//           const completed = completedIds.has(chapter._id);
+//           const active = activeChapterId === chapter._id && !locked;
+
+//           return (
+//             <ChapterCard
+//               key={chapter._id}
+//               chapter={chapter}
+//               index={idx}
+//               isCompleted={completed}
+//               isLocked={locked}
+//               isActive={active}
+//               onOpen={(ch) => {
+//                 handleOpenChapter(ch);
+//               }}
+//             />
+//           );
+//         })}
+
+//         {/* All done */}
+//         <AnimatePresence>
+//           {progressPercent >= 100 && chapters.length > 0 && (
+//             <motion.div
+//               initial={{ opacity: 0, scale: 0.9 }}
+//               animate={{ opacity: 1, scale: 1 }}
+//               className="bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-2xl p-6 text-center shadow-xl shadow-green-200"
+//             >
+//               <Trophy className="w-10 h-10 mx-auto mb-3 text-yellow-300" />
+//               <p className="font-bold text-lg">Course Complete! 🎉</p>
+//               <p className="text-sm text-green-100 mt-1">
+//                 You've finished all chapters.
+//               </p>
+//               <Link
+//                 to="/student/certificates"
+//                 className="mt-4 inline-block bg-white text-green-700 px-5 py-2 rounded-xl text-sm font-semibold hover:shadow-md transition"
+//               >
+//                 View Certificates
+//               </Link>
+//             </motion.div>
+//           )}
+//         </AnimatePresence>
+//       </main>
+//     </div>
+//   );
+// }
+
+// /* ── Helper: wraps getCourseChapters for readability ── */
+// async function getCourseChaptersWithProgress(courseId) {
+//   return getCourseChapters(courseId);
+// }
 
 import { useParams, Link } from "react-router-dom";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  PlayCircle,
+  ArrowLeft,
+  BookOpen,
+  FileText,
   CheckCircle2,
+  Lock,
   ChevronDown,
   ChevronRight,
-  ArrowLeft,
-  FileText,
-  Download,
-  Clock,
-  Lock,
-  BookOpen,
+  HelpCircle,
   Loader2,
-  Circle,
   AlertCircle,
-  Menu,
+  Trophy,
+  XCircle,
   X,
+  ChevronLeft,
+  ChevronRight as ChevronRightIcon,
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
 } from "lucide-react";
-import { getCourseById } from "../../services/courseService";
 import {
-  getCourseProgress,
-  completeLesson,
+  getCourseChapters,
+  submitChapterQuiz,
+  getChapterQuiz,
+  getCourseById,
 } from "../../services/studentService";
-import { useAuth } from "../../contexts/AuthContext";
-import ReactPlayer from "react-player";
 
-export default function CoursePlayer() {
-  const { id } = useParams();
-  const { user } = useAuth();
-  const [course, setCourse] = useState(null);
-  const [progress, setProgress] = useState(null);
-  const [activeLesson, setActiveLesson] = useState(null);
-  const [expandedSections, setExpandedSections] = useState({});
+const API_BASE =
+  import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
+
+/* ======================================================
+   DocumentModal – secure PDF viewer, no download
+====================================================== */
+function DocumentModal({ url, name, onClose }) {
+  const canvasRef = useRef(null);
+  const containerRef = useRef(null);
+  const [pdfDoc, setPdfDoc] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [scale, setScale] = useState(1.2);
   const [loading, setLoading] = useState(true);
-  const [markingComplete, setMarkingComplete] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [error, setError] = useState(null);
+  const [isPdf, setIsPdf] = useState(false);
+  const renderTaskRef = useRef(null);
 
-  // Load course + progress
+  /* Determine file type */
   useEffect(() => {
-    const load = async () => {
+    const lower = (url || "").toLowerCase();
+    const pdf = lower.endsWith(".pdf") || lower.includes(".pdf?");
+    setIsPdf(pdf);
+  }, [url]);
+
+  /* Load PDF.js for PDF files */
+  useEffect(() => {
+    if (!isPdf) return;
+    setLoading(true);
+    setError(null);
+
+    const loadPdfJs = async () => {
       try {
-        const [courseData, progressData] = await Promise.all([
-          getCourseById(id),
-          getCourseProgress(id),
-        ]);
-        setCourse(courseData);
-        setProgress(progressData);
+        if (!window.pdfjsLib) {
+          await new Promise((resolve, reject) => {
+            const script = document.createElement("script");
+            script.src =
+              "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+          });
+          window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+            "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+        }
 
-        // Expand all sections by default
-        const expanded = {};
-        courseData.sections?.forEach((s) => {
-          expanded[s._id] = true;
+        const loadingTask = window.pdfjsLib.getDocument({
+          url,
+          withCredentials: true,
         });
-        setExpandedSections(expanded);
-
-        // Set initial active lesson
-        if (progressData.lastAccessedLesson) {
-          // Find the lesson object
-          for (const section of courseData.sections || []) {
-            const found = section.lessons?.find(
-              (l) =>
-                l._id === progressData.lastAccessedLesson._id ||
-                l._id === progressData.lastAccessedLesson
-            );
-            if (found) {
-              setActiveLesson(found);
-              break;
-            }
-          }
-        }
-
-        // If no last accessed, use first lesson
-        if (!progressData.lastAccessedLesson) {
-          const firstSection = courseData.sections?.[0];
-          const firstLesson = firstSection?.lessons?.[0];
-          if (firstLesson) setActiveLesson(firstLesson);
-        }
+        const doc = await loadingTask.promise;
+        setPdfDoc(doc);
+        setTotalPages(doc.numPages);
+        setCurrentPage(1);
       } catch (err) {
-        setError(err.message || "Failed to load course");
+        setError("Unable to load document. Please try again.");
       } finally {
         setLoading(false);
       }
     };
-    load();
-  }, [id]);
 
-  const completedLessonIds = new Set(
-    (progress?.completedLessons || []).map((id) =>
-      typeof id === "string" ? id : id?.toString?.()
-    )
-  );
+    loadPdfJs();
+  }, [url, isPdf]);
 
-  const isLessonCompleted = (lessonId) => completedLessonIds.has(lessonId);
+  /* Render page whenever page/scale/doc changes */
+  const renderPage = useCallback(
+    async (pageNum) => {
+      if (!pdfDoc || !canvasRef.current) return;
 
-  const totalLessons = course?.sections?.reduce(
-    (sum, s) => sum + (s.lessons?.length || 0),
-    0
-  ) || 0;
+      /* Cancel any in-flight render */
+      if (renderTaskRef.current) {
+        try {
+          renderTaskRef.current.cancel();
+        } catch (_) {}
+      }
 
-  const handleMarkComplete = async () => {
-    if (!activeLesson || markingComplete) return;
-    setMarkingComplete(true);
-    try {
-      const result = await completeLesson(id, activeLesson._id);
-      setProgress((prev) => ({
-        ...prev,
-        completedLessons: [
-          ...(prev?.completedLessons || []),
-          activeLesson._id,
-        ],
-        progressPercent: result.progress.progressPercent,
-        isCompleted: result.progress.isCompleted,
-      }));
+      const page = await pdfDoc.getPage(pageNum);
+      const viewport = page.getViewport({ scale });
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
 
-      // Auto-advance to next lesson
-      const allLessons = course.sections?.flatMap((s) => s.lessons || []) || [];
-      const currentIdx = allLessons.findIndex(
-        (l) => l._id === activeLesson._id
-      );
-      if (currentIdx >= 0 && currentIdx < allLessons.length - 1) {
-        const nextLesson = allLessons[currentIdx + 1];
-        if (nextLesson && !isLessonCompleted(nextLesson._id)) {
-          setTimeout(() => setActiveLesson(nextLesson), 500);
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+
+      const renderTask = page.render({ canvasContext: ctx, viewport });
+      renderTaskRef.current = renderTask;
+
+      try {
+        await renderTask.promise;
+      } catch (err) {
+        if (err?.name !== "RenderingCancelledException") {
+          console.error(err);
         }
       }
+    },
+    [pdfDoc, scale],
+  );
+
+  useEffect(() => {
+    if (pdfDoc) renderPage(currentPage);
+  }, [pdfDoc, currentPage, scale, renderPage]);
+
+  /* Keyboard navigation */
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight" || e.key === "ArrowDown")
+        setCurrentPage((p) => Math.min(p + 1, totalPages));
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp")
+        setCurrentPage((p) => Math.max(p - 1, 1));
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose, totalPages]);
+
+  /* Block right-click on the modal */
+  const blockContext = (e) => e.preventDefault();
+
+  const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
+  const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
+  const zoomIn = () => setScale((s) => Math.min(s + 0.2, 3));
+  const zoomOut = () => setScale((s) => Math.max(s - 0.2, 0.5));
+
+  /* Non-PDF: render via Google Docs Viewer embedded in a sandboxed iframe */
+  const renderNonPdf = () => {
+    const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
+    return (
+      <div className="flex flex-col h-full">
+        <div className="flex-1 relative">
+          <iframe
+            src={viewerUrl}
+            className="w-full h-full border-0"
+            sandbox="allow-scripts allow-same-origin"
+            title={name || "Document"}
+            onContextMenu={blockContext}
+          />
+          {/* Transparent overlay to prevent right-click on iframe content */}
+          <div
+            className="absolute inset-0 pointer-events-none select-none"
+            style={{ zIndex: 1 }}
+            onContextMenu={blockContext}
+          />
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center"
+        style={{
+          backgroundColor: "rgba(0,0,0,0.75)",
+          backdropFilter: "blur(4px)",
+        }}
+        onClick={(e) => e.target === e.currentTarget && onClose()}
+        onContextMenu={blockContext}
+      >
+        <motion.div
+          initial={{ scale: 0.93, opacity: 0, y: 16 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.95, opacity: 0 }}
+          transition={{ type: "spring", damping: 25, stiffness: 300 }}
+          className="relative flex flex-col bg-white rounded-2xl shadow-2xl overflow-hidden"
+          style={{
+            width: "min(92vw, 900px)",
+            height: "min(92vh, 820px)",
+          }}
+          onContextMenu={blockContext}
+        >
+          {/* ── Header bar ── */}
+          <div className="flex items-center justify-between px-5 py-3 bg-gray-900 flex-shrink-0">
+            <div className="flex items-center gap-3 min-w-0">
+              <FileText className="w-4 h-4 text-orange-400 flex-shrink-0" />
+              <p className="text-white text-sm font-medium truncate max-w-xs">
+                {name || "Document Viewer"}
+              </p>
+              {isPdf && totalPages > 0 && (
+                <span className="text-gray-400 text-xs ml-1 flex-shrink-0">
+                  · {totalPages} page{totalPages !== 1 ? "s" : ""}
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1">
+              {/* Zoom controls – PDF only */}
+              {isPdf && (
+                <>
+                  <button
+                    onClick={zoomOut}
+                    title="Zoom out"
+                    className="p-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition"
+                  >
+                    <ZoomOut className="w-4 h-4" />
+                  </button>
+                  <span className="text-gray-400 text-xs min-w-[42px] text-center">
+                    {Math.round(scale * 100)}%
+                  </span>
+                  <button
+                    onClick={zoomIn}
+                    title="Zoom in"
+                    className="p-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition"
+                  >
+                    <ZoomIn className="w-4 h-4" />
+                  </button>
+                  <div className="w-px h-5 bg-gray-600 mx-1" />
+                </>
+              )}
+              <button
+                onClick={onClose}
+                className="p-2 rounded-lg text-gray-300 hover:bg-red-600 hover:text-white transition"
+                title="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* ── Document area ── */}
+          <div
+            ref={containerRef}
+            className="flex-1 overflow-auto bg-gray-100 relative"
+            style={{ userSelect: "none" }}
+            onContextMenu={blockContext}
+          >
+            {!isPdf ? (
+              renderNonPdf()
+            ) : loading ? (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
+                <p className="text-gray-500 text-sm font-medium">
+                  Loading document…
+                </p>
+              </div>
+            ) : error ? (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-8 text-center">
+                <AlertCircle className="w-10 h-10 text-red-400" />
+                <p className="text-red-600 font-medium">{error}</p>
+                <p className="text-gray-400 text-sm">
+                  Make sure the document is accessible and try again.
+                </p>
+              </div>
+            ) : (
+              <div className="flex justify-center py-6 px-4">
+                <div
+                  className="shadow-xl rounded-lg overflow-hidden bg-white"
+                  style={{ maxWidth: "100%" }}
+                  onContextMenu={blockContext}
+                >
+                  <canvas
+                    ref={canvasRef}
+                    style={{
+                      display: "block",
+                      maxWidth: "100%",
+                      userSelect: "none",
+                      pointerEvents: "none",
+                    }}
+                    onContextMenu={blockContext}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* ── Page navigation footer – PDF only ── */}
+          {isPdf && !loading && !error && totalPages > 0 && (
+            <div className="flex items-center justify-between px-5 py-3 bg-white border-t border-gray-100 flex-shrink-0">
+              <button
+                onClick={goPrev}
+                disabled={currentPage <= 1}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Previous
+              </button>
+
+              <div className="flex items-center gap-3">
+                {/* Page dots / compact indicator */}
+                <div className="flex items-center gap-1.5">
+                  {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                    const page =
+                      totalPages <= 7
+                        ? i + 1
+                        : currentPage <= 4
+                          ? i + 1
+                          : currentPage >= totalPages - 3
+                            ? totalPages - 6 + i
+                            : currentPage - 3 + i;
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`w-6 h-6 rounded-full text-xs font-medium transition-all ${
+                          page === currentPage
+                            ? "bg-orange-500 text-white scale-110"
+                            : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    );
+                  })}
+                  {totalPages > 7 && (
+                    <span className="text-gray-400 text-xs ml-1">
+                      …{totalPages}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <button
+                onClick={goNext}
+                disabled={currentPage >= totalPages}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition"
+              >
+                Next
+                <ChevronRightIcon className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
+          {/* Anti-download watermark layer – sits over the canvas area */}
+          {isPdf && !loading && !error && (
+            <div
+              className="absolute inset-0 pointer-events-none select-none"
+              style={{
+                zIndex: 10,
+                /* Subtle watermark grid */
+                backgroundImage: `repeating-linear-gradient(
+                  -45deg,
+                  transparent,
+                  transparent 80px,
+                  rgba(0,0,0,0.018) 80px,
+                  rgba(0,0,0,0.018) 82px
+                )`,
+              }}
+            />
+          )}
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+/* ======================================================
+   QuizPanel – renders inside an open chapter
+====================================================== */
+function QuizPanel({ chapterId, onComplete, onClose }) {
+  const [quiz, setQuiz] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [answers, setAnswers] = useState({});
+  const [result, setResult] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    getChapterQuiz(chapterId)
+      .then(({ quiz: q }) => setQuiz(q))
+      .catch(() => setError("Failed to load quiz"))
+      .finally(() => setLoading(false));
+  }, [chapterId]);
+
+  const handleSelect = (questionId, option) => {
+    if (result) return;
+    setAnswers((prev) => ({ ...prev, [questionId]: option }));
+  };
+
+  const handleSubmit = async () => {
+    const formattedAnswers = (quiz.questions || []).map((q) => ({
+      questionId: q._id,
+      selectedOption: answers[q._id] || "",
+    }));
+    setSubmitting(true);
+    try {
+      const res = await submitChapterQuiz(chapterId, formattedAnswers);
+      setResult(res);
+      if (res.passed) onComplete();
     } catch (err) {
-      console.error("Failed to mark lesson complete:", err);
+      setError(err.message || "Submission failed");
     } finally {
-      setMarkingComplete(false);
+      setSubmitting(false);
     }
   };
 
-  const toggleSection = (sectionId) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [sectionId]: !prev[sectionId],
-    }));
+  const allAnswered =
+    quiz?.questions?.length > 0 && quiz.questions.every((q) => answers[q._id]);
+
+  if (loading)
+    return (
+      <div className="flex items-center justify-center py-10">
+        <Loader2 className="w-6 h-6 animate-spin text-orange-500" />
+      </div>
+    );
+
+  if (!quiz)
+    return (
+      <div className="text-center py-8">
+        <CheckCircle2 className="w-10 h-10 text-green-500 mx-auto mb-3" />
+        <p className="text-gray-600 font-medium">No quiz for this chapter.</p>
+        <p className="text-sm text-gray-400 mt-1">
+          This chapter is already unlocked.
+        </p>
+        <button
+          onClick={onComplete}
+          className="mt-4 px-5 py-2.5 bg-green-500 text-white rounded-xl text-sm font-medium hover:bg-green-600"
+        >
+          Mark as Complete
+        </button>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="text-center py-6">
+        <AlertCircle className="w-8 h-8 text-red-400 mx-auto mb-2" />
+        <p className="text-red-500 text-sm">{error}</p>
+      </div>
+    );
+
+  if (result) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center py-6 space-y-4"
+      >
+        {result.passed ? (
+          <Trophy className="w-14 h-14 text-yellow-500 mx-auto" />
+        ) : (
+          <XCircle className="w-14 h-14 text-red-400 mx-auto" />
+        )}
+        <div>
+          <p className="text-xl font-bold text-gray-800">
+            {result.passed ? "Great work! 🎉" : "Keep trying!"}
+          </p>
+          <p className="text-gray-500 text-sm mt-1">
+            You scored{" "}
+            <span className="font-bold text-gray-700">
+              {result.score}/{result.totalMarks}
+            </span>
+          </p>
+        </div>
+        <div className="text-left space-y-3 mt-4">
+          {quiz.questions.map((q, idx) => {
+            const graded = result.gradedAnswers?.find(
+              (a) => a.questionId === q._id,
+            );
+            const selectedOpt = answers[q._id];
+            const isCorrect =
+              graded?.correct ?? selectedOpt === q.correctAnswer;
+            return (
+              <div
+                key={q._id}
+                className={`p-3 rounded-xl border text-sm ${
+                  isCorrect
+                    ? "bg-green-50 border-green-200"
+                    : "bg-red-50 border-red-200"
+                }`}
+              >
+                <p className="font-medium text-gray-700 mb-1">
+                  {idx + 1}. {q.prompt}
+                </p>
+                <p className="text-xs text-gray-500">
+                  Your answer:{" "}
+                  <span
+                    className={
+                      isCorrect
+                        ? "text-green-700 font-medium"
+                        : "text-red-600 font-medium"
+                    }
+                  >
+                    {selectedOpt || "Not answered"}
+                  </span>
+                </p>
+                {!isCorrect && (
+                  <p className="text-xs text-green-600 mt-0.5">
+                    Correct: {q.correctAnswer}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        {result.passed ? (
+          <button
+            onClick={onClose}
+            className="w-full mt-4 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl font-medium text-sm hover:shadow-lg"
+          >
+            Continue to Next Chapter →
+          </button>
+        ) : (
+          <button
+            onClick={() => {
+              setResult(null);
+              setAnswers({});
+            }}
+            className="w-full mt-4 py-2.5 bg-orange-500 text-white rounded-xl font-medium text-sm hover:bg-orange-600"
+          >
+            Retry Quiz
+          </button>
+        )}
+      </motion.div>
+    );
+  }
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <h4 className="font-semibold text-gray-800 flex items-center gap-2">
+          <HelpCircle className="w-4 h-4 text-orange-500" />
+          {quiz.title || "Chapter Quiz"}
+        </h4>
+        <span className="text-xs text-gray-400">
+          {quiz.questions?.length} question
+          {quiz.questions?.length !== 1 ? "s" : ""}
+          {quiz.totalMarks > 0 && ` · ${quiz.totalMarks} marks`}
+        </span>
+      </div>
+      {quiz.questions?.map((q, idx) => (
+        <div key={q._id} className="space-y-2">
+          <p className="text-sm font-medium text-gray-700">
+            {idx + 1}. {q.prompt}
+          </p>
+          <div className="grid gap-2">
+            {q.options?.map((opt, i) => (
+              <button
+                key={i}
+                onClick={() => handleSelect(q._id, opt)}
+                className={`text-left px-4 py-2.5 rounded-xl border text-sm transition-all ${
+                  answers[q._id] === opt
+                    ? "bg-orange-500 border-orange-500 text-white font-medium"
+                    : "bg-white border-gray-200 text-gray-600 hover:border-orange-300 hover:bg-orange-50"
+                }`}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+      <button
+        onClick={handleSubmit}
+        disabled={!allAnswered || submitting}
+        className="w-full py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-semibold text-sm hover:from-orange-600 hover:to-orange-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg shadow-orange-200 flex items-center justify-center gap-2"
+      >
+        {submitting ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Submitting...
+          </>
+        ) : (
+          "Submit Quiz"
+        )}
+      </button>
+    </div>
+  );
+}
+
+/* ======================================================
+   ChapterCard
+====================================================== */
+function ChapterCard({
+  chapter,
+  index,
+  isCompleted,
+  isLocked,
+  isActive,
+  onOpen,
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05 }}
+      className={`rounded-2xl border transition-all ${
+        isActive
+          ? "border-orange-300 shadow-md shadow-orange-100"
+          : isCompleted
+            ? "border-green-200 bg-green-50/40"
+            : isLocked
+              ? "border-gray-100 bg-gray-50 opacity-60"
+              : "border-gray-200 bg-white hover:border-orange-200 hover:shadow-sm"
+      }`}
+    >
+      <button
+        onClick={() => !isLocked && onOpen(chapter)}
+        disabled={isLocked}
+        className="w-full flex items-center gap-4 px-5 py-4 text-left"
+      >
+        <div
+          className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-sm ${
+            isCompleted
+              ? "bg-green-500 text-white"
+              : isLocked
+                ? "bg-gray-200 text-gray-400"
+                : isActive
+                  ? "bg-orange-500 text-white"
+                  : "bg-indigo-50 text-indigo-600"
+          }`}
+        >
+          {isCompleted ? (
+            <CheckCircle2 className="w-5 h-5" />
+          ) : isLocked ? (
+            <Lock className="w-4 h-4" />
+          ) : (
+            index + 1
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p
+            className={`font-semibold truncate ${isLocked ? "text-gray-400" : "text-gray-800"}`}
+          >
+            {chapter.title}
+          </p>
+          {chapter.description && (
+            <p className="text-xs text-gray-400 mt-0.5 truncate">
+              {chapter.description}
+            </p>
+          )}
+          <div className="flex items-center gap-3 mt-1">
+            {chapter.documentUrl && (
+              <span className="text-xs text-blue-500 flex items-center gap-1">
+                <FileText className="w-3 h-3" />
+                Document
+              </span>
+            )}
+            {chapter.quizId && (
+              <span className="text-xs text-orange-500 flex items-center gap-1">
+                <HelpCircle className="w-3 h-3" />
+                Quiz
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="flex-shrink-0">
+          {isLocked ? (
+            <Lock className="w-4 h-4 text-gray-300" />
+          ) : isActive ? (
+            <ChevronDown className="w-4 h-4 text-orange-500" />
+          ) : (
+            <ChevronRight className="w-4 h-4 text-gray-300" />
+          )}
+        </div>
+      </button>
+
+      <AnimatePresence initial={false}>
+        {isActive && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="overflow-hidden"
+          >
+            <ChapterContent chapter={chapter} isCompleted={isCompleted} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+/* ======================================================
+   ChapterContent – document viewer button + quiz
+====================================================== */
+function ChapterContent({ chapter, isCompleted }) {
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [chapterDone, setChapterDone] = useState(isCompleted);
+  const [docModal, setDocModal] = useState(false);
+
+  const docUrl = chapter.documentUrl
+    ? `${API_BASE}${chapter.documentUrl}`
+    : null;
+
+  const handleQuizComplete = () => {
+    setChapterDone(true);
+    setShowQuiz(false);
   };
 
-  const formatDuration = (seconds) => {
-    if (!seconds) return "";
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m}:${s.toString().padStart(2, "0")}`;
+  return (
+    <>
+      {/* Document Modal */}
+      {docModal && docUrl && (
+        <DocumentModal
+          url={docUrl}
+          name={chapter.documentName || "Study Document"}
+          onClose={() => setDocModal(false)}
+        />
+      )}
+
+      <div className="border-t border-gray-100 px-5 py-5 space-y-5">
+        {/* Document section */}
+        {docUrl ? (
+          <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <FileText className="w-4 h-4 text-blue-600" />
+              <p className="font-semibold text-blue-800 text-sm">
+                Chapter Material
+              </p>
+            </div>
+            <p className="text-xs text-blue-600">
+              {chapter.documentName || "Study document"}
+            </p>
+
+            {/* View only — no download button */}
+            <button
+              onClick={() => setDocModal(true)}
+              className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-medium hover:bg-blue-700 transition"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              View Document
+            </button>
+          </div>
+        ) : (
+          <div className="bg-gray-50 border border-dashed border-gray-200 rounded-2xl p-4 text-center text-sm text-gray-400">
+            No document uploaded for this chapter
+          </div>
+        )}
+
+        {/* Quiz / Complete section */}
+        {chapterDone ? (
+          <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-2xl px-4 py-3">
+            <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+            <p className="text-sm text-green-700 font-medium">
+              Chapter completed! Next chapter is unlocked.
+            </p>
+          </div>
+        ) : chapter.quizId ? (
+          <div className="space-y-3">
+            {!showQuiz ? (
+              <button
+                onClick={() => setShowQuiz(true)}
+                className="w-full py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-semibold text-sm hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg shadow-orange-200 flex items-center justify-center gap-2"
+              >
+                <HelpCircle className="w-4 h-4" />
+                Take Chapter Quiz to Unlock Next
+              </button>
+            ) : (
+              <div className="bg-white border border-gray-200 rounded-2xl p-5">
+                <QuizPanel
+                  chapterId={chapter._id}
+                  onComplete={handleQuizComplete}
+                  onClose={() => setShowQuiz(false)}
+                />
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="bg-gray-50 border border-dashed border-gray-200 rounded-2xl px-4 py-3 text-center text-sm text-gray-500">
+            No quiz for this chapter — it is always accessible
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+/* ======================================================
+   Main: CoursePlayer
+====================================================== */
+export default function CoursePlayer() {
+  const { id: courseId } = useParams();
+
+  const [course, setCourse] = useState(null);
+  const [chapters, setChapters] = useState([]);
+  const [completedIds, setCompletedIds] = useState(new Set());
+  const [activeChapterId, setActiveChapterId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const loadAll = async () => {
+    try {
+      const [courseData, chapterData] = await Promise.all([
+        getCourseById(courseId),
+        getCourseChaptersWithProgress(courseId),
+      ]);
+      setCourse(courseData);
+      setChapters(chapterData.chapters || []);
+      setCompletedIds(new Set(chapterData.completedChapters || []));
+
+      const firstIncomplete = (chapterData.chapters || []).find(
+        (c) => !(chapterData.completedChapters || []).includes(c._id),
+      );
+      if (firstIncomplete) setActiveChapterId(firstIncomplete._id);
+      else if (chapterData.chapters?.length > 0)
+        setActiveChapterId(chapterData.chapters[0]._id);
+    } catch (err) {
+      setError(err.message || "Failed to load course");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    loadAll();
+  }, [courseId]);
+
+  const refreshProgress = async () => {
+    try {
+      const data = await getCourseChaptersWithProgress(courseId);
+      setCompletedIds(new Set(data.completedChapters || []));
+      setChapters(data.chapters || []);
+    } catch {
+      /* silent */
+    }
+  };
+
+  const isChapterLocked = (index) => {
+    if (index === 0) return false;
+    const prev = chapters[index - 1];
+    if (!prev || !prev.quizId) return false;
+    return !completedIds.has(prev._id);
+  };
+
+  const handleOpenChapter = (chapter) => {
+    setActiveChapterId((prev) => (prev === chapter._id ? null : chapter._id));
+  };
+
+  const completedCount = chapters.filter((c) => completedIds.has(c._id)).length;
+  const progressPercent =
+    chapters.length > 0
+      ? Math.round((completedCount / chapters.length) * 100)
+      : 0;
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="flex items-center gap-3 text-gray-500">
-          <Loader2 className="w-6 h-6 animate-spin" />
+          <Loader2 className="w-6 h-6 animate-spin text-orange-500" />
           <span className="font-medium">Loading course...</span>
         </div>
       </div>
@@ -248,311 +1580,123 @@ export default function CoursePlayer() {
     );
   }
 
-  const progressPercent = progress?.progressPercent || 0;
-
   return (
-    <div className="min-h-screen bg-gray-900 flex flex-col">
-      {/* Top Bar */}
-      <header className="bg-gray-900 border-b border-gray-800 px-4 py-3 flex items-center justify-between z-20 sticky top-0">
-        <div className="flex items-center gap-4">
-          <Link
-            to="/student/courses"
-            className="text-gray-400 hover:text-white transition flex items-center gap-1 text-sm"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">Back</span>
-          </Link>
-          <div className="h-5 w-px bg-gray-700" />
-          <h1 className="text-white font-semibold text-sm sm:text-base truncate max-w-sm">
-            {course?.title}
-          </h1>
-        </div>
-
-        <div className="flex items-center gap-4">
-          {/* Progress indicator */}
-          <div className="hidden sm:flex items-center gap-3">
-            <div className="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${progressPercent}%` }}
-                transition={{ duration: 0.5 }}
-                className={`h-full rounded-full ${
-                  progressPercent >= 100 ? "bg-green-500" : "bg-orange-500"
-                }`}
-              />
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="sticky top-0 z-20 bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <Link
+              to="/student/courses"
+              className="flex items-center gap-1.5 text-gray-500 hover:text-gray-800 transition text-sm flex-shrink-0"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="hidden sm:inline">My Courses</span>
+            </Link>
+            <span className="text-gray-300 hidden sm:inline">|</span>
+            <div className="flex items-center gap-2 min-w-0">
+              <BookOpen className="w-4 h-4 text-indigo-500 flex-shrink-0" />
+              <h1 className="font-semibold text-gray-800 text-sm truncate">
+                {course?.title}
+              </h1>
             </div>
-            <span className="text-sm text-gray-400 font-medium">
-              {progressPercent}%
+          </div>
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="hidden sm:flex items-center gap-2">
+              <div className="w-28 h-2 bg-gray-200 rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progressPercent}%` }}
+                  transition={{ duration: 0.6 }}
+                  className={`h-full rounded-full ${
+                    progressPercent >= 100 ? "bg-green-500" : "bg-orange-500"
+                  }`}
+                />
+              </div>
+              <span className="text-xs font-semibold text-gray-600">
+                {progressPercent}%
+              </span>
+            </div>
+            <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">
+              {completedCount}/{chapters.length} done
             </span>
           </div>
-
-          {/* Sidebar toggle for mobile */}
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="lg:hidden text-gray-400 hover:text-white p-1"
-          >
-            {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
         </div>
       </header>
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* Main Content */}
-        <main className="flex-1 flex flex-col overflow-y-auto">
-          {/* Video Area */}
-          <div className="bg-black aspect-video w-full max-h-[70vh] relative">
-            {activeLesson?.videoUrl ? (
-              <ReactPlayer
-                url={activeLesson.videoUrl}
-                controls
-                width="100%"
-                height="100%"
-                playing={false}
-                config={{
-                  file: { attributes: { controlsList: "nodownload" } },
-                }}
-              />
-            ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center text-gray-500 gap-3">
-                <PlayCircle className="w-16 h-16 text-gray-600" />
-                <p className="text-gray-400 text-sm">
-                  {activeLesson
-                    ? "No video available for this lesson"
-                    : "Select a lesson to start"}
-                </p>
-              </div>
-            )}
+      {/* Body */}
+      <main className="max-w-4xl mx-auto px-4 py-8 space-y-4">
+        {course?.description && (
+          <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm mb-6">
+            <p className="text-gray-600 text-sm leading-relaxed">
+              {course.description}
+            </p>
           </div>
+        )}
 
-          {/* Lesson Info */}
-          {activeLesson && (
-            <div className="p-6 bg-gray-900">
-              <div className="max-w-4xl">
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                  <div className="flex-1">
-                    <h2 className="text-xl font-bold text-white mb-2">
-                      {activeLesson.title}
-                    </h2>
-                    {activeLesson.description && (
-                      <p className="text-gray-400 text-sm leading-relaxed">
-                        {activeLesson.description}
-                      </p>
-                    )}
-                  </div>
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="font-bold text-gray-800 flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-indigo-500" />
+            Course Chapters
+          </h2>
+          <p className="text-sm text-gray-400">
+            Complete each chapter's quiz to unlock the next
+          </p>
+        </div>
 
-                  {/* Mark Complete Button */}
-                  {!isLessonCompleted(activeLesson._id) ? (
-                    <button
-                      onClick={handleMarkComplete}
-                      disabled={markingComplete}
-                      className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-medium text-sm hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg shadow-orange-500/20 disabled:opacity-60 flex-shrink-0"
-                    >
-                      {markingComplete ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <CheckCircle2 className="w-4 h-4" />
-                      )}
-                      {markingComplete ? "Saving..." : "Mark Complete"}
-                    </button>
-                  ) : (
-                    <div className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-green-500/20 text-green-400 font-medium text-sm flex-shrink-0">
-                      <CheckCircle2 className="w-4 h-4" />
-                      Completed
-                    </div>
-                  )}
-                </div>
+        {chapters.length === 0 && (
+          <div className="text-center py-16 bg-white rounded-2xl border">
+            <BookOpen className="w-12 h-12 text-gray-200 mx-auto mb-3" />
+            <p className="text-gray-500 font-medium">No chapters yet</p>
+            <p className="text-sm text-gray-400 mt-1">
+              Your instructor hasn't added any chapters to this course.
+            </p>
+          </div>
+        )}
 
-                {/* Materials */}
-                {activeLesson.materials?.length > 0 && (
-                  <div className="mt-6 pt-5 border-t border-gray-800">
-                    <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
-                      <FileText className="w-4 h-4" />
-                      Lesson Materials
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {activeLesson.materials.map((mat, i) => (
-                        <a
-                          key={i}
-                          href={mat.fileUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white transition text-sm"
-                        >
-                          <Download className="w-3.5 h-3.5" />
-                          {mat.title || `Material ${i + 1}`}
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </main>
+        {chapters.map((chapter, idx) => {
+          const locked = isChapterLocked(idx);
+          const completed = completedIds.has(chapter._id);
+          const active = activeChapterId === chapter._id && !locked;
+          return (
+            <ChapterCard
+              key={chapter._id}
+              chapter={chapter}
+              index={idx}
+              isCompleted={completed}
+              isLocked={locked}
+              isActive={active}
+              onOpen={handleOpenChapter}
+            />
+          );
+        })}
 
-        {/* Sidebar - Lesson List */}
         <AnimatePresence>
-          {sidebarOpen && (
-            <motion.aside
-              initial={{ x: 300, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 300, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="w-80 lg:w-96 bg-gray-900 border-l border-gray-800 overflow-y-auto flex-shrink-0 fixed lg:relative right-0 top-0 h-full z-30 lg:z-0 pt-[57px] lg:pt-0"
+          {progressPercent >= 100 && chapters.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-2xl p-6 text-center shadow-xl shadow-green-200"
             >
-              {/* Sidebar Header */}
-              <div className="p-4 border-b border-gray-800 sticky top-0 bg-gray-900 z-10">
-                <h3 className="text-sm font-bold text-white flex items-center justify-between">
-                  <span className="flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-orange-500" />
-                    Course Content
-                  </span>
-                  <span className="text-xs text-gray-500 font-normal">
-                    {completedLessonIds.size}/{totalLessons}
-                  </span>
-                </h3>
-              </div>
-
-              {/* Sections */}
-              <div className="pb-6">
-                {course?.sections?.map((section, sIdx) => {
-                  const sectionLessons = section.lessons || [];
-                  const completedInSection = sectionLessons.filter((l) =>
-                    isLessonCompleted(l._id)
-                  ).length;
-                  const isExpanded = expandedSections[section._id];
-
-                  return (
-                    <div key={section._id} className="border-b border-gray-800/50">
-                      {/* Section Header */}
-                      <button
-                        onClick={() => toggleSection(section._id)}
-                        className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-800/50 transition text-left"
-                      >
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs text-gray-500 font-medium">
-                            Section {sIdx + 1}
-                          </p>
-                          <p className="text-sm text-gray-200 font-medium truncate">
-                            {section.title}
-                          </p>
-                          <p className="text-xs text-gray-500 mt-0.5">
-                            {completedInSection}/{sectionLessons.length} completed
-                          </p>
-                        </div>
-                        <ChevronDown
-                          className={`w-4 h-4 text-gray-500 transition-transform flex-shrink-0 ${
-                            isExpanded ? "rotate-0" : "-rotate-90"
-                          }`}
-                        />
-                      </button>
-
-                      {/* Lessons */}
-                      <AnimatePresence initial={false}>
-                        {isExpanded && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="overflow-hidden"
-                          >
-                            {sectionLessons.map((lesson, lIdx) => {
-                              const isActive =
-                                activeLesson?._id === lesson._id;
-                              const isCompleted = isLessonCompleted(lesson._id);
-
-                              return (
-                                <button
-                                  key={lesson._id}
-                                  onClick={() => setActiveLesson(lesson)}
-                                  className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all ${
-                                    isActive
-                                      ? "bg-orange-500/10 border-l-2 border-orange-500"
-                                      : "hover:bg-gray-800/50 border-l-2 border-transparent"
-                                  }`}
-                                >
-                                  {/* Status Icon */}
-                                  <div className="flex-shrink-0">
-                                    {isCompleted ? (
-                                      <CheckCircle2 className="w-5 h-5 text-green-500" />
-                                    ) : isActive ? (
-                                      <PlayCircle className="w-5 h-5 text-orange-500" />
-                                    ) : (
-                                      <Circle className="w-5 h-5 text-gray-600" />
-                                    )}
-                                  </div>
-
-                                  {/* Lesson Info */}
-                                  <div className="flex-1 min-w-0">
-                                    <p
-                                      className={`text-sm truncate ${
-                                        isActive
-                                          ? "text-orange-400 font-medium"
-                                          : isCompleted
-                                          ? "text-gray-400"
-                                          : "text-gray-300"
-                                      }`}
-                                    >
-                                      {lIdx + 1}. {lesson.title}
-                                    </p>
-                                    <div className="flex items-center gap-2 mt-0.5">
-                                      {lesson.duration > 0 && (
-                                        <span className="text-xs text-gray-600 flex items-center gap-1">
-                                          <Clock className="w-3 h-3" />
-                                          {formatDuration(lesson.duration)}
-                                        </span>
-                                      )}
-                                      {lesson.videoUrl && (
-                                        <span className="text-xs text-gray-600 flex items-center gap-1">
-                                          <PlayCircle className="w-3 h-3" />
-                                          Video
-                                        </span>
-                                      )}
-                                      {lesson.materials?.length > 0 && (
-                                        <span className="text-xs text-gray-600 flex items-center gap-1">
-                                          <FileText className="w-3 h-3" />
-                                          {lesson.materials.length}
-                                        </span>
-                                      )}
-                                    </div>
-                                  </div>
-                                </button>
-                              );
-                            })}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  );
-                })}
-              </div>
-            </motion.aside>
+              <Trophy className="w-10 h-10 mx-auto mb-3 text-yellow-300" />
+              <p className="font-bold text-lg">Course Complete! 🎉</p>
+              <p className="text-sm text-green-100 mt-1">
+                You've finished all chapters.
+              </p>
+              <Link
+                to="/student/certificates"
+                className="mt-4 inline-block bg-white text-green-700 px-5 py-2 rounded-xl text-sm font-semibold hover:shadow-md transition"
+              >
+                View Certificates
+              </Link>
+            </motion.div>
           )}
         </AnimatePresence>
-      </div>
-
-      {/* Course Complete Celebration */}
-      <AnimatePresence>
-        {progress?.isCompleted && progressPercent >= 100 && (
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-2xl shadow-2xl shadow-green-500/30 flex items-center gap-3 z-50"
-          >
-            <CheckCircle2 className="w-5 h-5" />
-            <span className="font-semibold text-sm">
-              Course Complete! Certificate earned.
-            </span>
-            <Link
-              to="/student/certificates"
-              className="ml-2 text-xs bg-white/20 px-3 py-1 rounded-full hover:bg-white/30 transition"
-            >
-              View Certificate
-            </Link>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </main>
     </div>
   );
+}
+
+async function getCourseChaptersWithProgress(courseId) {
+  return getCourseChapters(courseId);
 }

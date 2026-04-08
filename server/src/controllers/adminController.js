@@ -16,15 +16,38 @@ export const createUser = asyncHandler(async (req, res) => {
   if (!name || !email || !mobile || !role) {
     throw new ApiError(400, "All fields are required");
   }
-  if (!["student", "tutor"].includes(role)) {
-    throw new ApiError(400, "Invalid role. Use student or tutor");
+
+  if (
+    ![
+      "student",
+      "tutor",
+      "admin",
+      "super_admin",
+      "partner_institute",
+      "ao",
+    ].includes(role)
+  ) {
+    throw new ApiError(400, "Invalid role");
   }
 
-  const existingUser = await User.findOne({ email: email.toLowerCase() });
-  if (existingUser) throw new ApiError(409, "User already exists with this email");
+  const existingUser = await User.findOne({
+    email: email.toLowerCase(),
+  });
 
-  const randomPassword = crypto.randomBytes(6).toString("hex");
-  const passwordHash = await bcrypt.hash(randomPassword, 10);
+  if (existingUser) {
+    throw new ApiError(409, "User already exists");
+  }
+
+  /* Generate Password */
+
+  const randomPassword = crypto
+    .randomBytes(6)
+    .toString("hex");
+
+  const passwordHash = await bcrypt.hash(
+    randomPassword,
+    10
+  );
 
   const user = await User.create({
     name,
@@ -35,10 +58,13 @@ export const createUser = asyncHandler(async (req, res) => {
     isFirstLogin: true,
   });
 
-  // Send welcome email (non-blocking)
-  emailService.sendWelcomeEmail(email, randomPassword).catch((err) => {
-    console.warn("Welcome email failed:", err.message);
-  });
+  /* Send Email */
+
+  emailService
+    .sendWelcomeEmail(email, randomPassword)
+    .catch((err) =>
+      console.warn("Email failed:", err.message)
+    );
 
   await auditService.log({
     action: "CREATE_USER",
@@ -51,7 +77,19 @@ export const createUser = asyncHandler(async (req, res) => {
   res.status(201).json({
     success: true,
     message: "User created successfully",
-    data: { user, credentials: { email, password: randomPassword } },
+    data: {
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        mobile: user.mobile,
+        role: user.role,
+      },
+      credentials: {
+        email: email,
+        password: randomPassword,
+      },
+    },
   });
 });
 
@@ -62,7 +100,8 @@ export const enrollStudent = asyncHandler(async (req, res) => {
   const student = await User.findById(studentId);
   const course = await Course.findById(courseId);
 
-  if (!student || !course) throw new ApiError(404, "Student or course not found");
+  if (!student || !course)
+    throw new ApiError(404, "Student or course not found");
 
   if (student.enrolledCourses.some((id) => id.toString() === courseId)) {
     throw new ApiError(400, "Student already enrolled in this course");
@@ -79,17 +118,22 @@ export const enrollStudent = asyncHandler(async (req, res) => {
     details: `Enrolled in course: ${course.title}`,
   });
 
-  res.json({ success: true, message: "Student enrolled successfully", data: student });
+  res.json({
+    success: true,
+    message: "Student enrolled successfully",
+    data: student,
+  });
 });
 
 // ── Admin Stats ────────────────────────────────────────────────────────
 export const getAdminStats = asyncHandler(async (req, res) => {
-  const [totalStudents, totalTutors, totalCourses, totalRegistrations] = await Promise.all([
-    User.countDocuments({ role: "student" }),
-    User.countDocuments({ role: "tutor" }),
-    Course.countDocuments(),
-    Registration.countDocuments(),
-  ]);
+  const [totalStudents, totalTutors, totalCourses, totalRegistrations] =
+    await Promise.all([
+      User.countDocuments({ role: "student" }),
+      User.countDocuments({ role: "tutor" }),
+      Course.countDocuments(),
+      Registration.countDocuments(),
+    ]);
 
   res.json({
     success: true,
@@ -123,7 +167,10 @@ export const getAllUsers = asyncHandler(async (req, res) => {
 
   const total = await User.countDocuments(filter);
 
-  res.json({ success: true, data: { users, total, page: Number(page), limit: Number(limit) } });
+  res.json({
+    success: true,
+    data: { users, total, page: Number(page), limit: Number(limit) },
+  });
 });
 
 // ── Update User ────────────────────────────────────────────────────────
@@ -135,7 +182,10 @@ export const updateUser = asyncHandler(async (req, res) => {
     if (req.body[key] !== undefined) updates[key] = req.body[key];
   }
 
-  const user = await User.findByIdAndUpdate(id, updates, { new: true, runValidators: true }).select("-passwordHash");
+  const user = await User.findByIdAndUpdate(id, updates, {
+    new: true,
+    runValidators: true,
+  }).select("-passwordHash");
   if (!user) throw new ApiError(404, "User not found");
 
   res.json({ success: true, data: user });
@@ -165,7 +215,7 @@ export const updateUserRole = asyncHandler(async (req, res) => {
   const user = await User.findByIdAndUpdate(
     req.params.id,
     { role },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   ).select("-passwordHash");
 
   if (!user) throw new ApiError(404, "User not found");
@@ -245,7 +295,7 @@ export const processRegistration = asyncHandler(async (req, res) => {
       registration.student.name,
       registration.course.title,
       status,
-      remarks
+      remarks,
     )
     .catch((err) => console.warn("Status email failed:", err.message));
 
@@ -257,7 +307,11 @@ export const processRegistration = asyncHandler(async (req, res) => {
     details: `${status} registration for ${registration.student.email}`,
   });
 
-  res.json({ success: true, message: `Registration ${status}`, data: registration });
+  res.json({
+    success: true,
+    message: `Registration ${status}`,
+    data: registration,
+  });
 });
 
 // ── Export Registrations CSV ───────────────────────────────────────────
@@ -280,13 +334,22 @@ export const exportRegistrationsCSV = asyncHandler(async (req, res) => {
   }));
 
   if (rows.length === 0) {
-    return res.json({ success: true, message: "No registrations found", data: [] });
+    return res.json({
+      success: true,
+      message: "No registrations found",
+      data: [],
+    });
   }
 
   const headers = Object.keys(rows[0]).join(",");
-  const csv = [headers, ...rows.map((r) => Object.values(r).join(","))].join("\n");
+  const csv = [headers, ...rows.map((r) => Object.values(r).join(","))].join(
+    "\n",
+  );
 
   res.setHeader("Content-Type", "text/csv");
-  res.setHeader("Content-Disposition", "attachment; filename=registrations.csv");
+  res.setHeader(
+    "Content-Disposition",
+    "attachment; filename=registrations.csv",
+  );
   res.send(csv);
 });

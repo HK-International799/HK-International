@@ -154,6 +154,7 @@ const PaymentPage = () => {
 
   return (
     <MainLayout>
+          <h1 className="text-center"><span className="text-red-600 font-bold">Note :</span> Make sure to enter correct credentials. Company will not be responsible if you enter incorrect data. </h1>
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-green-50 flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
 

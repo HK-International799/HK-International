@@ -16,6 +16,7 @@ import {
   MessageSquare,
   Bell,
   Settings,
+  CalendarDays,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
@@ -37,11 +38,16 @@ const navItems = [
     icon: <MdAssignment size={20} />,
   },
   { to: "/student/submit", label: "Submit Work", icon: <Upload size={18} /> },
-  {
-    to: "/student/live-classes",
-    label: "Live Classes",
-    icon: <Video size={18} />,
-  },
+  // {
+  //   to: "/student/live-classes",
+  //   label: "Live Classes",
+  //   icon: <Video size={18} />,
+  // },
+  // {
+  //   to: "/student/orientations",
+  //   label: "Orientation",
+  //   icon: <CalendarDays size={18} />,
+  // },
   {
     to: "/student/chat",
     label: "Chat",
