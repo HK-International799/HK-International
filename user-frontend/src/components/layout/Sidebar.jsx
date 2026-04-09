@@ -59,22 +59,22 @@ const navItems = [
     label: "Question Bank",
     icon: <HelpCircle size={18} />,
   },
-  {
-    to: "/student/feedback",
-    label: "Feedback",
-    icon: <MessageSquare size={18} />,
-  },
-  {
-    to: "/student/notifications",
-    label: "Notifications",
-    icon: <Bell size={18} />,
-    badge: true,
-  },
-  {
-    to: "/student/certificates",
-    label: "Certificates",
-    icon: <MdWorkspacePremium size={20} />,
-  },
+  // {
+  //   to: "/student/feedback",
+  //   label: "Feedback",
+  //   icon: <MessageSquare size={18} />,
+  // },
+  // {
+  //   to: "/student/notifications",
+  //   label: "Notifications",
+  //   icon: <Bell size={18} />,
+  //   badge: true,
+  // },
+  // {
+  //   to: "/student/certificates",
+  //   label: "Certificates",
+  //   icon: <MdWorkspacePremium size={20} />,
+  // },
   { to: "/student/profile", label: "My Profile", icon: <MdPerson size={20} /> },
   { to: "/student/settings", label: "Settings", icon: <Settings size={18} /> },
 ];

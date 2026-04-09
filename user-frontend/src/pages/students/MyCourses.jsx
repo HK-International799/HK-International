@@ -280,7 +280,7 @@ export default function MyCourses() {
                       </div>
 
                       {/* Progress Bar */}
-                      <div className="mt-4">
+                      {/* <div className="mt-4">
                         <div className="flex justify-between text-xs mb-1.5">
                           <span className="text-gray-500 font-medium">
                             Progress
@@ -300,7 +300,7 @@ export default function MyCourses() {
                             className={`h-full rounded-full ${progressColor}`}
                           />
                         </div>
-                      </div>
+                      </div> */}
 
                       {/* CTA */}
                       <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-50">
