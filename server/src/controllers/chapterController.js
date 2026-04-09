@@ -5,6 +5,9 @@ import Question from "../models/Question.js";
 import ChapterProgress from "../models/ChapterProgress.js";
 import mongoose from "mongoose";
 
+import cloudinary from "../config/cloudinary.js";
+import streamifier from "streamifier";
+
 const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 /* ================================================================
@@ -32,9 +35,8 @@ export const getChaptersByCourse = async (req, res) => {
         studentId: req.user._id,
         courseId,
       });
-      completedChapters = progress?.completedChapters?.map((c) =>
-        c.toString()
-      ) || [];
+      completedChapters =
+        progress?.completedChapters?.map((c) => c.toString()) || [];
     }
 
     res.json({ chapters, completedChapters });
@@ -158,36 +160,99 @@ export const deleteChapter = async (req, res) => {
    Admin/Tutor: Upload a document file to a chapter.
    Uses multer (disk storage) — file available as req.file
 ================================================================ */
+// export const uploadChapterDocument = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     if (!isValidId(id)) {
+//       return res.status(400).json({ message: "Invalid chapter ID" });
+//     }
+
+//     const chapter = await Chapter.findById(id);
+//     if (!chapter) return res.status(404).json({ message: "Chapter not found" });
+
+//     if (!req.file) {
+//       return res.status(400).json({ message: "No file uploaded" });
+//     }
+
+//     // Store the relative URL so students can download it
+//     chapter.documentUrl = `/uploads/${req.file.filename}`;
+//     chapter.documentName = req.file.originalname;
+//     await chapter.save();
+
+//     res.json({
+//       message: "Document uploaded successfully",
+//       documentUrl: chapter.documentUrl,
+//       documentName: chapter.documentName,
+//       chapter,
+//     });
+//   } catch (err) {
+//     res
+//       .status(500)
+//       .json({ message: "Error uploading document", error: err.message });
+//   }
+// };
+
 export const uploadChapterDocument = async (req, res) => {
   try {
+    console.log("FILE:", req.file);
+
+    if (!req.file) {
+      return res.status(400).json({
+        message: "No file uploaded",
+      });
+    }
+
     const { id } = req.params;
 
     if (!isValidId(id)) {
-      return res.status(400).json({ message: "Invalid chapter ID" });
+      return res.status(400).json({
+        message: "Invalid chapter ID",
+      });
     }
 
     const chapter = await Chapter.findById(id);
-    if (!chapter) return res.status(404).json({ message: "Chapter not found" });
 
-    if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded" });
+    if (!chapter) {
+      return res.status(404).json({
+        message: "Chapter not found",
+      });
     }
 
-    // Store the relative URL so students can download it
-    chapter.documentUrl = `/uploads/${req.file.filename}`;
+    const uploadFromBuffer = (buffer) =>
+      new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: "lms-documents",
+            resource_type: "raw",
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          },
+        );
+
+        streamifier.createReadStream(buffer).pipe(stream);
+      });
+
+    const result = await uploadFromBuffer(req.file.buffer);
+
+    chapter.documentUrl = result.secure_url;
     chapter.documentName = req.file.originalname;
+
     await chapter.save();
 
     res.json({
       message: "Document uploaded successfully",
-      documentUrl: chapter.documentUrl,
-      documentName: chapter.documentName,
+      documentUrl: result.secure_url,
       chapter,
     });
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Error uploading document", error: err.message });
+    console.error(err);
+    res.status(500).json({
+      message: "Error uploading document",
+      error: err.message,
+    });
   }
 };
 
@@ -279,9 +344,9 @@ export const addQuizQuestion = async (req, res) => {
     if (!chapter) return res.status(404).json({ message: "Chapter not found" });
 
     if (!chapter.quizId) {
-      return res
-        .status(400)
-        .json({ message: "No quiz attached to this chapter. Create one first." });
+      return res.status(400).json({
+        message: "No quiz attached to this chapter. Create one first.",
+      });
     }
 
     const quiz = await Quiz.findById(chapter.quizId);
@@ -368,10 +433,9 @@ export const submitChapterQuiz = async (req, res) => {
     let score = 0;
     const gradedAnswers = (answers || []).map((ans) => {
       const question = quiz.questions.find(
-        (q) => q._id.toString() === ans.questionId
+        (q) => q._id.toString() === ans.questionId,
       );
-      const correct =
-        question && question.correctAnswer === ans.selectedOption;
+      const correct = question && question.correctAnswer === ans.selectedOption;
       if (correct) score += question.marks;
       return { ...ans, correct };
     });
@@ -385,7 +449,7 @@ export const submitChapterQuiz = async (req, res) => {
         $addToSet: { completedChapters: chapter._id },
         $setOnInsert: { studentId, courseId: chapter.courseId },
       },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     );
 
     res.json({

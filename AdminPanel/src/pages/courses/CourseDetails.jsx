@@ -1,723 +1,3 @@
-// import { useEffect, useState } from "react";
-// import { useParams } from "react-router-dom";
-// import {
-//   ChevronDown,
-//   ChevronRight,
-//   Plus,
-//   Trash2,
-//   Upload,
-//   BookOpen,
-//   FileText,
-//   HelpCircle,
-//   CheckCircle,
-//   Edit3,
-//   X,
-//   Save,
-// } from "lucide-react";
-
-// import AdminLayout from "../../components/layout/AdminLayout";
-// import {
-//   getCourseById,
-//   getChaptersByCourse,
-//   createChapter,
-//   updateChapterById,
-//   deleteChapterById,
-//   uploadChapterDocument,
-//   createChapterQuiz,
-//   addChapterQuizQuestion,
-//   getChapterQuiz,
-//   publishCourse,
-// } from "../../services/courseService";
-
-// /* ──────────────────────────────────────────────────────────
-//    Inline helper — simple card wrapper
-// ────────────────────────────────────────────────────────── */
-// const Card = ({ children, className = "" }) => (
-//   <div className={`bg-white border rounded-2xl p-5 ${className}`}>
-//     {children}
-//   </div>
-// );
-
-// /* ──────────────────────────────────────────────────────────
-//    QuizBuilder
-//    Displayed inside a chapter row when the admin clicks
-//    "Manage Quiz". Allows adding MCQ questions one by one.
-// ────────────────────────────────────────────────────────── */
-// const QuizBuilder = ({ chapter, onDone }) => {
-//   const [quiz, setQuiz] = useState(null);
-//   const [loading, setLoading] = useState(true);
-//   const [saving, setSaving] = useState(false);
-
-//   const [form, setForm] = useState({
-//     prompt: "",
-//     options: ["", "", "", ""],
-//     correctAnswer: "",
-//     marks: 1,
-//   });
-
-//   // Load existing quiz on mount
-//   useEffect(() => {
-//     loadQuiz();
-//   }, [chapter._id]);
-
-//   const loadQuiz = async () => {
-//     setLoading(true);
-//     try {
-//       const { quiz: q } = await getChapterQuiz(chapter._id);
-//       setQuiz(q);
-//     } catch {
-//       setQuiz(null);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   // Create quiz if none exists yet
-//   const handleCreateQuiz = async () => {
-//     try {
-//       setSaving(true);
-//       const { quiz: q } = await createChapterQuiz(chapter._id, {
-//         title: `${chapter.title} – Quiz`,
-//       });
-//       setQuiz(q);
-//     } catch (err) {
-//       alert(err.response?.data?.message || "Error creating quiz");
-//     } finally {
-//       setSaving(false);
-//     }
-//   };
-
-//   const handleAddQuestion = async () => {
-//     if (!form.prompt || !form.correctAnswer) {
-//       return alert("Question prompt and correct answer are required");
-//     }
-//     const nonEmptyOptions = form.options.filter((o) => o.trim() !== "");
-//     if (nonEmptyOptions.length < 2) {
-//       return alert("Provide at least 2 options");
-//     }
-//     try {
-//       setSaving(true);
-//       await addChapterQuizQuestion(chapter._id, {
-//         prompt: form.prompt,
-//         options: nonEmptyOptions,
-//         correctAnswer: form.correctAnswer,
-//         marks: form.marks,
-//       });
-//       // Reset form and reload quiz
-//       setForm({ prompt: "", options: ["", "", "", ""], correctAnswer: "", marks: 1 });
-//       await loadQuiz();
-//       alert("Question added successfully");
-//     } catch (err) {
-//       alert(err.response?.data?.message || "Error adding question");
-//     } finally {
-//       setSaving(false);
-//     }
-//   };
-
-//   if (loading) {
-//     return (
-//       <div className="flex items-center justify-center py-8">
-//         <div className="w-6 h-6 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="space-y-5">
-//       {/* Header */}
-//       <div className="flex items-center justify-between">
-//         <h4 className="font-semibold text-gray-700 flex items-center gap-2">
-//           <HelpCircle size={16} className="text-orange-500" />
-//           Quiz for: {chapter.title}
-//         </h4>
-//         <button
-//           onClick={onDone}
-//           className="p-1.5 rounded-lg hover:bg-gray-100"
-//         >
-//           <X size={16} className="text-gray-400" />
-//         </button>
-//       </div>
-
-//       {/* No quiz yet */}
-//       {!quiz && (
-//         <div className="text-center py-6 border-2 border-dashed rounded-xl">
-//           <HelpCircle size={32} className="mx-auto text-gray-300 mb-3" />
-//           <p className="text-sm text-gray-500 mb-4">
-//             No quiz created yet for this chapter
-//           </p>
-//           <button
-//             onClick={handleCreateQuiz}
-//             disabled={saving}
-//             className="bg-orange-500 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-orange-600 disabled:opacity-50"
-//           >
-//             {saving ? "Creating..." : "Create Quiz"}
-//           </button>
-//         </div>
-//       )}
-
-//       {/* Quiz exists — show questions + add form */}
-//       {quiz && (
-//         <div className="space-y-4">
-//           {/* Existing questions */}
-//           {quiz.questions?.length > 0 && (
-//             <div className="space-y-2">
-//               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
-//                 {quiz.questions.length} question(s) · {quiz.totalMarks} marks
-//               </p>
-//               {quiz.questions.map((q, idx) => (
-//                 <div
-//                   key={q._id}
-//                   className="bg-gray-50 rounded-xl p-3 border"
-//                 >
-//                   <p className="text-sm font-medium text-gray-700">
-//                     {idx + 1}. {q.prompt}
-//                   </p>
-//                   <div className="flex flex-wrap gap-2 mt-2">
-//                     {q.options?.map((opt, i) => (
-//                       <span
-//                         key={i}
-//                         className={`text-xs px-3 py-1 rounded-full border ${
-//                           opt === q.correctAnswer
-//                             ? "bg-green-100 border-green-300 text-green-700 font-medium"
-//                             : "bg-white text-gray-500"
-//                         }`}
-//                       >
-//                         {opt}
-//                         {opt === q.correctAnswer && " ✓"}
-//                       </span>
-//                     ))}
-//                   </div>
-//                   <p className="text-xs text-gray-400 mt-1">Marks: {q.marks}</p>
-//                 </div>
-//               ))}
-//             </div>
-//           )}
-
-//           {/* Add question form */}
-//           <div className="border rounded-xl p-4 space-y-3 bg-orange-50/30">
-//             <p className="text-sm font-semibold text-gray-700">Add Question</p>
-
-//             <textarea
-//               rows={2}
-//               placeholder="Question prompt *"
-//               className="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-orange-200 outline-none resize-none"
-//               value={form.prompt}
-//               onChange={(e) => setForm({ ...form, prompt: e.target.value })}
-//             />
-
-//             <div className="grid grid-cols-2 gap-2">
-//               {form.options.map((opt, i) => (
-//                 <input
-//                   key={i}
-//                   placeholder={`Option ${i + 1}`}
-//                   className="border rounded-xl p-2 text-sm focus:ring-2 focus:ring-orange-200 outline-none"
-//                   value={opt}
-//                   onChange={(e) => {
-//                     const next = [...form.options];
-//                     next[i] = e.target.value;
-//                     setForm({ ...form, options: next });
-//                   }}
-//                 />
-//               ))}
-//             </div>
-
-//             <div className="flex gap-3">
-//               <input
-//                 placeholder="Correct answer (must match an option) *"
-//                 className="flex-1 border rounded-xl p-2 text-sm focus:ring-2 focus:ring-orange-200 outline-none"
-//                 value={form.correctAnswer}
-//                 onChange={(e) =>
-//                   setForm({ ...form, correctAnswer: e.target.value })
-//                 }
-//               />
-//               <input
-//                 type="number"
-//                 min={1}
-//                 placeholder="Marks"
-//                 className="w-20 border rounded-xl p-2 text-sm focus:ring-2 focus:ring-orange-200 outline-none"
-//                 value={form.marks}
-//                 onChange={(e) =>
-//                   setForm({ ...form, marks: Number(e.target.value) })
-//                 }
-//               />
-//             </div>
-
-//             <button
-//               onClick={handleAddQuestion}
-//               disabled={saving}
-//               className="w-full bg-orange-500 text-white py-2 rounded-xl text-sm font-medium hover:bg-orange-600 disabled:opacity-50"
-//             >
-//               {saving ? "Saving..." : "+ Add Question"}
-//             </button>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// /* ──────────────────────────────────────────────────────────
-//    ChapterRow
-//    Renders one chapter with expand/collapse, document upload,
-//    and quiz management.
-// ────────────────────────────────────────────────────────── */
-// const ChapterRow = ({ chapter, index, onDelete, onRefresh }) => {
-//   const [expanded, setExpanded] = useState(false);
-//   const [showQuiz, setShowQuiz] = useState(false);
-//   const [uploading, setUploading] = useState(false);
-//   const [editTitle, setEditTitle] = useState(false);
-//   const [titleVal, setTitleVal] = useState(chapter.title);
-
-//   const handleDocUpload = async (e) => {
-//     const file = e.target.files[0];
-//     if (!file) return;
-//     try {
-//       setUploading(true);
-//       const fd = new FormData();
-//       fd.append("document", file);
-//       await uploadChapterDocument(chapter._id, fd);
-//       onRefresh();
-//     } catch (err) {
-//       alert(err.response?.data?.message || "Upload failed");
-//     } finally {
-//       setUploading(false);
-//     }
-//   };
-
-//   const handleSaveTitle = async () => {
-//     if (!titleVal.trim()) return;
-//     try {
-//       await updateChapterById(chapter._id, { title: titleVal });
-//       setEditTitle(false);
-//       onRefresh();
-//     } catch {
-//       alert("Could not update title");
-//     }
-//   };
-
-//   return (
-//     <div className="border rounded-2xl overflow-hidden">
-//       {/* Chapter header bar */}
-//       <div
-//         className="flex items-center gap-3 px-5 py-4 bg-white cursor-pointer hover:bg-gray-50"
-//         onClick={() => setExpanded((v) => !v)}
-//       >
-//         <span className="w-7 h-7 rounded-full bg-purple-100 text-purple-700 text-xs font-bold flex items-center justify-center flex-shrink-0">
-//           {index + 1}
-//         </span>
-
-//         {editTitle ? (
-//           <div
-//             className="flex items-center gap-2 flex-1"
-//             onClick={(e) => e.stopPropagation()}
-//           >
-//             <input
-//               autoFocus
-//               value={titleVal}
-//               onChange={(e) => setTitleVal(e.target.value)}
-//               className="flex-1 border rounded-xl px-3 py-1.5 text-sm focus:ring-2 focus:ring-purple-200 outline-none"
-//             />
-//             <button
-//               onClick={handleSaveTitle}
-//               className="p-1.5 rounded-lg text-green-600 hover:bg-green-50"
-//             >
-//               <Save size={15} />
-//             </button>
-//             <button
-//               onClick={() => {
-//                 setEditTitle(false);
-//                 setTitleVal(chapter.title);
-//               }}
-//               className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100"
-//             >
-//               <X size={15} />
-//             </button>
-//           </div>
-//         ) : (
-//           <div className="flex items-center gap-2 flex-1 min-w-0">
-//             <p className="font-medium text-gray-800 truncate">{chapter.title}</p>
-//             <button
-//               onClick={(e) => {
-//                 e.stopPropagation();
-//                 setEditTitle(true);
-//               }}
-//               className="p-1 rounded-lg text-gray-300 hover:text-gray-500 hover:bg-gray-100"
-//             >
-//               <Edit3 size={13} />
-//             </button>
-//           </div>
-//         )}
-
-//         {/* Badges */}
-//         <div className="flex items-center gap-2 ml-auto flex-shrink-0">
-//           {chapter.documentUrl && (
-//             <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-600 rounded-full">
-//               Doc ✓
-//             </span>
-//           )}
-//           {chapter.quizId && (
-//             <span className="text-xs px-2 py-0.5 bg-orange-100 text-orange-600 rounded-full">
-//               Quiz ✓
-//             </span>
-//           )}
-//           <button
-//             onClick={(e) => {
-//               e.stopPropagation();
-//               if (confirm("Delete this chapter and its quiz?")) onDelete(chapter._id);
-//             }}
-//             className="p-1.5 rounded-lg hover:bg-red-50"
-//           >
-//             <Trash2 size={14} className="text-red-400" />
-//           </button>
-//           {expanded ? (
-//             <ChevronDown size={16} className="text-gray-400" />
-//           ) : (
-//             <ChevronRight size={16} className="text-gray-400" />
-//           )}
-//         </div>
-//       </div>
-
-//       {/* Expanded content */}
-//       {expanded && (
-//         <div className="border-t bg-gray-50 p-5 space-y-5">
-//           {/* Description */}
-//           {chapter.description && (
-//             <p className="text-sm text-gray-600">{chapter.description}</p>
-//           )}
-
-//           {/* Document section */}
-//           <div className="bg-white rounded-xl border p-4 space-y-3">
-//             <div className="flex items-center gap-2">
-//               <FileText size={15} className="text-blue-500" />
-//               <p className="text-sm font-semibold text-gray-700">
-//                 Chapter Document
-//               </p>
-//             </div>
-
-//             {chapter.documentUrl ? (
-//               <div className="flex items-center gap-3">
-//                 <a
-//                   href={`${import.meta.env.VITE_API_URL || ""}${chapter.documentUrl}`}
-//                   target="_blank"
-//                   rel="noreferrer"
-//                   className="text-sm text-blue-600 hover:underline truncate"
-//                 >
-//                   📄 {chapter.documentName || "View Document"}
-//                 </a>
-//               </div>
-//             ) : (
-//               <p className="text-xs text-gray-400">No document uploaded yet</p>
-//             )}
-
-//             <label className="flex items-center gap-2 cursor-pointer">
-//               <span className="text-xs px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg border border-blue-200 hover:bg-blue-100 font-medium flex items-center gap-1.5">
-//                 <Upload size={12} />
-//                 {uploading ? "Uploading..." : chapter.documentUrl ? "Replace Document" : "Upload Document"}
-//               </span>
-//               <input
-//                 type="file"
-//                 className="hidden"
-//                 accept=".pdf,.doc,.docx,.ppt,.pptx"
-//                 disabled={uploading}
-//                 onChange={handleDocUpload}
-//               />
-//             </label>
-//           </div>
-
-//           {/* Quiz section */}
-//           <div className="bg-white rounded-xl border p-4 space-y-3">
-//             {showQuiz ? (
-//               <QuizBuilder
-//                 chapter={chapter}
-//                 onDone={() => {
-//                   setShowQuiz(false);
-//                   onRefresh();
-//                 }}
-//               />
-//             ) : (
-//               <div className="flex items-center justify-between">
-//                 <div className="flex items-center gap-2">
-//                   <HelpCircle size={15} className="text-orange-500" />
-//                   <p className="text-sm font-semibold text-gray-700">
-//                     Chapter Quiz
-//                     {chapter.quizId && (
-//                       <span className="ml-2 text-xs text-green-600 font-normal">
-//                         (quiz attached)
-//                       </span>
-//                     )}
-//                   </p>
-//                 </div>
-//                 <button
-//                   onClick={() => setShowQuiz(true)}
-//                   className="text-xs px-3 py-1.5 bg-orange-50 text-orange-600 rounded-lg border border-orange-200 hover:bg-orange-100 font-medium"
-//                 >
-//                   {chapter.quizId ? "Manage Quiz" : "Create Quiz"}
-//                 </button>
-//               </div>
-//             )}
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// /* ──────────────────────────────────────────────────────────
-//    Main Component: CourseDetails
-// ────────────────────────────────────────────────────────── */
-// export default function CourseDetails() {
-//   const { id } = useParams();
-
-//   const [course, setCourse] = useState(null);
-//   const [chapters, setChapters] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [publishing, setPublishing] = useState(false);
-
-//   // New chapter form state
-//   const [showAddChapter, setShowAddChapter] = useState(false);
-//   const [chapterForm, setChapterForm] = useState({
-//     title: "",
-//     description: "",
-//   });
-//   const [addingChapter, setAddingChapter] = useState(false);
-
-//   /* ── Load Data ── */
-//   const fetchAll = async () => {
-//     try {
-//       const [courseData, chapterData] = await Promise.all([
-//         getCourseById(id),
-//         getChaptersByCourse(id),
-//       ]);
-//       setCourse(courseData);
-//       setChapters(chapterData.chapters || []);
-//     } catch (err) {
-//       console.error(err);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   useEffect(() => {
-//     fetchAll();
-//   }, [id]);
-
-//   /* ── Add Chapter ── */
-//   const handleAddChapter = async () => {
-//     if (!chapterForm.title.trim()) return alert("Chapter title is required");
-//     try {
-//       setAddingChapter(true);
-//       await createChapter({
-//         courseId: id,
-//         title: chapterForm.title,
-//         description: chapterForm.description,
-//       });
-//       setChapterForm({ title: "", description: "" });
-//       setShowAddChapter(false);
-//       fetchAll();
-//     } catch (err) {
-//       alert(err.response?.data?.message || "Error creating chapter");
-//     } finally {
-//       setAddingChapter(false);
-//     }
-//   };
-
-//   /* ── Delete Chapter ── */
-//   const handleDeleteChapter = async (chapterId) => {
-//     try {
-//       await deleteChapterById(chapterId);
-//       fetchAll();
-//     } catch (err) {
-//       alert(err.response?.data?.message || "Error deleting chapter");
-//     }
-//   };
-
-//   /* ── Publish Course ── */
-//   const handlePublish = async () => {
-//     try {
-//       setPublishing(true);
-//       await publishCourse(id);
-//       fetchAll();
-//     } catch {
-//       alert("Error publishing course");
-//     } finally {
-//       setPublishing(false);
-//     }
-//   };
-
-//   /* ── Loading state ── */
-//   if (loading) {
-//     return (
-//       <AdminLayout>
-//         <div className="flex items-center justify-center h-60">
-//           <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
-//         </div>
-//       </AdminLayout>
-//     );
-//   }
-
-//   if (!course) {
-//     return (
-//       <AdminLayout>
-//         <p className="text-center text-gray-500 py-20">Course not found.</p>
-//       </AdminLayout>
-//     );
-//   }
-
-//   const completedCount = chapters.filter((c) => c.quizId).length;
-
-//   return (
-//     <AdminLayout>
-//       <div className="space-y-6 max-w-4xl mx-auto">
-
-//         {/* ── Header ── */}
-//         <div className="flex items-start justify-between gap-4">
-//           <div>
-//             <div className="flex items-center gap-3 mb-1">
-//               <BookOpen size={22} className="text-purple-600" />
-//               <h1 className="text-2xl font-bold text-gray-900">{course.title}</h1>
-//               <span
-//                 className={`text-xs px-2.5 py-1 rounded-full font-medium ${
-//                   course.status === "published"
-//                     ? "bg-green-100 text-green-700"
-//                     : "bg-yellow-100 text-yellow-700"
-//                 }`}
-//               >
-//                 {course.status}
-//               </span>
-//             </div>
-//             {course.description && (
-//               <p className="text-sm text-gray-500 ml-9">{course.description}</p>
-//             )}
-//           </div>
-
-//           {course.status !== "published" && (
-//             <button
-//               onClick={handlePublish}
-//               disabled={publishing}
-//               className="flex-shrink-0 bg-purple-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-purple-700 disabled:opacity-50 flex items-center gap-2"
-//             >
-//               <CheckCircle size={15} />
-//               {publishing ? "Publishing..." : "Publish Course"}
-//             </button>
-//           )}
-//         </div>
-
-//         {/* ── Stats ── */}
-//         <div className="grid grid-cols-3 gap-4">
-//           <Card className="text-center">
-//             <p className="text-3xl font-bold text-purple-600">{chapters.length}</p>
-//             <p className="text-xs text-gray-500 mt-1">Chapters</p>
-//           </Card>
-//           <Card className="text-center">
-//             <p className="text-3xl font-bold text-orange-500">{completedCount}</p>
-//             <p className="text-xs text-gray-500 mt-1">With Quiz</p>
-//           </Card>
-//           <Card className="text-center">
-//             <p className="text-3xl font-bold text-blue-500">
-//               {course.enrolledStudents?.length || 0}
-//             </p>
-//             <p className="text-xs text-gray-500 mt-1">Enrolled Students</p>
-//           </Card>
-//         </div>
-
-//         {/* ── Chapters Section ── */}
-//         <Card>
-//           <div className="flex items-center justify-between mb-5">
-//             <h2 className="font-semibold text-gray-800 flex items-center gap-2">
-//               <BookOpen size={16} className="text-purple-500" />
-//               Course Chapters
-//             </h2>
-//             <button
-//               onClick={() => setShowAddChapter((v) => !v)}
-//               className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-purple-700"
-//             >
-//               <Plus size={15} />
-//               Add Chapter
-//             </button>
-//           </div>
-
-//           {/* Add Chapter Form */}
-//           {showAddChapter && (
-//             <div className="mb-5 border-2 border-dashed border-purple-200 rounded-2xl p-5 bg-purple-50/30 space-y-3">
-//               <p className="text-sm font-semibold text-gray-700">New Chapter</p>
-//               <input
-//                 placeholder="Chapter title *"
-//                 className="w-full border rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-purple-200 outline-none"
-//                 value={chapterForm.title}
-//                 onChange={(e) =>
-//                   setChapterForm({ ...chapterForm, title: e.target.value })
-//                 }
-//               />
-//               <textarea
-//                 rows={2}
-//                 placeholder="Description (optional)"
-//                 className="w-full border rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-purple-200 outline-none resize-none"
-//                 value={chapterForm.description}
-//                 onChange={(e) =>
-//                   setChapterForm({
-//                     ...chapterForm,
-//                     description: e.target.value,
-//                   })
-//                 }
-//               />
-//               <div className="flex gap-3 justify-end">
-//                 <button
-//                   onClick={() => setShowAddChapter(false)}
-//                   className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-xl"
-//                 >
-//                   Cancel
-//                 </button>
-//                 <button
-//                   onClick={handleAddChapter}
-//                   disabled={addingChapter}
-//                   className="px-4 py-2 bg-purple-600 text-white rounded-xl text-sm font-medium hover:bg-purple-700 disabled:opacity-50"
-//                 >
-//                   {addingChapter ? "Adding..." : "Add Chapter"}
-//                 </button>
-//               </div>
-//             </div>
-//           )}
-
-//           {/* Chapter list */}
-//           {chapters.length === 0 ? (
-//             <div className="text-center py-12 border-2 border-dashed rounded-2xl">
-//               <BookOpen size={36} className="mx-auto text-gray-200 mb-3" />
-//               <p className="text-sm text-gray-500">No chapters yet.</p>
-//               <p className="text-xs text-gray-400 mt-1">
-//                 Click "Add Chapter" to create the first chapter.
-//               </p>
-//             </div>
-//           ) : (
-//             <div className="space-y-3">
-//               {chapters.map((chapter, idx) => (
-//                 <ChapterRow
-//                   key={chapter._id}
-//                   chapter={chapter}
-//                   index={idx}
-//                   onDelete={handleDeleteChapter}
-//                   onRefresh={fetchAll}
-//                 />
-//               ))}
-//             </div>
-//           )}
-//         </Card>
-
-//         {/* ── How the student flow works (info banner) ── */}
-//         <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 text-sm text-blue-700">
-//           <p className="font-semibold mb-1">💡 Student Flow</p>
-//           <p>
-//             Students see chapters in order. They must complete each chapter's
-//             quiz before the next chapter unlocks. Chapters without a quiz are
-//             freely accessible.
-//           </p>
-//         </div>
-
-//       </div>
-//     </AdminLayout>
-//   );
-// }
-
-
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import {
@@ -809,8 +89,7 @@ const EnrollStudentModal = ({ courseId, onClose, onSuccess }) => {
   const filtered = users.filter((u) => {
     const q = search.toLowerCase();
     return (
-      u.name?.toLowerCase().includes(q) ||
-      u.email?.toLowerCase().includes(q)
+      u.name?.toLowerCase().includes(q) || u.email?.toLowerCase().includes(q)
     );
   });
 
@@ -884,7 +163,9 @@ const EnrollStudentModal = ({ courseId, onClose, onSuccess }) => {
                 </div>
               ) : (
                 <span className="text-gray-400">
-                  {loadingUsers ? "Loading students…" : "Search and select a student"}
+                  {loadingUsers
+                    ? "Loading students…"
+                    : "Search and select a student"}
                 </span>
               )}
               <ChevronDown
@@ -912,7 +193,10 @@ const EnrollStudentModal = ({ courseId, onClose, onSuccess }) => {
                     />
                     {search && (
                       <button onClick={() => setSearch("")}>
-                        <X size={12} className="text-gray-400 hover:text-gray-600" />
+                        <X
+                          size={12}
+                          className="text-gray-400 hover:text-gray-600"
+                        />
                       </button>
                     )}
                   </div>
@@ -929,7 +213,9 @@ const EnrollStudentModal = ({ courseId, onClose, onSuccess }) => {
                     <div className="text-center py-8">
                       <User size={24} className="mx-auto text-gray-200 mb-2" />
                       <p className="text-sm text-gray-400">
-                        {search ? "No students match your search" : "No students found"}
+                        {search
+                          ? "No students match your search"
+                          : "No students found"}
                       </p>
                     </div>
                   ) : (
@@ -955,7 +241,10 @@ const EnrollStudentModal = ({ courseId, onClose, onSuccess }) => {
                           </p>
                         </div>
                         {selectedUser?._id === user._id && (
-                          <CheckCircle size={14} className="text-purple-500 flex-shrink-0" />
+                          <CheckCircle
+                            size={14}
+                            className="text-purple-500 flex-shrink-0"
+                          />
                         )}
                       </button>
                     ))
@@ -1072,7 +361,12 @@ const QuizBuilder = ({ chapter, onDone }) => {
         correctAnswer: form.correctAnswer,
         marks: form.marks,
       });
-      setForm({ prompt: "", options: ["", "", "", ""], correctAnswer: "", marks: 1 });
+      setForm({
+        prompt: "",
+        options: ["", "", "", ""],
+        correctAnswer: "",
+        marks: 1,
+      });
       await loadQuiz();
       alert("Question added successfully");
     } catch (err) {
@@ -1180,7 +474,9 @@ const QuizBuilder = ({ chapter, onDone }) => {
                 placeholder="Correct answer (must match an option) *"
                 className="flex-1 border rounded-xl p-2 text-sm focus:ring-2 focus:ring-orange-200 outline-none"
                 value={form.correctAnswer}
-                onChange={(e) => setForm({ ...form, correctAnswer: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, correctAnswer: e.target.value })
+                }
               />
               <input
                 type="number"
@@ -1188,7 +484,9 @@ const QuizBuilder = ({ chapter, onDone }) => {
                 placeholder="Marks"
                 className="w-20 border rounded-xl p-2 text-sm focus:ring-2 focus:ring-orange-200 outline-none"
                 value={form.marks}
-                onChange={(e) => setForm({ ...form, marks: Number(e.target.value) })}
+                onChange={(e) =>
+                  setForm({ ...form, marks: Number(e.target.value) })
+                }
               />
             </div>
             <button
@@ -1270,7 +568,10 @@ const ChapterRow = ({ chapter, index, onDelete, onRefresh }) => {
               <Save size={15} />
             </button>
             <button
-              onClick={() => { setEditTitle(false); setTitleVal(chapter.title); }}
+              onClick={() => {
+                setEditTitle(false);
+                setTitleVal(chapter.title);
+              }}
               className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100"
             >
               <X size={15} />
@@ -1278,9 +579,14 @@ const ChapterRow = ({ chapter, index, onDelete, onRefresh }) => {
           </div>
         ) : (
           <div className="flex items-center gap-2 flex-1 min-w-0">
-            <p className="font-medium text-gray-800 truncate">{chapter.title}</p>
+            <p className="font-medium text-gray-800 truncate">
+              {chapter.title}
+            </p>
             <button
-              onClick={(e) => { e.stopPropagation(); setEditTitle(true); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setEditTitle(true);
+              }}
               className="p-1 rounded-lg text-gray-300 hover:text-gray-500 hover:bg-gray-100"
             >
               <Edit3 size={13} />
@@ -1302,7 +608,8 @@ const ChapterRow = ({ chapter, index, onDelete, onRefresh }) => {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              if (confirm("Delete this chapter and its quiz?")) onDelete(chapter._id);
+              if (confirm("Delete this chapter and its quiz?"))
+                onDelete(chapter._id);
             }}
             className="p-1.5 rounded-lg hover:bg-red-50"
           >
@@ -1325,11 +632,13 @@ const ChapterRow = ({ chapter, index, onDelete, onRefresh }) => {
           <div className="bg-white rounded-xl border p-4 space-y-3">
             <div className="flex items-center gap-2">
               <FileText size={15} className="text-blue-500" />
-              <p className="text-sm font-semibold text-gray-700">Chapter Document</p>
+              <p className="text-sm font-semibold text-gray-700">
+                Chapter Document
+              </p>
             </div>
             {chapter.documentUrl ? (
               <a
-                href={`${import.meta.env.VITE_API_URL || ""}${chapter.documentUrl}`}
+                href={chapter.documentUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="text-sm text-blue-600 hover:underline truncate block"
@@ -1342,7 +651,11 @@ const ChapterRow = ({ chapter, index, onDelete, onRefresh }) => {
             <label className="flex items-center gap-2 cursor-pointer">
               <span className="text-xs px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg border border-blue-200 hover:bg-blue-100 font-medium flex items-center gap-1.5">
                 <Upload size={12} />
-                {uploading ? "Uploading..." : chapter.documentUrl ? "Replace Document" : "Upload Document"}
+                {uploading
+                  ? "Uploading..."
+                  : chapter.documentUrl
+                    ? "Replace Document"
+                    : "Upload Document"}
               </span>
               <input
                 type="file"
@@ -1358,7 +671,10 @@ const ChapterRow = ({ chapter, index, onDelete, onRefresh }) => {
             {showQuiz ? (
               <QuizBuilder
                 chapter={chapter}
-                onDone={() => { setShowQuiz(false); onRefresh(); }}
+                onDone={() => {
+                  setShowQuiz(false);
+                  onRefresh();
+                }}
               />
             ) : (
               <div className="flex items-center justify-between">
@@ -1401,7 +717,10 @@ export default function CourseDetails() {
   const [showEnrollModal, setShowEnrollModal] = useState(false);
 
   const [showAddChapter, setShowAddChapter] = useState(false);
-  const [chapterForm, setChapterForm] = useState({ title: "", description: "" });
+  const [chapterForm, setChapterForm] = useState({
+    title: "",
+    description: "",
+  });
   const [addingChapter, setAddingChapter] = useState(false);
 
   const fetchAll = async () => {
@@ -1410,7 +729,7 @@ export default function CourseDetails() {
         getCourseById(id),
         getChaptersByCourse(id),
       ]);
-      console.log(courseData)
+      console.log(courseData);
       setCourse(courseData);
       setChapters(chapterData.chapters || []);
     } catch (err) {
@@ -1420,7 +739,9 @@ export default function CourseDetails() {
     }
   };
 
-  useEffect(() => { fetchAll(); }, [id]);
+  useEffect(() => {
+    fetchAll();
+  }, [id]);
 
   const handleAddChapter = async () => {
     if (!chapterForm.title.trim()) return alert("Chapter title is required");
@@ -1490,13 +811,14 @@ export default function CourseDetails() {
       )}
 
       <div className="space-y-6 max-w-4xl mx-auto">
-
         {/* ── Header ── */}
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-1">
               <BookOpen size={22} className="text-purple-600" />
-              <h1 className="text-2xl font-bold text-gray-900">{course.title}</h1>
+              <h1 className="text-2xl font-bold text-gray-900">
+                {course.title}
+              </h1>
               <span
                 className={`text-xs px-2.5 py-1 rounded-full font-medium ${
                   course.status === "published"
@@ -1539,11 +861,15 @@ export default function CourseDetails() {
         {/* ── Stats ── */}
         <div className="grid grid-cols-3 gap-4">
           <Card className="text-center">
-            <p className="text-3xl font-bold text-purple-600">{chapters.length}</p>
+            <p className="text-3xl font-bold text-purple-600">
+              {chapters.length}
+            </p>
             <p className="text-xs text-gray-500 mt-1">Chapters</p>
           </Card>
           <Card className="text-center">
-            <p className="text-3xl font-bold text-orange-500">{completedCount}</p>
+            <p className="text-3xl font-bold text-orange-500">
+              {completedCount}
+            </p>
             <p className="text-xs text-gray-500 mt-1">With Quiz</p>
           </Card>
           <Card className="text-center">
@@ -1577,14 +903,21 @@ export default function CourseDetails() {
                 placeholder="Chapter title *"
                 className="w-full border rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-purple-200 outline-none"
                 value={chapterForm.title}
-                onChange={(e) => setChapterForm({ ...chapterForm, title: e.target.value })}
+                onChange={(e) =>
+                  setChapterForm({ ...chapterForm, title: e.target.value })
+                }
               />
               <textarea
                 rows={2}
                 placeholder="Description (optional)"
                 className="w-full border rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-purple-200 outline-none resize-none"
                 value={chapterForm.description}
-                onChange={(e) => setChapterForm({ ...chapterForm, description: e.target.value })}
+                onChange={(e) =>
+                  setChapterForm({
+                    ...chapterForm,
+                    description: e.target.value,
+                  })
+                }
               />
               <div className="flex gap-3 justify-end">
                 <button
@@ -1636,7 +969,6 @@ export default function CourseDetails() {
             freely accessible.
           </p>
         </div>
-
       </div>
     </AdminLayout>
   );

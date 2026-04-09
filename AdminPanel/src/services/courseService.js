@@ -248,9 +248,9 @@ export const deleteChapterById = async (chapterId) => {
 export const uploadChapterDocument = async (chapterId, formData) => {
   const { data } = await api.post(
     `/chapters/${chapterId}/upload-document`,
-    formData,
-    { headers: { "Content-Type": "multipart/form-data" } }
+    formData
   );
+
   return data;
 };
 

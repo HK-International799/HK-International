@@ -8,13 +8,12 @@ import express from "express";
 import Message from "./models/Message.js";
 import app from "./app.js";
 
-// Serve uploaded files
-app.use("/uploads", express.static("uploads"));
 
 const httpServer = createServer(app);
 
-console.log("ENV TEST:", process.env.RAZORPAY_KEY_ID);
-
+console.log(process.env.CLOUDINARY_API_SECRET);
+console.log(process.env.CLOUDINARY_API_KEY);
+console.log(process.env.CLOUDINARY_CLOUD_NAME);
 // ─── Socket.io setup ───────────────────────────────────────────────────
 const io = new SocketServer(httpServer, {
   cors: {

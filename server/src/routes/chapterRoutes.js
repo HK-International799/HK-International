@@ -27,7 +27,11 @@ router.get("/course/:courseId", getChaptersByCourse);
 
 /* ── Student progress ─────────────────────────────────────────── */
 // GET /api/chapters/progress/:courseId
-router.get("/progress/:courseId", roleMiddleware(["student"]), getStudentProgress);
+router.get(
+  "/progress/:courseId",
+  roleMiddleware(["student"]),
+  getStudentProgress,
+);
 
 /* ── Chapter CRUD (Admin / Tutor only) ────────────────────────── */
 // POST /api/chapters  — create new chapter
@@ -45,15 +49,23 @@ router.post(
   "/:id/upload-document",
   roleMiddleware(["admin", "tutor"]),
   upload.single("document"),
-  uploadChapterDocument
+  uploadChapterDocument,
 );
 
 /* ── Quiz management (Admin / Tutor) ──────────────────────────── */
 // POST /api/chapters/:id/create-quiz  — create quiz for chapter
-router.post("/:id/create-quiz", roleMiddleware(["admin", "tutor"]), createChapterQuiz);
+router.post(
+  "/:id/create-quiz",
+  roleMiddleware(["admin", "tutor"]),
+  createChapterQuiz,
+);
 
 // POST /api/chapters/:id/quiz/add-question  — add MCQ question
-router.post("/:id/quiz/add-question", roleMiddleware(["admin", "tutor"]), addQuizQuestion);
+router.post(
+  "/:id/quiz/add-question",
+  roleMiddleware(["admin", "tutor"]),
+  addQuizQuestion,
+);
 
 // GET /api/chapters/:id/quiz  — get quiz with questions
 router.get("/:id/quiz", getChapterQuiz);

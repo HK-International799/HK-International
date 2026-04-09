@@ -1398,9 +1398,8 @@ function ChapterContent({ chapter, isCompleted }) {
   const [chapterDone, setChapterDone] = useState(isCompleted);
   const [docModal, setDocModal] = useState(false);
 
-  const docUrl = chapter.documentUrl
-    ? `${API_BASE}${chapter.documentUrl}`
-    : null;
+  // Cloudinary URL is already full
+  const docUrl = chapter.documentUrl || null;
 
   const handleQuizComplete = () => {
     setChapterDone(true);
@@ -1409,7 +1408,6 @@ function ChapterContent({ chapter, isCompleted }) {
 
   return (
     <>
-      {/* Document Modal */}
       {docModal && docUrl && (
         <DocumentModal
           url={docUrl}
@@ -1419,7 +1417,6 @@ function ChapterContent({ chapter, isCompleted }) {
       )}
 
       <div className="border-t border-gray-100 px-5 py-5 space-y-5">
-        {/* Document section */}
         {docUrl ? (
           <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 space-y-3">
             <div className="flex items-center gap-2">
@@ -1428,11 +1425,11 @@ function ChapterContent({ chapter, isCompleted }) {
                 Chapter Material
               </p>
             </div>
+
             <p className="text-xs text-blue-600">
               {chapter.documentName || "Study document"}
             </p>
 
-            {/* View only — no download button */}
             <button
               onClick={() => setDocModal(true)}
               className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-medium hover:bg-blue-700 transition"
@@ -1446,7 +1443,6 @@ function ChapterContent({ chapter, isCompleted }) {
             No document uploaded for this chapter
           </div>
         )}
-
         {/* Quiz / Complete section */}
         {chapterDone ? (
           <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-2xl px-4 py-3">
