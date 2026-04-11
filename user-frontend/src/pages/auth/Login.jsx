@@ -45,7 +45,7 @@ export default function Login() {
             className="relative z-10 max-w-lg text-center"
           >
             <h1 className="text-5xl font-bold leading-tight">
-              Welcome Back to <br /> HK International
+              Welcome Back to <br />1A HK International
             </h1>
             <p className="mt-6 text-lg opacity-90">
               Access globally recognized safety certifications and advance your
