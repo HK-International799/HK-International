@@ -724,6 +724,7 @@ import {
   getChapterQuiz,
   getCourseById,
 } from "../../services/studentService";
+import DocumentModal from "./studentComponent/DocumentModal";
 
 const API_BASE =
   import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
@@ -731,346 +732,346 @@ const API_BASE =
 /* ======================================================
    DocumentModal – secure PDF viewer, no download
 ====================================================== */
-function DocumentModal({ url, name, onClose }) {
-  const canvasRef = useRef(null);
-  const containerRef = useRef(null);
-  const [pdfDoc, setPdfDoc] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const [scale, setScale] = useState(1.2);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isPdf, setIsPdf] = useState(false);
-  const renderTaskRef = useRef(null);
+// function DocumentModal({ url, name, onClose }) {
+//   const canvasRef = useRef(null);
+//   const containerRef = useRef(null);
+//   const [pdfDoc, setPdfDoc] = useState(null);
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [totalPages, setTotalPages] = useState(0);
+//   const [scale, setScale] = useState(1.2);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const [isPdf, setIsPdf] = useState(false);
+//   const renderTaskRef = useRef(null);
 
-  /* Determine file type */
-  useEffect(() => {
-    const lower = (url || "").toLowerCase();
-    const pdf = lower.endsWith(".pdf") || lower.includes(".pdf?");
-    setIsPdf(pdf);
-  }, [url]);
+//   /* Determine file type */
+//   useEffect(() => {
+//     const lower = (url || "").toLowerCase();
+//     const pdf = lower.endsWith(".pdf") || lower.includes(".pdf?");
+//     setIsPdf(pdf);
+//   }, [url]);
 
-  /* Load PDF.js for PDF files */
-  useEffect(() => {
-    if (!isPdf) return;
-    setLoading(true);
-    setError(null);
+//   /* Load PDF.js for PDF files */
+//   useEffect(() => {
+//     if (!isPdf) return;
+//     setLoading(true);
+//     setError(null);
 
-    const loadPdfJs = async () => {
-      try {
-        if (!window.pdfjsLib) {
-          await new Promise((resolve, reject) => {
-            const script = document.createElement("script");
-            script.src =
-              "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
-            script.onload = resolve;
-            script.onerror = reject;
-            document.head.appendChild(script);
-          });
-          window.pdfjsLib.GlobalWorkerOptions.workerSrc =
-            "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-        }
+//     const loadPdfJs = async () => {
+//       try {
+//         if (!window.pdfjsLib) {
+//           await new Promise((resolve, reject) => {
+//             const script = document.createElement("script");
+//             script.src =
+//               "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+//             script.onload = resolve;
+//             script.onerror = reject;
+//             document.head.appendChild(script);
+//           });
+//           window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+//             "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+//         }
 
-        const loadingTask = window.pdfjsLib.getDocument({
-          url,
-          withCredentials: true,
-        });
-        const doc = await loadingTask.promise;
-        setPdfDoc(doc);
-        setTotalPages(doc.numPages);
-        setCurrentPage(1);
-      } catch (err) {
-        setError("Unable to load document. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
+//         const loadingTask = window.pdfjsLib.getDocument({
+//           url,
+//           withCredentials: true,
+//         });
+//         const doc = await loadingTask.promise;
+//         setPdfDoc(doc);
+//         setTotalPages(doc.numPages);
+//         setCurrentPage(1);
+//       } catch (err) {
+//         setError("Unable to load document. Please try again.");
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
 
-    loadPdfJs();
-  }, [url, isPdf]);
+//     loadPdfJs();
+//   }, [url, isPdf]);
 
-  /* Render page whenever page/scale/doc changes */
-  const renderPage = useCallback(
-    async (pageNum) => {
-      if (!pdfDoc || !canvasRef.current) return;
+//   /* Render page whenever page/scale/doc changes */
+//   const renderPage = useCallback(
+//     async (pageNum) => {
+//       if (!pdfDoc || !canvasRef.current) return;
 
-      /* Cancel any in-flight render */
-      if (renderTaskRef.current) {
-        try {
-          renderTaskRef.current.cancel();
-        } catch (_) {}
-      }
+//       /* Cancel any in-flight render */
+//       if (renderTaskRef.current) {
+//         try {
+//           renderTaskRef.current.cancel();
+//         } catch (_) {}
+//       }
 
-      const page = await pdfDoc.getPage(pageNum);
-      const viewport = page.getViewport({ scale });
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext("2d");
+//       const page = await pdfDoc.getPage(pageNum);
+//       const viewport = page.getViewport({ scale });
+//       const canvas = canvasRef.current;
+//       const ctx = canvas.getContext("2d");
 
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
+//       canvas.height = viewport.height;
+//       canvas.width = viewport.width;
 
-      const renderTask = page.render({ canvasContext: ctx, viewport });
-      renderTaskRef.current = renderTask;
+//       const renderTask = page.render({ canvasContext: ctx, viewport });
+//       renderTaskRef.current = renderTask;
 
-      try {
-        await renderTask.promise;
-      } catch (err) {
-        if (err?.name !== "RenderingCancelledException") {
-          console.error(err);
-        }
-      }
-    },
-    [pdfDoc, scale],
-  );
+//       try {
+//         await renderTask.promise;
+//       } catch (err) {
+//         if (err?.name !== "RenderingCancelledException") {
+//           console.error(err);
+//         }
+//       }
+//     },
+//     [pdfDoc, scale],
+//   );
 
-  useEffect(() => {
-    if (pdfDoc) renderPage(currentPage);
-  }, [pdfDoc, currentPage, scale, renderPage]);
+//   useEffect(() => {
+//     if (pdfDoc) renderPage(currentPage);
+//   }, [pdfDoc, currentPage, scale, renderPage]);
 
-  /* Keyboard navigation */
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "Escape") onClose();
-      if (e.key === "ArrowRight" || e.key === "ArrowDown")
-        setCurrentPage((p) => Math.min(p + 1, totalPages));
-      if (e.key === "ArrowLeft" || e.key === "ArrowUp")
-        setCurrentPage((p) => Math.max(p - 1, 1));
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose, totalPages]);
+//   /* Keyboard navigation */
+//   useEffect(() => {
+//     const onKey = (e) => {
+//       if (e.key === "Escape") onClose();
+//       if (e.key === "ArrowRight" || e.key === "ArrowDown")
+//         setCurrentPage((p) => Math.min(p + 1, totalPages));
+//       if (e.key === "ArrowLeft" || e.key === "ArrowUp")
+//         setCurrentPage((p) => Math.max(p - 1, 1));
+//     };
+//     window.addEventListener("keydown", onKey);
+//     return () => window.removeEventListener("keydown", onKey);
+//   }, [onClose, totalPages]);
 
-  /* Block right-click on the modal */
-  const blockContext = (e) => e.preventDefault();
+//   /* Block right-click on the modal */
+//   const blockContext = (e) => e.preventDefault();
 
-  const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
-  const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
-  const zoomIn = () => setScale((s) => Math.min(s + 0.2, 3));
-  const zoomOut = () => setScale((s) => Math.max(s - 0.2, 0.5));
+//   const goNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
+//   const goPrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
+//   const zoomIn = () => setScale((s) => Math.min(s + 0.2, 3));
+//   const zoomOut = () => setScale((s) => Math.max(s - 0.2, 0.5));
 
-  /* Non-PDF: render via Google Docs Viewer embedded in a sandboxed iframe */
-  const renderNonPdf = () => {
-    const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
-    return (
-      <div className="flex flex-col h-full">
-        <div className="flex-1 relative">
-          <iframe
-            src={viewerUrl}
-            className="w-full h-full border-0"
-            sandbox="allow-scripts allow-same-origin"
-            title={name || "Document"}
-            onContextMenu={blockContext}
-          />
-          {/* Transparent overlay to prevent right-click on iframe content */}
-          <div
-            className="absolute inset-0 pointer-events-none select-none"
-            style={{ zIndex: 1 }}
-            onContextMenu={blockContext}
-          />
-        </div>
-      </div>
-    );
-  };
+//   /* Non-PDF: render via Google Docs Viewer embedded in a sandboxed iframe */
+//   const renderNonPdf = () => {
+//     const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
+//     return (
+//       <div className="flex flex-col h-full">
+//         <div className="flex-1 relative">
+//           <iframe
+//             src={viewerUrl}
+//             className="w-full h-full border-0"
+//             sandbox="allow-scripts allow-same-origin"
+//             title={name || "Document"}
+//             onContextMenu={blockContext}
+//           />
+//           {/* Transparent overlay to prevent right-click on iframe content */}
+//           <div
+//             className="absolute inset-0 pointer-events-none select-none"
+//             style={{ zIndex: 1 }}
+//             onContextMenu={blockContext}
+//           />
+//         </div>
+//       </div>
+//     );
+//   };
 
-  return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center"
-        style={{
-          backgroundColor: "rgba(0,0,0,0.75)",
-          backdropFilter: "blur(4px)",
-        }}
-        onClick={(e) => e.target === e.currentTarget && onClose()}
-        onContextMenu={blockContext}
-      >
-        <motion.div
-          initial={{ scale: 0.93, opacity: 0, y: 16 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0.95, opacity: 0 }}
-          transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="relative flex flex-col bg-white rounded-2xl shadow-2xl overflow-hidden"
-          style={{
-            width: "min(92vw, 900px)",
-            height: "min(92vh, 820px)",
-          }}
-          onContextMenu={blockContext}
-        >
-          {/* ── Header bar ── */}
-          <div className="flex items-center justify-between px-5 py-3 bg-gray-900 flex-shrink-0">
-            <div className="flex items-center gap-3 min-w-0">
-              <FileText className="w-4 h-4 text-orange-400 flex-shrink-0" />
-              <p className="text-white text-sm font-medium truncate max-w-xs">
-                {name || "Document Viewer"}
-              </p>
-              {isPdf && totalPages > 0 && (
-                <span className="text-gray-400 text-xs ml-1 flex-shrink-0">
-                  · {totalPages} page{totalPages !== 1 ? "s" : ""}
-                </span>
-              )}
-            </div>
+//   return (
+//     <AnimatePresence>
+//       <motion.div
+//         initial={{ opacity: 0 }}
+//         animate={{ opacity: 1 }}
+//         exit={{ opacity: 0 }}
+//         className="fixed inset-0 z-50 flex items-center justify-center"
+//         style={{
+//           backgroundColor: "rgba(0,0,0,0.75)",
+//           backdropFilter: "blur(4px)",
+//         }}
+//         onClick={(e) => e.target === e.currentTarget && onClose()}
+//         onContextMenu={blockContext}
+//       >
+//         <motion.div
+//           initial={{ scale: 0.93, opacity: 0, y: 16 }}
+//           animate={{ scale: 1, opacity: 1, y: 0 }}
+//           exit={{ scale: 0.95, opacity: 0 }}
+//           transition={{ type: "spring", damping: 25, stiffness: 300 }}
+//           className="relative flex flex-col bg-white rounded-2xl shadow-2xl overflow-hidden"
+//           style={{
+//             width: "min(92vw, 900px)",
+//             height: "min(92vh, 820px)",
+//           }}
+//           onContextMenu={blockContext}
+//         >
+//           {/* ── Header bar ── */}
+//           <div className="flex items-center justify-between px-5 py-3 bg-gray-900 flex-shrink-0">
+//             <div className="flex items-center gap-3 min-w-0">
+//               <FileText className="w-4 h-4 text-orange-400 flex-shrink-0" />
+//               <p className="text-white text-sm font-medium truncate max-w-xs">
+//                 {name || "Document Viewer"}
+//               </p>
+//               {isPdf && totalPages > 0 && (
+//                 <span className="text-gray-400 text-xs ml-1 flex-shrink-0">
+//                   · {totalPages} page{totalPages !== 1 ? "s" : ""}
+//                 </span>
+//               )}
+//             </div>
 
-            <div className="flex items-center gap-1">
-              {/* Zoom controls – PDF only */}
-              {isPdf && (
-                <>
-                  <button
-                    onClick={zoomOut}
-                    title="Zoom out"
-                    className="p-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition"
-                  >
-                    <ZoomOut className="w-4 h-4" />
-                  </button>
-                  <span className="text-gray-400 text-xs min-w-[42px] text-center">
-                    {Math.round(scale * 100)}%
-                  </span>
-                  <button
-                    onClick={zoomIn}
-                    title="Zoom in"
-                    className="p-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition"
-                  >
-                    <ZoomIn className="w-4 h-4" />
-                  </button>
-                  <div className="w-px h-5 bg-gray-600 mx-1" />
-                </>
-              )}
-              <button
-                onClick={onClose}
-                className="p-2 rounded-lg text-gray-300 hover:bg-red-600 hover:text-white transition"
-                title="Close"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+//             <div className="flex items-center gap-1">
+//               {/* Zoom controls – PDF only */}
+//               {isPdf && (
+//                 <>
+//                   <button
+//                     onClick={zoomOut}
+//                     title="Zoom out"
+//                     className="p-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition"
+//                   >
+//                     <ZoomOut className="w-4 h-4" />
+//                   </button>
+//                   <span className="text-gray-400 text-xs min-w-[42px] text-center">
+//                     {Math.round(scale * 100)}%
+//                   </span>
+//                   <button
+//                     onClick={zoomIn}
+//                     title="Zoom in"
+//                     className="p-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition"
+//                   >
+//                     <ZoomIn className="w-4 h-4" />
+//                   </button>
+//                   <div className="w-px h-5 bg-gray-600 mx-1" />
+//                 </>
+//               )}
+//               <button
+//                 onClick={onClose}
+//                 className="p-2 rounded-lg text-gray-300 hover:bg-red-600 hover:text-white transition"
+//                 title="Close"
+//               >
+//                 <X className="w-4 h-4" />
+//               </button>
+//             </div>
+//           </div>
 
-          {/* ── Document area ── */}
-          <div
-            ref={containerRef}
-            className="flex-1 overflow-auto bg-gray-100 relative"
-            style={{ userSelect: "none" }}
-            onContextMenu={blockContext}
-          >
-            {!isPdf ? (
-              renderNonPdf()
-            ) : loading ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
-                <p className="text-gray-500 text-sm font-medium">
-                  Loading document…
-                </p>
-              </div>
-            ) : error ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-8 text-center">
-                <AlertCircle className="w-10 h-10 text-red-400" />
-                <p className="text-red-600 font-medium">{error}</p>
-                <p className="text-gray-400 text-sm">
-                  Make sure the document is accessible and try again.
-                </p>
-              </div>
-            ) : (
-              <div className="flex justify-center py-6 px-4">
-                <div
-                  className="shadow-xl rounded-lg overflow-hidden bg-white"
-                  style={{ maxWidth: "100%" }}
-                  onContextMenu={blockContext}
-                >
-                  <canvas
-                    ref={canvasRef}
-                    style={{
-                      display: "block",
-                      maxWidth: "100%",
-                      userSelect: "none",
-                      pointerEvents: "none",
-                    }}
-                    onContextMenu={blockContext}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
+//           {/* ── Document area ── */}
+//           <div
+//             ref={containerRef}
+//             className="flex-1 overflow-auto bg-gray-100 relative"
+//             style={{ userSelect: "none" }}
+//             onContextMenu={blockContext}
+//           >
+//             {!isPdf ? (
+//               renderNonPdf()
+//             ) : loading ? (
+//               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+//                 <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
+//                 <p className="text-gray-500 text-sm font-medium">
+//                   Loading document…
+//                 </p>
+//               </div>
+//             ) : error ? (
+//               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-8 text-center">
+//                 <AlertCircle className="w-10 h-10 text-red-400" />
+//                 <p className="text-red-600 font-medium">{error}</p>
+//                 <p className="text-gray-400 text-sm">
+//                   Make sure the document is accessible and try again.
+//                 </p>
+//               </div>
+//             ) : (
+//               <div className="flex justify-center py-6 px-4">
+//                 <div
+//                   className="shadow-xl rounded-lg overflow-hidden bg-white"
+//                   style={{ maxWidth: "100%" }}
+//                   onContextMenu={blockContext}
+//                 >
+//                   <canvas
+//                     ref={canvasRef}
+//                     style={{
+//                       display: "block",
+//                       maxWidth: "100%",
+//                       userSelect: "none",
+//                       pointerEvents: "none",
+//                     }}
+//                     onContextMenu={blockContext}
+//                   />
+//                 </div>
+//               </div>
+//             )}
+//           </div>
 
-          {/* ── Page navigation footer – PDF only ── */}
-          {isPdf && !loading && !error && totalPages > 0 && (
-            <div className="flex items-center justify-between px-5 py-3 bg-white border-t border-gray-100 flex-shrink-0">
-              <button
-                onClick={goPrev}
-                disabled={currentPage <= 1}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                Previous
-              </button>
+//           {/* ── Page navigation footer – PDF only ── */}
+//           {isPdf && !loading && !error && totalPages > 0 && (
+//             <div className="flex items-center justify-between px-5 py-3 bg-white border-t border-gray-100 flex-shrink-0">
+//               <button
+//                 onClick={goPrev}
+//                 disabled={currentPage <= 1}
+//                 className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition"
+//               >
+//                 <ChevronLeft className="w-4 h-4" />
+//                 Previous
+//               </button>
 
-              <div className="flex items-center gap-3">
-                {/* Page dots / compact indicator */}
-                <div className="flex items-center gap-1.5">
-                  {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
-                    const page =
-                      totalPages <= 7
-                        ? i + 1
-                        : currentPage <= 4
-                          ? i + 1
-                          : currentPage >= totalPages - 3
-                            ? totalPages - 6 + i
-                            : currentPage - 3 + i;
-                    return (
-                      <button
-                        key={page}
-                        onClick={() => setCurrentPage(page)}
-                        className={`w-6 h-6 rounded-full text-xs font-medium transition-all ${
-                          page === currentPage
-                            ? "bg-orange-500 text-white scale-110"
-                            : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    );
-                  })}
-                  {totalPages > 7 && (
-                    <span className="text-gray-400 text-xs ml-1">
-                      …{totalPages}
-                    </span>
-                  )}
-                </div>
-              </div>
+//               <div className="flex items-center gap-3">
+//                 {/* Page dots / compact indicator */}
+//                 <div className="flex items-center gap-1.5">
+//                   {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+//                     const page =
+//                       totalPages <= 7
+//                         ? i + 1
+//                         : currentPage <= 4
+//                           ? i + 1
+//                           : currentPage >= totalPages - 3
+//                             ? totalPages - 6 + i
+//                             : currentPage - 3 + i;
+//                     return (
+//                       <button
+//                         key={page}
+//                         onClick={() => setCurrentPage(page)}
+//                         className={`w-6 h-6 rounded-full text-xs font-medium transition-all ${
+//                           page === currentPage
+//                             ? "bg-orange-500 text-white scale-110"
+//                             : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+//                         }`}
+//                       >
+//                         {page}
+//                       </button>
+//                     );
+//                   })}
+//                   {totalPages > 7 && (
+//                     <span className="text-gray-400 text-xs ml-1">
+//                       …{totalPages}
+//                     </span>
+//                   )}
+//                 </div>
+//               </div>
 
-              <button
-                onClick={goNext}
-                disabled={currentPage >= totalPages}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition"
-              >
-                Next
-                <ChevronRightIcon className="w-4 h-4" />
-              </button>
-            </div>
-          )}
+//               <button
+//                 onClick={goNext}
+//                 disabled={currentPage >= totalPages}
+//                 className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition"
+//               >
+//                 Next
+//                 <ChevronRightIcon className="w-4 h-4" />
+//               </button>
+//             </div>
+//           )}
 
-          {/* Anti-download watermark layer – sits over the canvas area */}
-          {isPdf && !loading && !error && (
-            <div
-              className="absolute inset-0 pointer-events-none select-none"
-              style={{
-                zIndex: 10,
-                /* Subtle watermark grid */
-                backgroundImage: `repeating-linear-gradient(
-                  -45deg,
-                  transparent,
-                  transparent 80px,
-                  rgba(0,0,0,0.018) 80px,
-                  rgba(0,0,0,0.018) 82px
-                )`,
-              }}
-            />
-          )}
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
-  );
-}
+//           {/* Anti-download watermark layer – sits over the canvas area */}
+//           {isPdf && !loading && !error && (
+//             <div
+//               className="absolute inset-0 pointer-events-none select-none"
+//               style={{
+//                 zIndex: 10,
+//                 /* Subtle watermark grid */
+//                 backgroundImage: `repeating-linear-gradient(
+//                   -45deg,
+//                   transparent,
+//                   transparent 80px,
+//                   rgba(0,0,0,0.018) 80px,
+//                   rgba(0,0,0,0.018) 82px
+//                 )`,
+//               }}
+//             />
+//           )}
+//         </motion.div>
+//       </motion.div>
+//     </AnimatePresence>
+//   );
+// }
 
 /* ======================================================
    QuizPanel – renders inside an open chapter
@@ -1409,12 +1410,12 @@ function ChapterContent({ chapter, isCompleted }) {
   return (
     <>
       {docModal && docUrl && (
-        <DocumentModal
-          url={docUrl}
-          name={chapter.documentName || "Study Document"}
-          onClose={() => setDocModal(false)}
-        />
-      )}
+  <DocumentModal
+    url={docUrl}
+    name={chapter.documentName}
+    onClose={() => setDocModal(false)}
+  />
+)}
 
       <div className="border-t border-gray-100 px-5 py-5 space-y-5">
         {docUrl ? (
