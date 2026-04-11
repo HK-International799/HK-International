@@ -32,12 +32,12 @@ const navItems = [
     label: "My Courses",
     icon: <MdMenuBook size={20} />,
   },
-  {
-    to: "/student/assignments",
-    label: "Assignments",
-    icon: <MdAssignment size={20} />,
-  },
-  { to: "/student/submit", label: "Submit Work", icon: <Upload size={18} /> },
+  // {
+  //   to: "/student/assignments",
+  //   label: "Assignments",
+  //   icon: <MdAssignment size={20} />,
+  // },
+  // { to: "/student/submit", label: "Submit Work", icon: <Upload size={18} /> },
   // {
   //   to: "/student/live-classes",
   //   label: "Live Classes",
@@ -48,17 +48,17 @@ const navItems = [
   //   label: "Orientation",
   //   icon: <CalendarDays size={18} />,
   // },
-  {
-    to: "/student/chat",
-    label: "Chat",
-    icon: <MessageCircle size={18} />,
-    badge: true,
-  },
-  {
-    to: "/student/question-bank",
-    label: "Question Bank",
-    icon: <HelpCircle size={18} />,
-  },
+  // {
+  //   to: "/student/chat",
+  //   label: "Chat",
+  //   icon: <MessageCircle size={18} />,
+  //   badge: true,
+  // },
+  // {
+  //   to: "/student/question-bank",
+  //   label: "Question Bank",
+  //   icon: <HelpCircle size={18} />,
+  // },
   // {
   //   to: "/student/feedback",
   //   label: "Feedback",
@@ -75,8 +75,8 @@ const navItems = [
   //   label: "Certificates",
   //   icon: <MdWorkspacePremium size={20} />,
   // },
-  { to: "/student/profile", label: "My Profile", icon: <MdPerson size={20} /> },
-  { to: "/student/settings", label: "Settings", icon: <Settings size={18} /> },
+  // { to: "/student/profile", label: "My Profile", icon: <MdPerson size={20} /> },
+  // { to: "/student/settings", label: "Settings", icon: <Settings size={18} /> },
 ];
 
 export default function Sidebar() {
