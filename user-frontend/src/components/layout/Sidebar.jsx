@@ -100,15 +100,16 @@ export default function Sidebar() {
       {/* USER INFO */}
       <div className="px-3 py-3 border-b border-gray-100">
         <div className="flex items-center gap-3">
-          {user?.avatar ? (
+          {user?.data?.avatar ? (
             <img
-              src={user.avatar}
-              alt={user.name}
+              src={user.data.avatar}
+              alt={user.data.name}
               className="w-10 h-10 rounded-full object-cover border-2 border-orange-400"
             />
           ) : (
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-orange-400 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-              {user?.name?.charAt(0)?.toUpperCase() || "U"}
+              {user?.data?.name?.charAt(0)?.toUpperCase() || "U"}
+
             </div>
           )}
 
@@ -121,7 +122,7 @@ export default function Sidebar() {
                 className="overflow-hidden min-w-0"
               >
                 <p className="font-semibold text-gray-900 text-sm truncate">
-                  {user?.name || "User"}
+                  {user?.data?.name || "User"}
                 </p>
                 <p className="text-xs text-gray-400 truncate">{user?.email}</p>
               </motion.div>

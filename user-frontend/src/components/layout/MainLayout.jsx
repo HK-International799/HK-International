@@ -6,23 +6,26 @@ import Sidebar from "./Sidebar";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function MainLayout({ children }) {
-  const { isAuthenticated, loading } = useAuth();
+  const { token, loading } = useAuth();
 
-  return (
-    <>
-      <Navbar />
-     {!isAuthenticated?( <Header />):""}
+return (
+  <>
+    <Navbar />
 
-      {isAuthenticated && !loading ? (
-        <div className="flex min-h-screen">
-          <Sidebar />
-          <main className="flex-1 p-6 bg-gray-50 pt-24 ml-16 ">{children}</main>
-        </div>
-      ) : (
-        <main className="">{children}</main>
-      )}
+    {!token && <Header />}
 
-      <Footer />
-    </>
-  );
+    {token && !loading ? (
+      <div className="flex min-h-screen">
+        <Sidebar />
+        <main className="flex-1 p-6 bg-gray-50 pt-24 ml-16">
+          {children}
+        </main>
+      </div>
+    ) : (
+      <main>{children}</main>
+    )}
+
+    <Footer />
+  </>
+);
 }

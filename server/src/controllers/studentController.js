@@ -5,6 +5,9 @@ import Course from "../models/Course.js";
 import Lesson from "../models/Lesson.js";
 import Quiz from "../models/Quiz.js";
 import QuizAttempt from "../models/QuizAttempt.js";
+import Chapter from "../models/Chapter.js";
+import ChapterProgress from "../models/ChapterProgress.js";
+
 
 /* ================================
    STUDENT DASHBOARD
@@ -20,8 +23,40 @@ export const getStudentDashboard = async (req, res) => {
       return res.status(404).json({ message: "Student not found" });
     }
 
-    const enrolledCourseIds = student.enrolledCourses.map(c => c._id);
+    const enrolledCourseIds = student.enrolledCourses.map((c) => c._id);
 
+    /* ===============================
+       GET CHAPTER DATA FOR PROGRESS
+    =============================== */
+    const coursesWithProgress = await Promise.all(
+      student.enrolledCourses.map(async (course) => {
+        const totalChapters = await Chapter.countDocuments({
+          courseId: course._id,
+        });
+
+        const completedChapters = await ChapterProgress.countDocuments({
+          courseId: course._id,
+          studentId: req.user._id,
+          completed: true,
+        });
+
+        const progress =
+          totalChapters > 0
+            ? Math.round((completedChapters / totalChapters) * 100)
+            : 0;
+
+        return {
+          ...course.toObject(),
+          totalChapters,
+          completedChapters,
+          progress,
+        };
+      })
+    );
+
+    /* ===============================
+       ASSIGNMENTS
+    =============================== */
     const assignments = await Assignment.find({
       courseId: { $in: enrolledCourseIds },
     }).populate("courseId", "title");
@@ -31,20 +66,38 @@ export const getStudentDashboard = async (req, res) => {
     });
 
     const pendingAssignments = assignments.filter(
-      a => !submissions.find(s => s.assignmentId.toString() === a._id.toString())
+      (a) =>
+        !submissions.find(
+          (s) => s.assignmentId.toString() === a._id.toString()
+        )
     );
+
+    /* ===============================
+       SUMMARY (IMPORTANT)
+    =============================== */
+    const summary = {
+      enrolledCoursesCount: coursesWithProgress.length,
+      totalAssignmentsCount: assignments.length,
+      submittedAssignmentsCount: submissions.length,
+      pendingAssignmentsCount: pendingAssignments.length,
+      gradedAssignmentsCount: submissions.filter(
+        (s) => s.status === "graded"
+      ).length,
+    };
 
     res.json({
       student,
-      enrolledCourses: student.enrolledCourses,
+      summary,
+      enrolledCourses: coursesWithProgress, // ✅ IMPORTANT
       upcomingAssignments: pendingAssignments.slice(0, 5),
       recentSubmissions: submissions.slice(0, 5),
     });
-
   } catch (err) {
+    console.error("Dashboard Error:", err); // 👈 ADD THIS
     res.status(500).json({ message: err.message });
   }
 };
+
 
 /* ================================
    MY COURSES

@@ -278,15 +278,15 @@ export default function Navbar() {
                   >
                     {user?.avatar ? (
                       <img
-                        src={user.avatar}
-                        alt={user.name}
+                        src={user.data.avatar}
+                        alt={user.data.name}
                         className="w-8 h-8 rounded-full object-cover border-2 border-orange-400"
                       />
                     ) : (
                       <FaUserCircle className="text-2xl text-indigo-600" />
                     )}
                     <span className="text-sm font-semibold max-w-[100px] truncate">
-                      {user?.name?.split(" ")[0] || "Profile"}
+                      {user?.data?.name?.split(" ")[0] || "Profile"}
                     </span>
                     <svg
                       className={`w-4 h-4 transition-transform ${profileOpen ? "rotate-180" : ""}`}
@@ -409,7 +409,7 @@ export default function Navbar() {
                     <>
                       <li className="border-t pt-4">
                         <p className="text-sm text-gray-400 mb-3">
-                          {user?.name || "Account"}
+                          {user?.data?.name || "Account"}
                         </p>
                         <div className="flex flex-col gap-3">
                           <Link

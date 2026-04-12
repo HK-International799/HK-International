@@ -155,13 +155,24 @@ export const AuthProvider = ({ children }) => {
 
   // inside AuthProvider:
   const login = async (credentials) => {
-    const data = await loginService(credentials); // uses authService
-    const newToken = data.token;
-    if (!newToken) throw new Error("Token not received from server");
-    localStorage.setItem("authToken", newToken);
-    setToken(newToken);
-    return { success: true };
-  };
+  const data = await loginService(credentials);
+  const newToken = data.token;
+
+  if (!newToken) throw new Error("Token not received");
+
+  localStorage.setItem("authToken", newToken);
+  setToken(newToken);
+
+  // 🔥 FETCH USER IMMEDIATELY
+  try {
+    const res = await api.get("/auth/me");
+    setUser(res.data);
+  } catch (err) {
+    console.error("User fetch failed after login", err);
+  }
+
+  return { success: true };
+};
 
   return (
     <AuthContext.Provider
