@@ -111,7 +111,6 @@ import {
 import api from "../services/api";
 import { login as loginService } from "../services/authService";
 
-
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -155,24 +154,25 @@ export const AuthProvider = ({ children }) => {
 
   // inside AuthProvider:
   const login = async (credentials) => {
-  const data = await loginService(credentials);
-  const newToken = data.token;
+    const data = await loginService(credentials);
+    console.log("LOGIN RESPONSE 👉", data); // 👈 ADD THIS
+    const newToken = data.data.token;
 
-  if (!newToken) throw new Error("Token not received");
+    if (!newToken) throw new Error("Token not received");
 
-  localStorage.setItem("authToken", newToken);
-  setToken(newToken);
+    localStorage.setItem("authToken", newToken);
+    setToken(newToken);
 
-  // 🔥 FETCH USER IMMEDIATELY
-  try {
-    const res = await api.get("/auth/me");
-    setUser(res.data);
-  } catch (err) {
-    console.error("User fetch failed after login", err);
-  }
+    // 🔥 FETCH USER IMMEDIATELY
+    try {
+      const res = await api.get("/auth/me");
+      setUser(res.data);
+    } catch (err) {
+      console.error("User fetch failed after login", err);
+    }
 
-  return { success: true };
-};
+    return { success: true };
+  };
 
   return (
     <AuthContext.Provider
