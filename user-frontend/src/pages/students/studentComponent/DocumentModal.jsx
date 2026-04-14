@@ -70,7 +70,7 @@ export default function DocumentModal({ url, name, onClose }) {
       const page = await pdfDoc.getPage(pageNum);
       const container = containerRef.current;
 
-      const viewport = page.getViewport({ scale: 1 });
+      const viewport = page.getViewport({ scale: 1.3 });
 
       // 🔥 Smart Fit (Best UX)
       const scaleX = container.clientWidth / viewport.width;
@@ -153,7 +153,7 @@ export default function DocumentModal({ url, name, onClose }) {
         onClick={(e) => e.target === e.currentTarget && onClose()}
       >
         <motion.div
-          className="w-[80vw] h-[95vh] bg-[#0f172a] rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+          className="w-screen h-full bg-[#0f172a] rounded-2xl shadow-2xl flex flex-col overflow-hidden"
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
         >

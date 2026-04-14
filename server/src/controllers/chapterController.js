@@ -481,7 +481,6 @@
 
 
 
-
 import Chapter from "../models/Chapter.js";
 import Course from "../models/Course.js";
 import Quiz from "../models/Quiz.js";
@@ -526,7 +525,7 @@ export const getChaptersByCourse = async (req, res) => {
         progress?.completedChapters?.map((c) => c.toString()) || [];
 
       // Attach last quiz result for each chapter that has one saved
-      // ChapterProgress.chapterResults is a Map<chapterId, { score, totalMarks, percentage, passed }>
+      // ChapterProgress.chapterResults is a Map<chapterId, { score, totalMarks, percentage, passed, grade }>
       if (progress?.chapterResults) {
         for (const [chapterId, result] of progress.chapterResults.entries()) {
           chapterResults[chapterId] = result;
@@ -844,9 +843,13 @@ export const getChapterQuiz = async (req, res) => {
    Student: Submit quiz answers for a chapter.
    Body: { answers: [{ questionId, selectedOption }] }
 
-   ✅ Returns: { score, totalMarks, percentage, passed }
-   ✅ Saves last result to ChapterProgress.chapterResults map
-   ✅ Only marks chapter complete if passed (≥50%)
+   ✅ Scoring tiers (IOSH Level 3):
+      - 70%+  → Distinction  (fully meets IOSH Level 3 criteria)
+      - 60%-69% → Pass       (passed, but below IOSH Level 3 standard)
+      - <60%  → Below Pass
+
+   ✅ Next chapter is ALWAYS unlocked after any quiz attempt.
+   ✅ Saves last result to ChapterProgress.chapterResults map.
 ================================================================ */
 export const submitChapterQuiz = async (req, res) => {
   try {
@@ -890,45 +893,50 @@ export const submitChapterQuiz = async (req, res) => {
       ? Math.round((score / totalMarks) * 100)
       : 0;
 
-    const passed = percentage >= 50;
-
-    /* ── Persist result + conditionally mark complete ────────── */
-    const resultSnapshot = { score, totalMarks, percentage, passed };
-
-    if (passed) {
-      // Mark chapter complete AND save result
-      await ChapterProgress.findOneAndUpdate(
-        { studentId, courseId: chapter.courseId },
-        {
-          $addToSet: { completedChapters: chapter._id },
-          $set: {
-            [`chapterResults.${chapter._id}`]: resultSnapshot,
-          },
-          $setOnInsert: { studentId, courseId: chapter.courseId },
-        },
-        { upsert: true, new: true }
-      );
+    /* ── Determine grade tier ────────────────────────────────── */
+    // grade: "distinction" | "pass" | "below_pass"
+    let grade;
+    if (percentage >= 70) {
+      grade = "distinction";
+    } else if (percentage >= 60) {
+      grade = "pass";
     } else {
-      // Save result even on failure (so student can see their score)
-      await ChapterProgress.findOneAndUpdate(
-        { studentId, courseId: chapter.courseId },
-        {
-          $set: {
-            [`chapterResults.${chapter._id}`]: resultSnapshot,
-          },
-          $setOnInsert: { studentId, courseId: chapter.courseId },
-        },
-        { upsert: true, new: true }
-      );
+      grade = "below_pass";
     }
 
-    /* ── Return clean result to frontend ─────────────────────── */
+    // "passed" for backward-compat: true if any attempt was made (always unlock)
+    // We use grade to drive UI messaging instead.
+    const passed = true; // always unlock next chapter after any attempt
+
+    /* ── Persist result + always mark chapter complete ───────── */
+    const resultSnapshot = { score, totalMarks, percentage, passed, grade };
+
+    await ChapterProgress.findOneAndUpdate(
+      { studentId, courseId: chapter.courseId },
+      {
+        $addToSet: { completedChapters: chapter._id }, // always unlock
+        $set: {
+          [`chapterResults.${chapter._id}`]: resultSnapshot,
+        },
+        $setOnInsert: { studentId, courseId: chapter.courseId },
+      },
+      { upsert: true, new: true }
+    );
+
+    /* ── Return result to frontend ───────────────────────────── */
+    const messages = {
+      distinction: "Excellent! You've met the IOSH Level 3 standard.",
+      pass: "Quiz complete! Next chapter unlocked. Score 70%+ to meet IOSH Level 3 criteria.",
+      below_pass: "Quiz complete! Next chapter unlocked. Aim for 60%+ to pass and 70%+ for IOSH Level 3.",
+    };
+
     res.json({
-      message: passed ? "Quiz passed! Next chapter unlocked." : "Quiz failed. Please try again.",
+      message: messages[grade],
       score,
       totalMarks,
       percentage,
       passed,
+      grade,
     });
   } catch (err) {
     res.status(500).json({

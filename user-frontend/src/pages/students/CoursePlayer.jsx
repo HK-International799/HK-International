@@ -675,7 +675,6 @@
 // async function getCourseChaptersWithProgress(courseId) {
 //   return getCourseChapters(courseId);
 // }
-
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -692,6 +691,8 @@ import {
   AlertCircle,
   Trophy,
   XCircle,
+  Star,
+  Award,
   RotateCcw,
 } from "lucide-react";
 import {
@@ -703,40 +704,76 @@ import {
 import DocumentModal from "./studentComponent/DocumentModal";
 
 /* ================================================================
-   ResultCard — shown after submission OR when reopening a
-   completed chapter (lastResult passed as prop)
+   getGradeTier — derives grade tier from a result object.
+   Supports both new results (with .grade) and legacy ones (percentage only).
+================================================================ */
+function getGradeTier(result) {
+  if (result.grade) return result.grade;
+  // Fallback for legacy results that don't have .grade
+  if (result.percentage >= 70) return "distinction";
+  if (result.percentage >= 60) return "pass";
+  return "below_pass";
+}
+
+/* ================================================================
+   ResultCard — 3-tier result display
+
+   Tier       Threshold   Icon    Color
+   ─────────────────────────────────────────────
+   Distinction  ≥ 70%     Trophy  Yellow/Gold
+   Pass         ≥ 60%     Award   Green
+   Below Pass   < 60%     XCircle Orange/Red
+   ─────────────────────────────────────────────
+   Next chapter is ALWAYS unlocked after any attempt.
 ================================================================ */
 function ResultCard({ result, isPersisted = false }) {
-  const { score, totalMarks, percentage, passed } = result;
+  const { score, totalMarks, percentage } = result;
+  const grade = getGradeTier(result);
+
+  const tierConfig = {
+    distinction: {
+      icon: <Trophy className="w-12 h-12 text-yellow-500 mb-2" />,
+      heading: "Distinction! 🏆",
+      subtext: "You've met the IOSH Level 3 standard (70%+).",
+      badgeClass: "bg-yellow-100 text-yellow-800 border border-yellow-300",
+      barClass: "bg-gradient-to-r from-yellow-400 to-yellow-500",
+      cardClass: "bg-gradient-to-br from-yellow-50 to-amber-50 border-yellow-200",
+      badge: "DISTINCTION",
+    },
+    pass: {
+      icon: <Award className="w-12 h-12 text-green-500 mb-2" />,
+      heading: "Quiz Passed! ✅",
+      subtext: "Next chapter unlocked. Score 70%+ to meet IOSH Level 3 criteria.",
+      badgeClass: "bg-green-100 text-green-700 border border-green-300",
+      barClass: "bg-gradient-to-r from-green-400 to-emerald-500",
+      cardClass: "bg-gradient-to-br from-green-50 to-emerald-50 border-green-200",
+      badge: "PASS",
+    },
+    below_pass: {
+      icon: <XCircle className="w-12 h-12 text-orange-400 mb-2" />,
+      heading: "Quiz Complete",
+      subtext: "Next chapter unlocked. Aim for 60%+ to pass and 70%+ for IOSH Level 3.",
+      badgeClass: "bg-orange-100 text-orange-700 border border-orange-300",
+      barClass: "bg-gradient-to-r from-orange-400 to-red-400",
+      cardClass: "bg-gradient-to-br from-orange-50 to-red-50 border-orange-200",
+      badge: "BELOW PASS",
+    },
+  };
+
+  const cfg = tierConfig[grade];
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`rounded-2xl border p-5 ${
-        passed
-          ? "bg-gradient-to-br from-green-50 to-emerald-50 border-green-200"
-          : "bg-gradient-to-br from-red-50 to-orange-50 border-red-200"
-      }`}
+      className={`rounded-2xl border p-5 ${cfg.cardClass}`}
     >
       {/* Icon + heading */}
       <div className="flex flex-col items-center text-center mb-4">
-        {passed ? (
-          <Trophy className="w-12 h-12 text-yellow-500 mb-2" />
-        ) : (
-          <XCircle className="w-12 h-12 text-red-400 mb-2" />
-        )}
-        <p className="text-lg font-bold text-gray-800">
-          {passed ? "Quiz Passed! 🎉" : "Quiz Failed"}
-        </p>
-        <p className="text-sm text-gray-500 mt-0.5">
-          {passed
-            ? isPersisted
-              ? "You passed this chapter."
-              : "Next chapter is now unlocked!"
-            : "Score 50% or more to unlock the next chapter."}
-        </p>
+        {cfg.icon}
+        <p className="text-lg font-bold text-gray-800">{cfg.heading}</p>
+        <p className="text-sm text-gray-500 mt-0.5 max-w-xs">{cfg.subtext}</p>
       </div>
 
       {/* Score row */}
@@ -754,27 +791,15 @@ function ResultCard({ result, isPersisted = false }) {
         <div className="w-px h-10 bg-gray-200" />
 
         <div className="text-center">
-          <p
-            className={`text-2xl font-black ${
-              passed ? "text-green-600" : "text-red-500"
-            }`}
-          >
-            {percentage}%
-          </p>
+          <p className="text-2xl font-black text-gray-800">{percentage}%</p>
           <p className="text-xs text-gray-400 mt-0.5">Percentage</p>
         </div>
 
         <div className="w-px h-10 bg-gray-200" />
 
         <div className="text-center">
-          <span
-            className={`text-xs font-bold px-3 py-1.5 rounded-full ${
-              passed
-                ? "bg-green-100 text-green-700"
-                : "bg-red-100 text-red-600"
-            }`}
-          >
-            {passed ? "PASSED" : "FAILED"}
+          <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${cfg.badgeClass}`}>
+            {cfg.badge}
           </span>
         </div>
       </div>
@@ -785,10 +810,28 @@ function ResultCard({ result, isPersisted = false }) {
           initial={{ width: 0 }}
           animate={{ width: `${Math.min(percentage, 100)}%` }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className={`h-full rounded-full ${
-            passed ? "bg-green-500" : "bg-red-400"
-          }`}
+          className={`h-full rounded-full ${cfg.barClass}`}
         />
+      </div>
+
+      {/* IOSH threshold markers */}
+      <div className="relative mt-1 w-full">
+        {/* 60% marker */}
+        <div
+          className="absolute flex flex-col items-center"
+          style={{ left: "60%", transform: "translateX(-50%)" }}
+        >
+          <div className="w-px h-2 bg-green-400" />
+          <span className="text-[10px] text-green-600 font-medium mt-0.5">60% Pass</span>
+        </div>
+        {/* 70% marker */}
+        <div
+          className="absolute flex flex-col items-center"
+          style={{ left: "70%", transform: "translateX(-50%)" }}
+        >
+          <div className="w-px h-2 bg-yellow-500" />
+          <span className="text-[10px] text-yellow-600 font-medium mt-0.5">70% IOSH L3</span>
+        </div>
       </div>
     </motion.div>
   );
@@ -796,7 +839,7 @@ function ResultCard({ result, isPersisted = false }) {
 
 /* ================================================================
    QuizPanel — loads & displays the quiz questions.
-   Calls onSubmit(result) with { score, totalMarks, percentage, passed }
+   Calls onSubmit(result) with { score, totalMarks, percentage, passed, grade }
 ================================================================ */
 function QuizPanel({ chapterId, onSubmit }) {
   const [quiz, setQuiz] = useState(null);
@@ -926,6 +969,10 @@ function QuizPanel({ chapterId, onSubmit }) {
    "result" → ResultCard after submission
 
    Completed chapters open straight to "result" using lastResult.
+
+   NOTE: Next chapter is ALWAYS unlocked after any quiz attempt.
+         The retry option is available for improvement but does NOT
+         affect locking — the student can always proceed.
 ================================================================ */
 function ChapterContent({ chapter, isCompleted, refreshProgress, lastResult }) {
   const [docModal, setDocModal] = useState(false);
@@ -935,20 +982,18 @@ function ChapterContent({ chapter, isCompleted, refreshProgress, lastResult }) {
   const [view, setView] = useState(isCompleted ? "result" : "start");
 
   // Holds whichever result is currently on screen
-  // (either freshly submitted, or the persisted lastResult)
   const [currentResult, setCurrentResult] = useState(
     isCompleted ? lastResult : null
   );
 
   const handleQuizSubmit = (result) => {
-    // result = { score, totalMarks, percentage, passed }
     setCurrentResult(result);
-    setView("result"); // always switch to result view after submit
-
-    if (result.passed) {
-      setTimeout(() => refreshProgress?.(), 800);
-    }
+    setView("result");
+    // Always refresh progress (next chapter is now unlocked)
+    setTimeout(() => refreshProgress?.(), 800);
   };
+
+  const grade = currentResult ? getGradeTier(currentResult) : null;
 
   return (
     <>
@@ -1007,27 +1052,29 @@ function ChapterContent({ chapter, isCompleted, refreshProgress, lastResult }) {
                   isPersisted={isCompleted && currentResult === lastResult}
                 />
 
-                {/* Passed: chapter-unlocked confirmation */}
-                {currentResult.passed && (
-                  <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-2xl px-4 py-3">
-                    <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                    <p className="text-sm text-green-700 font-medium">
-                      Chapter completed! The next chapter is now unlocked.
-                    </p>
-                  </div>
-                )}
+                {/* Chapter unlocked confirmation */}
+                <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-2xl px-4 py-3">
+                  <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                  <p className="text-sm text-green-700 font-medium">
+                    {isCompleted && currentResult === lastResult
+                      ? "Chapter completed! Next chapter is unlocked."
+                      : "Chapter complete! The next chapter is now unlocked."}
+                  </p>
+                </div>
 
-                {/* Failed: retry button */}
-                {!currentResult.passed && (
+                {/* Retry option — available for all tiers (improvement only, not for unlocking) */}
+                {grade !== "distinction" && (
                   <button
                     onClick={() => {
                       setCurrentResult(null);
                       setView("quiz");
                     }}
-                    className="w-full py-3 bg-orange-500 text-white rounded-xl font-semibold text-sm hover:bg-orange-600 transition-all flex items-center justify-center gap-2"
+                    className="w-full py-2.5 border border-orange-300 text-orange-600 rounded-xl font-medium text-sm hover:bg-orange-50 transition-all flex items-center justify-center gap-2"
                   >
                     <RotateCcw className="w-4 h-4" />
-                    Retry Quiz
+                    {grade === "pass"
+                      ? "Retake to achieve Distinction (70%+)"
+                      : "Retake to improve your score"}
                   </button>
                 )}
               </motion.div>
@@ -1092,6 +1139,15 @@ function ChapterCard({
   refreshProgress,
   lastResult,
 }) {
+  // Derive grade tier for the badge in the collapsed card list
+  const grade = lastResult ? getGradeTier(lastResult) : null;
+
+  const gradeBadgeClass = {
+    distinction: "text-yellow-700 bg-yellow-100",
+    pass: "text-green-700 bg-green-100",
+    below_pass: "text-orange-700 bg-orange-100",
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -1158,11 +1214,15 @@ function ChapterCard({
                 Quiz
               </span>
             )}
-            {/* Score badge — visible in the collapsed chapter list */}
-            {isCompleted && lastResult && (
-              <span className="text-xs font-semibold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">
+            {/* Grade badge — visible in the collapsed chapter list */}
+            {isCompleted && lastResult && grade && (
+              <span
+                className={`text-xs font-semibold px-2 py-0.5 rounded-full ${gradeBadgeClass[grade]}`}
+              >
                 {lastResult.score}/{lastResult.totalMarks} &middot;{" "}
                 {lastResult.percentage}%
+                {grade === "distinction" && " 🏆"}
+                {grade === "pass" && " ✅"}
               </span>
             )}
           </div>
@@ -1258,6 +1318,7 @@ export default function CoursePlayer() {
     if (index === 0) return false;
     const prev = chapters[index - 1];
     if (!prev?.quizId) return false;
+    // Locked only if the previous chapter hasn't been attempted at all
     return !completedIds.has(prev._id);
   };
 
