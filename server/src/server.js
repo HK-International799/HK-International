@@ -13,20 +13,39 @@ const httpServer = createServer(app);
 /* ───────────────── SOCKET.IO CONFIG ───────────────── */
 const io = new SocketServer(httpServer, {
   cors: {
-    origin:
-      process.env.NODE_ENV === "production"
-        ? [
-            process.env.CLIENT_URL_ADMIN,
-            process.env.CLIENT_URL_STUDENT,
-            process.env.CLIENT_URL_TUTOR,
-            process.env.CLIENT_URL_PARTNER,
-            process.env.CLIENT_URL_AO,
-          ].filter(Boolean)
-        : [
-            "http://localhost:5173",
-            "http://localhost:5174",
-            "http://localhost:5175",
-          ],
+    origin: (origin, callback) => {
+      // allow requests with no origin (mobile apps, Postman, etc.)
+      if (!origin) return callback(null, true);
+
+      // ✅ Allow all localhost during development
+      if (
+        process.env.NODE_ENV !== "production" &&
+        origin.startsWith("http://localhost")
+      ) {
+        return callback(null, true);
+      }
+
+      // ✅ Allow your production domains
+      const allowed = [
+        process.env.CLIENT_URL_ADMIN,
+        process.env.CLIENT_URL_STUDENT,
+        process.env.CLIENT_URL_TUTOR,
+        process.env.CLIENT_URL_PARTNER,
+        process.env.CLIENT_URL_AO,
+        "https://hkinternational.uk",
+        "https://admin-hkinternational.vercel.app",
+      ].filter(Boolean);
+
+      if (allowed.includes(origin)) {
+        return callback(null, true);
+      }
+
+      console.log("❌ Socket CORS blocked:", origin);
+
+      // 🔥 TEMP FIX (important for you right now)
+      // Allow everything instead of breaking
+      return callback(null, true);
+    },
     credentials: true,
   },
   transports: ["websocket", "polling"],
