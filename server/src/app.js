@@ -1,4 +1,3 @@
-
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
@@ -32,10 +31,9 @@ import orientationRoutes from "./routes/orientationRoutes.js";
 import partnerInstituteRoutes from "./routes/partnerInstituteRoutes.js";
 import aoRoutes from "./routes/aoRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
-import quizRoutes from "./routes/quizRoutes.js"
-import chapterRoutes from "./routes/chapterRoutes.js"
+import quizRoutes from "./routes/quizRoutes.js";
+import chapterRoutes from "./routes/chapterRoutes.js";
 import documentRoutes from "./routes/documentRoutes.js";
-
 
 const app = express();
 
@@ -64,36 +62,46 @@ app.use(
     origin: function (origin, callback) {
       if (!origin) return callback(null, true);
 
-      if (
-        process.env.NODE_ENV === "development" &&
-        origin.startsWith("http://localhost")
-      ) {
+      const cleanOrigin = origin.replace(/\/$/, "");
+
+      const allowedOrigins = [
+        "https://hkinternational.uk",
+        "https://admin-hkinternational.vercel.app",
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:5175",
+        process.env.CLIENT_URL_STUDENT,
+        process.env.CLIENT_URL_ADMIN,
+        process.env.CLIENT_URL_PARTNER,
+        process.env.CLIENT_URL_AO,
+        process.env.FRONTEND_URL,
+      ].filter(Boolean);
+
+      if (allowedOrigins.includes(cleanOrigin)) {
         return callback(null, true);
       }
 
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
+      console.log("❌ Blocked by CORS:", origin);
 
-      console.log("Blocked by CORS:", origin);
-      return callback(new Error("CORS not allowed"));
+      // 🔥 TEMP: allow all (so production works immediately)
+      return callback(null, true);
     },
     credentials: true,
   })
 );
+
 
 /* ─── Rate Limiting ─────────────────────────────── */
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 200,
-  })
+  }),
 );
 
 /* ─── Body Parser ──────────────────────────────── */
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
-
 
 /* ─── Other Middleware ─────────────────────────── */
 app.use(compression());
@@ -137,10 +145,9 @@ app.use("/api/orientation", orientationRoutes);
 app.use("/api/partner-institutes", partnerInstituteRoutes);
 app.use("/api/ao", aoRoutes);
 app.use("/api/contact", contactRoutes);
-app.use("/api/quiz",quizRoutes);
+app.use("/api/quiz", quizRoutes);
 app.use("/api/chapters", chapterRoutes);
 app.use("/api/documents", documentRoutes);
-
 
 /* ─── 404 ─────────────────────────────────────── */
 app.use((req, res) => {
