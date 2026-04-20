@@ -48,12 +48,12 @@ const navItems = [
   //   label: "Orientation",
   //   icon: <CalendarDays size={18} />,
   // },
-  // {
-  //   to: "/student/chat",
-  //   label: "Chat",
-  //   icon: <MessageCircle size={18} />,
-  //   badge: true,
-  // },
+  {
+    to: "/student/chat",
+    label: "Chat",
+    icon: <MessageCircle size={18} />,
+    badge: true,
+  },
   // {
   //   to: "/student/question-bank",
   //   label: "Question Bank",
@@ -77,6 +77,8 @@ const navItems = [
   // },
   // { to: "/student/profile", label: "My Profile", icon: <MdPerson size={20} /> },
   // { to: "/student/settings", label: "Settings", icon: <Settings size={18} /> },
+  { to: "/student/change-password", label: "Settings", icon: <Settings size={18} /> },
+
 ];
 
 export default function Sidebar() {

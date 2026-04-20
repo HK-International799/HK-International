@@ -1296,7 +1296,7 @@ export default function Dashboard() {
             {/* ── Right Column ── */}
             <div className="space-y-6">
               {/* Assignment Progress Summary */}
-              {!loading && summary.totalAssignmentsCount > 0 && (
+              {/* {!loading && summary.totalAssignmentsCount > 0 && (
                 <motion.section
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -1353,7 +1353,7 @@ export default function Dashboard() {
                     })}
                   </div>
                 </motion.section>
-              )}
+              )} */}
 
               {/* Course Progress Summary — FIX: new section showing chapter progress */}
               {/* {!loading && enrolledCourses.length > 0 && (

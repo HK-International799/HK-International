@@ -41,7 +41,7 @@ export default function MyCourses() {
     loadCourses();
   }, []);
 
-  console.log(courses)
+  console.log(courses);
   const filteredCourses = courses.filter((course) => {
     const matchesSearch = course.title
       ?.toLowerCase()
@@ -115,10 +115,10 @@ export default function MyCourses() {
                   placeholder="Search courses..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 transition"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-400 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 transition"
                 />
               </div>
-              <div className="flex gap-2">
+              {/* <div className="flex gap-2">
                 {["all", "in-progress", "completed", "not-started"].map(
                   (status) => (
                     <button
@@ -140,7 +140,7 @@ export default function MyCourses() {
                     </button>
                   ),
                 )}
-              </div>
+              </div> */}
             </div>
           )}
         </div>

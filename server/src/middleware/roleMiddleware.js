@@ -1,21 +1,47 @@
 import ApiError from "../utils/ApiError.js";
 
 /**
- * roleMiddleware must always be used AFTER authMiddleware.
- * Accepts an array of allowed roles.
+ * Role-based access control middleware
+ * MUST be used after authMiddleware
+ * @param {Array<string>} roles - allowed roles
  */
-const roleMiddleware = (roles) => (req, _res, next) => {
-  if (!req.user || !req.user.role) {
-    return next(new ApiError(401, "Not authenticated"));
-  }
+const roleMiddleware = (roles = []) => {
+  return (req, _res, next) => {
+    try {
+      // 🔒 Check authentication
+      if (!req.user) {
+        return next(new ApiError(401, "Not authenticated"));
+      }
 
-  if (!roles.includes(req.user.role)) {
-    return next(
-      new ApiError(403, `Access denied. Required role: ${roles.join(" or ")}`)
-    );
-  }
+      const userRole = req.user.role;
 
-  next();
+      if (!userRole) {
+        return next(new ApiError(401, "User role missing"));
+      }
+
+      // ⚠️ Validate roles input (avoid crashes)
+      if (!Array.isArray(roles) || roles.length === 0) {
+        console.error("roleMiddleware misconfigured: roles not provided");
+        return next(new ApiError(500, "Server configuration error"));
+      }
+
+      // ❌ Access check
+      if (!roles.includes(userRole)) {
+        return next(
+          new ApiError(
+            403,
+            `Access denied. Allowed roles: ${roles.join(", ")}`
+          )
+        );
+      }
+
+      // ✅ Authorized
+      next();
+    } catch (err) {
+      console.error("roleMiddleware error:", err);
+      next(new ApiError(500, "Internal server error"));
+    }
+  };
 };
 
 export default roleMiddleware;
