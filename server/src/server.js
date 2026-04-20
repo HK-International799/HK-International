@@ -96,12 +96,14 @@ io.on("connection", (socket) => {
   console.log(`🟢 Socket connected: ${socket.id}`);
 
   /* ─── USER ONLINE ─── */
-  socket.on("user:online", ({ userId, role }) => {
+  socket.on("user:online", (data) => {
+    const { userId, role } = data || {}; // ✅ safe
     if (!userId) return;
+
     addOnlineUser(userId, socket.id);
-    // ✅ store role on socket
     socket.userId = userId;
     socket.userRole = role;
+
     io.emit("users:online", getOnlineUserIds());
   });
 
@@ -232,7 +234,7 @@ io.on("connection", (socket) => {
           for (const socketId of sockets) {
             const s = io.sockets.sockets.get(socketId);
 
-            if (s?.userRole === "admin" && s.userId !== senderId) {
+            if (s && s.userRole === "admin" && String(s.userId) !== String(senderId)) {
               io.to(socketId).emit("notification", {
                 type: "NEW_COURSE_MESSAGE",
                 title: "New message from student",
@@ -267,9 +269,10 @@ io.on("connection", (socket) => {
     socket.to(courseId).emit("course:typing", user);
   });
 
-  socket.on("course:stopTyping", ({ courseId }) => {
+  socket.on("course:stopTyping", ({ courseId, user }) => {
     if (!courseId) return;
-    socket.to(courseId).emit("course:stopTyping");
+
+    socket.to(courseId).emit("course:stopTyping", user);
   });
 
   /* ─── REALTIME MODERATION EVENTS ─── */
