@@ -48,12 +48,12 @@ const navItems = [
   //   label: "Orientation",
   //   icon: <CalendarDays size={18} />,
   // },
-  {
-    to: "/student/chat",
-    label: "Chat",
-    icon: <MessageCircle size={18} />,
-    badge: true,
-  },
+  // {
+  //   to: "/student/chat",
+  //   label: "Chat",
+  //   icon: <MessageCircle size={18} />,
+  //   badge: true,
+  // },
   // {
   //   to: "/student/question-bank",
   //   label: "Question Bank",
