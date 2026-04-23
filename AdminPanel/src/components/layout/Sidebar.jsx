@@ -12,44 +12,45 @@ const navGroups = [
     label: "Overview",
     items: [
       { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
-      { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
-      { to: "/admin/reports", label: "Reports", icon: FileText },
+      // { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+      // { to: "/admin/reports", label: "Reports", icon: FileText },
     ],
   },
   {
     label: "Academic",
     items: [
       { to: "/admin/courses", label: "Courses", icon: BookOpen },
-      { to: "/admin/batches", label: "Batches", icon: Layers },
+      // { to: "/admin/batches", label: "Batches", icon: Layers },
       { to: "/admin/learners", label: "Learners", icon: GraduationCap },
-      { to: "/admin/live-classes", label: "Live Classes", icon: Video },
+      // { to: "/admin/live-classes", label: "Live Classes", icon: Video },
     ],
   },
   {
     label: "Assessment",
     items: [
-      { to: "/admin/assignments", label: "Assignments", icon: ClipboardList },
-      { to: "/admin/exams", label: "Exams", icon: FileCheck },
+      // { to: "/admin/assignments", label: "Assignments", icon: ClipboardList },
+      { to: "/admin/scenario-exams", label: " Scenario-Based Exams", icon: FileCheck },
+      { to: "/admin/exams", label: "  Exams", icon: FileCheck },
       { to: "/admin/question-bank", label: "Question Bank", icon: Database },
     ],
   },
-  {
-    label: "Institutes & Registrations",
-    items: [
-      { to: "/admin/institutes", label: "Partner Institutes", icon: Building2 },
-      { to: "/admin/registrations", label: "Registrations", icon: ClipboardCheck },
-      { to: "/admin/orientation", label: "Orientation", icon: Presentation },
-    ],
-  },
-  {
-    label: "Management",
-    items: [
-      { to: "/admin/documents", label: "Document Review", icon: FileText },
-      { to: "/admin/feedback", label: "Feedback", icon: MessageSquare },
-      { to: "/admin/messages", label: "Messages", icon: MessageCircle },
-      { to: "/admin/certificates", label: "Certificates", icon: Award },
-    ],
-  },
+  // {
+  //   label: "Institutes & Registrations",
+  //   items: [
+  //     { to: "/admin/institutes", label: "Partner Institutes", icon: Building2 },
+  //     { to: "/admin/registrations", label: "Registrations", icon: ClipboardCheck },
+  //     { to: "/admin/orientation", label: "Orientation", icon: Presentation },
+  //   ],
+  // },
+  // {
+  //   label: "Management",
+  //   items: [
+  //     { to: "/admin/documents", label: "Document Review", icon: FileText },
+  //     { to: "/admin/feedback", label: "Feedback", icon: MessageSquare },
+  //     { to: "/admin/messages", label: "Messages", icon: MessageCircle },
+  //     { to: "/admin/certificates", label: "Certificates", icon: Award },
+  //   ],
+  // },
   {
     label: "System",
     items: [{ to: "/admin/settings", label: "Settings", icon: Settings }],

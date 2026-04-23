@@ -1,30 +1,5 @@
 
 
-// // export default upload;
-// import multer from "multer";
-
-// // ── Memory storage (for CSV & Cloudinary uploads) ─────────────────
-// const memoryStorage = multer.memoryStorage();
-
-// // ── Upload for Cloudinary / large files ───────────────────────────
-// const upload = multer({
-//   storage: memoryStorage,
-//   limits: {
-//     fileSize: 100 * 1024 * 1024, // 100MB
-//   },
-// });
-
-// // ── Upload for CSV (small files) ──────────────────────────────────
-// const uploadMemory = multer({
-//   storage: memoryStorage,
-//   limits: {
-//     fileSize: 5 * 1024 * 1024, // 5MB
-//   },
-// });
-
-// export default upload;
-// export { uploadMemory };
-
 import multer from "multer";
 
 // ── Memory storage ─────────────────────────────

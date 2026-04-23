@@ -35,6 +35,7 @@ import contactRoutes from "./routes/contactRoutes.js";
 import quizRoutes from "./routes/quizRoutes.js"
 import chapterRoutes from "./routes/chapterRoutes.js"
 import documentRoutes from "./routes/documentRoutes.js";
+ import scenarioExamRoutes from "./routes/scenarioExamRoutes.js";
 
 
 const app = express();
@@ -140,7 +141,7 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/quiz",quizRoutes);
 app.use("/api/chapters", chapterRoutes);
 app.use("/api/documents", documentRoutes);
-
+app.use("/api/scenario-exams", scenarioExamRoutes);
 
 /* ─── 404 ─────────────────────────────────────── */
 app.use((req, res) => {

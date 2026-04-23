@@ -17,6 +17,7 @@ import {
   Bell,
   Settings,
   CalendarDays,
+  FileCheck,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
@@ -77,6 +78,7 @@ const navItems = [
   // },
   // { to: "/student/profile", label: "My Profile", icon: <MdPerson size={20} /> },
   // { to: "/student/settings", label: "Settings", icon: <Settings size={18} /> },
+  { to: "/exams/scenario", label: "Scenario-based Exam", icon: <FileCheck size={18} /> },
   { to: "/student/change-password", label: "Settings", icon: <Settings size={18} /> },
 
 ];

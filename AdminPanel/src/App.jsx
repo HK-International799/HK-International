@@ -37,6 +37,19 @@ const Institutes = lazy(() => import("./pages/institutes/Institutes"));
 const Registrations = lazy(() => import("./pages/registrations/Registrations"));
 const Orientation = lazy(() => import("./pages/orientation/Orientation"));
 
+const AdminScenarioExamList = lazy(
+  () => import("./pages/scenarioExam/AdminExamListPage"),
+);
+const AdminScenarioExamBuilder = lazy(
+  () => import("./pages/scenarioExam/AdminExamBuilderPage"),
+);
+const AdminScenarioSubmissions = lazy(
+  () => import("./pages/scenarioExam/AdminSubmissionsPage"),
+);
+const AdminScenarioReview = lazy(
+  () => import("./pages/scenarioExam/AdminReviewPage"),
+);
+
 const Loader = () => (
   <div className="min-h-screen flex items-center justify-center bg-gray-50">
     <div className="w-10 h-10 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin" />
@@ -212,6 +225,48 @@ function App() {
             }
           />
           <Route path="/admin/courses/:id" element={<CourseDetails />} />
+
+          {/* ── Scenario-Based Exams (Admin) ───────────────── */}
+          <Route
+            path="/admin/scenario-exams"
+            element={
+              <P>
+                <AdminScenarioExamList />
+              </P>
+            }
+          />
+          <Route
+            path="/admin/scenario-exams/create"
+            element={
+              <P>
+                <AdminScenarioExamBuilder />
+              </P>
+            }
+          />
+          <Route
+            path="/admin/scenario-exams/:id/edit"
+            element={
+              <P>
+                <AdminScenarioExamBuilder />
+              </P>
+            }
+          />
+          <Route
+            path="/admin/scenario-exams/:id/submissions"
+            element={
+              <P>
+                <AdminScenarioSubmissions />
+              </P>
+            }
+          />
+          <Route
+            path="/admin/scenario-exams/attempts/:aId/review"
+            element={
+              <P>
+                <AdminScenarioReview />
+              </P>
+            }
+          />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
