@@ -51,19 +51,19 @@ const OrientationCertificate = lazy(
 
 // ─── Scenario-Based Exams ───────────────────────────────
 const ScenarioExamList = lazy(
-  () => import("../pages/ScenarioExam/ExamListPage"),
+  () => import("../pages/scenarioExam/ExamListPage"),
 );
 const ScenarioExamInstructions = lazy(
-  () => import("../pages/ScenarioExam/ExamInstructionsPage"),
+  () => import("../pages/scenarioExam/ExamInstructionsPage"),
 );
 const ScenarioExamAttempt = lazy(
-  () => import("../pages/ScenarioExam/ExamPage"),
+  () => import("../pages/scenarioExam/ExamPage"),
 );
 const ScenarioExamReview = lazy(
-  () => import("../pages/ScenarioExam/ReviewPage"),
+  () => import("../pages/scenarioExam/ReviewPage"),
 );
 const ScenarioExamFeedback = lazy(
-  () => import("../pages/ScenarioExam/FeedbackPage"),
+  () => import("../pages/scenarioExam/FeedbackPage"),
 );
 
 // ─── AO Portal Pages ─────────────────────────────────────────────────────────
