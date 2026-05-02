@@ -19,7 +19,16 @@ const Courses = lazy(() => import("./pages/courses/Courses"));
 const Batches = lazy(() => import("./pages/batches/Batches"));
 const Learners = lazy(() => import("./pages/learners/Learners"));
 const LiveClasses = lazy(() => import("./pages/liveClasses/LiveClasses"));
+
+// ✅ Updated assignment pages
 const Assignments = lazy(() => import("./pages/assignments/Assignments"));
+const SubmissionsList = lazy(
+  () => import("./pages/submissions/SubmissionsList"),
+);
+const SubmissionReview = lazy(
+  () => import("./pages/submissions/SubmissionReview"),
+);
+
 const Exams = lazy(() => import("./pages/exams/Exams"));
 const DocumentReview = lazy(
   () => import("./pages/documentReview/DocumentReview"),
@@ -118,6 +127,8 @@ function App() {
               </P>
             }
           />
+
+          {/* ── Assignment Module ───────────────────────────────────── */}
           <Route
             path="/admin/assignments"
             element={
@@ -126,6 +137,35 @@ function App() {
               </P>
             }
           />
+
+          {/* All submissions (no filter) */}
+          <Route
+            path="/admin/submissions"
+            element={
+              <P>
+                <SubmissionsList />
+              </P>
+            }
+          />
+          {/* Submissions filtered by assignment */}
+          <Route
+            path="/admin/assignments/:assignmentId/submissions"
+            element={
+              <P>
+                <SubmissionsList />
+              </P>
+            }
+          />
+          {/* Single submission review / grade */}
+          <Route
+            path="/admin/submissions/:id/review"
+            element={
+              <P>
+                <SubmissionReview />
+              </P>
+            }
+          />
+
           <Route
             path="/admin/exams"
             element={

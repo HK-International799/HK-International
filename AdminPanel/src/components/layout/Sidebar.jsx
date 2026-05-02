@@ -28,7 +28,7 @@ const navGroups = [
   {
     label: "Assessment",
     items: [
-      // { to: "/admin/assignments", label: "Assignments", icon: ClipboardList },
+      { to: "/admin/assignments", label: "Assignments", icon: ClipboardList },
       { to: "/admin/scenario-exams", label: " Scenario-Based Exams", icon: FileCheck },
       { to: "/admin/exams", label: "  Exams", icon: FileCheck },
       { to: "/admin/question-bank", label: "Question Bank", icon: Database },

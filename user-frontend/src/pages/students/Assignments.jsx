@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState, useRef, useCallback } from "react";
 import {
   FileText,
   Calendar,
@@ -12,541 +11,910 @@ import {
   Loader2,
   Award,
   BookOpen,
-  Filter,
   MessageSquare,
   Upload,
   X,
+  Download,
+  File,
+  Star,
+  RotateCcw,
+  Eye,
+  Paperclip,
+  CheckCheck,
+  AlertTriangle,
+  Trophy,
 } from "lucide-react";
+
 import {
   getAssignments,
   submitAssignment,
+  getMySubmissionForAssignment,
 } from "../../services/studentService";
+
 import MainLayout from "../../components/layout/MainLayout";
+
+// ─── HELPERS ────────────────────────────────────────────────────────────────
+
+const getDueDateInfo = (dueDate) => {
+  if (!dueDate) return null;
+  const due = new Date(dueDate);
+  const now = new Date();
+  const diff = due - now;
+  const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+  return {
+    text: due.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }),
+    daysLeft: days,
+    isOverdue: days < 0,
+  };
+};
+
+const formatScore = (score, total) => {
+  if (score == null) return null;
+  const pct = total ? Math.round((score / total) * 100) : 0;
+  return { score, total, pct };
+};
+
+const getScoreColor = (pct) => {
+  if (pct >= 80)
+    return {
+      text: "text-emerald-600",
+      bg: "bg-emerald-50",
+      bar: "bg-emerald-500",
+    };
+  if (pct >= 60)
+    return { text: "text-amber-600", bg: "bg-amber-50", bar: "bg-amber-500" };
+  return { text: "text-red-500", bg: "bg-red-50", bar: "bg-red-500" };
+};
+
+// ─── STATUS BADGE ─────────────────────────────────────────────────────────────
+
+const StatusBadge = ({ status, isLate }) => {
+  const safe = status || "not_submitted";
+  const map = {
+    graded: {
+      cls: "bg-emerald-100 text-emerald-700 border border-emerald-200",
+      icon: <CheckCheck size={11} />,
+      label: "Graded",
+    },
+    submitted: {
+      cls: "bg-indigo-100 text-indigo-700 border border-indigo-200",
+      icon: <Clock size={11} />,
+      label: "Submitted",
+    },
+    not_submitted: {
+      cls: "bg-slate-100 text-slate-500 border border-slate-200",
+      icon: <AlertCircle size={11} />,
+      label: "Pending",
+    },
+  };
+  const { cls, icon, label } = map[safe] || map.not_submitted;
+  return (
+    <span
+      className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full ${cls}`}
+    >
+      {icon}
+      {label}
+      {isLate && safe !== "not_submitted" && (
+        <span className="ml-1 text-orange-500 font-semibold">· Late</span>
+      )}
+    </span>
+  );
+};
+
+// ─── SCORE RING ───────────────────────────────────────────────────────────────
+
+const ScoreRing = ({ pct }) => {
+  const c = getScoreColor(pct);
+  const r = 22;
+  const circ = 2 * Math.PI * r;
+  const dash = (pct / 100) * circ;
+  return (
+    <div
+      className={`relative inline-flex items-center justify-center w-16 h-16 rounded-full ${c.bg}`}
+    >
+      <svg width="64" height="64" className="absolute top-0 left-0 -rotate-90">
+        <circle
+          cx="32"
+          cy="32"
+          r={r}
+          fill="none"
+          stroke="#e2e8f0"
+          strokeWidth="4"
+        />
+        <circle
+          cx="32"
+          cy="32"
+          r={r}
+          fill="none"
+          stroke={pct >= 80 ? "#10b981" : pct >= 60 ? "#f59e0b" : "#ef4444"}
+          strokeWidth="4"
+          strokeDasharray={`${dash} ${circ}`}
+          strokeLinecap="round"
+          style={{ transition: "stroke-dasharray 0.8s ease" }}
+        />
+      </svg>
+      <span className={`text-sm font-bold ${c.text}`}>{pct}%</span>
+    </div>
+  );
+};
+
+// ─── FILE DROP ZONE ───────────────────────────────────────────────────────────
+
+const FileDropZone = ({ file, onFile, onClear, assignmentId }) => {
+  const inputRef = useRef();
+  const [dragging, setDragging] = useState(false);
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragging(false);
+    const f = e.dataTransfer.files[0];
+    if (f) onFile(f);
+  };
+
+  return (
+    <div
+      onDragOver={(e) => {
+        e.preventDefault();
+        setDragging(true);
+      }}
+      onDragLeave={() => setDragging(false)}
+      onDrop={handleDrop}
+      onClick={() => !file && inputRef.current?.click()}
+      className={`
+        relative rounded-xl border-2 border-dashed p-6 text-center cursor-pointer transition-all
+        ${dragging ? "border-indigo-400 bg-indigo-50" : "border-slate-200 hover:border-indigo-300 hover:bg-slate-50"}
+        ${file ? "cursor-default" : ""}
+      `}
+    >
+      <input
+        ref={inputRef}
+        type="file"
+        className="hidden"
+        accept=".pdf,.doc,.docx,.ppt,.pptx,.csv"
+        onChange={(e) => onFile(e.target.files[0])}
+      />
+
+      {file ? (
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center shrink-0">
+              <File size={18} className="text-indigo-600" />
+            </div>
+            <div className="text-left min-w-0">
+              <p className="text-sm font-medium text-slate-700 truncate">
+                {file.name}
+              </p>
+              <p className="text-xs text-slate-400">
+                {(file.size / 1024 / 1024).toFixed(2)} MB
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onClear();
+            }}
+            className="p-1.5 rounded-lg hover:bg-red-100 text-slate-400 hover:text-red-500 transition-colors"
+          >
+            <X size={16} />
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center mx-auto">
+            <Upload size={18} className="text-slate-400" />
+          </div>
+          <p className="text-sm text-slate-500">
+            <span className="font-medium text-indigo-600">Click to upload</span>{" "}
+            or drag & drop
+          </p>
+          <p className="text-xs text-slate-400">
+            PDF, DOC, DOCX, PPT, PPTX, CSV — up to 100MB
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ─── QUESTION INPUT ───────────────────────────────────────────────────────────
+
+const QuestionInput = ({ question, answer, onChange }) => {
+  const q = question;
+
+  if (q.type === "mcq" && q.options?.length > 0) {
+    return (
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-slate-700">{q.prompt}</p>
+        <div className="space-y-1.5">
+          {q.options.map((opt, i) => (
+            <label
+              key={i}
+              className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                answer?.selectedOption === opt
+                  ? "border-indigo-400 bg-indigo-50"
+                  : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+              }`}
+            >
+              <input
+                type="radio"
+                name={`q-${q._id}`}
+                value={opt}
+                checked={answer?.selectedOption === opt}
+                onChange={() => onChange("selectedOption", opt)}
+                className="text-indigo-600"
+              />
+              <span className="text-sm text-slate-700">{opt}</span>
+            </label>
+          ))}
+        </div>
+        {q.marks && (
+          <p className="text-xs text-slate-400">
+            {q.marks} mark{q.marks !== 1 ? "s" : ""}
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-sm font-medium text-slate-700">{q.prompt}</p>
+        {q.marks && (
+          <span className="text-xs text-slate-400 shrink-0">
+            {q.marks} mark{q.marks !== 1 ? "s" : ""}
+          </span>
+        )}
+      </div>
+      <textarea
+        rows={3}
+        placeholder="Type your answer here..."
+        value={answer?.textAnswer || ""}
+        onChange={(e) => onChange("textAnswer", e.target.value)}
+        className="w-full rounded-lg border border-slate-200 p-3 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent resize-y transition-all"
+      />
+    </div>
+  );
+};
+
+// ─── SUBMISSION RESULT VIEW ───────────────────────────────────────────────────
+
+const SubmissionResult = ({ sub, assignment }) => {
+  if (!sub) return null;
+  const scoreData = formatScore(sub.totalScore, assignment?.totalMarks);
+
+  return (
+    <div className="space-y-4">
+      {/* Score */}
+      {sub.status === "graded" && scoreData && (
+        <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-white border border-slate-200">
+          <ScoreRing pct={scoreData.pct} />
+          <div>
+            <p className="text-xs text-slate-400 font-medium uppercase tracking-wide">
+              Your Score
+            </p>
+            <p className="text-2xl font-bold text-slate-800">
+              {scoreData.score}
+              <span className="text-slate-400 text-lg font-normal">
+                {" "}
+                / {scoreData.total}
+              </span>
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Feedback */}
+      {sub.feedback && (
+        <div className="rounded-xl border border-amber-100 bg-amber-50 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <MessageSquare size={14} className="text-amber-600" />
+            <p className="text-xs font-semibold text-amber-700 uppercase tracking-wide">
+              Tutor Feedback
+            </p>
+          </div>
+          <p className="text-sm text-slate-700 leading-relaxed">
+            {sub.feedback}
+          </p>
+        </div>
+      )}
+
+      {/* Submitted file */}
+      {sub.submissionFile?.url && (
+        <a
+          href={sub.submissionFile.url}
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all group"
+        >
+          <div className="w-9 h-9 rounded-lg bg-slate-100 group-hover:bg-indigo-100 flex items-center justify-center transition-colors">
+            <File
+              size={16}
+              className="text-slate-500 group-hover:text-indigo-600"
+            />
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-slate-700 truncate">
+              {sub.submissionFile.originalName || "Submitted File"}
+            </p>
+            <p className="text-xs text-indigo-500">View submission →</p>
+          </div>
+        </a>
+      )}
+
+      {/* Per-question results */}
+      {sub.answers?.length > 0 && (
+        <div className="space-y-3">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+            Your Answers
+          </p>
+          {sub.answers.map((ans, i) => {
+            const q = ans.questionId;
+            const isCorrect = ans.isCorrect;
+            const awarded = ans.marksAwarded;
+            return (
+              <div
+                key={ans._id}
+                className={`rounded-xl border p-3 space-y-2 ${
+                  sub.status === "graded"
+                    ? isCorrect === true
+                      ? "border-emerald-200 bg-emerald-50"
+                      : isCorrect === false
+                        ? "border-red-200 bg-red-50"
+                        : "border-slate-200 bg-white"
+                    : "border-slate-200 bg-white"
+                }`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-xs font-medium text-slate-600">
+                    Q{i + 1}. {q?.prompt}
+                  </p>
+                  {sub.status === "graded" && awarded != null && (
+                    <span className="text-xs font-semibold text-slate-500 shrink-0">
+                      {awarded}/{q?.marks || "?"}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-slate-700">
+                  {ans.textAnswer || ans.selectedOption || (
+                    <span className="italic text-slate-400">No answer</span>
+                  )}
+                </p>
+                {sub.status === "graded" && q?.correctAnswer && (
+                  <p className="text-xs text-emerald-600">
+                    ✓ Correct: {q.correctAnswer}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Review annotations */}
+      {sub.reviewAnnotations?.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+            Review Notes
+          </p>
+          {sub.reviewAnnotations.map((ann, i) => (
+            <div
+              key={i}
+              className="flex items-start gap-2 text-sm text-slate-600"
+            >
+              <span>{ann.icon || "📝"}</span>
+              <span>{ann.note}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
 
 export default function Assignments() {
   const [assignments, setAssignments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [filter, setFilter] = useState("all");
   const [expandedId, setExpandedId] = useState(null);
-  const [submitting, setSubmitting] = useState(null);
   const [answers, setAnswers] = useState({});
-  const [submitSuccess, setSubmitSuccess] = useState(null);
+  const [files, setFiles] = useState({});
+  const [mode, setMode] = useState({}); // "text" | "file"
+  const [submitting, setSubmitting] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [cached, setCached] = useState({}); // submission cache by assignmentId
+  const [errors, setErrors] = useState({});
+  const [globalError, setGlobalError] = useState(null);
+  const [successId, setSuccessId] = useState(null);
+
+  // ── Load assignments ─────────────────────────────────────────────────────
 
   useEffect(() => {
-    const load = async () => {
+    (async () => {
       try {
         const data = await getAssignments();
-        setAssignments(data);
-      } catch (err) {
-        setError(err.message || "Failed to load assignments");
+        const normalized = (data?.assignments || data || []).map((a) => ({
+          ...a,
+          submissionStatus: a.submissionStatus || "not_submitted",
+        }));
+        setAssignments(normalized);
+      } catch {
+        setGlobalError("Failed to load assignments. Please try again.");
       } finally {
         setLoading(false);
       }
-    };
-    load();
+    })();
   }, []);
 
-  const filteredAssignments = assignments.filter((a) => {
-    if (filter === "all") return true;
-    if (filter === "pending") return a.submissionStatus === "not_submitted";
-    if (filter === "submitted") return a.submissionStatus === "pending";
-    if (filter === "graded") return a.submissionStatus === "graded";
-    return true;
-  });
+  // ── Toggle expand + fetch submission ────────────────────────────────────
 
-  const stats = {
-    total: assignments.length,
-    pending: assignments.filter((a) => a.submissionStatus === "not_submitted").length,
-    submitted: assignments.filter((a) => a.submissionStatus === "pending").length,
-    graded: assignments.filter((a) => a.submissionStatus === "graded").length,
+  const toggleExpand = async (a) => {
+    const id = a._id;
+    if (expandedId === id) {
+      setExpandedId(null);
+      return;
+    }
+    setExpandedId(id);
+
+    if (cached[id] !== undefined) return; // already fetched
+
+    try {
+      const sub = await getMySubmissionForAssignment(id);
+      setCached((p) => ({ ...p, [id]: sub }));
+      if (sub?.status) {
+        setAssignments((prev) =>
+          prev.map((x) =>
+            x._id === id ? { ...x, submissionStatus: sub.status } : x,
+          ),
+        );
+      }
+    } catch {
+      setCached((p) => ({ ...p, [id]: null }));
+    }
   };
 
-  const handleAnswerChange = (assignmentId, questionId, field, value) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [assignmentId]: {
-        ...prev[assignmentId],
-        [questionId]: {
-          ...prev[assignmentId]?.[questionId],
-          questionId,
-          [field]: value,
-        },
+  // ── Answer handler ───────────────────────────────────────────────────────
+
+  const handleAnswer = useCallback((aId, qId, field, val) => {
+    setAnswers((p) => ({
+      ...p,
+      [aId]: {
+        ...p[aId],
+        [qId]: { ...p[aId]?.[qId], questionId: qId, [field]: val },
       },
     }));
-  };
+  }, []);
 
-  const handleSubmit = async (assignment) => {
-    const assignmentAnswers = answers[assignment._id] || {};
-    const formattedAnswers = Object.values(assignmentAnswers).map((a) => ({
-      questionId: a.questionId,
-      textAnswer: a.textAnswer || "",
-      selectedOption: a.selectedOption || "",
-    }));
+  // ── Submit ───────────────────────────────────────────────────────────────
 
-    setSubmitting(assignment._id);
+  const handleSubmit = async (a) => {
+    const id = a._id;
+    setErrors((p) => ({ ...p, [id]: null }));
+
+    if (mode[id] === "file") {
+      if (!files[id]) {
+        setErrors((p) => ({ ...p, [id]: "Please select a file to upload." }));
+        return;
+      }
+    }
+
+    setSubmitting(id);
     try {
-      await submitAssignment({
-        assignmentId: assignment._id,
-        answers: formattedAnswers,
-      });
+      let result;
+      if (mode[id] === "file") {
+        const fd = new FormData();
+        fd.append("file", files[id]);
+        result = await submitAssignment(id, fd);
+      } else {
+        const ans = Object.values(answers[id] || {});
+        result = await submitAssignment(id, { answers: ans });
+      }
 
       // Update local state
       setAssignments((prev) =>
-        prev.map((a) =>
-          a._id === assignment._id
-            ? { ...a, submissionStatus: "pending" }
-            : a
-        )
+        prev.map((x) =>
+          x._id === id ? { ...x, submissionStatus: "submitted" } : x,
+        ),
       );
-      setSubmitSuccess(assignment._id);
-      setTimeout(() => setSubmitSuccess(null), 3000);
+      setCached((p) => ({ ...p, [id]: result }));
+      setSuccessId(id);
+      setTimeout(() => setSuccessId(null), 4000);
       setExpandedId(null);
-    } catch (err) {
-      setError(err.message || "Failed to submit assignment");
+    } catch (e) {
+      const msg =
+        e?.response?.data?.message ||
+        e?.message ||
+        "Submission failed. Please try again.";
+      setErrors((p) => ({ ...p, [id]: msg }));
     } finally {
       setSubmitting(null);
     }
   };
 
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case "graded":
-        return (
-          <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-100">
-            <CheckCircle2 className="w-3 h-3" />
-            Graded
-          </span>
-        );
-      case "pending":
-        return (
-          <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100">
-            <Clock className="w-3 h-3" />
-            Submitted
-          </span>
-        );
-      default:
-        return (
-          <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-orange-50 text-orange-700 border border-orange-100">
-            <AlertCircle className="w-3 h-3" />
-            Pending
-          </span>
-        );
-    }
-  };
-
-  const getDueDateInfo = (dueDate) => {
-    if (!dueDate) return null;
-    const due = new Date(dueDate);
-    const now = new Date();
-    const daysLeft = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
-    const isOverdue = daysLeft < 0;
-    const isUrgent = daysLeft >= 0 && daysLeft <= 3;
-
-    return {
-      text: due.toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      }),
-      daysLeft,
-      isOverdue,
-      isUrgent,
-    };
-  };
-
-  const Skeleton = ({ className }) => (
-    <div className={`animate-pulse bg-gray-200 rounded-lg ${className}`} />
-  );
+  // ── Render ───────────────────────────────────────────────────────────────
 
   return (
     <MainLayout>
-      <div className="min-h-screen bg-gray-50 pb-12">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-xl">
-              <FileText className="w-6 h-6 text-white" />
+      <div className="min-h-screen bg-slate-50">
+        <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+                Assignments
+              </h1>
+              <p className="text-sm text-slate-500 mt-0.5">
+                {assignments.length > 0
+                  ? `${assignments.filter((a) => a.submissionStatus === "not_submitted").length} pending`
+                  : "Your coursework"}
+              </p>
             </div>
-            My Assignments
-          </h1>
-          <p className="text-gray-500 mt-1 text-sm">
-            Track and submit your course assignments
-          </p>
-        </div>
-
-        {/* Stats */}
-        {!loading && assignments.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-            {[
-              { label: "Total", value: stats.total, color: "bg-gray-100 text-gray-700" },
-              { label: "Pending", value: stats.pending, color: "bg-orange-50 text-orange-700" },
-              { label: "Submitted", value: stats.submitted, color: "bg-blue-50 text-blue-700" },
-              { label: "Graded", value: stats.graded, color: "bg-green-50 text-green-700" },
-            ].map((s) => (
-              <div
-                key={s.label}
-                className={`${s.color} px-4 py-3 rounded-xl text-center`}
-              >
-                <p className="text-2xl font-bold">{s.value}</p>
-                <p className="text-xs font-medium opacity-80">{s.label}</p>
-              </div>
-            ))}
+            <div className="flex items-center gap-2 text-xs text-slate-400">
+              <BookOpen size={14} />
+              <span>
+                {assignments.length} assignment
+                {assignments.length !== 1 ? "s" : ""}
+              </span>
+            </div>
           </div>
-        )}
 
-        {/* Filters */}
-        {!loading && assignments.length > 0 && (
-          <div className="flex gap-2 mb-6">
-            {[
-              { key: "all", label: "All" },
-              { key: "pending", label: "Pending" },
-              { key: "submitted", label: "Submitted" },
-              { key: "graded", label: "Graded" },
-            ].map((f) => (
-              <button
-                key={f.key}
-                onClick={() => setFilter(f.key)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                  filter === f.key
-                    ? "bg-indigo-600 text-white"
-                    : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+          {/* Global success toast */}
+          {successId && (
+            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-sm">
+              <CheckCircle2 size={16} />
+              Assignment submitted successfully!
+            </div>
+          )}
+
+          {/* Global error */}
+          {globalError && (
+            <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm">
+              <AlertTriangle size={16} />
+              {globalError}
+            </div>
+          )}
+
+          {/* Loading */}
+          {loading && (
+            <div className="flex items-center justify-center py-20">
+              <div className="flex items-center gap-3 text-slate-400">
+                <Loader2 size={20} className="animate-spin" />
+                <span className="text-sm">Loading assignments…</span>
+              </div>
+            </div>
+          )}
+
+          {/* Empty */}
+          {!loading && assignments.length === 0 && (
+            <div className="text-center py-20 space-y-3">
+              <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto">
+                <FileText size={24} className="text-slate-400" />
+              </div>
+              <p className="text-slate-500 text-sm">No assignments yet</p>
+            </div>
+          )}
+
+          {/* Assignment list */}
+          {assignments.map((a) => {
+            const id = a._id;
+            const due = getDueDateInfo(a.dueDate);
+            const isOpen = expandedId === id;
+            const sub = cached[id];
+            const hasSubmission = a.submissionStatus !== "not_submitted";
+            const isGraded = a.submissionStatus === "graded";
+            const scoreData = isGraded
+              ? formatScore(sub?.totalScore, a.totalMarks)
+              : null;
+            const localMode = mode[id] || "text";
+            const localError = errors[id];
+
+            return (
+              <div
+                key={id}
+                className={`bg-white rounded-2xl border transition-all duration-200 ${
+                  isOpen
+                    ? "border-indigo-200 shadow-md"
+                    : "border-slate-200 shadow-sm hover:border-slate-300 hover:shadow"
                 }`}
               >
-                {f.label}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Error */}
-        <AnimatePresence>
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm flex items-center gap-2"
-            >
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
-              {error}
-              <button onClick={() => setError(null)} className="ml-auto">
-                <X className="w-4 h-4" />
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Success */}
-        <AnimatePresence>
-          {submitSuccess && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm flex items-center gap-2"
-            >
-              <CheckCircle2 className="w-4 h-4" />
-              Assignment submitted successfully!
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Loading */}
-        {loading ? (
-          <div className="space-y-4">
-            {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="bg-white rounded-2xl p-6 border border-gray-100">
-                <div className="flex items-center gap-4">
-                  <Skeleton className="h-10 w-10 rounded-xl" />
-                  <div className="flex-1 space-y-2">
-                    <Skeleton className="h-5 w-1/3" />
-                    <Skeleton className="h-4 w-1/4" />
-                  </div>
-                  <Skeleton className="h-8 w-24 rounded-full" />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : filteredAssignments.length > 0 ? (
-          <div className="space-y-4">
-            {filteredAssignments.map((assignment, i) => {
-              const isExpanded = expandedId === assignment._id;
-              const dueInfo = getDueDateInfo(assignment.dueDate);
-              const canSubmit = assignment.submissionStatus === "not_submitted";
-
-              return (
-                <motion.div
-                  key={assignment._id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.04 }}
-                  className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow"
+                {/* ── Card header ── */}
+                <button
+                  className="w-full text-left p-5 flex items-start gap-4"
+                  onClick={() => toggleExpand(a)}
                 >
-                  {/* Assignment Header */}
-                  <button
-                    onClick={() =>
-                      setExpandedId(isExpanded ? null : assignment._id)
-                    }
-                    className="w-full flex items-center gap-4 p-5 text-left"
-                  >
-                    <div
-                      className={`p-2.5 rounded-xl flex-shrink-0 ${
-                        assignment.submissionStatus === "graded"
-                          ? "bg-green-100"
-                          : assignment.submissionStatus === "pending"
-                          ? "bg-blue-100"
+                  {/* Icon */}
+                  <div
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                      isGraded
+                        ? "bg-emerald-100"
+                        : hasSubmission
+                          ? "bg-indigo-100"
                           : "bg-orange-100"
-                      }`}
-                    >
-                      <FileText
-                        className={`w-5 h-5 ${
-                          assignment.submissionStatus === "graded"
-                            ? "text-green-600"
-                            : assignment.submissionStatus === "pending"
-                            ? "text-blue-600"
-                            : "text-orange-600"
-                        }`}
-                      />
-                    </div>
+                    }`}
+                  >
+                    {isGraded ? (
+                      <Trophy size={18} className="text-emerald-600" />
+                    ) : hasSubmission ? (
+                      <CheckCircle2 size={18} className="text-indigo-600" />
+                    ) : (
+                      <FileText size={18} className="text-orange-600" />
+                    )}
+                  </div>
 
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 text-sm truncate">
-                        {assignment.title}
-                      </h3>
-                      <div className="flex items-center gap-3 mt-1 flex-wrap">
-                        <span className="text-xs text-gray-400 flex items-center gap-1">
-                          <BookOpen className="w-3 h-3" />
-                          {assignment.courseId?.title || "—"}
-                        </span>
-                        {assignment.totalMarks > 0 && (
-                          <span className="text-xs text-gray-400 flex items-center gap-1">
-                            <Award className="w-3 h-3" />
-                            {assignment.totalMarks} marks
-                          </span>
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <h2 className="font-semibold text-slate-800 text-sm leading-tight truncate">
+                          {a.title}
+                        </h2>
+                        {a.courseId?.title && (
+                          <p className="text-xs text-slate-400 mt-0.5">
+                            {a.courseId.title}
+                          </p>
                         )}
-                        {dueInfo && (
-                          <span
-                            className={`text-xs flex items-center gap-1 ${
-                              dueInfo.isOverdue
-                                ? "text-red-500"
-                                : dueInfo.isUrgent
-                                ? "text-orange-500"
-                                : "text-gray-400"
-                            }`}
-                          >
-                            <Calendar className="w-3 h-3" />
-                            {dueInfo.isOverdue
-                              ? "Overdue"
-                              : `Due ${dueInfo.text}`}
-                          </span>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <StatusBadge
+                          status={a.submissionStatus}
+                          isLate={sub?.isLate}
+                        />
+                        {isOpen ? (
+                          <ChevronUp size={16} className="text-slate-400" />
+                        ) : (
+                          <ChevronDown size={16} className="text-slate-400" />
                         )}
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 flex-shrink-0">
-                      {/* Score if graded */}
-                      {assignment.submissionStatus === "graded" &&
-                        assignment.totalScore != null && (
-                          <div className="text-right">
-                            <p className="text-lg font-bold text-green-600">
-                              {assignment.totalScore}
-                            </p>
-                            <p className="text-xs text-gray-400">
-                              /{assignment.totalMarks}
-                            </p>
+                    {/* Meta row */}
+                    <div className="flex items-center gap-4 mt-2 flex-wrap">
+                      {due && (
+                        <span
+                          className={`flex items-center gap-1 text-xs ${
+                            due.isOverdue
+                              ? "text-red-500"
+                              : due.daysLeft <= 3
+                                ? "text-orange-500"
+                                : "text-slate-400"
+                          }`}
+                        >
+                          <Calendar size={11} />
+                          {due.isOverdue
+                            ? `Overdue · ${due.text}`
+                            : due.daysLeft === 0
+                              ? "Due today"
+                              : due.daysLeft === 1
+                                ? "Due tomorrow"
+                                : `Due ${due.text}`}
+                        </span>
+                      )}
+                      {a.totalMarks > 0 && (
+                        <span className="flex items-center gap-1 text-xs text-slate-400">
+                          <Star size={11} />
+                          {a.totalMarks} marks
+                        </span>
+                      )}
+                      {a.questions?.length > 0 && (
+                        <span className="flex items-center gap-1 text-xs text-slate-400">
+                          <MessageSquare size={11} />
+                          {a.questions.length} question
+                          {a.questions.length !== 1 ? "s" : ""}
+                        </span>
+                      )}
+                      {a.file?.url && (
+                        <span className="flex items-center gap-1 text-xs text-slate-400">
+                          <Paperclip size={11} />
+                          Attachment
+                        </span>
+                      )}
+                      {isGraded && scoreData && (
+                        <span
+                          className={`flex items-center gap-1 text-xs font-medium ${getScoreColor(scoreData.pct).text}`}
+                        >
+                          <Award size={11} />
+                          {scoreData.score}/{scoreData.total}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </button>
+
+                {/* ── Expanded body ── */}
+                {isOpen && (
+                  <div className="border-t border-slate-100 p-5 space-y-5">
+                    {/* Description */}
+                    {a.description && (
+                      <p className="text-sm text-slate-600 leading-relaxed">
+                        {a.description}
+                      </p>
+                    )}
+
+                    {/* Download assignment file */}
+                    {a.file?.url && (
+                      <div
+                        onClick={async () => {
+                          const response = await fetch(a.file.url);
+                          const blob = await response.blob();
+
+                          const url = window.URL.createObjectURL(blob);
+
+                          const link = document.createElement("a");
+                          link.href = url;
+
+                          // ✅ Preserve correct extension
+                          const fileName = a.file.originalName || "assignment";
+                          link.download = fileName;
+
+                          document.body.appendChild(link);
+                          link.click();
+                          link.remove();
+
+                          window.URL.revokeObjectURL(url);
+                        }}
+                        className="cursor-pointer flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all group"
+                      >
+                        <div className="w-9 h-9 rounded-lg bg-slate-100 group-hover:bg-indigo-100 flex items-center justify-center transition-colors">
+                          <Download
+                            size={16}
+                            className="text-slate-500 group-hover:text-indigo-600"
+                          />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-slate-700">
+                            {a.file.originalName || "Assignment File"}
+                          </p>
+                          <p className="text-xs text-indigo-500">
+                            Download & complete →
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* ─── SUBMISSION VIEW (already submitted/graded) ─── */}
+                    {hasSubmission && (
+                      <>
+                        {/* Loading submission details */}
+                        {sub === undefined && (
+                          <div className="flex items-center gap-2 text-sm text-slate-400">
+                            <Loader2 size={14} className="animate-spin" />
+                            Loading submission…
                           </div>
                         )}
 
-                      {getStatusBadge(assignment.submissionStatus)}
+                        {sub !== undefined && sub !== null && (
+                          <SubmissionResult sub={sub} assignment={a} />
+                        )}
 
-                      {isExpanded ? (
-                        <ChevronUp className="w-4 h-4 text-gray-400" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-gray-400" />
-                      )}
-                    </div>
-                  </button>
+                        {sub === null && (
+                          <div className="text-sm text-slate-400 italic">
+                            Submission details unavailable.
+                          </div>
+                        )}
+                      </>
+                    )}
 
-                  {/* Expanded Content */}
-                  <AnimatePresence>
-                    {isExpanded && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="px-5 pb-5 border-t border-gray-100">
-                          {/* Description */}
-                          {assignment.description && (
-                            <p className="text-sm text-gray-600 mt-4 leading-relaxed">
-                              {assignment.description}
+                    {/* ─── SUBMISSION FORM (not yet submitted) ─── */}
+                    {!hasSubmission && (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm font-semibold text-slate-700">
+                            Your Submission
+                          </p>
+
+                          {/* Mode toggle */}
+                          <div className="flex rounded-lg overflow-hidden border border-slate-200 text-xs">
+                            <button
+                              onClick={() =>
+                                setMode((p) => ({ ...p, [id]: "text" }))
+                              }
+                              className={`px-3 py-1.5 transition-colors ${
+                                localMode !== "file"
+                                  ? "bg-indigo-600 text-white"
+                                  : "bg-white text-slate-500 hover:bg-slate-50"
+                              }`}
+                            >
+                              <span className="flex items-center gap-1.5">
+                                <MessageSquare size={11} /> Text
+                              </span>
+                            </button>
+                            <button
+                              onClick={() =>
+                                setMode((p) => ({ ...p, [id]: "file" }))
+                              }
+                              className={`px-3 py-1.5 transition-colors ${
+                                localMode === "file"
+                                  ? "bg-indigo-600 text-white"
+                                  : "bg-white text-slate-500 hover:bg-slate-50"
+                              }`}
+                            >
+                              <span className="flex items-center gap-1.5">
+                                <Upload size={11} /> File
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Text mode — questions */}
+                        {localMode !== "file" && a.questions?.length > 0 && (
+                          <div className="space-y-4">
+                            {a.questions.map((q, i) => (
+                              <div key={q._id} className="space-y-1">
+                                <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">
+                                  Question {i + 1}
+                                </p>
+                                <QuestionInput
+                                  question={q}
+                                  answer={answers[id]?.[q._id]}
+                                  onChange={(field, val) =>
+                                    handleAnswer(id, q._id, field, val)
+                                  }
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Text mode — no questions */}
+                        {localMode !== "file" &&
+                          (!a.questions || a.questions.length === 0) && (
+                            <p className="text-xs text-slate-400 italic">
+                              No questions. Switch to File upload to submit your
+                              work.
                             </p>
                           )}
 
-                          {/* Attachment */}
-                          {assignment.file?.url && (
-                            <div className="mt-4">
-                              <a
-                                href={assignment.file.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-50 text-gray-700 hover:bg-gray-100 text-sm border border-gray-200 transition"
-                              >
-                                <Upload className="w-4 h-4" />
-                                {assignment.file.originalName || "Download Attachment"}
-                              </a>
-                            </div>
+                        {/* File mode */}
+                        {localMode === "file" && (
+                          <FileDropZone
+                            file={files[id]}
+                            onFile={(f) => setFiles((p) => ({ ...p, [id]: f }))}
+                            onClear={() =>
+                              setFiles((p) => ({ ...p, [id]: null }))
+                            }
+                            assignmentId={id}
+                          />
+                        )}
+
+                        {/* Error */}
+                        {localError && (
+                          <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                            <AlertTriangle size={14} />
+                            {localError}
+                          </div>
+                        )}
+
+                        {/* Submit button */}
+                        <button
+                          onClick={() => handleSubmit(a)}
+                          disabled={submitting === id}
+                          className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white text-sm font-medium py-2.5 rounded-xl transition-colors"
+                        >
+                          {submitting === id ? (
+                            <>
+                              <Loader2 size={15} className="animate-spin" />
+                              Submitting…
+                            </>
+                          ) : (
+                            <>
+                              <Send size={15} />
+                              Submit Assignment
+                            </>
                           )}
-
-                          {/* Feedback */}
-                          {assignment.feedback && (
-                            <div className="mt-4 p-4 bg-green-50 rounded-xl border border-green-100">
-                              <p className="text-xs font-semibold text-green-700 mb-1 flex items-center gap-1">
-                                <MessageSquare className="w-3 h-3" />
-                                Tutor Feedback
-                              </p>
-                              <p className="text-sm text-green-800">
-                                {assignment.feedback}
-                              </p>
-                            </div>
-                          )}
-
-                          {/* Questions & Submit Form */}
-                          {canSubmit && assignment.questions?.length > 0 && (
-                            <div className="mt-5 space-y-4">
-                              <h4 className="text-sm font-semibold text-gray-800">
-                                Questions ({assignment.questions.length})
-                              </h4>
-
-                              {assignment.questions.map((q, qIdx) => (
-                                <div
-                                  key={q._id}
-                                  className="p-4 rounded-xl bg-gray-50 border border-gray-100"
-                                >
-                                  <p className="text-sm font-medium text-gray-800 mb-2">
-                                    {qIdx + 1}. {q.prompt}
-                                    <span className="text-xs text-gray-400 ml-2">
-                                      ({q.marks} marks)
-                                    </span>
-                                  </p>
-
-                                  {q.type === "mcq" && q.options?.length > 0 ? (
-                                    <div className="space-y-2">
-                                      {q.options.map((opt, oIdx) => (
-                                        <label
-                                          key={oIdx}
-                                          className="flex items-center gap-3 cursor-pointer group"
-                                        >
-                                          <input
-                                            type="radio"
-                                            name={`q-${assignment._id}-${q._id}`}
-                                            value={opt}
-                                            onChange={() =>
-                                              handleAnswerChange(
-                                                assignment._id,
-                                                q._id,
-                                                "selectedOption",
-                                                opt
-                                              )
-                                            }
-                                            className="w-4 h-4 text-orange-600 focus:ring-orange-500"
-                                          />
-                                          <span className="text-sm text-gray-700 group-hover:text-gray-900">
-                                            {opt}
-                                          </span>
-                                        </label>
-                                      ))}
-                                    </div>
-                                  ) : (
-                                    <textarea
-                                      rows={3}
-                                      placeholder="Type your answer here..."
-                                      onChange={(e) =>
-                                        handleAnswerChange(
-                                          assignment._id,
-                                          q._id,
-                                          "textAnswer",
-                                          e.target.value
-                                        )
-                                      }
-                                      className="w-full rounded-lg border border-gray-200 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 resize-none"
-                                    />
-                                  )}
-                                </div>
-                              ))}
-
-                              {/* Submit button */}
-                              <div className="flex justify-end pt-2">
-                                <button
-                                  onClick={() => handleSubmit(assignment)}
-                                  disabled={submitting === assignment._id}
-                                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-medium text-sm hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg shadow-orange-500/20 disabled:opacity-60"
-                                >
-                                  {submitting === assignment._id ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                  ) : (
-                                    <Send className="w-4 h-4" />
-                                  )}
-                                  {submitting === assignment._id
-                                    ? "Submitting..."
-                                    : "Submit Assignment"}
-                                </button>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* No questions - text submission */}
-                          {canSubmit && (!assignment.questions || assignment.questions.length === 0) && (
-                            <div className="mt-5">
-                              <p className="text-sm text-gray-500 mb-3">
-                                This assignment has no questions. You can submit directly.
-                              </p>
-                              <button
-                                onClick={() => handleSubmit(assignment)}
-                                disabled={submitting === assignment._id}
-                                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-medium text-sm hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg shadow-orange-500/20 disabled:opacity-60"
-                              >
-                                {submitting === assignment._id ? (
-                                  <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : (
-                                  <Send className="w-4 h-4" />
-                                )}
-                                {submitting === assignment._id
-                                  ? "Submitting..."
-                                  : "Mark as Submitted"}
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </motion.div>
+                        </button>
+                      </div>
                     )}
-                  </AnimatePresence>
-                </motion.div>
-              );
-            })}
-          </div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex flex-col items-center justify-center py-20 text-center"
-          >
-            <div className="w-20 h-20 rounded-2xl bg-gray-100 flex items-center justify-center mb-5">
-              <FileText className="w-10 h-10 text-gray-400" />
-            </div>
-            <h3 className="font-bold text-gray-700 text-lg mb-1">
-              {filter !== "all" ? "No matching assignments" : "No assignments yet"}
-            </h3>
-            <p className="text-sm text-gray-400 max-w-sm">
-              {filter !== "all"
-                ? "Try changing the filter to see more assignments."
-                : "Assignments from your enrolled courses will appear here."}
-            </p>
-          </motion.div>
-        )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </MainLayout>
   );

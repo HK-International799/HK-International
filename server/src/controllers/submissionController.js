@@ -1,216 +1,188 @@
-import Submission from "../models/Submission.js";
-import Answer from "../models/Answer.js";
-import Assignment from "../models/Assignment.js";
-import User from "../models/User.js";
 
-const isEnrolledInCourse = (user, courseId) => {
-  return user.enrolledCourses?.some(
-    (id) => id.toString() === courseId.toString()
+// import asyncHandler from "../utils/asyncHandler.js";
+// import apiResponse from "../utils/apiResponse.js";
+// import {
+//   submitAssignmentService,
+//   getMySubmissionService,
+//   listSubmissionsService,
+//   getSubmissionByIdService,
+//   gradeSubmissionService,
+//   saveAnnotationsService,   // ✅ new
+// } from "../services/submissionService.js";
+
+// // POST /api/assignments/:assignmentId/submit
+// export const submitAssignment = asyncHandler(async (req, res) => {
+//   let answers = req.body.answers;
+//   if (typeof answers === "string") {
+//     try {
+//       answers = JSON.parse(answers);
+//     } catch {
+//       answers = [];
+//     }
+//   }
+
+//   const submission = await submitAssignmentService({
+//     assignmentId: req.params.assignmentId,
+//     studentId: req.user._id,
+//     answers: answers || [],
+//     fileBuffer: req.file?.buffer,
+//     fileOriginalName: req.file?.originalname,
+//   });
+
+//   return apiResponse(res, 201, "Assignment submitted", submission);
+// });
+
+// // GET /api/assignments/:assignmentId/my-submission
+// export const getMySubmission = asyncHandler(async (req, res) => {
+//   const submission = await getMySubmissionService(
+//     req.params.assignmentId,
+//     req.user._id
+//   );
+//   return apiResponse(res, 200, "Submission fetched", submission);
+// });
+
+// // GET /api/submissions  (Tutor/Admin — list with pagination)
+// export const listSubmissions = asyncHandler(async (req, res) => {
+//   const result = await listSubmissionsService({
+//     assignmentId: req.query.assignmentId,
+//     user: req.user,
+//     page: req.query.page,
+//     limit: req.query.limit,
+//     status: req.query.status,
+//   });
+
+//   return apiResponse(res, 200, "Submissions fetched", result);
+// });
+
+// // GET /api/submissions/:id
+// export const getSubmissionById = asyncHandler(async (req, res) => {
+//   const submission = await getSubmissionByIdService(req.params.id, req.user);
+//   return apiResponse(res, 200, "Submission fetched", submission);
+// });
+
+// // PUT /api/submissions/:id/grade
+// export const gradeSubmission = asyncHandler(async (req, res) => {
+//   const submission = await gradeSubmissionService(
+//     req.params.id,
+//     {
+//       totalScore: req.body.totalScore,
+//       feedback: req.body.feedback,
+//       questionGrades: req.body.questionGrades || [],
+//       reviewAnnotations: req.body.reviewAnnotations || [],
+//     },
+//     req.user._id
+//   );
+
+//   return apiResponse(res, 200, "Submission graded", submission);
+// });
+
+// // ✅ PATCH /api/submissions/:id/annotations
+// // Saves document-level annotations placed by admin/tutor in the PDF viewer.
+// // Body: { annotations: [{ id, page, xPct, yPct, type, note }] }
+// export const saveAnnotations = asyncHandler(async (req, res) => {
+//   const result = await saveAnnotationsService(
+//     req.params.id,
+//     req.body.annotations,
+//     req.user
+//   );
+
+//   return apiResponse(
+//     res,
+//     200,
+//     `Annotations saved (${result.count} total)`,
+//     result
+//   );
+// });
+
+
+
+
+import asyncHandler from "../utils/asyncHandler.js";
+import apiResponse from "../utils/apiResponse.js";
+import {
+  submitAssignmentService,
+  getMySubmissionService,
+  listSubmissionsService,
+  getSubmissionByIdService,
+  gradeSubmissionService,
+  saveAnnotationsService,
+} from "../services/submissionService.js";
+
+// POST /api/assignments/:assignmentId/submit
+export const submitAssignment = asyncHandler(async (req, res) => {
+  let answers = req.body.answers;
+  if (typeof answers === "string") {
+    try { answers = JSON.parse(answers); }
+    catch { answers = []; }
+  }
+
+  const submission = await submitAssignmentService({
+    assignmentId: req.params.assignmentId,
+    studentId: req.user._id,
+    answers: answers || [],
+    fileBuffer: req.file?.buffer,
+    fileOriginalName: req.file?.originalname,
+  });
+
+  return apiResponse(res, 201, "Assignment submitted", submission);
+});
+
+// GET /api/assignments/:assignmentId/my-submission
+export const getMySubmission = asyncHandler(async (req, res) => {
+  const submission = await getMySubmissionService(
+    req.params.assignmentId,
+    req.user._id
   );
-};
+  return apiResponse(res, 200, "Submission fetched", submission);
+});
 
-export const submitAssignment = async (req, res) => {
-  try {
-    const { assignmentId, answers = [] } = req.body;
+// GET /api/submissions  (Tutor/Admin — list with pagination)
+export const listSubmissions = asyncHandler(async (req, res) => {
+  const result = await listSubmissionsService({
+    assignmentId: req.query.assignmentId,
+    user: req.user,
+    page: req.query.page,
+    limit: req.query.limit,
+    status: req.query.status,
+  });
+  return apiResponse(res, 200, "Submissions fetched", result);
+});
 
-    if (!assignmentId) {
-      return res.status(400).json({ message: "assignmentId is required" });
-    }
+// GET /api/submissions/:id
+export const getSubmissionById = asyncHandler(async (req, res) => {
+  const submission = await getSubmissionByIdService(req.params.id, req.user);
+  return apiResponse(res, 200, "Submission fetched", submission);
+});
 
-    const assignment = await Assignment.findById(assignmentId).populate("questions");
-    if (!assignment) {
-      return res.status(404).json({ message: "Assignment not found" });
-    }
+// PUT /api/submissions/:id/grade
+export const gradeSubmission = asyncHandler(async (req, res) => {
+  const submission = await gradeSubmissionService(
+    req.params.id,
+    {
+      totalScore: req.body.totalScore,
+      feedback: req.body.feedback,
+      questionGrades: req.body.questionGrades || [],
+      reviewAnnotations: req.body.reviewAnnotations || [],
+      // FIX: Accept both key names — frontend may send either
+      annotations: req.body.annotations,
+      documentAnnotations: req.body.documentAnnotations,
+    },
+    req.user._id
+  );
+  return apiResponse(res, 200, "Submission graded", submission);
+});
 
-    const student = await User.findById(req.user._id).select("enrolledCourses");
-    if (!isEnrolledInCourse(student, assignment.courseId)) {
-      return res.status(403).json({ message: "You are not enrolled in this course" });
-    }
-
-    const existingSubmission = await Submission.findOne({
-      assignmentId,
-      studentId: req.user._id,
-    });
-
-    if (existingSubmission) {
-      return res.status(409).json({
-        message: "You have already submitted this assignment",
-      });
-    }
-
-    const validQuestionIds = assignment.questions.map((q) => q._id.toString());
-
-    for (const answer of answers) {
-      if (!answer.questionId) {
-        return res.status(400).json({
-          message: "Each answer must include questionId",
-        });
-      }
-
-      if (!validQuestionIds.includes(answer.questionId.toString())) {
-        return res.status(400).json({
-          message: `Invalid questionId: ${answer.questionId}`,
-        });
-      }
-    }
-
-    const submission = await Submission.create({
-      assignmentId,
-      studentId: req.user._id,
-      status: "pending",
-    });
-
-    const answerDocs =
-      answers.length > 0
-        ? await Answer.insertMany(
-            answers.map((ans) => ({
-              questionId: ans.questionId,
-              submissionId: submission._id,
-              textAnswer: ans.textAnswer || "",
-              fileUrl: ans.fileUrl || "",
-              selectedOption: ans.selectedOption || "",
-            }))
-          )
-        : [];
-
-    submission.answers = answerDocs.map((a) => a._id);
-    await submission.save();
-
-    const populatedSubmission = await Submission.findById(submission._id)
-      .populate("assignmentId", "title dueDate totalMarks")
-      .populate("answers");
-
-    res.status(201).json(populatedSubmission);
-  } catch (err) {
-    res.status(500).json({
-      message: "Error submitting assignment",
-      error: err.message,
-    });
-  }
-};
-
-export const getMySubmissions = async (req, res) => {
-  try {
-    const submissions = await Submission.find({ studentId: req.user._id })
-      .populate("assignmentId", "title dueDate totalMarks courseId")
-      .populate("answers")
-      .sort({ createdAt: -1 });
-
-    res.json(submissions);
-  } catch (err) {
-    res.status(500).json({
-      message: "Error fetching your submissions",
-      error: err.message,
-    });
-  }
-};
-
-export const getMySubmissionForAssignment = async (req, res) => {
-  try {
-    const { assignmentId } = req.params;
-
-    const submission = await Submission.findOne({
-      assignmentId,
-      studentId: req.user._id,
-    })
-      .populate("assignmentId", "title dueDate totalMarks")
-      .populate("answers");
-
-    if (!submission) {
-      return res.status(404).json({ message: "Submission not found" });
-    }
-
-    res.json(submission);
-  } catch (err) {
-    res.status(500).json({
-      message: "Error fetching submission",
-      error: err.message,
-    });
-  }
-};
-
-export const getSubmissionsByAssignment = async (req, res) => {
-  try {
-    const { assignmentId } = req.params;
-
-    const submissions = await Submission.find({ assignmentId })
-      .populate("studentId", "name email")
-      .populate("answers")
-      .sort({ createdAt: -1 });
-
-    res.json(submissions);
-  } catch (err) {
-    res.status(500).json({
-      message: "Error fetching submissions",
-      error: err.message,
-    });
-  }
-};
-
-export const getSubmissionById = async (req, res) => {
-  try {
-    const submission = await Submission.findById(req.params.id)
-      .populate("studentId", "name email")
-      .populate("assignmentId", "title dueDate totalMarks")
-      .populate("answers");
-
-    if (!submission) {
-      return res.status(404).json({ message: "Submission not found" });
-    }
-
-    if (
-      req.user.role === "student" &&
-      submission.studentId._id.toString() !== req.user._id.toString()
-    ) {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
-    res.json(submission);
-  } catch (err) {
-    res.status(500).json({
-      message: "Error fetching submission",
-      error: err.message,
-    });
-  }
-};
-
-export const gradeSubmission = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { totalScore, feedback } = req.body;
-
-    const submission = await Submission.findById(id).populate("assignmentId", "totalMarks");
-    if (!submission) {
-      return res.status(404).json({ message: "Submission not found" });
-    }
-
-    if (totalScore === undefined || totalScore === null) {
-      return res.status(400).json({ message: "totalScore is required" });
-    }
-
-    if (Number(totalScore) > Number(submission.assignmentId.totalMarks || 0)) {
-      return res.status(400).json({
-        message: "totalScore cannot be greater than assignment totalMarks",
-      });
-    }
-
-    submission.totalScore = totalScore;
-    submission.feedback = feedback || "";
-    submission.status = "graded";
-    submission.gradedBy = req.user._id;
-
-    await submission.save();
-
-    const updatedSubmission = await Submission.findById(submission._id)
-      .populate("studentId", "name email")
-      .populate("assignmentId", "title totalMarks")
-      .populate("answers");
-
-    res.json(updatedSubmission);
-  } catch (err) {
-    res.status(500).json({
-      message: "Error grading submission",
-      error: err.message,
-    });
-  }
-};
+// PATCH /api/submissions/:id/annotations
+export const saveAnnotations = asyncHandler(async (req, res) => {
+  const result = await saveAnnotationsService(
+    req.params.id,
+    req.body.annotations,
+    req.user
+  );
+  return apiResponse(
+    res,
+    200,
+    `Annotations saved (${result.count} total)`,
+    result
+  );
+});

@@ -1,3 +1,5 @@
+
+
 // import api from "./api";
 
 // // ─── Courses ──────────────────────────────────────────────────────────────────
@@ -130,7 +132,7 @@
 //   return data;
 // };
 
-// // ─── Assignments (detailed) ───────────────────────────────────────────────────
+// // ─── Assignments ──────────────────────────────────────────────────────────────
 // export const getAssignmentById = async (id) => {
 //   const { data } = await api.get(`/assignments/${id}`);
 //   return data;
@@ -176,9 +178,7 @@
 
 // export const getSubmissionForAssignment = async (assignmentId) => {
 //   try {
-//     const { data } = await api.get(
-//       `/submissions/assignment/${assignmentId}/my`,
-//     );
+//     const { data } = await api.get(`/submissions/assignment/${assignmentId}/my`);
 //     return data;
 //   } catch (err) {
 //     if (err.response?.status === 404) return null;
@@ -229,6 +229,62 @@
 //   return data;
 // };
 
+// // ─── Chapter APIs (NEW) ───────────────────────────────────────────────────────
+
+// /**
+//  * Get all chapters for a course plus the student's completed chapter IDs.
+//  * Returns: { chapters: [...], completedChapters: [...ids] }
+//  */
+// export const getCourseChapters = async (courseId) => {
+//   try {
+//     const { data } = await api.get(`/chapters/course/${courseId}`);
+//     return data;
+//   } catch (error) {
+//     throw error.response?.data || { message: "Failed to load chapters" };
+//   }
+// };
+
+// /**
+//  * Get the quiz (with questions) for a specific chapter.
+//  * Returns: { quiz: { ... questions[] } | null }
+//  */
+// export const getChapterQuiz = async (chapterId) => {
+//   try {
+//     const { data } = await api.get(`/chapters/${chapterId}/quiz`);
+//     return data;
+//   } catch (error) {
+//     throw error.response?.data || { message: "Failed to load quiz" };
+//   }
+// };
+
+// /**
+//  * Submit quiz answers for a chapter.
+//  * Body: { answers: [{ questionId, selectedOption }] }
+//  * Returns: { score, totalMarks, passed, gradedAnswers }
+//  */
+// export const submitChapterQuiz = async (chapterId, answers) => {
+//   try {
+//     const { data } = await api.post(`/chapters/${chapterId}/submit-quiz`, {
+//       answers,
+//     });
+//     return data;
+//   } catch (error) {
+//     throw error.response?.data || { message: "Failed to submit quiz" };
+//   }
+// };
+
+// /**
+//  * Get the student's chapter progress for a course.
+//  * Returns: { completedChapters: [...ids] }
+//  */
+// export const getChapterProgress = async (courseId) => {
+//   try {
+//     const { data } = await api.get(`/chapters/progress/${courseId}`);
+//     return data;
+//   } catch (error) {
+//     throw error.response?.data || { message: "Failed to load chapter progress" };
+//   }
+// };
 
 
 import api from "./api";
@@ -246,10 +302,7 @@ export const getEnrolledCourses = async () => {
 // ─── Progress ─────────────────────────────────────────────────────────────────
 export const completeLesson = async (courseId, lessonId) => {
   try {
-    const { data } = await api.post("/progress/complete-lesson", {
-      courseId,
-      lessonId,
-    });
+    const { data } = await api.post("/progress/complete-lesson", { courseId, lessonId });
     return data;
   } catch (error) {
     throw error.response?.data || { message: "Failed to mark lesson complete" };
@@ -352,7 +405,7 @@ export const getDocumentById = async (id) => {
   return data;
 };
 
-// ─── Question Banks (read-only for students) ──────────────────────────────────
+// ─── Question Banks ───────────────────────────────────────────────────────────
 export const getQuestionBanks = async () => {
   const { data } = await api.get("/question-banks");
   return data;
@@ -364,15 +417,58 @@ export const getQuestionBankById = async (id) => {
 };
 
 // ─── Assignments ──────────────────────────────────────────────────────────────
-export const getAssignmentById = async (id) => {
-  const { data } = await api.get(`/assignments/${id}`);
-  return data;
-};
 
 export const getAssignments = async (courseId) => {
   const params = courseId ? { courseId } : {};
   const { data } = await api.get("/assignments", { params });
-  return data;
+  // Handle both { assignments: [] } and []
+  return Array.isArray(data) ? data : (data?.data?.assignments ?? data?.assignments ?? []);
+};
+
+export const getAssignmentById = async (id) => {
+  const { data } = await api.get(`/assignments/${id}`);
+  return data?.data ?? data;
+};
+
+// ─── Submissions ──────────────────────────────────────────────────────────────
+
+/**
+ * Submit assignment.
+ * Supports:
+ *  - Text answers only  → pass { assignmentId, answers }
+ *  - File only          → pass FormData with file + assignmentId
+ *  - Both               → pass FormData with file + answers (JSON string)
+ */
+export const submitAssignment = async (assignmentId, payload) => {
+  const isFormData = payload instanceof FormData;
+  const { data } = await api.post(
+    `/assignments/${assignmentId}/submit`,
+    payload,
+    {
+      headers: isFormData ? { "Content-Type": "multipart/form-data" } : {},
+    }
+  );
+  return data?.data ?? data;
+};
+
+export const getMySubmissionForAssignment = async (assignmentId) => {
+  try {
+    const { data } = await api.get(`/assignments/${assignmentId}/my-submission`);
+    return data?.data ?? data;
+  } catch (err) {
+    if (err.response?.status === 404) return null;
+    throw err;
+  }
+};
+
+export const getMySubmissions = async () => {
+  const { data } = await api.get("/submissions/my");
+  return data?.data ?? data;
+};
+
+export const getSubmissionById = async (id) => {
+  const { data } = await api.get(`/submissions/${id}`);
+  return data?.data ?? data;
 };
 
 // ─── Notifications ────────────────────────────────────────────────────────────
@@ -393,32 +489,6 @@ export const markAllNotificationsRead = async () => {
 
 export const getUnreadNotificationCount = async () => {
   const { data } = await api.get("/notifications/unread/count");
-  return data;
-};
-
-// ─── Submissions ──────────────────────────────────────────────────────────────
-export const submitAssignment = async (payload) => {
-  const { data } = await api.post("/submissions", payload);
-  return data;
-};
-
-export const getMySubmissions = async () => {
-  const { data } = await api.get("/submissions/my");
-  return data;
-};
-
-export const getSubmissionForAssignment = async (assignmentId) => {
-  try {
-    const { data } = await api.get(`/submissions/assignment/${assignmentId}/my`);
-    return data;
-  } catch (err) {
-    if (err.response?.status === 404) return null;
-    throw err;
-  }
-};
-
-export const getSubmissionById = async (id) => {
-  const { data } = await api.get(`/submissions/${id}`);
   return data;
 };
 
@@ -460,12 +530,7 @@ export const getStudentAssignments = async () => {
   return data;
 };
 
-// ─── Chapter APIs (NEW) ───────────────────────────────────────────────────────
-
-/**
- * Get all chapters for a course plus the student's completed chapter IDs.
- * Returns: { chapters: [...], completedChapters: [...ids] }
- */
+// ─── Chapter APIs ─────────────────────────────────────────────────────────────
 export const getCourseChapters = async (courseId) => {
   try {
     const { data } = await api.get(`/chapters/course/${courseId}`);
@@ -475,10 +540,6 @@ export const getCourseChapters = async (courseId) => {
   }
 };
 
-/**
- * Get the quiz (with questions) for a specific chapter.
- * Returns: { quiz: { ... questions[] } | null }
- */
 export const getChapterQuiz = async (chapterId) => {
   try {
     const { data } = await api.get(`/chapters/${chapterId}/quiz`);
@@ -488,26 +549,15 @@ export const getChapterQuiz = async (chapterId) => {
   }
 };
 
-/**
- * Submit quiz answers for a chapter.
- * Body: { answers: [{ questionId, selectedOption }] }
- * Returns: { score, totalMarks, passed, gradedAnswers }
- */
 export const submitChapterQuiz = async (chapterId, answers) => {
   try {
-    const { data } = await api.post(`/chapters/${chapterId}/submit-quiz`, {
-      answers,
-    });
+    const { data } = await api.post(`/chapters/${chapterId}/submit-quiz`, { answers });
     return data;
   } catch (error) {
     throw error.response?.data || { message: "Failed to submit quiz" };
   }
 };
 
-/**
- * Get the student's chapter progress for a course.
- * Returns: { completedChapters: [...ids] }
- */
 export const getChapterProgress = async (courseId) => {
   try {
     const { data } = await api.get(`/chapters/progress/${courseId}`);
