@@ -49,6 +49,18 @@ const OrientationCertificate = lazy(
   () => import("../pages/students/OrientationCertificate"),
 );
 
+// ─── Student Exams (MCQ-style) ────────────────────────────────────────────────
+const StudentExamList = lazy(() => import("../pages/students/exams/ExamList"));
+const StudentExamInstructions = lazy(
+  () => import("../pages/students/exams/ExamInstructions"),
+);
+const StudentExamAttempt = lazy(
+  () => import("../pages/students/exams/ExamAttempt"),
+);
+const StudentExamResult = lazy(
+  () => import("../pages/students/exams/ExamResult"),
+);
+
 // ─── Scenario-Based Exams ───────────────────────────────
 const ScenarioExamList = lazy(
   () => import("../pages/scenarioExam/ExamListPage"),
@@ -249,6 +261,47 @@ export default function AppRoutes() {
             element={
               <ProtectedRoute>
                 <OrientationCertificate />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ── Student MCQ Exams ────────────────────────────────────── */}
+          {/*
+           *  Route flow:
+           *  1. /student/exams                           → List of active exams
+           *  2. /student/exams/:examId/instructions      → Instructions / confirmation page
+           *  3. /student/exams/:examId/attempt           → Live exam (timer + questions)
+           *  4. /student/exams/:examId/result/:attemptId → Result + breakdown
+           */}
+          <Route
+            path="/student/exams"
+            element={
+              <ProtectedRoute>
+                <StudentExamList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/student/exams/:examId/instructions"
+            element={
+              <ProtectedRoute>
+                <StudentExamInstructions />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/student/exams/:examId/attempt"
+            element={
+              <ProtectedRoute>
+                <StudentExamAttempt />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/student/exams/:examId/result/:attemptId"
+            element={
+              <ProtectedRoute>
+                <StudentExamResult />
               </ProtectedRoute>
             }
           />

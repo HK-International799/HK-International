@@ -12,6 +12,10 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CourseDetails from "./pages/courses/CourseDetails";
+import ExamList from "./pages/exams/ExamList";
+import CreateExam from "./pages/exams/CreateExam";
+import ExamReport from "./pages/exams/ExamReport";
+import EditExam from "./pages/exams/EditExam";
 
 // Lazy load all pages
 const Dashboard = lazy(() => import("./pages/dashboard/Dashboard"));
@@ -29,7 +33,6 @@ const SubmissionReview = lazy(
   () => import("./pages/submissions/SubmissionReview"),
 );
 
-const Exams = lazy(() => import("./pages/exams/Exams"));
 const DocumentReview = lazy(
   () => import("./pages/documentReview/DocumentReview"),
 );
@@ -167,14 +170,6 @@ function App() {
           />
 
           <Route
-            path="/admin/exams"
-            element={
-              <P>
-                <Exams />
-              </P>
-            }
-          />
-          <Route
             path="/admin/documents"
             element={
               <P>
@@ -307,6 +302,12 @@ function App() {
               </P>
             }
           />
+
+          {/* exam Routes */}
+          <Route path="/exams" element={<ExamList />} />
+          <Route path="/exams/create" element={<CreateExam />} />
+          <Route path="/exams/:examId/report" element={<ExamReport />} />
+          <Route path="/exams/:examId/edit" element={<EditExam />} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
