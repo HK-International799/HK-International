@@ -20,7 +20,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import {
   getStudentAssignments,
   submitAssignment,
-  getSubmissionForAssignment,
+  getMySubmissionForAssignment,
   uploadDocument,
 } from "../../services/studentService";
 
@@ -70,7 +70,7 @@ export default function UploadAssignment() {
     const checkSubmission = async () => {
       setCheckingSubmission(true);
       try {
-        const sub = await getSubmissionForAssignment(selectedAssignment._id);
+        const sub = await getMySubmissionForAssignment(selectedAssignment._id);
         setExistingSubmission(sub);
       } catch {
         setExistingSubmission(null);
