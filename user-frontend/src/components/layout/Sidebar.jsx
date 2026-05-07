@@ -256,11 +256,11 @@ const navItems = [
   },
   // ── Exam routes ───────────────────────────────────────────────────────────
   // MCQ / Standard Exams  →  /student/exams
-  // {
-  //   to: "/student/exams",
-  //   label: "Exams",
-  //   icon: <ClipboardList size={18} />,
-  // },
+  {
+    to: "/student/exams",
+    label: "Exams",
+    icon: <ClipboardList size={18} />,
+  },
   // Scenario-based Exams  →  /exams/scenario
   {
     to: "/exams/scenario",
