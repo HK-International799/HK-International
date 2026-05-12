@@ -29,18 +29,23 @@ function ConfirmSubmitModal({ total, answered, onConfirm, onCancel }) {
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl animate-[popIn_0.2s_ease]">
         <div className="text-5xl mb-4">{skipped > 0 ? "⚠️" : "✅"}</div>
-        <h3 className="text-xl font-extrabold text-slate-900 mb-2">Submit Exam?</h3>
+        <h3 className="text-xl font-extrabold text-slate-900 mb-2">
+          Submit Exam?
+        </h3>
         <p className="text-slate-500 text-sm leading-relaxed mb-3">
           You have answered{" "}
           <strong className="text-slate-900">{answered}</strong> of{" "}
           <strong className="text-slate-900">{total}</strong> questions.
           {skipped > 0 && (
             <span className="text-orange-600">
-              {" "}{skipped} question{skipped > 1 ? "s" : ""} will be skipped.
+              {" "}
+              {skipped} question{skipped > 1 ? "s" : ""} will be skipped.
             </span>
           )}
         </p>
-        <p className="text-red-500 text-xs font-semibold mb-6">This action cannot be undone.</p>
+        <p className="text-red-500 text-xs font-semibold mb-6">
+          This action cannot be undone.
+        </p>
         <div className="flex gap-3">
           <button
             onClick={onCancel}
@@ -70,14 +75,17 @@ function TimerDisplay({ timeLeft }) {
   return (
     <div
       className={`flex items-center gap-2 px-4 py-1.5 rounded-xl font-mono font-extrabold text-lg border transition-all duration-300
-        ${isCritical
-          ? "bg-red-50 border-red-200 text-red-600 animate-pulse"
-          : isDanger
-          ? "bg-orange-50 border-orange-200 text-orange-600"
-          : "bg-indigo-50 border-indigo-200 text-indigo-700"
+        ${
+          isCritical
+            ? "bg-red-50 border-red-200 text-red-600 animate-pulse"
+            : isDanger
+              ? "bg-orange-50 border-orange-200 text-orange-600"
+              : "bg-indigo-50 border-indigo-200 text-indigo-700"
         }`}
     >
-      <span className="text-sm">{isCritical ? "🔴" : isDanger ? "🟠" : "⏱"}</span>
+      <span className="text-sm">
+        {isCritical ? "🔴" : isDanger ? "🟠" : "⏱"}
+      </span>
       {formatTimeLeft(timeLeft)}
     </div>
   );
@@ -121,7 +129,9 @@ function QuestionPanel({ q, idx, total, answers, onSelect, onClear, saving }) {
 
       {/* Question text */}
       <div className="px-6 pt-5 pb-2">
-        <p className="text-[16.5px] font-semibold text-slate-900 leading-relaxed">{q.questionText}</p>
+        <p className="text-[16.5px] font-semibold text-slate-900 leading-relaxed">
+          {q.questionText}
+        </p>
       </div>
 
       {/* Options */}
@@ -133,17 +143,19 @@ function QuestionPanel({ q, idx, total, answers, onSelect, onClear, saving }) {
               key={opt.label}
               onClick={() => onSelect(String(q._id), opt.label)}
               className={`w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl border-2 text-left transition-all duration-150
-                ${isSelected
-                  ? "border-indigo-500 bg-indigo-50 shadow-sm shadow-indigo-100"
-                  : "border-slate-100 bg-slate-50/60 hover:border-indigo-200 hover:bg-indigo-50/40"
+                ${
+                  isSelected
+                    ? "border-indigo-500 bg-indigo-50 shadow-sm shadow-indigo-100"
+                    : "border-slate-100 bg-slate-50/60 hover:border-indigo-200 hover:bg-indigo-50/40"
                 }`}
             >
               {/* Label bubble */}
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center font-extrabold text-[13px] flex-shrink-0 transition-all duration-150
-                  ${isSelected
-                    ? "bg-indigo-600 text-white"
-                    : "bg-slate-200 text-slate-600"
+                  ${
+                    isSelected
+                      ? "bg-indigo-600 text-white"
+                      : "bg-slate-200 text-slate-600"
                   }`}
               >
                 {opt.label}
@@ -157,7 +169,9 @@ function QuestionPanel({ q, idx, total, answers, onSelect, onClear, saving }) {
               </span>
               {/* Checkmark */}
               {isSelected && (
-                <span className="text-indigo-600 font-bold text-lg flex-shrink-0">✓</span>
+                <span className="text-indigo-600 font-bold text-lg flex-shrink-0">
+                  ✓
+                </span>
               )}
             </button>
           );
@@ -179,7 +193,9 @@ function QuestionPalette({ questions, answers, currentIdx, onJump }) {
       <div className="px-4 py-3.5 border-b border-slate-50">
         <div className="flex justify-between items-center mb-2">
           <span className="text-xs font-bold text-slate-600">Progress</span>
-          <span className="text-xs font-extrabold text-indigo-600">{answered}/{total} answered</span>
+          <span className="text-xs font-extrabold text-indigo-600">
+            {answered}/{total} answered
+          </span>
         </div>
         <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
           <div
@@ -187,7 +203,9 @@ function QuestionPalette({ questions, answers, currentIdx, onJump }) {
             style={{ width: `${pct}%` }}
           />
         </div>
-        <div className="text-right text-[10px] text-slate-400 mt-1 font-medium">{pct}% complete</div>
+        <div className="text-right text-[10px] text-slate-400 mt-1 font-medium">
+          {pct}% complete
+        </div>
       </div>
 
       {/* Grid */}
@@ -203,11 +221,12 @@ function QuestionPalette({ questions, answers, currentIdx, onJump }) {
                 onClick={() => onJump(i)}
                 title={`Q${i + 1}${isAnswered ? " (answered)" : " (unanswered)"}`}
                 className={`aspect-square rounded-lg text-xs font-bold transition-all duration-150 flex items-center justify-center
-                  ${isAnswered
-                    ? "bg-indigo-600 text-white shadow-sm shadow-indigo-200"
-                    : isCurrent
-                    ? "bg-orange-100 text-orange-700 border-2 border-orange-400"
-                    : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                  ${
+                    isAnswered
+                      ? "bg-indigo-600 text-white shadow-sm shadow-indigo-200"
+                      : isCurrent
+                        ? "bg-orange-100 text-orange-700 border-2 border-orange-400"
+                        : "bg-slate-100 text-slate-500 hover:bg-slate-200"
                   }
                   ${isCurrent && !isAnswered ? "ring-2 ring-orange-300 ring-offset-1" : ""}
                   ${isCurrent && isAnswered ? "ring-2 ring-indigo-300 ring-offset-1" : ""}
@@ -294,7 +313,8 @@ export default function ExamAttempt() {
   // ── Keyboard navigation ───────────────────────────────────────────────────
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === "ArrowRight") setCurrentIdx((i) => Math.min(i + 1, questions.length - 1));
+      if (e.key === "ArrowRight")
+        setCurrentIdx((i) => Math.min(i + 1, questions.length - 1));
       if (e.key === "ArrowLeft") setCurrentIdx((i) => Math.max(i - 1, 0));
     };
     window.addEventListener("keydown", onKey);
@@ -335,7 +355,10 @@ export default function ExamAttempt() {
             selectedOption: optionLabel,
           });
         } catch (err) {
-          if (err.response?.status === 410 || err.message?.includes("expired")) {
+          if (
+            err.response?.status === 410 ||
+            err.message?.includes("expired")
+          ) {
             clearInterval(timerRef.current);
             navigate(`/student/exams/${examId}/result/${attemptIdRef.current}`);
           }
@@ -344,17 +367,49 @@ export default function ExamAttempt() {
         }
       }, SAVE_DEBOUNCE_MS);
     },
-    [examId, navigate]
+    [examId, navigate],
   );
 
   // ── Clear answer ──────────────────────────────────────────────────────────
-  const handleClear = useCallback((questionId) => {
+  // ── Clear answer ──────────────────────────────────────────────────────────
+const handleClear = useCallback(
+  async (questionId) => {
+    // Update UI instantly
     setAnswers((prev) => {
       const copy = { ...prev };
       delete copy[questionId];
       return copy;
     });
-  }, []);
+
+    clearTimeout(saveTimerRef.current);
+    setSaving(true);
+
+    try {
+      // Save empty answer to backend
+      await saveAnswer(examId, {
+        attemptId: attemptIdRef.current,
+        questionId,
+        selectedOption: null,
+      });
+    } catch (err) {
+      console.error("Clear answer error:", err);
+
+      if (
+        err.response?.status === 410 ||
+        err.message?.includes("expired")
+      ) {
+        clearInterval(timerRef.current);
+
+        navigate(
+          `/student/exams/${examId}/result/${attemptIdRef.current}`
+        );
+      }
+    } finally {
+      setSaving(false);
+    }
+  },
+  [examId, navigate]
+);
 
   // ── Submit ────────────────────────────────────────────────────────────────
   const doSubmit = useCallback(
@@ -365,11 +420,16 @@ export default function ExamAttempt() {
       clearInterval(timerRef.current);
       clearTimeout(saveTimerRef.current);
       try {
-        const answersArr = Object.entries(answersRef.current).map(([questionId, selectedOption]) => ({
-          questionId,
-          selectedOption,
-        }));
-        await submitExam(examId, { attemptId: attemptIdRef.current, answers: answersArr });
+        const answersArr = Object.entries(answersRef.current).map(
+          ([questionId, selectedOption]) => ({
+            questionId,
+            selectedOption,
+          }),
+        );
+        await submitExam(examId, {
+          attemptId: attemptIdRef.current,
+          answers: answersArr,
+        });
         navigate(`/student/exams/${examId}/result/${attemptIdRef.current}`);
       } catch (err) {
         setErrorMsg(err.response?.data?.message || err.message);
@@ -377,7 +437,7 @@ export default function ExamAttempt() {
         submittingRef.current = false;
       }
     },
-    [examId, navigate]
+    [examId, navigate],
   );
 
   // ── Loading ───────────────────────────────────────────────────────────────
@@ -385,7 +445,9 @@ export default function ExamAttempt() {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4">
         <div className="w-12 h-12 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin" />
-        <p className="text-slate-500 text-[15px] font-medium">Preparing your exam…</p>
+        <p className="text-slate-500 text-[15px] font-medium">
+          Preparing your exam…
+        </p>
       </div>
     );
   }
@@ -400,7 +462,8 @@ export default function ExamAttempt() {
             {autoSubmitted ? "Time's Up!" : "Something went wrong"}
           </h3>
           <p className="text-slate-500 text-sm mb-6">
-            {errorMsg || "Unable to process the exam request. Please try again."}
+            {errorMsg ||
+              "Unable to process the exam request. Please try again."}
           </p>
           <button
             onClick={() => navigate("/student/exams")}
@@ -418,8 +481,12 @@ export default function ExamAttempt() {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4">
         <div className="w-14 h-14 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin" />
-        <p className="text-slate-700 text-[15px] font-bold">Submitting your exam…</p>
-        <p className="text-slate-400 text-sm">Please do not close this window.</p>
+        <p className="text-slate-700 text-[15px] font-bold">
+          Submitting your exam…
+        </p>
+        <p className="text-slate-400 text-sm">
+          Please do not close this window.
+        </p>
       </div>
     );
   }
@@ -444,7 +511,10 @@ export default function ExamAttempt() {
         <ConfirmSubmitModal
           total={total}
           answered={answered}
-          onConfirm={() => { setShowConfirm(false); doSubmit(false); }}
+          onConfirm={() => {
+            setShowConfirm(false);
+            doSubmit(false);
+          }}
           onCancel={() => setShowConfirm(false)}
         />
       )}
@@ -454,7 +524,9 @@ export default function ExamAttempt() {
         {/* Left */}
         <div className="flex items-center gap-2.5 min-w-0">
           <span className="text-lg">📝</span>
-          <span className="text-white font-bold text-sm truncate hidden sm:block">Exam in Progress</span>
+          <span className="text-white font-bold text-sm truncate hidden sm:block">
+            Exam in Progress
+          </span>
         </div>
 
         {/* Center: Timer */}
@@ -465,13 +537,14 @@ export default function ExamAttempt() {
           <div className="bg-indigo-900 text-indigo-100 text-xs font-bold px-3 py-1 rounded-lg tabular-nums">
             {answered}/{total}
           </div>
-          <span className="text-indigo-400 text-xs hidden sm:block">answered</span>
+          <span className="text-indigo-400 text-xs hidden sm:block">
+            answered
+          </span>
         </div>
       </div>
 
       {/* ── Body ────────────────────────────────────────── */}
       <div className="max-w-5xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-5 items-start">
-
         {/* Left: question + nav */}
         <div className="space-y-4">
           <QuestionPanel
@@ -490,9 +563,10 @@ export default function ExamAttempt() {
               onClick={() => setCurrentIdx((i) => Math.max(0, i - 1))}
               disabled={isFirst}
               className={`px-5 py-2.5 rounded-xl font-semibold text-sm border transition-all
-                ${isFirst
-                  ? "border-slate-100 text-slate-300 bg-slate-50 cursor-not-allowed"
-                  : "border-slate-200 text-slate-700 bg-white hover:bg-slate-50 hover:border-slate-300"
+                ${
+                  isFirst
+                    ? "border-slate-100 text-slate-300 bg-slate-50 cursor-not-allowed"
+                    : "border-slate-200 text-slate-700 bg-white hover:bg-slate-50 hover:border-slate-300"
                 }`}
             >
               ← Prev
@@ -510,12 +584,15 @@ export default function ExamAttempt() {
 
             <button
               onClick={() =>
-                isLast ? setShowConfirm(true) : setCurrentIdx((i) => Math.min(total - 1, i + 1))
+                isLast
+                  ? setShowConfirm(true)
+                  : setCurrentIdx((i) => Math.min(total - 1, i + 1))
               }
               className={`px-5 py-2.5 rounded-xl font-bold text-sm text-white transition-all
-                ${isLast
-                  ? "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-md shadow-emerald-200"
-                  : "bg-indigo-600 hover:bg-indigo-700 shadow-sm shadow-indigo-200"
+                ${
+                  isLast
+                    ? "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-md shadow-emerald-200"
+                    : "bg-indigo-600 hover:bg-indigo-700 shadow-sm shadow-indigo-200"
                 }`}
             >
               {isLast ? "Submit Exam ✓" : "Next →"}
@@ -546,15 +623,32 @@ export default function ExamAttempt() {
 
           {/* Quick stats */}
           <div className="bg-white border border-slate-100 rounded-2xl shadow-sm p-4">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Status</p>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">
+              Status
+            </p>
             <div className="space-y-2.5">
               {[
-                { label: "Answered", count: answered, color: "text-indigo-600", bg: "bg-indigo-50" },
-                { label: "Unanswered", count: total - answered, color: "text-slate-400", bg: "bg-slate-50" },
+                {
+                  label: "Answered",
+                  count: answered,
+                  color: "text-indigo-600",
+                  bg: "bg-indigo-50",
+                },
+                {
+                  label: "Unanswered",
+                  count: total - answered,
+                  color: "text-slate-400",
+                  bg: "bg-slate-50",
+                },
               ].map((s) => (
-                <div key={s.label} className="flex items-center justify-between">
+                <div
+                  key={s.label}
+                  className="flex items-center justify-between"
+                >
                   <span className="text-sm text-slate-600">{s.label}</span>
-                  <span className={`text-sm font-extrabold px-2.5 py-0.5 rounded-lg ${s.color} ${s.bg}`}>
+                  <span
+                    className={`text-sm font-extrabold px-2.5 py-0.5 rounded-lg ${s.color} ${s.bg}`}
+                  >
                     {s.count}
                   </span>
                 </div>

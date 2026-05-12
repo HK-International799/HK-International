@@ -12,6 +12,7 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CourseDetails from "./pages/courses/CourseDetails";
+import CourseEnrollments from "./pages/courses/CourseEnrollments";
 import ExamList from "./pages/exams/ExamList";
 import CreateExam from "./pages/exams/CreateExam";
 import ExamReport from "./pages/exams/ExamReport";
@@ -260,6 +261,14 @@ function App() {
             }
           />
           <Route path="/admin/courses/:id" element={<CourseDetails />} />
+          <Route
+            path="/admin/courses/:id/enrollments"
+            element={
+              <ProtectedRoute>
+                <CourseEnrollments />
+              </ProtectedRoute>
+            }
+          />
 
           {/* ── Scenario-Based Exams (Admin) ───────────────── */}
           <Route

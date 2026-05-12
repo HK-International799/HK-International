@@ -167,14 +167,8 @@ export default function Dashboard() {
               Overview of your LMS platform
             </p>
           </div>
-          <div className="flex gap-3 mt-4 md:mt-0">
-            <button
-              onClick={() => navigate("/admin/courses")}
-              className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-indigo-700 transition"
-            >
-              <PlusCircle size={16} />
-              Add Course
-            </button>
+          {/* <div className="flex gap-3 mt-4 md:mt-0">
+            
             <button
               onClick={() => navigate("/admin/registrations")}
               className="flex items-center gap-2 bg-white border px-4 py-2 rounded-xl text-sm hover:bg-gray-50 transition"
@@ -182,7 +176,7 @@ export default function Dashboard() {
               <ClipboardCheck size={16} />
               Registrations
             </button>
-          </div>
+          </div> */}
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -330,13 +324,16 @@ export default function Dashboard() {
                 // { l: "Orientation", t: "/admin/orientation" },
                 // { l: "Certificates", t: "/admin/certificates" },
               ].map((a) => (
-                <button
-                  key={a.t}
-                  onClick={() => navigate(a.t)}
-                  className="bg-white/10 p-3.5 rounded-xl text-sm hover:bg-white/20 transition text-left"
-                >
-                  {a.l}
-                </button>
+                <>
+                  <button
+                    key={a.t}
+                    onClick={() => navigate(a.t)}
+                    className="bg-white/10 p-3.5 rounded-xl text-sm hover:bg-white/40 transition text-left flex items-center gap-2"
+                  >
+                     <PlusCircle size={16} />
+                    {a.l}
+                  </button>
+                </>
               ))}
             </div>
           </div>

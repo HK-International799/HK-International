@@ -164,7 +164,7 @@ export default function CoursePage() {
                   key={i}
                   className="bg-white p-6 rounded-xl shadow-sm border"
                 >
-                  🚀 {benefit}
+                   {benefit}
                 </div>
               ))}
             </div>

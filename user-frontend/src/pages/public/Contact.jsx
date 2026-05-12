@@ -55,7 +55,7 @@ India`,
         "service_x3pkgja",
         "template_4dj6vh9",
         formRef.current,
-        "X_iLS4ZvvvPycarnm"
+        "X_iLS4ZvvvPycarnm",
       )
       .then(
         () => {
@@ -67,14 +67,13 @@ India`,
         () => {
           setLoading(false);
           setMessageStatus("❌ Failed to send message. Try again.");
-        }
+        },
       );
   };
 
   return (
     <MainLayout>
       <div className="bg-slate-50 min-h-screen">
-
         {/* HERO */}
         <section className="pt-14 pb-10 text-center max-w-4xl mx-auto px-6">
           <motion.h1
@@ -86,8 +85,8 @@ India`,
           </motion.h1>
 
           <p className="mt-4 text-gray-600 text-lg">
-            Reach our global team for internationally accredited health &
-            safety training and certification guidance.
+            Reach our global team for internationally accredited health & safety
+            training and certification guidance.
           </p>
         </section>
 
@@ -105,38 +104,6 @@ India`,
           </div>
         </section>
 
-        {/* OFFICES */}
-        <section className="max-w-7xl mx-auto px-6 pb-20 space-y-16">
-          {offices.map((office, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.2 }}
-              viewport={{ once: true }}
-              className="grid md:grid-cols-2 bg-white rounded-3xl shadow-lg overflow-hidden border"
-            >
-              <div className="p-10">
-                <div className="flex items-center gap-3 mb-4 text-indigo-700">
-                  <FaMapMarkerAlt />
-                  <h3 className="text-2xl font-bold">{office.name}</h3>
-                </div>
-
-                <p className="text-gray-600 whitespace-pre-line">
-                  {office.address}
-                </p>
-              </div>
-
-              <iframe
-                src={office.map}
-                className="w-full h-[320px] border-0"
-                loading="lazy"
-                title={office.name}
-              />
-            </motion.div>
-          ))}
-        </section>
-
         {/* CONTACT FORM */}
         <section className="max-w-6xl mx-auto px-6 pb-32">
           <motion.div
@@ -145,7 +112,6 @@ India`,
             viewport={{ once: true }}
             className="grid md:grid-cols-2 bg-white rounded-3xl shadow-xl overflow-hidden"
           >
-
             {/* LEFT */}
             <div className="bg-gradient-to-br from-indigo-900 to-blue-950 text-white p-12">
               <h2 className="text-3xl font-bold mb-6">
@@ -168,9 +134,7 @@ India`,
 
             {/* FORM */}
             <div className="p-10 bg-orange-50">
-
               <form ref={formRef} onSubmit={sendEmail} className="space-y-5">
-
                 <input
                   type="text"
                   name="user_name"
@@ -249,6 +213,38 @@ India`,
               </form>
             </div>
           </motion.div>
+        </section>
+
+        {/* OFFICES */}
+        <section className="max-w-7xl mx-auto px-6 pb-20 space-y-16">
+          {offices.map((office, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.2 }}
+              viewport={{ once: true }}
+              className="grid md:grid-cols-2 bg-white rounded-3xl shadow-lg overflow-hidden border"
+            >
+              <div className="p-10">
+                <div className="flex items-center gap-3 mb-4 text-indigo-700">
+                  <FaMapMarkerAlt />
+                  <h3 className="text-2xl font-bold">{office.name}</h3>
+                </div>
+
+                <p className="text-gray-600 whitespace-pre-line">
+                  {office.address}
+                </p>
+              </div>
+
+              <iframe
+                src={office.map}
+                className="w-full h-[320px] border-0"
+                loading="lazy"
+                title={office.name}
+              />
+            </motion.div>
+          ))}
         </section>
       </div>
     </MainLayout>

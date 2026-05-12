@@ -113,6 +113,16 @@ export default function Navbar() {
       title: "BCRSP Canada",
       courses: [{ name: "", id: "crsp-certification" }],
     },
+
+    {
+      title: "CSP Exam Preparation",
+      courses: [
+        {
+          name: "CSP Exam Preparation",
+          id: "certified-safety-professional-csp-exam-preparation",
+        },
+      ],
+    },
     {
       title: "EOSH UK",
       courses: [

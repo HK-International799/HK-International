@@ -12,22 +12,31 @@ const startExam = async (req, res) => {
     const examId = req.params.id;
 
     const exam = await Exam.findById(examId);
-    if (!exam) return res.status(404).json({ message: "Exam not found" });
-    if (!exam.isActive)
-      return res.status(403).json({ message: "Exam is not active" });
 
+    if (!exam) {
+      return res.status(404).json({ message: "Exam not found" });
+    }
+
+    if (!exam.isActive) {
+      return res.status(403).json({ message: "Exam is not active" });
+    }
+
+    // Count all attempts for this student + exam
     const existingAttempts = await Attempt.countDocuments({
       studentId,
       examId,
+      status: { $in: ["submitted", "expired", "in_progress"] },
     });
 
+    // Max attempts check
     if (existingAttempts >= exam.maxAttempts) {
       return res.status(403).json({
         message: `Maximum attempts (${exam.maxAttempts}) reached`,
       });
     }
 
-    // Check for an in-progress attempt
+    // ─── CHECK FOR IN-PROGRESS ATTEMPT ──────────────────────────────────────
+
     const inProgress = await Attempt.findOne({
       studentId,
       examId,
@@ -35,17 +44,25 @@ const startExam = async (req, res) => {
     });
 
     if (inProgress) {
+      // If expired -> auto submit
       if (new Date() > inProgress.endTime) {
-        // Time expired – auto submit
         await _autoSubmit(inProgress, exam);
-        // Fall through to create a new attempt (only if more attempts remain)
-        const freshCount = await Attempt.countDocuments({ studentId, examId });
+
+        // Re-check max attempts after auto-submit
+        const freshCount = await Attempt.countDocuments({
+          studentId,
+          examId,
+        });
+
         if (freshCount >= exam.maxAttempts) {
-          return res.status(403).json({ message: "Maximum attempts reached" });
+          return res.status(403).json({
+            message: "Maximum attempts reached",
+          });
         }
       } else {
-        // Resume existing attempt – never expose correct answers
+        // Resume running attempt
         const safeQuestions = inProgress.questionSet.map(_stripAnswers);
+
         return res.json({
           message: "Resuming existing attempt",
           attemptId: inProgress._id,
@@ -57,30 +74,61 @@ const startExam = async (req, res) => {
       }
     }
 
-    // Pick a question set
+    // ─── GENERATE QUESTION SET ──────────────────────────────────────────────
+
     let questionSet;
+
     if (exam.reattemptNewQuestions || existingAttempts === 0) {
       questionSet = randomSelect(exam.questions, exam.totalQuestions);
     } else {
-      // Reuse same questions on reattempt if reattemptNewQuestions is false
+      // Reuse same questions
       questionSet = exam.questions.slice(0, exam.totalQuestions);
     }
 
     const now = new Date();
+
     const endTime = new Date(now.getTime() + exam.timeLimit * 60 * 1000);
 
-    const freshCount = await Attempt.countDocuments({ studentId, examId });
+    // ─── SAFE ATTEMPT CREATION (FIXED) ─────────────────────────────────────
 
-    const attempt = await Attempt.create({
-      studentId,
-      examId,
-      attemptNumber: freshCount + 1,
-      questionSet,
-      answers: [],
-      startTime: now,
-      endTime,
-      status: "in_progress",
-    });
+    let attempt;
+    let created = false;
+
+    while (!created) {
+      try {
+        // Get latest attempt safely
+        const latestAttempt = await Attempt.findOne({
+          studentId,
+          examId,
+        }).sort({ attemptNumber: -1 });
+
+        const nextAttemptNumber = latestAttempt
+          ? latestAttempt.attemptNumber + 1
+          : 1;
+
+        attempt = await Attempt.create({
+          studentId,
+          examId,
+          attemptNumber: nextAttemptNumber,
+          questionSet,
+          answers: [],
+          startTime: now,
+          endTime,
+          status: "in_progress",
+        });
+
+        created = true;
+      } catch (err) {
+        // Retry only for duplicate key race condition
+        if (err.code === 11000) {
+          continue;
+        }
+
+        throw err;
+      }
+    }
+
+    // ─── RESPONSE ───────────────────────────────────────────────────────────
 
     return res.status(201).json({
       message: "Exam started",
@@ -91,9 +139,11 @@ const startExam = async (req, res) => {
     });
   } catch (err) {
     console.error("startExam error:", err);
-    return res
-      .status(500)
-      .json({ message: "Server error", error: err.message });
+
+    return res.status(500).json({
+      message: "Server error",
+      error: err.message,
+    });
   }
 };
 
@@ -132,10 +182,31 @@ const saveAnswer = async (req, res) => {
       (a) => a.questionId.toString() === questionId,
     );
 
-    if (existing) {
-      existing.selectedOption = selectedOption;
+    // if (existing) {
+    //   existing.selectedOption = selectedOption;
+    // } else {
+    //   attempt.answers.push({ questionId, selectedOption });
+    // }
+
+    //above code replaced with bellow
+    if (selectedOption === null) {
+      // Remove cleared answer completely
+      attempt.answers = attempt.answers.filter(
+        (a) => a.questionId.toString() !== questionId,
+      );
     } else {
-      attempt.answers.push({ questionId, selectedOption });
+      const existing = attempt.answers.find(
+        (a) => a.questionId.toString() === questionId,
+      );
+
+      if (existing) {
+        existing.selectedOption = selectedOption;
+      } else {
+        attempt.answers.push({
+          questionId,
+          selectedOption,
+        });
+      }
     }
 
     await attempt.save();

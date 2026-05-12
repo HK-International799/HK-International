@@ -226,7 +226,7 @@ export const courses = [
 
     level: "Level 6 Diploma (Equivalent to Bachelor's Degree Level)",
 
-    image: "/courses/esc-level6-idhse.jpg",
+    image: "/logos/6-esc.png",
 
     overview:
       "The European Safety Council Level 6 Diploma in International Diploma in Health, Safety and Environmental Management (IDHSE) is a comprehensive professional qualification designed for individuals who want to develop advanced expertise in occupational health, safety and environmental management. The programme prepares professionals to manage complex workplace risks, implement international safety standards and lead organisational safety strategies.",
@@ -324,7 +324,7 @@ export const courses = [
 
     level: "Level 7 Diploma (Postgraduate Level Qualification)",
 
-    image: "/courses/esc-level7-osh.jpg",
+    image: "/logos/6-esc.png",
 
     overview:
       "The European Safety Council Level 7 Diploma in Occupational Health and Safety (OHS) is an advanced postgraduate level qualification designed for professionals who aim to develop strategic expertise in occupational health, safety and environmental management. The programme equips learners with high-level knowledge and leadership capabilities required to design, implement and evaluate organisational safety systems across complex workplaces.",
@@ -442,7 +442,7 @@ export const courses = [
 
     level: "Level 7 Diploma (Postgraduate / Master's Level Qualification)",
 
-    image: "/courses/esc-level7-psm.jpg",
+    image: "/logos/6-esc.png",
 
     overview:
       "The European Safety Council Level 7 Diploma in Process Safety Management (PSM) is an advanced postgraduate qualification designed for professionals working in high-hazard industries such as oil and gas, chemical processing, manufacturing, energy and petrochemical sectors. The programme develops advanced knowledge and leadership capability required to manage complex industrial processes safely and prevent catastrophic incidents. Learners gain expertise in process safety systems, risk-based safety management, human factors and strategic leadership in industrial safety.",
@@ -539,7 +539,7 @@ export const courses = [
 
     level: "Professional Lead Auditor Certification",
 
-    image: "/courses/iso-45001-lead-auditor.jpg",
+    image: "/logos/5-pecb.png",
 
     overview:
       "The ISO 45001 Lead Auditor Certificate (PECB Certified – Canada) is a globally recognised professional certification designed for individuals who want to develop expertise in auditing Occupational Health and Safety Management Systems (OH&S MS). The training provides the knowledge and practical skills required to plan, conduct and manage audits in accordance with ISO 45001 standards, ISO 19011 auditing guidelines and ISO/IEC 17021 certification processes.",
@@ -641,7 +641,7 @@ export const courses = [
 
     level: "Professional Lead Auditor Certification",
 
-    image: "/courses/iso-9001-lead-auditor.jpg",
+    image: "/logos/5-pecb.png",
 
     overview:
       "The ISO 9001 Lead Auditor Certificate (PECB Certified – Canada) is an internationally recognised professional certification designed for individuals who want to develop expertise in auditing Quality Management Systems (QMS). The training programme equips participants with the knowledge and practical skills required to conduct first-party, second-party and third-party audits based on ISO 9001 standards. Participants learn how to evaluate an organisation’s quality management system, identify improvement opportunities and ensure compliance with international quality management practices.",
@@ -1346,7 +1346,7 @@ export const courses = [
 
     level: "Professional Trainer Certification",
 
-    image: "/courses/eosh-train-the-trainer.jpg",
+    image: "/logos/8-eosh.png",
 
     overview:
       "The EOSH Train The Trainer Certificate is an internationally recognised professional qualification designed for individuals who want to become certified trainers in occupational health, safety and environmental (HSE) disciplines. The course equips participants with the knowledge, instructional techniques and leadership skills required to design, deliver and evaluate effective safety training programs. Participants learn how to apply adult learning principles, develop structured training materials and deliver engaging safety sessions that improve workplace safety awareness and compliance.",
@@ -1821,7 +1821,7 @@ export const courses = [
 
     level: "Level 4 (Equivalent to Year 1 UK Degree)",
 
-    image: "/courses/othm-iqa-award.jpg",
+    image: "/logos/3-othm.png",
 
     overview:
       "The OTHM Level 4 Award in Internal Quality Assurance is designed for professionals responsible for monitoring the quality of assessment decisions. It provides essential knowledge and practical skills required to internally assure assessment processes and maintain consistency, fairness, and compliance within training organisations.",
@@ -1896,7 +1896,7 @@ export const courses = [
 
     level: "Level 4 (Supervisory Level)",
 
-    image: "/courses/othm-iqa-certificate.jpg",
+    image: "/logos/3-othm.png",
 
     overview:
       "This qualification is designed for professionals responsible for leading and managing internal quality assurance systems within organisations.",
@@ -1969,7 +1969,7 @@ export const courses = [
 
     level: "Level 5 (Equivalent to Year 2 UK Degree)",
 
-    image: "/courses/othm-law.jpg",
+    image: "/logos/3-othm.png",
 
     overview:
       "A comprehensive legal qualification covering core areas of UK and international law, focusing on legal reasoning, research, and writing.",
@@ -2041,7 +2041,7 @@ export const courses = [
 
     level: "Level 6 (Equivalent to UK Bachelor’s Degree)",
 
-    image: "/courses/othm-ohs-level6.jpg",
+    image: "/logos/3-othm.png",
 
     overview:
       "A professional qualification for developing expertise in workplace health and safety management and compliance.",
@@ -2105,7 +2105,7 @@ export const courses = [
 
     level: "Level 7 (Postgraduate Level)",
 
-    image: "/courses/othm-ohs-level7.jpg",
+    image: "/logos/3-othm.png",
 
     overview:
       "A strategic-level qualification for senior professionals leading organisational health and safety.",
@@ -2164,7 +2164,7 @@ export const courses = [
 
     level: "Postgraduate Level",
 
-    image: "/courses/othm-risk.jpg",
+    image: "/logos/3-othm.png",
 
     overview:
       "Develop expertise in enterprise risk management, governance, and resilience.",
@@ -2224,7 +2224,7 @@ export const courses = [
 
     level: "Postgraduate Level",
 
-    image: "/courses/othm-environment.jpg",
+    image: "/logos/3-othm.png",
 
     overview:
       "A leadership programme in sustainability, ESG, and environmental governance.",
@@ -2286,7 +2286,7 @@ export const courses = [
 
     level: "Level 1 (Introductory)",
 
-    image: "/courses/cieh-level1-food.jpg",
+    image: "/logos/4-cieh.png",
 
     overview:
       "The CIEH Level 1 Certificate in Food Safety is an entry-level programme designed to introduce learners to the fundamentals of food hygiene and safe food handling practices. It builds awareness of contamination risks and ensures learners understand how to maintain basic hygiene standards in low-risk food environments.",
@@ -2367,7 +2367,7 @@ export const courses = [
 
     level: "Level 2 (Operational Level)",
 
-    image: "/courses/cieh-level2-food.jpg",
+    image: "/logos/4-cieh.png",
 
     overview:
       "The CIEH Level 2 Certificate in Food Safety is designed for individuals who handle food as part of their job role. It provides practical knowledge of food hygiene, contamination prevention, and compliance with food safety standards.",
@@ -2440,7 +2440,7 @@ export const courses = [
 
     level: "Level 3 (Supervisory Level)",
 
-    image: "/courses/cieh-level3-food.jpg",
+    image: "/logos/4-cieh.png",
 
     overview:
       "The CIEH Level 3 Certificate in Food Safety is designed for supervisors and managers responsible for implementing and monitoring food safety systems such as HACCP.",
@@ -2512,7 +2512,7 @@ export const courses = [
 
     level: "Level 2 (Basic First Aid)",
 
-    image: "/courses/cieh-firstaid-level2.jpg",
+    image: "/logos/4-cieh.png",
 
     overview:
       "This course equips learners with essential first aid skills to respond effectively to workplace emergencies until professional help arrives.",
@@ -2576,7 +2576,7 @@ export const courses = [
 
     level: "Level 3 (Advanced First Aid)",
 
-    image: "/courses/cieh-firstaid-level3.jpg",
+    image: "/logos/4-cieh.png",
 
     overview:
       "An advanced first aid programme designed for high-risk workplaces requiring skilled emergency response capability.",
@@ -2627,5 +2627,348 @@ export const courses = [
       "Higher employability in industrial sectors",
     ],
   },
+
+  {
+    id: "certified-safety-professional-csp-exam-preparation",
+
+    title: "Certified Safety Professional (CSP) Exam Preparation Course",
+
+    organization: "1A HK International",
+
+    accreditation: "CSP Exam Preparation & Coaching Support",
+
+    duration: "Flexible Learning Duration",
+
+    mode: [
+      "Live Online Training",
+      "LMS-Based Learning",
+      "Corporate Training",
+      "Tutor-Led Sessions",
+    ],
+
+    level: "Professional HSE Certification Preparation",
+
+    image: "/logos/hk_logo.jpeg",
+
+    overview:
+      "The Certified Safety Professional (CSP) Exam Preparation Course by 1A HK International is a premium, structured, and result-focused preparation programme designed for HSE professionals preparing for the CSP examination. The course provides complete learning support through live coaching, LMS access, question banks, mock tests, tutor guidance, AI-enhanced learning support, personal counselling, study planning, and one-to-one mentoring. It is designed to help safety professionals strengthen conceptual understanding, improve exam confidence, and prepare strategically for the CSP examination.",
+
+    importance:
+      "The Certified Safety Professional (CSP) credential is one of the most respected professional safety certifications for experienced HSE professionals. Successfully preparing for the CSP exam requires more than self-study. Candidates need structured preparation, strong conceptual understanding, exam practice, professional mentoring, and practical safety knowledge. This course helps learners build confidence, improve exam techniques, strengthen weak areas, and develop a deeper understanding of occupational health, safety, environmental, and risk management concepts.",
+
+    learningOutcomes: [
+      "Understand major occupational health and safety concepts required for the CSP exam",
+      "Strengthen hazard identification and risk assessment skills",
+      "Develop confidence in solving exam-style questions",
+      "Improve understanding of incident investigation and root cause analysis",
+      "Learn practical workplace safety applications and risk control methods",
+      "Enhance safety leadership and professional decision-making skills",
+      "Improve time management and exam preparation strategy",
+      "Identify weak areas through mock tests and performance reviews",
+      "Gain structured preparation through LMS-based learning support",
+      "Build professional confidence as an HSE practitioner",
+    ],
+
+    modules: [
+      {
+        title: "Introduction to CSP Exam Preparation",
+        topics: [
+          "Understanding the CSP examination structure",
+          "Professional preparation strategy",
+          "Study planning and exam approach",
+          "Building confidence for the CSP exam",
+        ],
+      },
+
+      {
+        title: "Occupational Safety and Health Management",
+        topics: [
+          "Safety management systems",
+          "Occupational safety principles",
+          "Health and safety programme management",
+          "Safety performance improvement",
+        ],
+      },
+
+      {
+        title: "Hazard Identification and Risk Assessment",
+        topics: [
+          "Hazard recognition techniques",
+          "Risk assessment methods",
+          "Risk prioritisation and evaluation",
+          "Hierarchy of controls",
+        ],
+      },
+
+      {
+        title: "Incident Investigation and Root Cause Analysis",
+        topics: [
+          "Incident investigation procedures",
+          "Root cause analysis methods",
+          "Corrective and preventive actions",
+          "Learning from workplace incidents",
+        ],
+      },
+
+      {
+        title: "Emergency Planning and Fire Safety",
+        topics: [
+          "Emergency preparedness planning",
+          "Fire prevention and protection systems",
+          "Evacuation and emergency response",
+          "Crisis management concepts",
+        ],
+      },
+
+      {
+        title: "Industrial Hygiene and Occupational Health",
+        topics: [
+          "Industrial hygiene fundamentals",
+          "Occupational health hazards",
+          "Exposure monitoring concepts",
+          "Health risk control methods",
+        ],
+      },
+
+      {
+        title: "Environmental and Sustainability Management",
+        topics: [
+          "Environmental management principles",
+          "Pollution prevention concepts",
+          "Environmental responsibilities",
+          "Sustainability awareness in HSE",
+        ],
+      },
+
+      {
+        title: "Safety Leadership and Communication",
+        topics: [
+          "Safety culture development",
+          "Leadership in HSE management",
+          "Workplace communication strategies",
+          "Behaviour-based safety concepts",
+        ],
+      },
+
+      {
+        title: "Legal, Ethical, and Regulatory Responsibilities",
+        topics: [
+          "Legal compliance principles",
+          "Ethical responsibilities in safety practice",
+          "Regulatory awareness",
+          "Professional accountability",
+        ],
+      },
+
+      {
+        title: "Contractor Safety and Workplace Auditing",
+        topics: [
+          "Contractor safety management",
+          "Workplace inspection techniques",
+          "Safety audit concepts",
+          "Performance measurement methods",
+        ],
+      },
+
+      {
+        title: "CSP Question Bank and Practice Sessions",
+        topics: [
+          "Exam-style question practice",
+          "Understanding tricky questions",
+          "Improving speed and accuracy",
+          "Weak area identification",
+        ],
+      },
+
+      {
+        title: "Mock Tests and Performance Review",
+        topics: [
+          "Full-length CSP mock tests",
+          "Time management practice",
+          "Performance evaluation",
+          "Revision and exam improvement strategies",
+        ],
+      },
+
+      {
+        title: "AI-Enhanced Learning Support",
+        topics: [
+          "Smart study planning support",
+          "Personalised revision guidance",
+          "Performance tracking assistance",
+          "Focused learning recommendations",
+        ],
+      },
+
+      {
+        title: "One-to-One Mentoring and Counselling",
+        topics: [
+          "Personal tutor guidance",
+          "Doubt-solving support",
+          "Individual improvement planning",
+          "Motivation and confidence-building support",
+        ],
+      },
+    ],
+
+    whoShouldAttend: [
+      "Safety Officers",
+      "HSE Officers",
+      "Safety Engineers",
+      "HSE Engineers",
+      "Safety Supervisors",
+      "HSE Supervisors",
+      "Safety Managers",
+      "HSE Managers",
+      "EHS Professionals",
+      "Risk Managers",
+      "Industrial Safety Professionals",
+      "Construction Safety Professionals",
+      "Oil and Gas Safety Professionals",
+      "Manufacturing Safety Professionals",
+      "Fire and Safety Professionals",
+      "Safety Consultants",
+      "Safety Trainers",
+      "Working professionals preparing for international HSE career growth",
+    ],
+
+    certification:
+      "1A HK International provides professional CSP exam preparation, coaching, mock tests, LMS access, question banks, tutor support, and learning guidance. The Certified Safety Professional (CSP) credential is awarded by the Board of Certified Safety Professionals (BCSP), USA, subject to candidate eligibility and successful completion of the official examination.",
+
+    careerBenefits: [
+      "Improved confidence for the CSP examination",
+      "Enhanced professional credibility in occupational safety and health",
+      "Better understanding of workplace risk management",
+      "Improved safety leadership and communication skills",
+      "Stronger practical HSE knowledge for real workplace situations",
+      "Professional growth opportunities in global HSE industries",
+      "Improved capability in incident investigation and hazard control",
+      "Enhanced organisational safety performance contribution",
+      "Greater career opportunities in oil and gas, construction, manufacturing, and industrial sectors",
+      "Structured and guided exam preparation support",
+    ],
+
+    features: [
+      "Live online CSP coaching classes",
+      "Comprehensive CSP question bank",
+      "Mock tests and practice assessments",
+      "Learning Management System (LMS) access",
+      "AI-enhanced learning support",
+      "One-to-one counselling and mentoring",
+      "Tutor-led doubt-solving sessions",
+      "Performance review and improvement guidance",
+      "Flexible online learning support",
+      "Practical HSE-based teaching approach",
+    ],
+
+    industries: [
+      "Oil and Gas",
+      "Construction",
+      "Manufacturing",
+      "Engineering",
+      "Power and Energy",
+      "Logistics and Transport",
+      "Facility Management",
+      "Chemical Industries",
+      "Infrastructure Projects",
+      "Industrial Operations",
+      "Consultancy Services",
+    ],
+
+    deliveryMode: [
+      "Live Online Training",
+      "LMS Access",
+      "Question Bank Access",
+      "Mock Test Practice",
+      "Tutor-Led Sessions",
+      "One-to-One Counselling",
+      "Online Doubt Solving",
+      "Performance Review Support",
+      "Corporate Batch Training",
+    ],
+
+    faq: [
+      {
+        question: "What is the Certified Safety Professional (CSP) exam?",
+        answer:
+          "The CSP exam is a professional certification examination for experienced safety practitioners who want to demonstrate advanced competency in occupational safety and health management.",
+      },
+
+      {
+        question: "Does 1A HK International provide CSP certification?",
+        answer:
+          "No. 1A HK International provides CSP exam preparation, coaching, LMS access, question banks, mock tests, and learner support. The official CSP credential is awarded by BCSP, USA.",
+      },
+
+      {
+        question: "Is this CSP preparation course available online?",
+        answer:
+          "Yes. The course is available through live online coaching, LMS learning, mock tests, question banks, and tutor support.",
+      },
+
+      {
+        question: "Do learners receive mock tests and question banks?",
+        answer:
+          "Yes. Learners receive access to CSP-focused question banks and mock tests to improve exam preparation and confidence.",
+      },
+
+      {
+        question: "Is personal tutor guidance available?",
+        answer:
+          "Yes. The course includes one-to-one counselling, tutor support, performance review, and doubt-solving guidance.",
+      },
+
+      {
+        question: "Is this course suitable for working professionals?",
+        answer:
+          "Yes. The course is designed specifically for working HSE professionals who require flexible and structured exam preparation support.",
+      },
+
+      {
+        question: "Can organisations enrol their HSE teams?",
+        answer:
+          "Yes. Corporate training and customised batches may be arranged for organisations and safety teams.",
+      },
+    ],
+
+    seo: {
+      metaTitle:
+        "Certified Safety Professional CSP Exam Preparation Course Online | 1A HK International",
+
+      metaDescription:
+        "Join the Certified Safety Professional (CSP) Exam Preparation Course by 1A HK International. Get live online coaching, LMS access, question banks, mock tests, AI-enhanced learning support, tutor guidance, and one-to-one counselling.",
+
+      keywords: [
+        "Certified Safety Professional course",
+        "CSP exam preparation",
+        "CSP training course",
+        "Online CSP training",
+        "CSP coaching",
+        "CSP mock test",
+        "CSP question bank",
+        "Certified Safety Professional exam coaching",
+        "CSP online course",
+        "HSE certification course",
+        "Safety officer certification course",
+        "Safety manager training",
+        "Occupational safety course",
+        "Health and safety training online",
+        "1A HK International CSP course",
+      ],
+
+      url: "https://hkinternational.uk/certified-safety-professional-csp-exam-preparation",
+    },
+
+    banner: {
+      title: "Certified Safety Professional (CSP) Exam Preparation Course",
+
+      subtitle:
+        "Prepare for the CSP exam with live online coaching, LMS access, mock tests, question banks, AI-enhanced learning support, tutor guidance, and one-to-one counselling.",
+
+      description:
+        "Learn smarter, practise better, and prepare confidently with 1A HK International.",
+    },
+  },
+
   {},
 ];
