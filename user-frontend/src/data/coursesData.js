@@ -748,7 +748,7 @@ export const courses = [
 
     level: "Professional Workplace Safety Training",
 
-    image: "/courses/she-hse-plan-training.jpg",
+    image: "/logos/hk_logo.jpeg",
 
     overview:
       "The SHE / HSE Plan Training programme is designed to provide professionals with the knowledge and practical skills required to develop, implement and manage Safety, Health and Environment (SHE) plans within organisations. The course focuses on integrating workplace safety, occupational health and environmental protection into daily operations through structured safety planning, risk management strategies and compliance with regulatory standards.",
@@ -877,7 +877,7 @@ export const courses = [
 
     level: "Professional HSE Training",
 
-    image: "/courses/bbs-training.jpg",
+    image: "/logos/hk_logo.jpeg",
 
     overview:
       "The Behaviour-Based Safety (BBS) Training programme focuses on the human factors that influence workplace safety. While traditional safety systems concentrate on procedures and equipment, BBS focuses on identifying and improving worker behaviour that may lead to accidents or unsafe conditions. This training equips participants with the skills required to observe workplace behaviours, provide constructive safety feedback and implement behaviour-based safety programmes within organisations.",
@@ -994,7 +994,7 @@ export const courses = [
 
     level: "Professional HSE Safety Training",
 
-    image: "/courses/confined-space-training.jpg",
+    image: "/logos/hk_logo.jpeg",
 
     overview:
       "The Confined Space Safety Training programme provides essential knowledge and practical skills required for working safely in confined or restricted environments such as tanks, silos, pipelines, underground vaults and storage vessels. The training focuses on hazard identification, risk assessment, safe entry procedures and emergency rescue planning to ensure that workers can safely perform tasks in confined spaces while complying with occupational safety regulations.",
@@ -1114,7 +1114,7 @@ export const courses = [
 
     level: "Professional HSE Safety Training",
 
-    image: "/courses/permit-to-work-training.jpg",
+    image: "/logos/hk_logo.jpeg",
 
     overview:
       "The Permit to Work (PTW) Safety Training programme is designed to provide professionals with the knowledge and practical skills required to implement and manage permit-to-work systems in industrial environments. The training focuses on safe work authorisation procedures, hazard identification, risk control and coordination of high-risk activities. Participants learn how to issue, receive and monitor permits to ensure that hazardous work tasks are carried out safely and in compliance with occupational health and safety regulations.",
@@ -1235,7 +1235,7 @@ export const courses = [
 
     level: "Professional Environmental and Sustainability Training",
 
-    image: "/courses/e-waste-management-training.jpg",
+    image: "/logos/hk_logo.jpeg",
 
     overview:
       "The E-Waste Management Training programme provides comprehensive knowledge and practical guidance on the safe handling, management and disposal of electronic waste. With the rapid growth of electronic devices worldwide, improper disposal of e-waste has become a major environmental and health concern. This training equips professionals with the knowledge required to manage electronic waste responsibly while promoting sustainable environmental practices and regulatory compliance.",
@@ -1475,7 +1475,7 @@ export const courses = [
 
     level: "Professional Construction Safety Certification",
 
-    image: "/courses/osha-30-construction.jpg",
+    image: "/logos/9-ibsp.png",
 
     overview:
       "The OSHA 30 Hours Construction Certificate is an internationally recognised safety training program designed for supervisors, engineers and workers responsible for safety in construction environments. The course provides comprehensive knowledge of workplace hazards, OSHA safety regulations and industry best practices required to prevent accidents and injuries on construction sites. Participants gain the skills required to recognise hazards, implement effective safety controls and ensure compliance with occupational safety standards.",
@@ -1632,7 +1632,7 @@ export const courses = [
 
     level: "Professional Workplace Safety Certification",
 
-    image: "/courses/osha-30-general-industry.jpg",
+    image: "/logos/9-ibsp.png",
 
     overview:
       "The OSHA 30 Hours General Industry Certificate is a comprehensive occupational safety training program designed for supervisors, managers and professionals responsible for workplace safety across various industries. The course provides detailed knowledge of OSHA regulations, workplace hazard recognition and effective safety management practices. Participants learn how to identify risks, implement safety controls and promote a proactive safety culture within organisations.",
