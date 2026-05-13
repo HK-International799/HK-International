@@ -7,7 +7,7 @@
   <!-- Homepage -->
   <url>
     <loc>https://hkinternational.uk/</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -15,45 +15,34 @@
   <!-- Main public pages -->
   <url>
     <loc>https://hkinternational.uk/courses</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://hkinternational.uk/about</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://hkinternational.uk/contact</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
-  <url>
-    <loc>https://hkinternational.uk/register</loc>
-    <lastmod>2026-05-12</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://hkinternational.uk/login</loc>
-    <lastmod>2026-05-12</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
+  
 
   <!-- IOSH UK -->
   <url>
     <loc>https://hkinternational.uk/course/iosh-managing-safely</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hkinternational.uk/course/iosh-level3</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -61,19 +50,19 @@
   <!-- European Safety Council -->
   <url>
     <loc>https://hkinternational.uk/course/esc-l6-d-idhse</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hkinternational.uk/course/esc-l7-d-osh</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hkinternational.uk/course/esc-l7-d-psm</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -81,13 +70,13 @@
   <!-- PECB Canada -->
   <url>
     <loc>https://hkinternational.uk/course/iso-45001-auditor</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hkinternational.uk/course/iso-9001-auditor</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -95,31 +84,31 @@
   <!-- HSE Training Courses -->
   <url>
     <loc>https://hkinternational.uk/course/she-hse-plan-training</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hkinternational.uk/course/bbs-training</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hkinternational.uk/course/confined-space-safety</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hkinternational.uk/course/permit-to-work</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hkinternational.uk/course/e-waste-management</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -127,7 +116,7 @@
   <!-- EOSH UK -->
   <url>
     <loc>https://hkinternational.uk/course/eosh-train-the-trainer</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -135,13 +124,13 @@
   <!-- OSHA USA -->
   <url>
     <loc>https://hkinternational.uk/course/osha-construction</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hkinternational.uk/course/osha-general</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -149,43 +138,43 @@
   <!-- OTHM UK -->
   <url>
     <loc>https://hkinternational.uk/course/othm-iqa-award</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hkinternational.uk/course/othm-iqa-certificate</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hkinternational.uk/course/othm-level5-law</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hkinternational.uk/course/othm-level6</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hkinternational.uk/course/othm-level7-ohs</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hkinternational.uk/course/othm-level7-risk</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hkinternational.uk/course/othm-level7-environment</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -193,31 +182,31 @@
   <!-- CIEH UK -->
   <url>
     <loc>https://hkinternational.uk/course/cieh-level1-food</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hkinternational.uk/course/cieh-level2-food</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hkinternational.uk/course/cieh-level3-food</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hkinternational.uk/course/cieh-level2-firstaid</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://hkinternational.uk/course/cieh-level3-firstaid</loc>
-    <lastmod>2026-05-12</lastmod>
+    <!-- <lastmod>2026-05-12</lastmod> -->
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

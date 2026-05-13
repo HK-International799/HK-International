@@ -255,6 +255,9 @@ export const ioshKeywords = [
   "IOSH Managing Safely Bahrain",
   "IOSH Managing Safely Africa",
   "IOSH Managing Safely Nigeria",
+  "IOSH MS",
+  "IOSH ms",
+  "iosh ms",
 
   // IOSH Managing Safely Related Searches
   "IOSH Managing Safely certificate",
