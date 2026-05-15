@@ -234,18 +234,12 @@ const courseMenu = [
       { name: "IOSH Level 3 Certificate", id: "iosh-level3" },
     ],
   },
+
   {
     title: "OTHM UK",
-    courses: [
-      { name: "OTHM Level 3 Award IQA", id: "othm-iqa-award" },
-      { name: "OTHM Level 4 Certificate IQA", id: "othm-iqa-certificate" },
-      { name: "OTHM Level 5 Award in Health and Safety Law", id: "othm-level5-law" },
-      { name: "OTHM Level 6 Diploma in OHS", id: "othm-level6" },
-      { name: "OTHM Level 7 Diploma in OHS Management", id: "othm-level7-ohs" },
-      { name: "OTHM Level 7 Diploma in Risk Management", id: "othm-level7-risk" },
-      { name: "OTHM Level 7 Diploma in Environmental Management", id: "othm-level7-environment" },
-    ],
+    courses: [{ name: "OTHM Level 6 Diploma in OHS", id: "othm-level6" }],
   },
+
   {
     title: "PECB (Canada)",
     courses: [
@@ -253,37 +247,65 @@ const courseMenu = [
       { name: "ISO 9001 Lead Auditor Certificate", id: "iso-9001-auditor" },
     ],
   },
+
   {
     title: "CIEH UK",
-    courses: [
-      { name: "CIEH Level 1 Award in Food Safety", id: "cieh-level1-food" },
-      { name: "CIEH Level 2 Award in Food Safety", id: "cieh-level2-food" },
-      { name: "CIEH Level 3 Award in Food Safety", id: "cieh-level3-food" },
-      { name: "CIEH Level 2 Award in First Aid", id: "cieh-level2-firstaid" },
-      { name: "CIEH Level 3 Award in First Aid", id: "cieh-level3-firstaid" },
-    ],
+    courses: [{ name: "Level 3 Health & Safety", id: "cieh-level3" }],
   },
+
   {
     title: "OSHA USA",
     courses: [
-      { name: "OSHA 30 Hour Construction Certificate", id: "osha-construction" },
+      {
+        name: "OSHA 30 Hour Construction Certificate",
+        id: "osha-construction",
+      },
       { name: "OSHA 30 Hour General Industry Certificate", id: "osha-general" },
     ],
   },
+
   {
     title: "European Safety Council",
     courses: [
-      { name: "ESC Level 6 Diploma in IDHSE", id: "esc-l6-d-idhse" },
-      { name: "ESC Level 7 Diploma in OSH", id: "esc-l7-d-osh" },
-      { name: "ESC Level 7 Diploma in PSM", id: "esc-l7-d-psm" },
+      {
+        name: "ESC Level 6 Diploma in IDHSE",
+        id: "esc-l6-d-idhse",
+      },
+      {
+        name: "ESC Level 7 Diploma in OSH",
+        id: "esc-l7-d-osh",
+      },
+      {
+        name: "ESC Level 7 Diploma in PSM",
+        id: "esc-l7-d-psm",
+      },
     ],
   },
+
+  {
+    title: "BCRSP Canada",
+    courses: [{ name: "CRSP Certification", id: "crsp-certification" }],
+  },
+  {
+    title: "CSP Exam Preparation",
+    courses: [
+      {
+        name: "CSP Exam Preparation",
+        id: "certified-safety-professional-csp-exam-preparation",
+      },
+    ],
+  },
+
   {
     title: "EOSH UK",
     courses: [
-      { name: "EOSH Train The Trainer Certificate", id: "eosh-train-the-trainer" },
+      {
+        name: "EOSH Train The Trainer Certificate",
+        id: "eosh-train-the-trainer",
+      },
     ],
   },
+
   {
     title: "HSE Training Courses",
     courses: [
@@ -307,7 +329,7 @@ const coursesData = courseMenu.flatMap((category) =>
     students: 200 + ((course.id.length * 137) % 1300), // deterministic, not random
     rating: (4.4 + ((course.id.length * 7) % 6) / 10).toFixed(1),
     image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644",
-  }))
+  })),
 );
 
 export default function Courses() {
@@ -321,9 +343,9 @@ export default function Courses() {
       coursesData.filter(
         (course) =>
           (category === "All" || course.category === category) &&
-          course.title.toLowerCase().includes(search.toLowerCase())
+          course.title.toLowerCase().includes(search.toLowerCase()),
       ),
-    [category, search]
+    [category, search],
   );
 
   return (

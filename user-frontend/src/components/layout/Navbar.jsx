@@ -486,7 +486,6 @@
 //   );
 // }
 
-
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
@@ -601,6 +600,16 @@ export default function Navbar() {
     {
       title: "BCRSP Canada",
       courses: [{ name: "", id: "crsp-certification" }],
+    },
+
+    {
+      title: "CSP Exam Preparation",
+      courses: [
+        {
+          name: "CSP Exam Preparation",
+          id: "certified-safety-professional-csp-exam-preparation",
+        },
+      ],
     },
     {
       title: "EOSH UK",
@@ -814,7 +823,10 @@ export default function Navbar() {
                         className="w-8 h-8 rounded-full object-cover border-2 border-orange-400"
                       />
                     ) : (
-                      <FaUserCircle className="text-2xl text-indigo-600" aria-hidden="true" />
+                      <FaUserCircle
+                        className="text-2xl text-indigo-600"
+                        aria-hidden="true"
+                      />
                     )}
                     <span className="text-sm font-semibold max-w-[100px] truncate">
                       {user?.data?.name?.split(" ")[0] || "Profile"}
@@ -914,7 +926,11 @@ export default function Navbar() {
             aria-expanded={isOpen}
             aria-controls="mobile-menu"
           >
-            {isOpen ? <HiOutlineX aria-hidden="true" /> : <HiOutlineMenu aria-hidden="true" />}
+            {isOpen ? (
+              <HiOutlineX aria-hidden="true" />
+            ) : (
+              <HiOutlineMenu aria-hidden="true" />
+            )}
           </button>
         </div>
 
