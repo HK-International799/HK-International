@@ -987,6 +987,15 @@ export default function Navbar() {
                     Contact
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    to="/payment"
+                    title="Course payments and enrollment"
+                    aria-label="Payments page"
+                  >
+                    Payments
+                  </Link>
+                </li>
 
                 {!loading &&
                   (isAuthenticated ? (
