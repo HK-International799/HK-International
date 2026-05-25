@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -19,13 +19,30 @@ import {
   Save,
   Check,
   Award,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
-// ─── PDF.JS WORKER ────────────────────────────────────────────────────────────
-// FIX: Use CDN worker as fallback to avoid Vite bundling issues with pdfjs-dist
-pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+// ─── PDF.JS WORKER (react-pdf 9.x + pdfjs-dist 4.x) ──────────────────────────
+// CRITICAL: We load the worker from react-pdf's OWN pdfjs-dist, not from the
+// top-level pdfjs-dist. react-pdf imports its internal copy, and the worker
+// must match that copy byte-for-byte. Mixing versions = "fake worker failed".
+//
+// `new URL(..., import.meta.url)` is the Vite-idiomatic way to ship the
+// worker file as a static asset. Vite emits it with a hashed filename in
+// production and serves it directly in dev — no CDN, no 404s.
+
+// ==============================================
+// pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+//   "pdfjs-dist/build/pdf.worker.min.mjs",
+//   import.meta.url,
+// ).toString();
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url
+).toString();
 
 // ─── ANNOTATION TYPES ─────────────────────────────────────────────────────────
 export const ANNOTATION_TYPES = {
@@ -53,31 +70,28 @@ export const ANNOTATION_TYPES = {
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
-// ─── FIX 1: Improved file type detection ──────────────────────────────────────
-// Previously only checked if URL "includes" .pdf — now checks the actual
-// extension properly, handling Cloudinary URLs with query params.
+// ─── FIX #2: Improved file type detection ─────────────────────────────────────
+// Handles Cloudinary URLs with query params, base64 data URIs, etc.
 const detectType = (fileName = "", fileUrl = "") => {
-  // Check filename first (most reliable)
-  if (fileName) {
-    const ext = fileName.split(".").pop()?.toLowerCase();
-    if (ext === "pdf") return "pdf";
-    if (ext === "docx" || ext === "doc") return "docx";
-  }
-  // Fall back to URL — strip query params before checking extension
-  if (fileUrl) {
-    const clean = fileUrl.split("?")[0].toLowerCase();
-    if (clean.endsWith(".pdf")) return "pdf";
-    if (clean.endsWith(".docx") || clean.endsWith(".doc")) return "docx";
-    // Cloudinary raw uploads sometimes have no extension in URL
-    // Check for common Cloudinary PDF/DOCX path markers
-    if (clean.includes("/pdf/") || clean.includes("format=pdf")) return "pdf";
-  }
-  // Default: try PDF since react-pdf handles it
+  const source = `${fileName} ${fileUrl}`.toLowerCase();
+  if (source.includes(".pdf") || source.includes("application/pdf"))
+    return "pdf";
+  if (
+    source.includes(".docx") ||
+    source.includes("application/vnd.openxmlformats")
+  )
+    return "docx";
+  if (source.includes(".doc") || source.includes("application/msword"))
+    return "docx";
+  // Default to PDF since submissions are most likely PDFs
   return "pdf";
 };
 
 // ─── ANNOTATION PIN ───────────────────────────────────────────────────────────
-function AnnotationPin({ annotation, onDelete, readOnly }) {
+// FIX #3: `activeType` must be passed as a prop — it was referenced as a
+// free variable before, causing a ReferenceError that silently swallowed events
+// and made annotation pins invisible/unclickable.
+function AnnotationPin({ annotation, onDelete, readOnly, activeType }) {
   const [hovered, setHovered] = useState(false);
   const def = ANNOTATION_TYPES[annotation.type] || ANNOTATION_TYPES.note;
   const { Icon, color, fill, label } = def;
@@ -92,7 +106,10 @@ function AnnotationPin({ annotation, onDelete, readOnly }) {
         zIndex: 30,
         cursor: readOnly ? "default" : "pointer",
         userSelect: "none",
-        pointerEvents: "auto",
+        // FIX: Only block pointer events when an annotation type is actively
+        // being placed (so you can't accidentally delete while placing).
+        // Previously used undeclared `activeType` which threw an error.
+        pointerEvents: activeType ? "none" : "auto",
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -197,11 +214,14 @@ function PdfPageWithAnnotations({
     };
 
     sync();
+    // Poll briefly after mount as canvas renders async
+    const t = setTimeout(sync, 300);
     const ro = new ResizeObserver(sync);
     ro.observe(el);
     const mo = new MutationObserver(sync);
     mo.observe(el, { childList: true, subtree: true, attributes: true });
     return () => {
+      clearTimeout(t);
       ro.disconnect();
       mo.disconnect();
     };
@@ -236,12 +256,13 @@ function PdfPageWithAnnotations({
         position: "relative",
         marginBottom: 28,
         lineHeight: 0,
-        display: "block", // ✅ change from inline-block
-        marginLeft: "auto", // ✅ center trick
-        marginRight: "auto", // ✅ center trick
-        overflow: "hidden",
+        display: "block",
+        marginLeft: "auto",
+        marginRight: "auto",
+        overflow: "visible",
       }}
     >
+      {/* Page label */}
       <div
         style={{
           position: "absolute",
@@ -274,6 +295,7 @@ function PdfPageWithAnnotations({
         <Page
           pageNumber={pageNumber}
           scale={scale}
+          devicePixelRatio={1}
           renderAnnotationLayer={false}
           renderTextLayer={false}
         />
@@ -290,16 +312,19 @@ function PdfPageWithAnnotations({
             width: canvasSize.w,
             height: canvasSize.h,
             cursor: readOnly || !activeType ? "default" : "crosshair",
-            zIndex: 50, // 🔥 HIGHER than canvas
-            pointerEvents: "auto",
+            // FIX: pointer events only needed when placing annotations
+            zIndex: 50,
+            pointerEvents: activeType ? "auto" : "none",
           }}
         >
+          {/* FIX #3 applied: pass activeType prop to each AnnotationPin */}
           {pageAnnotations.map((ann) => (
             <AnnotationPin
               key={ann.id}
               annotation={ann}
               onDelete={onDelete}
               readOnly={readOnly}
+              activeType={activeType}
             />
           ))}
         </div>
@@ -309,8 +334,12 @@ function PdfPageWithAnnotations({
 }
 
 // ─── PDF VIEWER ───────────────────────────────────────────────────────────────
-// FIX: Added proper CORS handling via options.withCredentials and
-// correct worker URL so PDF loads from Cloudinary URLs
+// react-pdf v9: pass `file` as a string URL (or a stable object reference).
+// Both `file` and `options` MUST be memoized — react-pdf compares by reference
+// and will warn "File prop changed" / "Options prop changed" on every render
+// if you inline a new object literal. That warning also triggers a full
+// Document reload, which causes the worker to be re-spawned, which on a hot
+// reload looks like the "Offscreen component error".
 function PdfViewer({
   fileUrl,
   annotations,
@@ -325,13 +354,62 @@ function PdfViewer({
   const [loadError, setLoadError] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // FIX: Build a proper file options object for react-pdf
-  // Cloudinary PDFs may need CORS — pass withCredentials: false
-  const fileOptions = {
-    url: fileUrl,
-    httpHeaders: {},
-    withCredentials: false,
-  };
+  // Memoize the file object. Passing a string is the simplest path and
+  // already stable, but we wrap in useMemo so adding httpHeaders or
+  // withCredentials later won't reintroduce the "File prop changed" warning.
+  const memoizedFile = useMemo(
+    () => (fileUrl ? { url: fileUrl } : null),
+    [fileUrl],
+  );
+
+  // Memoize the options object — referential stability is required.
+  // cMapUrl / standardFontDataUrl point at the worker's sibling assets,
+  // which Vite serves from node_modules at the same base path.
+  const memoizedOptions = useMemo(
+    () => ({
+      cMapUrl: "/node_modules/pdfjs-dist/cmaps/",
+      cMapPacked: true,
+      standardFontDataUrl: "/node_modules/pdfjs-dist/standard_fonts/",
+      withCredentials: false,
+    }),
+    [],
+  );
+
+  // Reset state when the file changes so old pages don't flash.
+  useEffect(() => {
+    setNumPages(null);
+    setLoadError(null);
+    setLoading(true);
+  }, [fileUrl]);
+
+  const handleLoadSuccess = useCallback(
+    ({ numPages: n }) => {
+      setNumPages(n);
+      setLoading(false);
+      setLoadError(null);
+      onPagesLoaded?.(n);
+    },
+    [onPagesLoaded],
+  );
+
+  const handleLoadError = useCallback((err) => {
+    // eslint-disable-next-line no-console
+    console.error("PDF load error:", err);
+    setLoadError(err?.message || "Failed to load PDF");
+    setLoading(false);
+  }, []);
+
+  // Defensive: if fileUrl arrives as null/undefined (modal opened before
+  // signed URL resolved), render a friendly placeholder instead of letting
+  // <Document> crash with "Invalid parameter object".
+  if (!fileUrl) {
+    return (
+      <div className="flex items-center gap-3 py-20 text-slate-400">
+        <Loader2 size={22} className="animate-spin" />
+        <span className="text-sm font-medium">Preparing document…</span>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -343,23 +421,13 @@ function PdfViewer({
       }}
     >
       <Document
-        file={fileOptions}
-        onLoadSuccess={({ numPages }) => {
-          setNumPages(numPages);
-          setLoading(false);
-          onPagesLoaded?.(numPages);
-        }}
-        onLoadError={(err) => {
-          console.error("PDF load error:", err);
-          setLoadError(err.message || "Failed to load PDF");
-          setLoading(false);
-        }}
+        file={memoizedFile}
+        options={memoizedOptions}
+        onLoadSuccess={handleLoadSuccess}
+        onLoadError={handleLoadError}
         loading={null}
-        options={{
-          cMapUrl:
-            "https://cdnjs.cloudflare.com/ajax/libs/pdfjs-dist/3.4.120/cmaps/",
-          cMapPacked: true,
-        }}
+        error={null}
+        noData={null}
       >
         {loading && (
           <div className="flex items-center gap-3 py-20 text-slate-400">
@@ -367,6 +435,7 @@ function PdfViewer({
             <span className="text-sm font-medium">Loading PDF…</span>
           </div>
         )}
+
         {loadError && (
           <div className="flex flex-col items-center gap-3 py-12 text-red-400 text-sm">
             <div className="flex items-center gap-2">
@@ -374,7 +443,7 @@ function PdfViewer({
               <span>Failed to load PDF: {loadError}</span>
             </div>
             <p className="text-slate-500 text-xs">
-              Try downloading the file directly:
+              Try opening or downloading the file directly:
             </p>
             <a
               href={fileUrl}
@@ -386,6 +455,7 @@ function PdfViewer({
             </a>
           </div>
         )}
+
         {!loading &&
           !loadError &&
           numPages &&
@@ -498,7 +568,8 @@ function DocxViewer({
         background: "#fff",
         boxShadow: "0 8px 40px rgba(0,0,0,0.22)",
         borderRadius: 3,
-        zoom: scale,
+        transform: `scale(${scale})`,
+        transformOrigin: "top center",
         maxWidth: 850,
         width: "100%",
       }}
@@ -532,6 +603,7 @@ function DocxViewer({
               annotation={ann}
               onDelete={onDelete}
               readOnly={readOnly}
+              activeType={activeType}
             />
           ))}
       </div>
@@ -669,12 +741,9 @@ async function downloadAnnotatedPdf(fileUrl, annotations, fileName) {
   }
 }
 
-// ─── FIX 2: Proper extension helper ──────────────────────────────────────────
-// Previously downloads had no extension or wrong extension.
 function getDownloadName(fileName, fileType, suffix = "") {
-  const base = fileName
-    ? fileName.replace(/\.(pdf|docx|doc)$/i, "")
-    : "document";
+  const fallback = fileType === "pdf" ? "submission" : "assignment-file";
+  const base = fileName ? fileName.replace(/\.(pdf|docx|doc)$/i, "") : fallback;
   const ext = fileType === "pdf" ? ".pdf" : ".docx";
   return suffix ? `${base}_${suffix}${ext}` : `${base}${ext}`;
 }
@@ -690,105 +759,14 @@ function triggerDownload(blob, filename) {
   URL.revokeObjectURL(url);
 }
 
-// download reviewed visual
-async function downloadReviewedVisual({
-  contentRef,
-  feedback,
-  totalScore,
-  maxMarks,
-  studentDetails,
-  fileName,
-}) {
-  try {
-    // ─── 1. CREATE PDF ───
-    const pdf = new jsPDF("p", "pt", "a4");
-
-    // ─── 2. FIRST PAGE (DETAILS) ───
-    pdf.setFont("Helvetica", "bold");
-    pdf.setFontSize(18);
-    pdf.text("Student Report", 40, 50);
-
-    pdf.setFontSize(11);
-    pdf.setFont("Helvetica", "normal");
-
-    const details = [
-      `Name: ${studentDetails?.name || "N/A"}`,
-      `Email: ${studentDetails?.email || "N/A"}`,
-      `Exam: ${studentDetails?.exam || "N/A"}`,
-      `Date: ${new Date().toLocaleDateString()}`,
-      `Score: ${
-        totalScore != null ? `${totalScore}/${maxMarks}` : "Not graded"
-      }`,
-    ];
-
-    let y = 80;
-
-    details.forEach((line) => {
-      pdf.text(line, 40, y);
-      y += 16;
-    });
-
-    y += 10;
-
-    pdf.setFont("Helvetica", "bold");
-    pdf.text("Feedback:", 40, y);
-
-    y += 16;
-
-    pdf.setFont("Helvetica", "normal");
-
-    const splitFeedback = pdf.splitTextToSize(feedback || "", 500);
-
-    pdf.text(splitFeedback, 40, y);
-
-    // ─── 3. CAPTURE DOCUMENT UI ───
-    const canvas = await html2canvas(contentRef.current, {
-      scale: 2, // higher quality
-      useCORS: true,
-      backgroundColor: "#ffffff",
-      foreignObjectRendering: true,
-    });
-
-    const imgData = canvas.toDataURL("image/png");
-
-    // ─── 4. ADD NEW PAGE ───
-    pdf.addPage();
-
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-
-    const imgWidth = pageWidth;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-    let position = 0;
-
-    // ─── 5. HANDLE MULTIPLE PAGES ───
-    if (imgHeight < pageHeight) {
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-    } else {
-      let remainingHeight = imgHeight;
-      let yOffset = 0;
-
-      while (remainingHeight > 0) {
-        pdf.addImage(imgData, "PNG", 0, yOffset, imgWidth, imgHeight);
-
-        remainingHeight -= pageHeight;
-
-        if (remainingHeight > 0) {
-          pdf.addPage();
-          yOffset -= pageHeight;
-        }
-      }
-    }
-
-    // ─── 6. SAVE ───
-    pdf.save(`${fileName}_reviewed.pdf`);
-  } catch (err) {
-    console.error("Download failed:", err);
-  }
-}
-
-// ─── FIX 3: Download Reviewed Assignment (PDF with annotations + feedback + marks)
+// ─── DOWNLOAD REVIEWED ASSIGNMENT ────────────────────────────────────────────
+// Produces a multi-page PDF:
+//   page 1+ : structured evaluation report (student / assignment / submission
+//             / evaluation / review sections + annotations summary)
+//   page N+ : rasterized snapshots of every annotated document page
+//
+// Backward-compatible: if `reportContext` is missing the report still renders
+// using the basic feedback / score the modal already had.
 async function downloadReviewedAssignment({
   fileUrl,
   fileName,
@@ -797,109 +775,299 @@ async function downloadReviewedAssignment({
   feedback,
   totalScore,
   maxMarks,
-  studentDetails,
-  contentRef, // ✅ ADD THIS
+  reportContext,
+  contentRef,
 }) {
   try {
     const { PDFDocument, rgb, StandardFonts } = await import("pdf-lib");
-    const html2canvas = (await import("html2canvas")).default;
+    const html2canvasLib = (await import("html2canvas")).default;
 
     const pdfDoc = await PDFDocument.create();
-
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-    // ───────────── 1. FIRST PAGE (REPORT) ─────────────
-    const page = pdfDoc.addPage([612, 792]);
-    let y = 750;
+    // ── Layout constants ────────────────────────────────────────────────────
+    const PAGE_W = 612;
+    const PAGE_H = 792;
+    const MARGIN_X = 48;
+    const MARGIN_TOP = 56;
+    const MARGIN_BOTTOM = 56;
+    const LINE = 16;
+    const SECTION_GAP = 12;
 
-    page.drawText("Student Report", {
-      x: 40,
+    const fmtDate = (d) => {
+      if (!d) return "—";
+      try {
+        return new Date(d).toLocaleString();
+      } catch {
+        return String(d);
+      }
+    };
+
+    // Word-wrap a string to a given pixel width using the embedded font.
+    const wrap = (text, size, maxWidth, useFont = font) => {
+      const words = String(text || "").split(/\s+/);
+      const lines = [];
+      let line = "";
+      for (const w of words) {
+        const trial = line ? `${line} ${w}` : w;
+        if (useFont.widthOfTextAtSize(trial, size) > maxWidth) {
+          if (line) lines.push(line);
+          line = w;
+        } else {
+          line = trial;
+        }
+      }
+      if (line) lines.push(line);
+      return lines.length ? lines : [""];
+    };
+
+    // Sanitize a string of glyphs Helvetica (WinAnsi) can't encode — pdf-lib
+    // throws on characters like curly quotes or em-dashes otherwise.
+    const safe = (s) =>
+      String(s ?? "")
+        .replace(/[\u2018\u2019]/g, "'")
+        .replace(/[\u201C\u201D]/g, '"')
+        .replace(/[\u2013\u2014]/g, "-")
+        .replace(/[\u2026]/g, "...")
+        // strip anything still outside WinAnsi printable range
+        .replace(/[^\x09\x0A\x0D\x20-\x7E\xA0-\xFF]/g, "");
+
+    // Page/cursor manager so the report can spill onto more pages cleanly.
+    let page = pdfDoc.addPage([PAGE_W, PAGE_H]);
+    let y = PAGE_H - MARGIN_TOP;
+
+    const newPage = () => {
+      page = pdfDoc.addPage([PAGE_W, PAGE_H]);
+      y = PAGE_H - MARGIN_TOP;
+    };
+    const need = (h) => {
+      if (y - h < MARGIN_BOTTOM) newPage();
+    };
+
+    const drawText = (text, opts = {}) => {
+      const size = opts.size || 11;
+      const useFont = opts.bold ? boldFont : font;
+      const color = opts.color || rgb(0.1, 0.1, 0.1);
+      const x = opts.x ?? MARGIN_X;
+      const maxW = PAGE_W - x - MARGIN_X;
+      const lines = wrap(safe(text), size, maxW, useFont);
+      for (const ln of lines) {
+        need(size + 4);
+        page.drawText(ln, { x, y, size, font: useFont, color });
+        y -= size + 4;
+      }
+    };
+
+    const drawSectionHeading = (text) => {
+      need(28);
+      y -= 6;
+      page.drawText(safe(text), {
+        x: MARGIN_X,
+        y,
+        size: 13,
+        font: boldFont,
+        color: rgb(0.18, 0.24, 0.55),
+      });
+      y -= 4;
+      // underline
+      page.drawLine({
+        start: { x: MARGIN_X, y: y - 2 },
+        end: { x: PAGE_W - MARGIN_X, y: y - 2 },
+        thickness: 0.75,
+        color: rgb(0.78, 0.82, 0.92),
+      });
+      y -= 14;
+    };
+
+    const drawKeyValue = (key, value) => {
+      const size = 11;
+      const labelWidth = 110;
+      need(size + 4);
+      page.drawText(safe(`${key}:`), {
+        x: MARGIN_X,
+        y,
+        size,
+        font: boldFont,
+        color: rgb(0.3, 0.3, 0.35),
+      });
+      const valueLines = wrap(
+        safe(value ?? "—"),
+        size,
+        PAGE_W - MARGIN_X - (MARGIN_X + labelWidth),
+        font,
+      );
+      let first = true;
+      for (const ln of valueLines) {
+        if (!first) need(size + 4);
+        page.drawText(ln, {
+          x: MARGIN_X + labelWidth,
+          y,
+          size,
+          font,
+          color: rgb(0.12, 0.12, 0.18),
+        });
+        y -= size + 4;
+        first = false;
+      }
+    };
+
+    // ── HEADER ──────────────────────────────────────────────────────────────
+    page.drawText("Student Evaluation Report", {
+      x: MARGIN_X,
       y,
       size: 22,
       font: boldFont,
-      color: rgb(0.2, 0.2, 0.6),
+      color: rgb(0.16, 0.22, 0.55),
     });
-
-    y -= 40;
-
-    const details = [
-      `Name: ${studentDetails?.name || "N/A"}`,
-      `Email: ${studentDetails?.email || "N/A"}`,
-      `Exam: ${studentDetails?.exam || "N/A"}`,
-      `Date: ${new Date().toLocaleDateString()}`,
-    ];
-
-    details.forEach((text) => {
-      page.drawText(text, { x: 40, y, size: 12, font });
-      y -= 20;
-    });
-
-    y -= 20;
-
+    y -= 28;
     page.drawText(
-      `Score: ${
-        totalScore != null ? `${totalScore} / ${maxMarks}` : "Not graded"
-      }`,
-      {
-        x: 40,
-        y,
-        size: 14,
-        font: boldFont,
-        color: rgb(0.1, 0.5, 0.1),
-      },
+      `Generated ${new Date().toLocaleString()}`,
+      { x: MARGIN_X, y, size: 9, font, color: rgb(0.45, 0.45, 0.5) },
     );
+    y -= SECTION_GAP + 6;
 
-    y -= 30;
+    // ── STUDENT DETAILS ─────────────────────────────────────────────────────
+    const student = reportContext?.student;
+    drawSectionHeading("Student Details");
+    drawKeyValue("Name", student?.name || "N/A");
+    drawKeyValue("Email", student?.email || "N/A");
+    if (student?.rollNumber) drawKeyValue("Roll Number", student.rollNumber);
+    y -= SECTION_GAP;
 
-    page.drawText("Feedback:", {
-      x: 40,
-      y,
-      size: 13,
-      font: boldFont,
-    });
+    // ── ASSIGNMENT DETAILS ──────────────────────────────────────────────────
+    const assignment = reportContext?.assignment;
+    if (assignment) {
+      drawSectionHeading("Assignment Details");
+      drawKeyValue("Title", assignment.title || "N/A");
+      if (assignment.description)
+        drawKeyValue("Description", assignment.description);
+      if (assignment.createdAt)
+        drawKeyValue("Given On", fmtDate(assignment.createdAt));
+      if (assignment.dueDate)
+        drawKeyValue("Due Date", fmtDate(assignment.dueDate));
+      if (assignment.totalMarks != null)
+        drawKeyValue("Total Marks", String(assignment.totalMarks));
+      y -= SECTION_GAP;
+    }
 
-    y -= 20;
+    // ── SUBMISSION DETAILS ──────────────────────────────────────────────────
+    const submissionMeta = reportContext?.submission;
+    drawSectionHeading("Submission Details");
+    drawKeyValue(
+      "Submitted On",
+      fmtDate(submissionMeta?.submittedAt) +
+        (submissionMeta?.isLate ? "  (late)" : ""),
+    );
+    drawKeyValue("File Name", submissionMeta?.fileName || fileName || "N/A");
+    if (submissionMeta?.fileUrl)
+      drawKeyValue("File URL", submissionMeta.fileUrl);
+    y -= SECTION_GAP;
 
-    feedback.split("\n").forEach((line) => {
-      page.drawText(line, { x: 40, y, size: 11, font });
-      y -= 16;
-    });
+    // ── EVALUATION ──────────────────────────────────────────────────────────
+    drawSectionHeading("Evaluation");
+    const evalCtx = reportContext?.evaluation;
+    const scoreVal =
+      (evalCtx?.totalScore ?? totalScore) != null
+        ? `${evalCtx?.totalScore ?? totalScore} / ${
+            evalCtx?.maxMarks ?? maxMarks ?? "?"
+          }`
+        : "Not graded";
+    drawKeyValue("Total Score", scoreVal);
 
-    // ───────────── 2. CAPTURE DOCUMENT VIEW ─────────────
-    // ✅ USE contentRef instead of querySelector
+    const fbText = (evalCtx?.feedback ?? feedback) || "";
+    if (fbText.trim()) {
+      need(LINE);
+      page.drawText("Feedback:", {
+        x: MARGIN_X,
+        y,
+        size: 11,
+        font: boldFont,
+        color: rgb(0.3, 0.3, 0.35),
+      });
+      y -= LINE;
+      for (const para of fbText.split(/\n+/)) {
+        drawText(para, { size: 11 });
+      }
+    }
+
+    // Question-wise grading
+    const qGrades = evalCtx?.questionGrades || [];
+    if (qGrades.length > 0) {
+      y -= 6;
+      need(LINE);
+      page.drawText("Question-wise Grading:", {
+        x: MARGIN_X,
+        y,
+        size: 11,
+        font: boldFont,
+        color: rgb(0.3, 0.3, 0.35),
+      });
+      y -= LINE;
+      qGrades.forEach((qg, idx) => {
+        need(LINE * 2);
+        drawText(`Q${idx + 1}. ${qg.questionText || ""}`, {
+          size: 11,
+          bold: true,
+        });
+        const bits = [];
+        if (qg.marks != null) bits.push(`Marks: ${qg.marks}`);
+        if (qg.isCorrect != null)
+          bits.push(qg.isCorrect ? "Correct" : "Incorrect");
+        if (qg.icon) bits.push(`Marker: ${qg.icon}`);
+        if (bits.length) drawText(bits.join("   |   "), { size: 10 });
+        y -= 4;
+      });
+    }
+    y -= SECTION_GAP;
+
+    // ── ANNOTATIONS SUMMARY ─────────────────────────────────────────────────
+    if (annotations && annotations.length) {
+      drawSectionHeading("Document Annotations");
+      const byType = annotations.reduce((acc, a) => {
+        acc[a.type] = (acc[a.type] || 0) + 1;
+        return acc;
+      }, {});
+      const summary = Object.entries(byType)
+        .map(([k, v]) => `${k}: ${v}`)
+        .join("   |   ");
+      drawText(`Total: ${annotations.length}   (${summary})`, { size: 11 });
+      y -= SECTION_GAP;
+    }
+
+    // ── REVIEW META ─────────────────────────────────────────────────────────
+    const reviewMeta = reportContext?.review;
+    if (reviewMeta) {
+      drawSectionHeading("Review Context");
+      drawKeyValue("Status", reviewMeta.status || "—");
+      if (reviewMeta.reviewedAt)
+        drawKeyValue("Reviewed On", fmtDate(reviewMeta.reviewedAt));
+      if (reviewMeta.reviewerName)
+        drawKeyValue("Reviewed By", reviewMeta.reviewerName);
+    }
+
+    // ── DOCUMENT SNAPSHOTS ──────────────────────────────────────────────────
     if (contentRef?.current) {
-      // 🔹 get all visible pages (PDF + DOCX both supported)
-      const pages =
-        contentRef.current.querySelectorAll(".pdf-page-wrapper")?.length > 0
-          ? contentRef.current.querySelectorAll(".pdf-page-wrapper")
-          : [contentRef.current.querySelector(".docx-content")];
+      const pageEls = contentRef.current.querySelectorAll(".pdf-page-wrapper");
+      const targets =
+        pageEls.length > 0
+          ? Array.from(pageEls)
+          : [contentRef.current.querySelector(".docx-content")].filter(Boolean);
 
-      for (let i = 0; i < pages.length; i++) {
-        const el = pages[i];
+      for (const el of targets) {
         if (!el) continue;
-        // 🔥 force visible rendering before capture
-        el.style.transform = "scale(1)";
-        el.style.opacity = "1";
-
-        // ⏳ wait for UI to fully render (VERY IMPORTANT)
-        await new Promise((res) => setTimeout(res, 300));
-
-        const canvas = await html2canvas(el, {
+        await new Promise((r) => setTimeout(r, 200));
+        const canvas = await html2canvasLib(el, {
           scale: 2,
           useCORS: true,
           backgroundColor: "#ffffff",
-          foreignObjectRendering: true, // 🔥 REQUIRED FOR ANNOTATIONS
+          foreignObjectRendering: true,
         });
-
         const imgData = canvas.toDataURL("image/png");
         const img = await pdfDoc.embedPng(imgData);
-
-        const pageWidth = 612; // A4 width
+        const pageWidth = PAGE_W;
         const pageHeight = (canvas.height * pageWidth) / canvas.width;
-
         const pdfPage = pdfDoc.addPage([pageWidth, pageHeight]);
-
         pdfPage.drawImage(img, {
           x: 0,
           y: 0,
@@ -909,14 +1077,13 @@ async function downloadReviewedAssignment({
       }
     }
 
-    // ───────────── 3. SAVE ─────────────
     const pdfBytes = await pdfDoc.save();
-
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
-
-    triggerDownload(blob, `${fileName}_reviewed.pdf`);
+    // FIX: Use getDownloadName so we strip the existing .pdf extension before
+    // appending "_reviewed.pdf" — otherwise we'd get "assignment.pdf_reviewed.pdf".
+    triggerDownload(blob, getDownloadName(fileName, "pdf", "reviewed"));
   } catch (err) {
-    console.error(err);
+    console.error("Download reviewed failed:", err);
   }
 }
 
@@ -927,14 +1094,17 @@ export default function DocumentAnnotator({
   fileType: fileTypeProp,
   annotations = [],
   onChange,
-  onSave, // async (annotations: array) => void
+  onSave,
   readOnly = false,
   onClose,
-  // FIX: Added props for "Download Reviewed" feature
   feedback = "",
   totalScore = null,
   maxMarks = null,
+  // FIX: Rich context for the reviewed-PDF report. Optional; if absent, we
+  // fall back to the minimal report we always produced.
+  reportContext = null,
 }) {
+  // FIX #5: If fileUrl is missing, show a clear error rather than crashing
   const fileType = fileTypeProp || detectType(fileName, fileUrl);
   const [scale, setScale] = useState(1.0);
   const [activeType, setActiveType] = useState(null);
@@ -976,14 +1146,13 @@ export default function DocumentAnnotator({
       await onSave(annotations);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
-    } catch (err) {
+    } catch {
       alert("Failed to save annotations. Please try again.");
     } finally {
       setSaving(false);
     }
   };
 
-  // FIX: Proper download with correct extension
   const handleDownload = async () => {
     if (fileType === "pdf" && annotations.length > 0) {
       setDownloading(true);
@@ -993,18 +1162,25 @@ export default function DocumentAnnotator({
         setDownloading(false);
       }
     } else {
-      // FIX: Force correct extension on direct download
-      const link = document.createElement("a");
-      link.href = fileUrl;
-      link.download = getDownloadName(fileName, fileType);
-      link.target = "_blank";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      // FIX: Plain <a download="..."> is ignored by browsers when the URL is
+      // cross-origin (e.g. Cloudinary), so the file would save with the
+      // Cloudinary-hashed name instead of the original assignment.pdf.
+      // Fetch as a blob and download via an object URL — the download
+      // attribute IS honored on blob: URLs because they're same-origin.
+      setDownloading(true);
+      try {
+        const res = await fetch(fileUrl);
+        const blob = await res.blob();
+        triggerDownload(blob, getDownloadName(fileName, fileType));
+      } catch (err) {
+        console.error("Download failed, opening in new tab:", err);
+        window.open(fileUrl, "_blank");
+      } finally {
+        setDownloading(false);
+      }
     }
   };
 
-  // FIX: New "Download Reviewed Assignment" feature
   const handleDownloadReviewed = async () => {
     setDownloadingReviewed(true);
     try {
@@ -1016,11 +1192,8 @@ export default function DocumentAnnotator({
         feedback,
         totalScore,
         maxMarks,
-        studentDetails: {
-          name: "Anurag",
-          email: "anurag@email.com",
-        },
-        contentRef, // ✅ ADD THIS
+        reportContext,
+        contentRef,
       });
     } finally {
       setDownloadingReviewed(false);
@@ -1031,13 +1204,47 @@ export default function DocumentAnnotator({
   const zoomOut = () => setScale((s) => Math.max(+(s - 0.15).toFixed(2), 0.4));
   const zoomReset = () => setScale(1.0);
 
+  // Escape cancels active annotation type
   useEffect(() => {
     const h = (e) => {
-      if (e.key === "Escape") setActiveType(null);
+      if (e.key === "Escape") {
+        if (activeType) {
+          e.stopPropagation();
+          setActiveType(null);
+        }
+      }
     };
-    window.addEventListener("keydown", h);
-    return () => window.removeEventListener("keydown", h);
-  }, []);
+    window.addEventListener("keydown", h, true);
+    return () => window.removeEventListener("keydown", h, true);
+  }, [activeType]);
+
+  // FIX #6: If no fileUrl provided, show a friendly error state
+  if (!fileUrl) {
+    return (
+      <div
+        className="flex flex-col h-full bg-slate-900 overflow-hidden items-center justify-center gap-4"
+        style={{ minHeight: 300 }}
+      >
+        <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20">
+          <AlertTriangle size={32} className="text-red-400 mx-auto mb-2" />
+          <p className="text-red-300 text-sm text-center">
+            No document URL provided.
+          </p>
+          <p className="text-slate-500 text-xs text-center mt-1">
+            The submission file may not have been uploaded.
+          </p>
+        </div>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-xl text-sm text-slate-400 border border-white/10 hover:bg-white/10 transition"
+          >
+            Close
+          </button>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full bg-slate-900 overflow-hidden">
@@ -1048,7 +1255,7 @@ export default function DocumentAnnotator({
             <FileText size={16} className="text-indigo-400" />
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-slate-200 truncate max-w-[200px]">
+            <p className="text-sm font-semibold text-slate-200 truncate max-w-[220px]">
               {fileName || "Document"}
             </p>
             <p className="text-[10px] text-slate-500 uppercase tracking-wider">
@@ -1062,44 +1269,50 @@ export default function DocumentAnnotator({
           </div>
         </div>
 
-        {/* Zoom */}
+        {/* Zoom controls */}
         <div className="flex items-center gap-1 bg-white/[0.05] rounded-xl p-1 flex-shrink-0">
           <button
             onClick={zoomOut}
             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+            title="Zoom out"
           >
             <ZoomOut size={14} />
           </button>
           <button
             onClick={zoomReset}
             className="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-300 hover:text-white hover:bg-white/10 transition-all min-w-[44px] text-center"
+            title="Reset zoom"
           >
             {Math.round(scale * 100)}%
           </button>
           <button
             onClick={zoomIn}
             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+            title="Zoom in"
           >
             <ZoomIn size={14} />
           </button>
         </div>
 
-        {/* Actions */}
+        {/* Action buttons */}
         <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
           {annotations.length > 0 && !readOnly && (
             <button
               onClick={handleClearAll}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-red-400 border border-red-500/20 bg-red-500/[0.07] hover:bg-red-500/15 transition-all"
             >
-              <RotateCcw size={12} />
-              Clear
+              <RotateCcw size={12} /> Clear
             </button>
           )}
           {!readOnly && onSave && (
             <button
               onClick={handleSave}
               disabled={saving}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all border ${saved ? "text-emerald-400 border-emerald-500/30 bg-emerald-500/10" : "text-sky-400 border-sky-500/30 bg-sky-500/10 hover:bg-sky-500/20"}`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all border ${
+                saved
+                  ? "text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
+                  : "text-sky-400 border-sky-500/30 bg-sky-500/10 hover:bg-sky-500/20"
+              }`}
             >
               {saving ? (
                 <Loader2 size={12} className="animate-spin" />
@@ -1125,7 +1338,6 @@ export default function DocumentAnnotator({
               ? "Download Annotated"
               : "Download"}
           </button>
-          {/* FIX: New Download Reviewed button */}
           <button
             onClick={handleDownloadReviewed}
             disabled={downloadingReviewed}
@@ -1143,6 +1355,7 @@ export default function DocumentAnnotator({
             <button
               onClick={onClose}
               className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+              title="Close"
             >
               <X size={16} />
             </button>
@@ -1163,7 +1376,11 @@ export default function DocumentAnnotator({
               <button
                 key={key}
                 onClick={() => setActiveType(isActive ? null : key)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all duration-150 border ${isActive ? "scale-105" : "border-white/[0.07] text-slate-500 bg-white/[0.03] hover:border-white/20 hover:text-slate-300"}`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all duration-150 border ${
+                  isActive
+                    ? "scale-105"
+                    : "border-white/[0.07] text-slate-500 bg-white/[0.03] hover:border-white/20 hover:text-slate-300"
+                }`}
                 style={
                   isActive
                     ? {
@@ -1285,7 +1502,7 @@ export default function DocumentAnnotator({
         .docx-content img { max-width:100%; height:auto; border-radius:4px; }
         .docx-content ul,.docx-content ol { padding-left:1.5em; margin:0.5em 0; }
         .docx-content strong { font-weight:700; }
-        .pdf-page-wrapper { position: relative;}
+        .pdf-page-wrapper { position: relative; }
       `}</style>
     </div>
   );

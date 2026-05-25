@@ -451,6 +451,29 @@ export const submitAssignment = async (assignmentId, payload) => {
   return data?.data ?? data;
 };
 
+
+/**
+ * Resubmit (replace) an existing assignment submission.
+ * Allowed only when:
+ *  - submission exists
+ *  - due date has not passed
+ *  - submission is not yet graded
+ *
+ * @param {string} assignmentId
+ * @param {FormData} formData  Must contain a single "file" field (PDF)
+ * @returns updated submission
+ */
+export const resubmitAssignment = async (assignmentId, formData) => {
+  const { data } = await api.patch(
+    `/assignments/${assignmentId}/resubmit`,
+    formData,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    }
+  );
+  return data?.data ?? data;
+};
+
 export const getMySubmissionForAssignment = async (assignmentId) => {
   try {
     const { data } = await api.get(`/assignments/${assignmentId}/my-submission`);
@@ -526,7 +549,7 @@ export const getStudentCourses = async () => {
 };
 
 export const getStudentAssignments = async () => {
-  const { data } = await api.get("/students/assignments");
+  const { data } = await api.get("/students/");
   return data;
 };
 

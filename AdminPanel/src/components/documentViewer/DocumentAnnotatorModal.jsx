@@ -1,3 +1,12 @@
+// /**
+//  * DocumentAnnotatorModal.jsx
+//  *
+//  * Full-screen modal wrapping <DocumentAnnotator>.
+//  *
+//  * FIX: Now passes feedback, totalScore, and maxMarks props down to
+//  *      DocumentAnnotator so the "Download Reviewed Assignment" button
+//  *      can include them in the final PDF.
+//  */
 
 // import { useEffect } from "react";
 // import DocumentAnnotator from "./DocumentAnnotator";
@@ -13,6 +22,10 @@
 //   annotations = [],
 //   onChange,
 //   readOnly = false,
+//   // FIX: New props needed for "Download Reviewed" feature
+//   feedback = "",
+//   totalScore = null,
+//   maxMarks = null,
 // }) {
 //   // Lock body scroll when open
 //   useEffect(() => {
@@ -26,17 +39,22 @@
 //     };
 //   }, [open]);
 
-//   // Close on Escape
+//   // Close on Escape — but DocumentAnnotator also listens for Escape
+//   // to cancel active annotation type, so we only close if no active type
+//   // This is handled inside DocumentAnnotator; modal just provides the backdrop.
 //   useEffect(() => {
 //     if (!open) return;
 //     const handler = (e) => {
+//       // Only close modal on Escape if no annotator toolbar is active
+//       // (DocumentAnnotator's own Escape handler runs first and stops propagation
+//       //  if an annotation type is active)
 //       if (e.key === "Escape") onClose?.();
 //     };
 //     window.addEventListener("keydown", handler);
 //     return () => window.removeEventListener("keydown", handler);
 //   }, [open, onClose]);
 
-//   if (!open) return null;
+//   if (!open || !fileUrl) return null;
 
 //   return (
 //     <div
@@ -58,13 +76,12 @@
 //       <div
 //         style={{
 //           flex: 1,
-//           height: "100%", // ✅ ADD
+//           height: "100%",
 //           margin: 20,
 //           borderRadius: 20,
 //           overflow: "hidden",
 //           display: "flex",
 //           flexDirection: "column",
-//           background: "#fff", // ✅ ADD (critical for text visibility)
 //           boxShadow: "0 32px 80px rgba(0,0,0,0.6)",
 //           animation: "slideUp 0.2s ease",
 //         }}
@@ -77,16 +94,19 @@
 //           onChange={onChange}
 //           readOnly={readOnly}
 //           onClose={onClose}
+//           // FIX: Pass review context for "Download Reviewed" button
+//           feedback={feedback}
+//           totalScore={totalScore}
+//           maxMarks={maxMarks}
 //           onSave={async (updatedAnnotations) => {
 //             if (!submissionId) return;
-
 //             await saveAnnotations(submissionId, updatedAnnotations);
 //           }}
 //         />
 //       </div>
 
 //       <style>{`
-//         @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+//         @keyframes fadeIn  { from { opacity: 0 }               to { opacity: 1 } }
 //         @keyframes slideUp { from { transform: translateY(16px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
 //       `}</style>
 //     </div>
@@ -102,9 +122,12 @@
  *
  * Full-screen modal wrapping <DocumentAnnotator>.
  *
- * FIX: Now passes feedback, totalScore, and maxMarks props down to
- *      DocumentAnnotator so the "Download Reviewed Assignment" button
- *      can include them in the final PDF.
+ * FIX: Removed `!fileUrl` guard from the early-return so that when fileUrl
+ * arrives asynchronously the modal still mounts and DocumentAnnotator shows
+ * its own "no URL" error state rather than a blank modal.
+ *
+ * Also passes feedback, totalScore, and maxMarks down so the
+ * "Download Reviewed Assignment" button can include them in the final PDF.
  */
 
 import { useEffect } from "react";
@@ -121,10 +144,12 @@ export default function DocumentAnnotatorModal({
   annotations = [],
   onChange,
   readOnly = false,
-  // FIX: New props needed for "Download Reviewed" feature
   feedback = "",
   totalScore = null,
   maxMarks = null,
+  // FIX: Optional rich context the parent can pass so the "Download Reviewed"
+  // PDF includes student, assignment, submission, evaluation and review meta.
+  reportContext = null,
 }) {
   // Lock body scroll when open
   useEffect(() => {
@@ -138,22 +163,20 @@ export default function DocumentAnnotatorModal({
     };
   }, [open]);
 
-  // Close on Escape — but DocumentAnnotator also listens for Escape
-  // to cancel active annotation type, so we only close if no active type
-  // This is handled inside DocumentAnnotator; modal just provides the backdrop.
+  // Close on Escape — only when no annotation type is active.
+  // DocumentAnnotator's own Escape handler runs first (capture phase)
+  // and stops propagation when cancelling an active annotation type.
   useEffect(() => {
     if (!open) return;
     const handler = (e) => {
-      // Only close modal on Escape if no annotator toolbar is active
-      // (DocumentAnnotator's own Escape handler runs first and stops propagation
-      //  if an annotation type is active)
       if (e.key === "Escape") onClose?.();
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [open, onClose]);
 
-  if (!open || !fileUrl) return null;
+  // FIX: Only bail if not open — let DocumentAnnotator handle missing fileUrl
+  if (!open) return null;
 
   return (
     <div
@@ -163,9 +186,9 @@ export default function DocumentAnnotatorModal({
         zIndex: 9999,
         display: "flex",
         alignItems: "stretch",
-        background: "rgba(15,23,42,0.6)",
+        background: "rgba(15,23,42,0.7)",
         backdropFilter: "blur(6px)",
-        animation: "fadeIn 0.15s ease",
+        animation: "daFadeIn 0.15s ease",
       }}
       onClick={(e) => {
         // Close on backdrop click
@@ -181,8 +204,9 @@ export default function DocumentAnnotatorModal({
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",
-          boxShadow: "0 32px 80px rgba(0,0,0,0.6)",
-          animation: "slideUp 0.2s ease",
+          background: "#0f172a",
+          boxShadow: "0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.05)",
+          animation: "daSlideUp 0.2s ease",
         }}
       >
         <DocumentAnnotator
@@ -193,10 +217,10 @@ export default function DocumentAnnotatorModal({
           onChange={onChange}
           readOnly={readOnly}
           onClose={onClose}
-          // FIX: Pass review context for "Download Reviewed" button
           feedback={feedback}
           totalScore={totalScore}
           maxMarks={maxMarks}
+          reportContext={reportContext}
           onSave={async (updatedAnnotations) => {
             if (!submissionId) return;
             await saveAnnotations(submissionId, updatedAnnotations);
@@ -205,8 +229,8 @@ export default function DocumentAnnotatorModal({
       </div>
 
       <style>{`
-        @keyframes fadeIn  { from { opacity: 0 }               to { opacity: 1 } }
-        @keyframes slideUp { from { transform: translateY(16px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+        @keyframes daFadeIn  { from { opacity: 0 } to { opacity: 1 } }
+        @keyframes daSlideUp { from { transform: translateY(20px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
       `}</style>
     </div>
   );

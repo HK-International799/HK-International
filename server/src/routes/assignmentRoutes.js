@@ -15,6 +15,7 @@ import {
 import {
   submitAssignment,
   getMySubmission,
+  resubmitAssignment,
 } from "../controllers/submissionController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import roleMiddleware from "../middleware/roleMiddleware.js";
@@ -74,6 +75,16 @@ router.get(
   authMiddleware,
   roleMiddleware(["student"]),
   getMySubmission
+);
+
+// ── STUDENT RESUBMISSION (PDF replace before due date) ───────────────────────
+
+router.patch(
+  "/:assignmentId/resubmit",
+  authMiddleware,
+  roleMiddleware(["student"]),
+  upload.single("file"), // PDF only — additionally validated in service
+  resubmitAssignment
 );
 
 export default router;

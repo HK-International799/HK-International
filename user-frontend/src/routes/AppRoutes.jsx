@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
@@ -30,9 +30,7 @@ const Assignments = lazy(() => import("../pages/students/Assignments"));
 const Certificates = lazy(() => import("../pages/students/Certificates"));
 const Profile = lazy(() => import("../pages/students/Profile"));
 const Chat = lazy(() => import("../pages/students/Chat"));
-const UploadAssignment = lazy(
-  () => import("../pages/students/UploadAssignment"),
-);
+
 const LiveClasses = lazy(() => import("../pages/students/LiveClasses"));
 const QuestionBank = lazy(() => import("../pages/students/QuestionBank"));
 const Feedback = lazy(() => import("../pages/students/Feedback"));
@@ -160,11 +158,7 @@ export default function AppRoutes() {
           />
           <Route
             path="/student/submit"
-            element={
-              <ProtectedRoute>
-                <UploadAssignment />
-              </ProtectedRoute>
-            }
+            element={<Navigate to="student/assignment" replace /> }
           />
           <Route
             path="/student/certificates"

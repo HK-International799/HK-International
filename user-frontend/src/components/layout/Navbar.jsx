@@ -630,6 +630,22 @@ export default function Navbar() {
         { name: "E-Waste Management Training", id: "e-waste-management" },
       ],
     },
+    {
+      title: "1A HK International",
+      courses: [
+        { name: "HSE Internal Audit and Compliance Review Training", id: "hse-internal-audit-compliance-review-training" },
+        { name: "Workplace Inspection and Audit Reporting Training", id: "workplace-inspection-audit-reporting-training" },
+        { name: "Occupational Health and Safety Risk Management and Audit Readiness", id: "occupational-health-safety-risk-management-audit-readiness" },
+        { name: "HSE Plan and Documentation Review", id: "hse-plan-documentation-review-training" },
+        // { name: "Incident Investigation, Corrective Action and Audit Follow-up Training", id: "incident-investigation-corrective-action-audit-follow-up-training" },
+        // { name: "Contractor HSE Audit and Performance Monitoring", id: "contractor-hse-audit-performance-monitoring" },
+        // { name: "HSE Management System Review and Internal Audit Awareness", id: "hse-management-system-review-internal-audit-awareness" },
+        // { name: "HSE Quality Assurance and Continuous Improvement Training", id: "hse-quality-assurance-continuous-improvement-training" },
+        // { name: "Permit-to-Work compliance and Auditing", id: "permit-to-work-compliance-auditing-training" },
+        // { name: "Risk Assessment Review and Control Verification Training", id: "risk-assessment-review-control-verification-training" },
+
+      ],
+    },
   ];
 
   return (

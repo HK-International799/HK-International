@@ -662,3 +662,107 @@ export const saveAnnotationsService = async (id, annotations, user) => {
 
   return { annotations: submission.annotations, count: clean.length };
 };
+
+
+// ─── RESUBMIT (Student) ──────────────────────────────────────────────────────
+/**
+ * Replace an existing submission's file (PDF) before the due date.
+ *
+ * Rules:
+ *  - Submission must already exist for this (assignment, student) pair
+ *  - Due date must not have passed
+ *  - Submission must NOT already be graded
+ *  - Old Cloudinary file is deleted; new file is uploaded
+ *  - All grading state is reset
+ *
+ * Called by: PATCH /api/assignments/:assignmentId/resubmit
+ */
+export const resubmitAssignmentService = async ({
+  assignmentId,
+  studentId,
+  fileBuffer,
+  fileOriginalName,
+  fileMimetype,
+}) => {
+  // 1. File required
+  if (!fileBuffer || !fileOriginalName) {
+    throw new ApiError(400, "A PDF file is required to resubmit.");
+  }
+
+  // PDF-only validation
+  const isPdfByMime = fileMimetype === "application/pdf";
+  const isPdfByExt = /\.pdf$/i.test(fileOriginalName);
+  if (!isPdfByMime && !isPdfByExt) {
+    throw new ApiError(400, "Only PDF files are allowed for resubmission.");
+  }
+
+  // 2. Load assignment (need dueDate, courseId for late check)
+  const assignment = await Assignment.findById(assignmentId);
+  if (!assignment) throw new ApiError(404, "Assignment not found");
+
+  // 3. Find existing submission
+  const submission = await Submission.findOne({ assignmentId, studentId });
+  if (!submission) {
+    throw new ApiError(
+      404,
+      "No existing submission found. Use the submit endpoint to create one first."
+    );
+  }
+
+  // 4. Due-date validation
+  if (assignment.dueDate && new Date() > new Date(assignment.dueDate)) {
+    throw new ApiError(
+      403,
+      "Due date has passed. You cannot update your submission."
+    );
+  }
+
+  // 5. Prevent replacing graded submissions
+  if (submission.status === "graded") {
+    throw new ApiError(403, "Graded submissions cannot be replaced.");
+  }
+
+  // 6. Delete previous Cloudinary file (best-effort, swallow errors)
+  if (submission.submissionFile?.public_id) {
+    try {
+      await deletePdfFromCloudinary(submission.submissionFile.public_id);
+    } catch (err) {
+      console.error("Cloudinary delete failed during resubmit:", err.message);
+    }
+  }
+
+  // 7. Upload new file
+  const uploaded = await uploadPdfToCloudinary(
+    fileBuffer,
+    fileOriginalName,
+    "assignments/submissions"
+  );
+
+  // 8. Update submissionFile
+  submission.submissionFile = {
+    url: uploaded.url,
+    public_id: uploaded.public_id,
+    originalName: fileOriginalName,
+  };
+
+  // 9. Recalculate isLate
+  submission.isLate = !!(
+    assignment.dueDate && new Date() > new Date(assignment.dueDate)
+  );
+
+  // 10. Reset grading state completely
+  submission.status = "submitted";
+  submission.totalScore = null;
+  submission.feedback = "";
+  submission.gradedBy = null;
+  submission.gradedAt = null;
+  submission.annotations = [];
+  submission.reviewAnnotations = [];
+
+  // 11. Save and return populated submission
+  await submission.save();
+
+  return Submission.findById(submission._id)
+    .populate("assignmentId", "title dueDate totalMarks")
+    .populate("answers");
+};

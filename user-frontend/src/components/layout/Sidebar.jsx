@@ -268,7 +268,7 @@ const navItems = [
     icon: <FileCheck size={18} />,
   },
   // ─────────────────────────────────────────────────────────────────────────
-  // { to: "/student/assignments",   label: "Assignments",    icon: <MdAssignment size={20} /> },
+  { to: "/student/assignments",   label: "Assignments",    icon: <MdAssignment size={20} /> },
   // { to: "/student/submit",        label: "Submit Work",    icon: <Upload size={18} /> },
   // { to: "/student/live-classes",  label: "Live Classes",   icon: <Video size={18} /> },
   // { to: "/student/orientations",  label: "Orientation",    icon: <CalendarDays size={18} /> },

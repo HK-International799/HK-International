@@ -196,7 +196,6 @@
 //   );
 // }
 
-
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { courses } from "../../data/coursesData";
 import { motion } from "framer-motion";
@@ -271,10 +270,11 @@ export default function CoursePage() {
     : course.mode || "Online";
 
   const metaTitle = `${course.title} | ${course.accreditation} – 1A HK International`;
-  const metaDescription = `Enroll in ${course.title} by ${course.organization}. ${overviewShort}... Available ${modes}. Duration: ${course.duration}.`.slice(
-    0,
-    300
-  );
+  const metaDescription =
+    `Enroll in ${course.title} by ${course.organization}. ${overviewShort}... Available ${modes}. Duration: ${course.duration}.`.slice(
+      0,
+      300,
+    );
 
   return (
     <MainLayout>
@@ -316,7 +316,10 @@ export default function CoursePage() {
             </Link>
           </li>
           <li aria-hidden="true">/</li>
-          <li aria-current="page" className="text-slate-900 font-medium truncate max-w-[60vw]">
+          <li
+            aria-current="page"
+            className="text-slate-900 font-medium truncate max-w-[60vw]"
+          >
             {course.title}
           </li>
         </ol>
@@ -392,7 +395,9 @@ export default function CoursePage() {
                 viewport={{ once: true }}
                 className="bg-white p-6 rounded-xl shadow-sm border"
               >
-                <span className="text-green-600 mr-2" aria-hidden="true">✔</span>
+                <span className="text-green-600 mr-2" aria-hidden="true">
+                  ✔
+                </span>
                 {item}
               </motion.li>
             ))}
@@ -427,7 +432,9 @@ export default function CoursePage() {
           <ul className="space-y-3 text-gray-600 list-none p-0">
             {course.whoShouldAttend.map((item, i) => (
               <li key={i}>
-                <span className="text-green-600 mr-2" aria-hidden="true">✔</span>
+                <span className="text-green-600 mr-2" aria-hidden="true">
+                  ✔
+                </span>
                 {item}
               </li>
             ))}

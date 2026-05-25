@@ -106,6 +106,7 @@ import {
   getSubmissionByIdService,
   gradeSubmissionService,
   saveAnnotationsService,
+  resubmitAssignmentService,
 } from "../services/submissionService.js";
 
 // POST /api/assignments/:assignmentId/submit
@@ -185,4 +186,19 @@ export const saveAnnotations = asyncHandler(async (req, res) => {
     `Annotations saved (${result.count} total)`,
     result
   );
+});
+
+// PATCH /api/assignments/:assignmentId/resubmit
+// Student replaces their existing submission file with a new PDF
+// (only allowed before due date and before grading).
+export const resubmitAssignment = asyncHandler(async (req, res) => {
+  const submission = await resubmitAssignmentService({
+    assignmentId: req.params.assignmentId,
+    studentId: req.user._id,
+    fileBuffer: req.file?.buffer,
+    fileOriginalName: req.file?.originalname,
+    fileMimetype: req.file?.mimetype,
+  });
+
+  return apiResponse(res, 200, "Submission updated successfully", submission);
 });
