@@ -1,9 +1,16 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+  Navigate,
+} from "react-router-dom";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 import AOProtectedRoute from "../components/auth/AOProtectedRoute";
+import AshishVed from "../pages/public/profiles/AshishVed";
 
 // ─── Lazy-loaded Public Pages ─────────────────────────────────────────────────
 const Home = lazy(() => import("../pages/public/Home"));
@@ -113,6 +120,10 @@ export default function AppRoutes() {
           <Route path="/courses" element={<Courses />} />
           <Route path="/course/:id" element={<CourseDetails />} />
 
+
+          {/* ---------Profiles--------------------------------------------- */}
+          <Route path="/profile/ashish" element={<AshishVed/>} />
+
           {/* ── Auth ────────────────────────────────────────────────── */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -158,7 +169,7 @@ export default function AppRoutes() {
           />
           <Route
             path="/student/submit"
-            element={<Navigate to="student/assignment" replace /> }
+            element={<Navigate to="student/assignment" replace />}
           />
           <Route
             path="/student/certificates"
