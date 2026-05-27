@@ -214,7 +214,7 @@ export const courses = [
 
     organization: "European Safety Council",
 
-    accreditation: "OFQUAL Regulated Qualification – United Kingdom",
+    accreditation: "OFQUAL Regulated Qualification - United Kingdom",
 
     duration: "12 Months (Part-Time)",
 
@@ -312,9 +312,9 @@ export const courses = [
 
     organization: "European Safety Council",
 
-    accreditation: "OFQUAL Regulated Qualification – United Kingdom",
+    accreditation: "OFQUAL Regulated Qualification - United Kingdom",
 
-    duration: "9 – 12 Months",
+    duration: "9 - 12 Months",
 
     mode: [
       "Online Learning",
@@ -430,9 +430,9 @@ export const courses = [
 
     organization: "European Safety Council",
 
-    accreditation: "OFQUAL Regulated Qualification – United Kingdom",
+    accreditation: "OFQUAL Regulated Qualification - United Kingdom",
 
-    duration: "6 – 12 Months (Flexible Learning)",
+    duration: "6 - 12 Months (Flexible Learning)",
 
     mode: [
       "Online Learning",
@@ -523,9 +523,9 @@ export const courses = [
   {
     id: "iso-45001-auditor",
 
-    title: "ISO 45001 Lead Auditor Certificate (PECB Certified – Canada)",
+    title: "ISO 45001 Lead Auditor Certificate (PECB Certified - Canada)",
 
-    organization: "PECB – Professional Evaluation and Certification Board",
+    organization: "PECB - Professional Evaluation and Certification Board",
 
     accreditation: "PECB Certified | Internationally Recognised Certification",
 
@@ -542,7 +542,7 @@ export const courses = [
     image: "/logos/5-pecb.png",
 
     overview:
-      "The ISO 45001 Lead Auditor Certificate (PECB Certified – Canada) is a globally recognised professional certification designed for individuals who want to develop expertise in auditing Occupational Health and Safety Management Systems (OH&S MS). The training provides the knowledge and practical skills required to plan, conduct and manage audits in accordance with ISO 45001 standards, ISO 19011 auditing guidelines and ISO/IEC 17021 certification processes.",
+      "The ISO 45001 Lead Auditor Certificate (PECB Certified - Canada) is a globally recognised professional certification designed for individuals who want to develop expertise in auditing Occupational Health and Safety Management Systems (OH&S MS). The training provides the knowledge and practical skills required to plan, conduct and manage audits in accordance with ISO 45001 standards, ISO 19011 auditing guidelines and ISO/IEC 17021 certification processes.",
 
     importance:
       "ISO 45001 is the international standard for occupational health and safety management systems, developed to help organisations improve employee safety, reduce workplace risks and create better working conditions. Organisations around the world are increasingly implementing ISO 45001 to demonstrate their commitment to health and safety. Professionals who are certified as ISO 45001 Lead Auditors play a critical role in evaluating management systems, identifying non-conformities and ensuring compliance with global safety standards.",
@@ -625,9 +625,9 @@ export const courses = [
   {
     id: "iso-9001-auditor",
 
-    title: "ISO 9001 Lead Auditor Certificate (PECB Certified – Canada)",
+    title: "ISO 9001 Lead Auditor Certificate (PECB Certified - Canada)",
 
-    organization: "PECB – Professional Evaluation and Certification Board",
+    organization: "PECB - Professional Evaluation and Certification Board",
 
     accreditation: "PECB Certified | Internationally Recognised Certification",
 
@@ -644,7 +644,7 @@ export const courses = [
     image: "/logos/5-pecb.png",
 
     overview:
-      "The ISO 9001 Lead Auditor Certificate (PECB Certified – Canada) is an internationally recognised professional certification designed for individuals who want to develop expertise in auditing Quality Management Systems (QMS). The training programme equips participants with the knowledge and practical skills required to conduct first-party, second-party and third-party audits based on ISO 9001 standards. Participants learn how to evaluate an organisation’s quality management system, identify improvement opportunities and ensure compliance with international quality management practices.",
+      "The ISO 9001 Lead Auditor Certificate (PECB Certified - Canada) is an internationally recognised professional certification designed for individuals who want to develop expertise in auditing Quality Management Systems (QMS). The training programme equips participants with the knowledge and practical skills required to conduct first-party, second-party and third-party audits based on ISO 9001 standards. Participants learn how to evaluate an organisation’s quality management system, identify improvement opportunities and ensure compliance with international quality management practices.",
 
     importance:
       "ISO 9001 is the world’s most widely adopted standard for Quality Management Systems and is implemented by organisations across all industries to ensure consistent product and service quality. Organisations seeking ISO 9001 certification require competent auditors to assess their management systems and verify compliance with international standards. Professionals certified as ISO 9001 Lead Auditors play a vital role in improving organisational processes, enhancing customer satisfaction and ensuring continual improvement in business operations.",
@@ -867,7 +867,7 @@ export const courses = [
 
     accreditation: "Professional Workplace Safety Training Certificate",
 
-    duration: "2 – 3 Days Intensive Training",
+    duration: "2 - 3 Days Intensive Training",
 
     mode: [
       "Online Instructor-Led Training",
@@ -984,7 +984,7 @@ export const courses = [
 
     accreditation: "Professional Workplace Safety Training Certificate",
 
-    duration: "2 – 3 Days Intensive Training",
+    duration: "2 - 3 Days Intensive Training",
 
     mode: [
       "Online Instructor-Led Training",
@@ -1104,7 +1104,7 @@ export const courses = [
 
     accreditation: "Professional Workplace Safety Training Certificate",
 
-    duration: "2 – 3 Days Intensive Training",
+    duration: "2 - 3 Days Intensive Training",
 
     mode: [
       "Online Instructor-Led Training",
@@ -1225,7 +1225,7 @@ export const courses = [
 
     accreditation: "Professional Environmental & Safety Training Certificate",
 
-    duration: "2 – 3 Days Intensive Training",
+    duration: "2 - 3 Days Intensive Training",
 
     mode: [
       "Online Instructor-Led Training",
@@ -1332,11 +1332,11 @@ export const courses = [
 
     title: "EOSH Train The Trainer Certificate",
 
-    organization: "EOSH UK – Environmental Occupational Safety and Health",
+    organization: "EOSH UK - Environmental Occupational Safety and Health",
 
     accreditation: "EOSH UK Certified International Qualification",
 
-    duration: "7 – 10 Days Training Program",
+    duration: "7 - 10 Days Training Program",
 
     mode: [
       "Online Instructor-Led Training",
@@ -1461,7 +1461,7 @@ export const courses = [
 
     title: "OSHA 30 Hours Construction Certificate (PECB Canada)",
 
-    organization: "OSHA – Occupational Safety and Health Administration",
+    organization: "OSHA - Occupational Safety and Health Administration",
 
     accreditation: "PECB Certified Canada",
 
@@ -1618,7 +1618,7 @@ export const courses = [
 
     title: "OSHA 30 Hours General Industry Certificate",
 
-    organization: "OSHA – Occupational Safety and Health Administration",
+    organization: "OSHA - Occupational Safety and Health Administration",
 
     accreditation: "PECB Certified Canada",
 
@@ -1815,7 +1815,7 @@ export const courses = [
 
     accreditation: "Ofqual Regulated (RQF Level 4)",
 
-    duration: "3–6 Months",
+    duration: "3-6 Months",
 
     mode: ["Online Learning", "Blended Learning", "Workplace-Based Assessment"],
 
@@ -1890,7 +1890,7 @@ export const courses = [
 
     accreditation: "Ofqual Regulated (RQF Level 4)",
 
-    duration: "4–8 Months",
+    duration: "4-8 Months",
 
     mode: ["Online", "Blended", "Workplace-Based"],
 
@@ -1963,7 +1963,7 @@ export const courses = [
 
     accreditation: "Ofqual Regulated (RQF Level 5)",
 
-    duration: "6–12 Months",
+    duration: "6-12 Months",
 
     mode: ["Online", "Blended"],
 
@@ -2035,7 +2035,7 @@ export const courses = [
 
     accreditation: "Ofqual Regulated (RQF Level 6)",
 
-    duration: "6–12 Months",
+    duration: "6-12 Months",
 
     mode: ["Online", "Blended", "Workplace"],
 
@@ -2099,7 +2099,7 @@ export const courses = [
 
     accreditation: "Ofqual Regulated (RQF Level 7)",
 
-    duration: "6–12 Months",
+    duration: "6-12 Months",
 
     mode: ["Online", "Blended"],
 
@@ -2158,7 +2158,7 @@ export const courses = [
 
     accreditation: "Ofqual Regulated (RQF Level 7)",
 
-    duration: "6–12 Months",
+    duration: "6-12 Months",
 
     mode: ["Online"],
 
@@ -2218,7 +2218,7 @@ export const courses = [
 
     accreditation: "Ofqual Regulated (RQF Level 7)",
 
-    duration: "6–12 Months",
+    duration: "6-12 Months",
 
     mode: ["Online"],
 
@@ -2276,7 +2276,7 @@ export const courses = [
 
     title: "CIEH Level 1 Certificate in Food Safety",
 
-    organization: "CIEH – Chartered Institute of Environmental Health (UK)",
+    organization: "CIEH - Chartered Institute of Environmental Health (UK)",
 
     accreditation: "Internationally Recognised Food Safety Certification",
 
@@ -2812,16 +2812,7 @@ export const courses = [
     ],
 
     whoShouldAttend: [
-      "Safety Officers",
-      "HSE Officers",
-      "Safety Engineers",
-      "HSE Engineers",
-      "Safety Supervisors",
-      "HSE Supervisors",
-      "Safety Managers",
-      "HSE Managers",
-      "EHS Professionals",
-      "Risk Managers",
+      
       "Industrial Safety Professionals",
       "Construction Safety Professionals",
       "Oil and Gas Safety Professionals",
@@ -3155,17 +3146,7 @@ export const courses = [
     ],
 
     whoShouldAttend: [
-      "HSE Officers",
-      "Safety Officers",
-      "HSE Engineers",
-      "Safety Engineers",
-      "HSE Supervisors",
-      "Safety Supervisors",
-      "HSE Managers",
-      "Safety Managers",
-      "Internal Auditors",
-      "Compliance Officers",
-      "EHS Professionals",
+      
       "Quality and Safety Professionals",
       "Risk Management Professionals",
       "Construction Safety Professionals",
@@ -3460,19 +3441,13 @@ export const courses = [
     ],
 
     whoShouldAttend: [
-      "HSE Officers",
-      "Safety Officers",
-      "HSE Engineers",
-      "Safety Engineers",
+      
       "Supervisors and Team Leaders",
       "HSE Managers",
       "Safety Managers",
       "Internal Auditors",
       "Compliance Officers",
       "EHS Professionals",
-      "Quality and Safety Professionals",
-      "Construction Safety Professionals",
-      "Manufacturing Safety Professionals",
       "Facility Management Professionals",
       "Professionals responsible for workplace inspections",
     ],
@@ -3770,20 +3745,9 @@ export const courses = [
     ],
 
     whoShouldAttend: [
-      "HSE Officers",
-      "Safety Officers",
-      "HSE Engineers",
-      "Safety Engineers",
-      "HSE Supervisors",
-      "Safety Supervisors",
-      "HSE Managers",
-      "Safety Managers",
+   
       "Risk Management Professionals",
       "Internal Auditors",
-      "Compliance Officers",
-      "EHS Professionals",
-      "Quality and Safety Professionals",
-      "Construction Safety Professionals",
       "Oil and Gas Safety Professionals",
       "Manufacturing Safety Professionals",
       "Professionals responsible for audit preparation and compliance",
@@ -4073,20 +4037,11 @@ export const courses = [
     ],
 
     whoShouldAttend: [
-      "HSE Officers",
-      "Safety Officers",
-      "HSE Engineers",
-      "Safety Engineers",
-      "HSE Supervisors",
-      "Safety Supervisors",
-      "HSE Managers",
-      "Safety Managers",
-      "Document Controllers",
+
       "Compliance Officers",
       "Internal Auditors",
       "EHS Professionals",
-      "Quality and Safety Professionals",
-      "Construction Safety Professionals",
+    
       "Manufacturing Safety Professionals",
       "Consultants and Trainers",
       "Professionals responsible for HSE documentation and audits",
@@ -4379,22 +4334,12 @@ export const courses = [
 
     whoShouldAttend: [
       "HSE Officers",
-      "Safety Officers",
       "HSE Engineers",
       "Safety Engineers",
-      "HSE Supervisors",
-      "Safety Supervisors",
-      "HSE Managers",
-      "Safety Managers",
-      "Incident Investigation Team Members",
-      "Internal Auditors",
-      "Compliance Officers",
-      "EHS Professionals",
+
       "Construction Safety Professionals",
-      "Oil and Gas Safety Professionals",
-      "Manufacturing Safety Professionals",
+\      "Manufacturing Safety Professionals",
       "Supervisors and Team Leaders",
-      "Professionals responsible for incident management and safety improvement",
     ],
 
     certification:
@@ -4683,19 +4628,10 @@ export const courses = [
 
     whoShouldAttend: [
       "HSE Officers",
-      "Safety Officers",
-      "HSE Engineers",
-      "Safety Engineers",
-      "HSE Supervisors",
-      "Safety Supervisors",
-      "HSE Managers",
-      "Safety Managers",
-      "Contractor Supervisors",
-      "Project Managers",
+     
       "Compliance Officers",
       "Internal Auditors",
-      "EHS Professionals",
-      "Construction Safety Professionals",
+    
       "Oil and Gas Safety Professionals",
       "Manufacturing Safety Professionals",
       "Professionals managing contractor safety performance",
@@ -4998,17 +4934,11 @@ export const courses = [
       "HSE Officers",
       "Safety Officers",
       "HSE Engineers",
-      "Safety Engineers",
-      "HSE Supervisors",
-      "Safety Supervisors",
-      "HSE Managers",
-      "Safety Managers",
+     
       "Internal Audit Team Members",
       "Compliance Officers",
       "EHS Professionals",
-      "Quality and Safety Professionals",
-      "Construction Safety Professionals",
-      "Manufacturing Safety Professionals",
+    
       "Oil and Gas Safety Professionals",
       "Professionals involved in HSE system implementation and review",
     ],
@@ -5301,18 +5231,10 @@ export const courses = [
     whoShouldAttend: [
       "HSE Officers",
       "Safety Officers",
-      "HSE Engineers",
-      "Safety Engineers",
-      "HSE Supervisors",
-      "Safety Supervisors",
-      "HSE Managers",
-      "Safety Managers",
-      "Quality Assurance Professionals",
+ 
       "Internal Auditors",
       "Compliance Officers",
-      "EHS Professionals",
-      "Quality and Safety Professionals",
-      "Construction Safety Professionals",
+   
       "Manufacturing Safety Professionals",
       "Oil and Gas Safety Professionals",
       "Professionals involved in HSE system improvement and performance monitoring",
@@ -5606,17 +5528,10 @@ export const courses = [
       "HSE Officers",
       "Safety Officers",
       "HSE Engineers",
-      "Safety Engineers",
-      "HSE Supervisors",
-      "Safety Supervisors",
-      "HSE Managers",
+  
       "Safety Managers",
       "Permit Issuers and Receivers",
-      "Supervisors and Team Leaders",
-      "Internal Auditors",
-      "Compliance Officers",
-      "EHS Professionals",
-      "Construction Safety Professionals",
+  
       "Oil and Gas Safety Professionals",
       "Manufacturing Safety Professionals",
       "Professionals responsible for high-risk work activities",
@@ -5908,19 +5823,12 @@ export const courses = [
     whoShouldAttend: [
       "HSE Officers",
       "Safety Officers",
-      "HSE Engineers",
-      "Safety Engineers",
-      "HSE Supervisors",
-      "Safety Supervisors",
+  
       "HSE Managers",
       "Safety Managers",
-      "Risk Assessment Team Members",
-      "Internal Auditors",
-      "Compliance Officers",
-      "EHS Professionals",
+      
       "Construction Safety Professionals",
       "Manufacturing Safety Professionals",
-      "Oil and Gas Safety Professionals",
       "Professionals responsible for workplace risk management",
     ],
 

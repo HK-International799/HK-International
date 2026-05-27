@@ -15,6 +15,13 @@ const scenarioExamSchema = new mongoose.Schema(
       default: "draft",
     },
     allowReattempt: { type: Boolean, default: false },
+    // Optional course association — kept backward-compatible.
+    // Existing scenario exams without a courseId remain visible to all students.
+    courseId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course",
+      default: null,
+    },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
@@ -22,5 +29,6 @@ const scenarioExamSchema = new mongoose.Schema(
 
 scenarioExamSchema.index({ status: 1 });
 scenarioExamSchema.index({ createdBy: 1 });
+scenarioExamSchema.index({ courseId: 1 });
 
 export default mongoose.model("ScenarioExam", scenarioExamSchema);

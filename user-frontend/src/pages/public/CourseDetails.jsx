@@ -224,7 +224,7 @@ export default function CoursePage() {
           </h1>
           <p className="text-slate-500 mb-8">
             The course you are looking for doesn't exist or has been moved.
-          </p>
+          </p> 
           <Link
             to="/courses"
             className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold"

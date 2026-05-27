@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, FileText, Clock, CheckCircle2, Hourglass } from "lucide-react";
+import {
+  ArrowLeft,
+  FileText,
+  Clock,
+  CheckCircle2,
+  Hourglass,
+} from "lucide-react";
 import AdminLayout from "../../components/layout/AdminLayout";
 import { getExamSubmissions } from "../../services/scenarioExamService";
 
@@ -98,11 +104,10 @@ export default function AdminSubmissionsPage() {
                     <td className="p-3">
                       <span
                         className={`px-2 py-0.5 rounded-full text-xs ${statusBadge(
-                          s.status
+                          s.status,
                         )}`}
                       >
-                        {statusIcon(s.status)}{" "}
-                        {s.status.replace("_", " ")}
+                        {statusIcon(s.status)} {s.status.replace("_", " ")}
                       </span>
                     </td>
                     <td className="p-3 text-gray-600">

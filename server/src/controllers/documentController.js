@@ -1,4 +1,5 @@
 import Document from "../models/Document.js";
+import User from "../models/User.js";
 
 // ✅ Upload Document (Student Only Recommended)
 export const uploadDocument = async (req, res) => {
@@ -54,14 +55,49 @@ export const getAllDocuments = async (req, res) => {
 
     let filter = {};
 
-    // 🎯 Student → only their docs
+    // 🎯 Student → only docs belonging to courses they're enrolled in.
+    //    Docs with courseId === null are NOT visible to students.
     if (req.user.role === "student") {
-      filter.uploadedBy = req.user.id;
+      const student = await User.findById(req.user.id).select("enrolledCourses");
+      const enrolled = student?.enrolledCourses || [];
+
+      // No enrollments → return empty list gracefully (no server error)
+      if (enrolled.length === 0) {
+        return res.status(200).json({
+          success: true,
+          total: 0,
+          page: Number(page),
+          pages: 0,
+          data: [],
+        });
+      }
+
+      filter.courseId = { $in: enrolled };
     }
 
-    // 🎯 Admin/Tutor → full access + filters
+    // 🎯 Admin/Tutor → full access + filters (unchanged)
     if (status) filter.status = status;
-    if (courseId) filter.courseId = courseId;
+    if (courseId) {
+      // For students, intersect requested courseId with enrolled courses.
+      // If a student requests a course they're not enrolled in -> empty result.
+      if (req.user.role === "student") {
+        const allowed = (filter.courseId?.$in || []).some(
+          (id) => id?.toString() === courseId.toString()
+        );
+        if (!allowed) {
+          return res.status(200).json({
+            success: true,
+            total: 0,
+            page: Number(page),
+            pages: 0,
+            data: [],
+          });
+        }
+        filter.courseId = courseId;
+      } else {
+        filter.courseId = courseId;
+      }
+    }
 
     const skip = (page - 1) * limit;
 
@@ -99,12 +135,23 @@ export const getDocumentById = async (req, res) => {
       return res.status(404).json({ message: "Document not found" });
     }
 
-    // 🔐 Student can only view own doc
-    if (
-      req.user.role === "student" &&
-      document.uploadedBy._id.toString() !== req.user.id
-    ) {
-      return res.status(403).json({ message: "Access denied" });
+    // 🔐 Student access: own upload OR enrolled in the document's course.
+    if (req.user.role === "student") {
+      const isOwner =
+        document.uploadedBy?._id?.toString() === req.user.id?.toString();
+      let isEnrolled = false;
+      const docCourseId = document.courseId?.toString();
+      if (docCourseId) {
+        const student = await User.findById(req.user.id).select(
+          "enrolledCourses"
+        );
+        isEnrolled = (student?.enrolledCourses || []).some(
+          (id) => id?.toString() === docCourseId
+        );
+      }
+      if (!isOwner && !isEnrolled) {
+        return res.status(403).json({ message: "Access denied" });
+      }
     }
 
     res.status(200).json({

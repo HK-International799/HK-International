@@ -1,207 +1,18 @@
-// import Exam from "../models/Exam.js";
-// import {
-//   buildQuestionSet,
-//   getQuestionsByCourse,
-// } from "../utils/questionUtils.js";
-
-// // ─── CREATE EXAM ────────────────────────────────────────────────────────────
-// // POST /api/exam/create
-// const createExam = async (req, res) => {
-//   try {
-//     console.log("📥 Incoming createExam request");
-//     console.log("🧾 Body:", req.body);
-//     console.log("👤 User:", req.user);
-
-//     // ✅ AUTH CHECK (prevents crash)
-//     if (!req.user) {
-//       console.error("❌ No user found in request (auth failed)");
-//       return res.status(401).json({ message: "Unauthorized" });
-//     }
-
-//     const {
-//       title,
-//       description,
-//       courseId,
-//       timeLimit,
-//       totalQuestions,
-//       passingScore,
-//       maxAttempts,
-//       allowReattempt,
-//       reattemptNewQuestions,
-//       manualQuestions = [],
-//     } = req.body;
-
-//     // ✅ VALIDATION
-//     if (!title || !courseId || !timeLimit || !totalQuestions) {
-//       console.warn("⚠️ Missing required fields");
-//       return res.status(400).json({
-//         message: "title, courseId, timeLimit, totalQuestions are required",
-//       });
-//     }
-
-//     console.log("📊 Building question set...");
-
-//     // ✅ BUILD QUESTION SET
-//     const { questionSet, error } = await buildQuestionSet(
-//       courseId,
-//       Number(totalQuestions),
-//       manualQuestions,
-//     );
-
-//     console.log("📦 Question set size:", questionSet?.length);
-
-//     if (error) {
-//       console.warn("⚠️ Question set error:", error);
-//       return res.status(422).json({ message: error });
-//     }
-
-//     if (!questionSet || !questionSet.length) {
-//       console.error("❌ Empty question set");
-//       return res.status(500).json({
-//         message: "Failed to generate question set",
-//       });
-//     }
-
-//     console.log("💾 Creating exam in DB...");
-
-//     // ✅ CREATE EXAM
-//     const exam = await Exam.create({
-//       title,
-//       description,
-//       courseId,
-//       timeLimit: Number(timeLimit),
-//       totalQuestions: Number(totalQuestions),
-//       questions: questionSet,
-//       passingScore: passingScore !== undefined ? Number(passingScore) : 40,
-//       maxAttempts: maxAttempts !== undefined ? Number(maxAttempts) : 1,
-//       allowReattempt: Boolean(allowReattempt),
-//       reattemptNewQuestions:
-//         reattemptNewQuestions !== undefined
-//           ? Boolean(reattemptNewQuestions)
-//           : true,
-//       isActive: true,
-//       createdBy: req.user._id, // ✅ now safe
-//     });
-
-//     console.log("✅ Exam created:", exam._id);
-
-//     return res.status(201).json({
-//       message: "Exam created successfully",
-//       exam,
-//     });
-//   } catch (err) {
-//     console.error("❌ createExam ERROR:", err);
-
-//     return res.status(500).json({
-//       message: "Server error",
-//       error: err.message,
-//     });
-//   }
-// };
-
-// // ─── LIST ALL EXAMS (ADMIN) ──────────────────────────────────────────────────
-// const listExams = async (req, res) => {
-//   try {
-//     const exams = await Exam.find()
-//       .populate("courseId", "title name")
-//       .populate("createdBy", "name email")
-//       .select("-questions")
-//       .sort({ createdAt: -1 });
-
-//     return res.json(exams);
-//   } catch (err) {
-//     return res
-//       .status(500)
-//       .json({ message: "Server error", error: err.message });
-//   }
-// };
-
-// // ─── LIST ACTIVE EXAMS (STUDENT) ────────────────────────────────────────────
-// const listActiveExams = async (req, res) => {
-//   try {
-//     const exams = await Exam.find({ isActive: true })
-//       .populate("courseId", "title name")
-//       .select("-questions")
-//       .sort({ createdAt: -1 });
-
-//     return res.json(exams);
-//   } catch (err) {
-//     return res
-//       .status(500)
-//       .json({ message: "Server error", error: err.message });
-//   }
-// };
-
-// // ─── GET SINGLE EXAM ────────────────────────────────────────────────────────
-// const getExam = async (req, res) => {
-//   try {
-//     const exam = await Exam.findById(req.params.id)
-//       .populate("courseId", "title name")
-//       .populate("createdBy", "name email");
-
-//     if (!exam) return res.status(404).json({ message: "Exam not found" });
-
-//     return res.json(exam);
-//   } catch (err) {
-//     return res
-//       .status(500)
-//       .json({ message: "Server error", error: err.message });
-//   }
-// };
-
-// // ─── TOGGLE ACTIVE STATUS ───────────────────────────────────────────────────
-// const toggleExamStatus = async (req, res) => {
-//   try {
-//     const exam = await Exam.findById(req.params.id);
-//     if (!exam) return res.status(404).json({ message: "Exam not found" });
-
-//     exam.isActive = !exam.isActive;
-//     await exam.save();
-
-//     return res.json({
-//       message: `Exam ${exam.isActive ? "activated" : "deactivated"}`,
-//       isActive: exam.isActive,
-//     });
-//   } catch (err) {
-//     return res
-//       .status(500)
-//       .json({ message: "Server error", error: err.message });
-//   }
-// };
-
-// // ─── GET QUESTION COUNT ─────────────────────────────────────────────────────
-// const getCourseQuestionCount = async (req, res) => {
-//   try {
-//     const questions = await getQuestionsByCourse(req.params.courseId);
-
-//     return res.json({
-//       count: questions.length,
-//       courseId: req.params.courseId,
-//     });
-//   } catch (err) {
-//     return res
-//       .status(500)
-//       .json({ message: "Server error", error: err.message });
-//   }
-// };
-
-// // ✅ DEFAULT EXPORT (VERY IMPORTANT)
-// export default {
-//   createExam,
-//   listExams,
-//   listActiveExams,
-//   getExam,
-//   toggleExamStatus,
-//   getCourseQuestionCount,
-// };
-
-
 
 // controllers/examController.js
 
 import mongoose from "mongoose";
 import Exam from "../models/Exam.js";
+import User from "../models/User.js";
 import { buildQuestionSet, getQuestionsByCourse } from "../utils/questionUtils.js";
+
+// ─── HELPER: check whether a courseId is in the student's enrolledCourses ───
+// Mirrors the enrollment-check pattern from src/services/assignmentService.js
+const _isStudentEnrolled = (enrolledCourses = [], courseId) => {
+  if (!courseId) return false;
+  const target = courseId.toString();
+  return enrolledCourses.some((id) => id?.toString() === target);
+};
 
 // ─── CREATE EXAM ─────────────────────────────────────────────────────────────
 // POST /api/exams/create
@@ -283,7 +94,23 @@ const listExams = async (req, res) => {
 // GET /api/exams/active
 const listActiveExams = async (req, res) => {
   try {
-    const exams = await Exam.find({ isActive: true })
+    const filter = { isActive: true };
+
+    // Students: restrict to exams whose courseId is in their enrolledCourses
+    if (req.user?.role === "student") {
+      const student = await User.findById(req.user._id).select("enrolledCourses");
+      const enrolled = student?.enrolledCourses || [];
+
+      // No enrollments -> return empty list (NOT an error)
+      if (enrolled.length === 0) {
+        return res.json([]);
+      }
+
+      filter.courseId = { $in: enrolled };
+    }
+    // Admin/tutor: no extra filter — preserve existing behavior
+
+    const exams = await Exam.find(filter)
       .populate("courseId", "title name")
       .select("-questions")
       .sort({ createdAt: -1 });
@@ -307,6 +134,19 @@ const getExam = async (req, res) => {
       .populate("createdBy", "name email");
 
     if (!exam) return res.status(404).json({ message: "Exam not found" });
+
+    // Enrollment guard: students can only fetch exams for courses they're enrolled in
+    if (req.user?.role === "student") {
+      const student = await User.findById(req.user._id).select("enrolledCourses");
+      const examCourseId =
+        exam.courseId?._id?.toString() || exam.courseId?.toString();
+
+      if (!_isStudentEnrolled(student?.enrolledCourses, examCourseId)) {
+        return res
+          .status(403)
+          .json({ message: "You are not enrolled in the course for this exam" });
+      }
+    }
 
     return res.json(exam);
   } catch (err) {

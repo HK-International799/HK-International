@@ -20,6 +20,8 @@ import {
   deleteScenario,
   publishScenarioExam,
 } from "../../services/scenarioExamService";
+import { getCourses } from "../../services/courseService";
+getCourses;
 
 export default function AdminExamBuilderPage() {
   const { id } = useParams();
@@ -34,9 +36,11 @@ export default function AdminExamBuilderPage() {
     passingScore: 0,
     allowReattempt: false,
     status: "draft",
+    courseId: "",
   });
   const [scenarios, setScenarios] = useState([]);
   const [examId, setExamId] = useState(id || null);
+  const [courses, setCourses] = useState([]);
 
   /* ── UI state ───────────────────────────────────────────── */
   const [loading, setLoading] = useState(isEdit);
@@ -61,6 +65,7 @@ export default function AdminExamBuilderPage() {
           passingScore: d.exam.passingScore,
           allowReattempt: d.exam.allowReattempt,
           status: d.exam.status,
+          courseId: d.exam.courseId?._id || "",
         });
         setScenarios(d.questions || []);
       } catch (e) {
@@ -70,6 +75,17 @@ export default function AdminExamBuilderPage() {
       }
     })();
   }, [id, isEdit]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await getCourses();
+        setCourses(res);
+      } catch (err) {
+        console.error("Failed to load courses");
+      }
+    })();
+  }, []);
 
   const flash = (msg) => {
     setSuccessMsg(msg);
@@ -129,9 +145,7 @@ export default function AdminExamBuilderPage() {
     setAddingIdx(qId);
     try {
       const res = await updateScenario(qId, data);
-      setScenarios((prev) =>
-        prev.map((q) => (q._id === qId ? res.data : q))
-      );
+      setScenarios((prev) => prev.map((q) => (q._id === qId ? res.data : q)));
       flash("Scenario updated.");
     } catch (e) {
       setErr(e.response?.data?.message || "Failed to update scenario");
@@ -144,7 +158,7 @@ export default function AdminExamBuilderPage() {
   const handleDeleteScenario = async (qId) => {
     if (
       !window.confirm(
-        "Delete this scenario? The associated PDF will also be removed from Cloudinary."
+        "Delete this scenario? The associated PDF will also be removed from Cloudinary.",
       )
     )
       return;
@@ -166,7 +180,7 @@ export default function AdminExamBuilderPage() {
     }
     if (
       !window.confirm(
-        "Publish this exam? Students will be able to see and attempt it."
+        "Publish this exam? Students will be able to see and attempt it.",
       )
     )
       return;
@@ -281,6 +295,26 @@ export default function AdminExamBuilderPage() {
 
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">
+                Select Course
+              </label>
+
+              <select
+                className="w-full border rounded-lg p-2.5 text-sm"
+                value={exam.courseId || ""}
+                onChange={(e) => setExam({ ...exam, courseId: e.target.value })}
+              >
+                <option value="">-- No Course (Public Exam) --</option>
+
+                {courses.map((course) => (
+                  <option key={course._id} value={course._id}>
+                    {course.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">
                 Passing Score
               </label>
               <input
@@ -344,7 +378,8 @@ export default function AdminExamBuilderPage() {
                 <FileText size={16} className="text-indigo-500" />
                 Scenario Blocks
                 <span className="text-xs text-gray-400 font-normal">
-                  ({scenarios.length} scenario{scenarios.length !== 1 ? "s" : ""})
+                  ({scenarios.length} scenario
+                  {scenarios.length !== 1 ? "s" : ""})
                 </span>
               </h2>
             </div>
@@ -417,264 +452,3 @@ export default function AdminExamBuilderPage() {
     </AdminLayout>
   );
 }
-
-
-
-
-
-// import { useEffect, useState } from "react";
-// import { useNavigate, useParams } from "react-router-dom";
-// import { ArrowLeft, Plus, Save } from "lucide-react";
-// import AdminLayout from "../../components/layout/AdminLayout";
-// import QuestionEditor from "../../components/ScenarioExam/QuestionEditor";
-// import {
-//   createScenarioExam,
-//   updateScenarioExam,
-//   getScenarioExamDetails,
-//   addScenarioQuestion,
-//   updateScenarioQuestion,
-//   deleteScenarioQuestion,
-// } from "../../services/scenarioExamService";
-
-// export default function AdminExamBuilderPage() {
-//   const { id } = useParams(); // undefined when creating
-//   const navigate = useNavigate();
-//   const isEdit = Boolean(id);
-
-//   const [exam, setExam] = useState({
-//     title: "",
-//     description: "",
-//     duration: 60,
-//     passingScore: 0,
-//     allowReattempt: false,
-//     status: "draft",
-//   });
-//   const [questions, setQuestions] = useState([]);
-//   const [examId, setExamId] = useState(id || null);
-//   const [loading, setLoading] = useState(isEdit);
-//   const [saving, setSaving] = useState(false);
-//   const [err, setErr] = useState("");
-//   const [adding, setAdding] = useState(false);
-
-//   useEffect(() => {
-//     if (!isEdit) return;
-//     (async () => {
-//       try {
-//         const res = await getScenarioExamDetails(id);
-//         const data = res.data;
-//         setExam({
-//           title: data.exam.title,
-//           description: data.exam.description,
-//           duration: data.exam.duration,
-//           passingScore: data.exam.passingScore,
-//           allowReattempt: data.exam.allowReattempt,
-//           status: data.exam.status,
-//         });
-//         setQuestions(data.questions || []);
-//       } catch (e) {
-//         setErr(e.response?.data?.message || "Failed to load exam");
-//       } finally {
-//         setLoading(false);
-//       }
-//     })();
-//   }, [id, isEdit]);
-
-//   const handleSaveExam = async () => {
-//     setErr("");
-//     if (!exam.title.trim()) return setErr("Title is required");
-//     if (!exam.duration || exam.duration < 1)
-//       return setErr("Duration must be at least 1 minute");
-
-//     setSaving(true);
-//     try {
-//       if (isEdit) {
-//         await updateScenarioExam(id, exam);
-//       } else {
-//         const res = await createScenarioExam(exam);
-//         setExamId(res.data._id);
-//         navigate(`/admin/scenario-exams/${res.data._id}/edit`, {
-//           replace: true,
-//         });
-//       }
-//     } catch (e) {
-//       setErr(e.response?.data?.message || "Save failed");
-//     } finally {
-//       setSaving(false);
-//     }
-//   };
-
-//   const handleAddQuestion = async (data) => {
-//     if (!examId) {
-//       alert("Please save the exam first before adding questions.");
-//       return;
-//     }
-//     setAdding(true);
-//     try {
-//       const res = await addScenarioQuestion(examId, data);
-//       setQuestions((prev) => [...prev, res.data]);
-//     } catch (e) {
-//       alert(e.response?.data?.message || "Failed to add question");
-//     } finally {
-//       setAdding(false);
-//     }
-//   };
-
-//   const handleUpdateQuestion = async (qId, data) => {
-//     try {
-//       const res = await updateScenarioQuestion(qId, data);
-//       setQuestions((prev) => prev.map((q) => (q._id === qId ? res.data : q)));
-//     } catch (e) {
-//       alert(e.response?.data?.message || "Failed to update question");
-//     }
-//   };
-
-//   const handleDeleteQuestion = async (qId) => {
-//     if (!confirm("Delete this question?")) return;
-//     try {
-//       await deleteScenarioQuestion(qId);
-//       setQuestions((prev) => prev.filter((q) => q._id !== qId));
-//     } catch (e) {
-//       alert(e.response?.data?.message || "Failed to delete");
-//     }
-//   };
-
-//   if (loading) {
-//     return (
-//       <AdminLayout>
-//         <div className="p-6 text-gray-500">Loading…</div>
-//       </AdminLayout>
-//     );
-//   }
-
-//   return (
-//     <AdminLayout>
-//       <div className="p-6 space-y-5">
-//         <button
-//           onClick={() => navigate("/admin/scenario-exams")}
-//           className="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1"
-//         >
-//           <ArrowLeft size={14} /> Back to exams
-//         </button>
-
-//         <h1 className="text-2xl font-semibold text-gray-800">
-//           {isEdit ? "Edit Scenario Exam" : "Create Scenario Exam"}
-//         </h1>
-
-//         {err && (
-//           <div className="bg-red-50 border border-red-200 text-red-700 text-sm p-3 rounded-md">
-//             {err}
-//           </div>
-//         )}
-
-//         {/* Exam basic info */}
-//         <div className="bg-white border rounded-lg p-5 space-y-3">
-//           <h2 className="font-medium text-gray-800">Exam Details</h2>
-//           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-//             <div>
-//               <label className="text-xs text-gray-500">Title</label>
-//               <input
-//                 className="w-full border rounded-md p-2 text-sm"
-//                 value={exam.title}
-//                 onChange={(e) => setExam({ ...exam, title: e.target.value })}
-//               />
-//             </div>
-//             <div>
-//               <label className="text-xs text-gray-500">
-//                 Duration (minutes)
-//               </label>
-//               <input
-//                 type="number"
-//                 min="1"
-//                 className="w-full border rounded-md p-2 text-sm"
-//                 value={exam.duration}
-//                 onChange={(e) =>
-//                   setExam({ ...exam, duration: Number(e.target.value) })
-//                 }
-//               />
-//             </div>
-//             <div>
-//               <label className="text-xs text-gray-500">Passing Score</label>
-//               <input
-//                 type="number"
-//                 min="0"
-//                 className="w-full border rounded-md p-2 text-sm"
-//                 value={exam.passingScore}
-//                 onChange={(e) =>
-//                   setExam({ ...exam, passingScore: Number(e.target.value) })
-//                 }
-//               />
-//             </div>
-//             <label className="flex items-center gap-2 mt-6 text-sm">
-//               <input
-//                 type="checkbox"
-//                 checked={!!exam.allowReattempt}
-//                 onChange={(e) =>
-//                   setExam({ ...exam, allowReattempt: e.target.checked })
-//                 }
-//               />
-//               Allow reattempt by default
-//             </label>
-//           </div>
-//           <div>
-//             <label className="text-xs text-gray-500">Description</label>
-//             <textarea
-//               rows={3}
-//               className="w-full border rounded-md p-2 text-sm"
-//               value={exam.description}
-//               onChange={(e) =>
-//                 setExam({ ...exam, description: e.target.value })
-//               }
-//             />
-//           </div>
-//           <button
-//             onClick={handleSaveExam}
-//             disabled={saving}
-//             className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-md px-4 py-2 disabled:opacity-60"
-//           >
-//             <Save size={14} /> {saving ? "Saving…" : "Save Exam"}
-//           </button>
-//         </div>
-
-//         {/* Questions */}
-//         {examId && (
-//           <div className="bg-white border rounded-lg p-5 space-y-4">
-//             <div className="flex items-center justify-between">
-//               <h2 className="font-medium text-gray-800">
-//                 Questions ({questions.length})
-//               </h2>
-//             </div>
-
-//             {questions.length === 0 && (
-//               <div className="text-sm text-gray-500 border border-dashed rounded-md p-4 text-center">
-//                 No questions yet. Add your first question below.
-//               </div>
-//             )}
-
-//             <div className="space-y-3">
-//               {questions.map((q) => (
-//                 <QuestionEditor
-//                   key={q._id}
-//                   question={q}
-//                   onSave={(data) => handleUpdateQuestion(q._id, data)}
-//                   onDelete={() => handleDeleteQuestion(q._id)}
-//                 />
-//               ))}
-//             </div>
-
-//             <div className="border-t pt-4">
-//               <h3 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-//                 <Plus size={14} /> Add a new question
-//               </h3>
-//               <QuestionEditor
-//                 key={`new-${questions.length}`}
-//                 question={{ questionNumber: questions.length + 1 }}
-//                 onSave={handleAddQuestion}
-//                 saving={adding}
-//               />
-//             </div>
-//           </div>
-//         )}
-//       </div>
-//     </AdminLayout>
-//   );
-// }

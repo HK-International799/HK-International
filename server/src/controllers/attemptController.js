@@ -2,6 +2,7 @@
 
 import Exam from "../models/Exam.js";
 import Attempt from "../models/Attempt.js";
+import User from "../models/User.js";
 import { randomSelect } from "../utils/questionUtils.js";
 
 // ─── START EXAM ATTEMPT ───────────────────────────────────────────────────────
@@ -19,6 +20,21 @@ const startExam = async (req, res) => {
 
     if (!exam.isActive) {
       return res.status(403).json({ message: "Exam is not active" });
+    }
+
+    // ─── ENROLLMENT GUARD (students only) ────────────────────────────────────
+    // Mirrors the enrollment-check pattern used in assignmentService.js
+    if (req.user?.role === "student") {
+      const student = await User.findById(req.user._id).select("enrolledCourses");
+      const examCourseId = exam.courseId?.toString();
+      const enrolled = (student?.enrolledCourses || []).some(
+        (id) => id?.toString() === examCourseId
+      );
+      if (!enrolled) {
+        return res
+          .status(403)
+          .json({ message: "You are not enrolled in this course" });
+      }
     }
 
     // Count all attempts for this student + exam
