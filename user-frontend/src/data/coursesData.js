@@ -4338,7 +4338,7 @@ export const courses = [
       "Safety Engineers",
 
       "Construction Safety Professionals",
-\      "Manufacturing Safety Professionals",
+      "Manufacturing Safety Professionals",
       "Supervisors and Team Leaders",
     ],
 
