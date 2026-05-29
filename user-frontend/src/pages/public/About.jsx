@@ -181,27 +181,7 @@ export default function About() {
         </div>
       </section>
 
-      {/* FAQ */}
-      <section className="py-24" aria-label="Frequently Asked Questions">
-        <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            Frequently Asked Questions
-          </h2>
-
-          <div itemScope itemType="https://schema.org/FAQPage">
-            {faqs.map((faq, index) => (
-              <div
-                key={index}
-                itemScope
-                itemProp="mainEntity"
-                itemType="https://schema.org/Question"
-              >
-                <FaqItem {...faq} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      
 
       {/* CTA */}
       <section className="bg-blue-600 text-white py-24 text-center">

@@ -44,20 +44,7 @@ export const brandKeywords = [
   "hkinternational.uk verification",
   "hkinternational.uk online courses",
 
-  // Company Searches
-  "1A HK International company",
-  "1A HK International institute",
-  "1A HK International training institute",
-  "1A HK International academy",
-  "1A HK International certifications",
-  "1A HK International training provider",
-  "1A HK International accredited",
-  "1A HK International approval",
-  "1A HK International verification",
-  "1A HK International student portal",
-  "1A HK International LMS",
-  "1A HK International online learning",
-  "1A HK International learning platform",
+
 
   // Login / Student Portal
   "1A HK International login",
@@ -193,19 +180,7 @@ export const brandKeywords = [
   "online safety training platform",
   "student certification dashboard",
 
-  // Alternative Searches / Misspellings
-  "hk interntional",
-  "h k international",
-  "hkint",
-  "1ahk",
-  "1ahk international",
-  "1a hkint",
-  "hk international course",
-  "hk international training",
-  "hk international certification",
-  "hkinternational courses",
-  "hkinternational safety training",
-  "hkinternational online certification",
+  
 ];
 
 /* ============================================================
@@ -402,15 +377,16 @@ export const ioshKeywords = [
   "HK International IOSH training",
   "hkinternational IOSH",
 
-  // Misspellings & Alternative Searches
-  "iosh managing safelye",
-  "iosh managng safely",
-  "iosh saftey course",
-  "iosh online certficate",
-  "iosh traning",
-  "iosh certificat",
-  "iosh uk saftey",
-  "iosh occupational saftey",
+
+  "IOSH Managing Safely for managers",
+  "IOSH Managing Safely for supervisors",
+  "IOSH Level 3 OSH fees",
+  "IOSH Level 3 OSH assessment",
+  "IOSH Level 3 Ofqual regulated qualification",
+  "IOSH Level 3 Tech IOSH eligibility",
+  "IOSH Level 3 vs NEBOSH IGC",
+  "IOSH Level 3 for HSE professionals",
+  "IOSH Level 3 for supervisors and managers",
 ];
 
 /* ============================================================
@@ -646,16 +622,20 @@ export const othmKeywords = [
   "hkinternational OTHM",
   "1A HK OTHM online training",
 
-  // Misspellings & Variations
-  "otm diploma",
-  "othm diplomma",
-  "othm saftey diploma",
-  "othm health and saftey",
-  "othm qualfication",
-  "othm online certfication",
-  "othm traning",
-  "othm verifier",
-  "othm asseser course",
+
+  "OTHM UK qualifications",
+  "OTHM Ofqual regulated qualification",
+  "OTHM assignment based diploma",
+  "OTHM Level 6 alternative to NEBOSH Diploma",
+  "OTHM Level 7 Diploma in Occupational Health and Safety Management",
+  "OTHM Level 7 Environmental and Sustainability Management",
+  "OTHM Level 7 Sustainability Diploma",
+  "OTHM ESG diploma",
+  "OTHM diploma for HSE managers",
+  "OTHM diploma for safety officers",
+  "OTHM diploma for career progression",
+  "NEBOSH Diploma alternative",
+  "UK regulated HSE diploma",
 ];
 
 /* ============================================================
@@ -750,6 +730,16 @@ export const pecbKeywords = [
   "PECB ATP",
   "PECB authorized training",
   "PECB exam preparation",
+
+  "PECB training partner",
+  "ISO 45001 Occupational Health and Safety Management System",
+  "ISO 9001 Quality Management System",
+  "ISO 14001 Environmental Management System",
+  "ISO management system training",
+  "QMS auditor training",
+  "EMS auditor training",
+  "OHSMS auditor training",
+  "ISMS auditor training",
 ];
 
 /* ============================================================
@@ -822,6 +812,10 @@ export const oshaKeywords = [
   "best OSHA course online",
   "buy OSHA course online",
   "OSHA renewal",
+
+  "OSHA safety course",
+  "OSHA compliance training",
+  "OSHA for construction workers",
 ];
 
 /* ============================================================
@@ -913,6 +907,14 @@ export const ciehKeywords = [
   "Ofqual regulated first aid",
   "Royal Society for Public Health",
   "HABC food safety",
+
+  "CIEH food safety course",
+  "CIEH food hygiene course",
+  "food safety course for restaurants",
+  "food safety course for catering",
+  "food safety supervisor course",
+  "CIEH First Aid course",
+  "first aid certificate online",
 ];
 
 /* ============================================================
@@ -1235,6 +1237,20 @@ export const generalHseKeywords = [
   "safety policy training",
   "safety statistics training",
   "KPI for HSE",
+
+  "HSE certificate online",
+  "HSE training institute",
+  "HSE training provider",
+  "HSE course for safety officer",
+  "HSE course for Gulf jobs",
+  "HSE course for UAE jobs",
+  "HSE course for Saudi Arabia jobs",
+  "occupational health and safety qualification",
+  "OSH qualification",
+  "safety manager course",
+  "corporate HSE training",
+  "online safety training with certificate",
+  "safety courses for working professionals",
 ];
 
 /* ============================================================

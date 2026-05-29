@@ -276,11 +276,7 @@ export default function Navbar() {
             </li>
 
             {/* ── COURSES MEGA MENU ── */}
-            <li 
-            className="relative"
-  onMouseEnter={() => setCoursesOpen(true)}
-  
-            >
+            <li className="relative" onMouseEnter={() => setCoursesOpen(true)}>
               <button
                 ref={coursesButtonRef}
                 onClick={() => setCoursesOpen((prev) => !prev)}
@@ -329,7 +325,7 @@ export default function Navbar() {
                   >
                     <div className="max-w-7xl mx-auto px-6 py-4">
                       {/* 3-column category grid */}
-                      <div className="grid grid-cols-3 gap-2">
+                      <div className="grid grid-cols-3 gap-2 pb-2">
                         {courseMenu.map((category, i) => {
                           const count = category.courses.filter(
                             (c) => c.name,
@@ -398,6 +394,7 @@ export default function Navbar() {
                           );
                         })}
                       </div>
+                      <hr />
 
                       {/* Course reveal panel — slides in below the grid */}
                       <AnimatePresence>
@@ -410,9 +407,9 @@ export default function Navbar() {
                             transition={{ duration: 0.22, ease: "easeOut" }}
                             className="overflow-hidden "
                           >
-                            <div className="mt-2 pt-2 border-t border-gray-100 ">
+                            <div className="m-1 border-t border-gray-100 ">
                               {/* Panel header */}
-                              <div className="flex items-center justify-between mb-4 ">
+                              <div className="flex items-center justify-between mb-3 ">
                                 <div className="flex items-center gap-3 ">
                                   <span className="text-sm font-semibold text-gray-900">
                                     {courseMenu[selectedCategory].title}
@@ -425,7 +422,7 @@ export default function Navbar() {
                                 <button
                                   onClick={() => setSelectedCategory(null)}
                                   aria-label="Close courses panel"
-                                  className="text-xs text-gray-600 hover:text-gray-600 flex items-center gap-1 transition-colors "
+                                  className="text-xs text-gray-600 hover:text-orange-600 flex items-center gap-1 transition-colors "
                                 >
                                   <svg
                                     className="w-3.5 h-3.5"
@@ -445,7 +442,7 @@ export default function Navbar() {
                                 </button>
                               </div>
 
-                              {/* Courses in 3-column grid */}
+                              {/* Courses in 4-column grid */}
                               <div className="grid grid-cols-4 gap-2 pb-2 ">
                                 {activeCourses.map((course, j) => (
                                   <Link
@@ -457,10 +454,10 @@ export default function Navbar() {
                                       setCoursesOpen(false);
                                       setSelectedCategory(null);
                                     }}
-                                    className="group flex items-start gap-2.5 px-3 py-2.5 rounded-lg hover:bg-indigo-50 transition-all duration-120 "
+                                    className="group flex items-start gap-2.5 px-2 py-1 rounded-lg hover:bg-indigo-100 transition-all duration-120 "
                                   >
                                     <span className="w-1.5 h-1.5 rounded-full bg-indigo-300 group-hover:bg-indigo-500 flex-shrink-0 mt-1.5 transition-colors " />
-                                    <span className="text-xs text-gray-600 group-hover:text-indigo-700 leading-snug transition-colors">
+                                    <span className="text-sm text-gray-600 group-hover:text-indigo-700 leading-snug transition-colors">
                                       {course.name}
                                     </span>
                                   </Link>
@@ -473,8 +470,8 @@ export default function Navbar() {
                     </div>
 
                     {/* Footer */}
-                    <div className="border-t border-gray-100 bg-gray-50 px-6 py-3 flex items-center justify-between rounded-2xl">
-                      <p className="text-xs text-gray-400">
+                    <div className="border-t border-gray-300 bg-gray-50 px-6 py-2 flex items-center justify-between rounded-2xl">
+                      <p className="text-xs text-gray-500">
                         {selectedCategory === null
                           ? "Click any category to explore its courses"
                           : `Showing courses for ${courseMenu[selectedCategory].title}`}
@@ -485,7 +482,7 @@ export default function Navbar() {
                           setCoursesOpen(false);
                           setSelectedCategory(null);
                         }}
-                        className="text-xs font-medium text-indigo-600 bg-white hover:bg-indigo-50 border border-indigo-100 px-4 py-1.5 rounded-md transition-colors"
+                        className="text-xs font-medium text-indigo-600 hover:text-orange-600 bg-white hover:bg-indigo-100 border border-indigo-300 px-4 py-1.5 rounded-md transition-colors hover:cursor-pointer"
                       >
                         View all courses →
                       </button>
@@ -632,8 +629,8 @@ export default function Navbar() {
                       to="/login"
                       title="Start learning - Login to enroll in courses"
                       aria-label="Start learning - Login"
-                      className="relative bg-gradient-to-r from-orange-500 to-orange-600 hover:from-indigo-600 hover:to-indigo-700 text-white px-6 py-2 rounded-lg shadow-lg transition-all duration-200"
-                    >
+                      className="relative bg-gradient-to-r from-orange-500  to-orange-600 hover:from-indigo-600 text-white px-4 py-2 rounded-xl hover:rounded-full shadow-lg transition-all ease-in-out "
+                    >6
                       Start Learning
                     </Link>
                   </motion.div>
