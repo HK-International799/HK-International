@@ -630,7 +630,7 @@ export default function Navbar() {
                       title="Start learning - Login to enroll in courses"
                       aria-label="Start learning - Login"
                       className="relative bg-gradient-to-r from-orange-500  to-orange-600 hover:from-indigo-600 text-white px-4 py-2 rounded-xl hover:rounded-full shadow-lg transition-all ease-in-out "
-                    >6
+                    >
                       Start Learning
                     </Link>
                   </motion.div>
