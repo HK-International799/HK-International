@@ -7,14 +7,20 @@ export default function HeroCarousel() {
 
   const slides = [
     {
+      type: "video",
+      src: "/slides/heroVideo.mp4",
+      title: "Industrial Construction Excellence",
+      subtitle: "Real-world project environments demonstrating international standards in health, safety, and environmental management"
+    },
+    {
       type: "image",
-      src: "/slides/safety-training.jpg",
+      src: "/slides/global-training.jpg",
       title: "Global Safety Certifications",
       subtitle: "Learn internationally recognized occupational safety programs"
     },
     {
       type: "image",
-      src: "/slides/HSE_slideShow.jpg",
+      src: "/slides/practical-industry-training.jpg",
       title: "Practical Industrial Training",
       subtitle: "Real world HSE training programs for professionals"
     },
@@ -31,7 +37,7 @@ export default function HeroCarousel() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % slides.length);
-    }, 6000);
+    }, 2000);
 
     return () => clearInterval(interval);
   }, []);

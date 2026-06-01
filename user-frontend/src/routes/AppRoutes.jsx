@@ -45,6 +45,10 @@ const Notifications = lazy(() => import("../pages/students/Notifications"));
 const Settings = lazy(() => import("../pages/students/Settings"));
 const ChangePassword = lazy(() => import("../pages/students/ChangePassword"));
 
+// Blog
+import Blog from "../pages/public/Blog";
+import BlogPost from "../pages/public/BlogPost";
+
 // ─── Orientation Pages ────────────────────────────────────────────────────────
 const OrientationSessions = lazy(
   () => import("../pages/students/OrientationSessions"),
@@ -120,9 +124,8 @@ export default function AppRoutes() {
           <Route path="/courses" element={<Courses />} />
           <Route path="/course/:id" element={<CourseDetails />} />
 
-
           {/* ---------Profiles--------------------------------------------- */}
-          <Route path="/profile/ashish" element={<AshishVed/>} />
+          <Route path="/profile/ashish" element={<AshishVed />} />
 
           {/* ── Auth ────────────────────────────────────────────────── */}
           <Route path="/login" element={<Login />} />
@@ -133,6 +136,10 @@ export default function AppRoutes() {
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-failed" element={<PaymentFailed />} />
+
+          {/* blog */}
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
 
           {/* ── Student Protected ───────────────────────────────────── */}
           <Route

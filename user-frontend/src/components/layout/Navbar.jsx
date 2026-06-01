@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaUserCircle } from "react-icons/fa";
@@ -205,6 +205,22 @@ export default function Navbar() {
     setSelectedCategory((prev) => (prev === index ? null : index));
   };
 
+  const navLinkClass = ({ isActive }) =>
+    `relative text-[15px] font-semibold transition-all duration-300
+   ${
+     isActive
+       ? "bg-gradient-to-r from-indigo-600 to-orange-500 bg-clip-text text-transparent"
+       : "text-slate-700 hover:bg-gradient-to-r hover:from-indigo-600 hover:to-orange-500 hover:bg-clip-text hover:text-transparent"
+   }
+   after:absolute after:left-1/2 after:-bottom-1
+   after:h-[2px] after:w-0
+   after:bg-gradient-to-r after:from-indigo-600 after:to-orange-500
+   after:transition-all after:duration-300
+   after:-translate-x-1/2
+   hover:after:w-full
+   ${isActive ? "after:w-full" : ""}
+  `;
+
   const activeCourses =
     selectedCategory !== null
       ? courseMenu[selectedCategory].courses.filter((c) => c.name)
@@ -263,50 +279,37 @@ export default function Navbar() {
           </motion.div>
 
           {/* DESKTOP MENU */}
-          <ul className="hidden md:flex gap-10 items-center font-medium">
-            <li>
-              <Link
+          <ul className="hidden md:flex items-center gap-8 lg:gap-10">
+            <motion.li whileHover={{ y: -4 }}>
+              <NavLink
                 to="/"
                 title="Home - 1A HK International"
                 aria-label="Go to Home page"
-                className="text-gray-800 hover:text-indigo-700 transition"
+                className={navLinkClass}
               >
                 Home
-              </Link>
-            </li>
+              </NavLink>
+            </motion.li>
 
             {/* ── COURSES MEGA MENU ── */}
             <li className="relative" onMouseEnter={() => setCoursesOpen(true)}>
               <button
                 ref={coursesButtonRef}
-                onClick={() => setCoursesOpen((prev) => !prev)}
+                onClick={() => {
+                  setCoursesOpen((prev) => !prev);
+                  navigate("/courses");
+                }}
                 title="Browse all accredited HSE courses"
                 aria-label="Toggle courses menu"
                 aria-haspopup="true"
                 aria-expanded={coursesOpen}
-                className={`flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg transition-all ${
-                  coursesOpen
-                    ? "bg-indigo-50 text-indigo-700"
-                    : "text-gray-800 hover:bg-gray-50 hover:text-indigo-700"
-                }`}
+                className={`group relative flex items-center gap-1 py-2 rounded-xl font-semibold text-[15px] transition-all duration-300 ${coursesOpen ? "bg-gradient-to-r from-indigo-50 to-orange-50" : "hover:bg-gradient-to-r hover:from-indigo-50 hover:to-orange-50"}`}
               >
-                Courses
-                <svg
-                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                    coursesOpen ? "rotate-180 text-indigo-600" : "text-gray-400"
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
+                <span
+                  className={`transition-all duration-300 ${coursesOpen ? "bg-gradient-to-r from-indigo-600 to-orange-500 bg-clip-text text-transparent" : "text-slate-700 group-hover:bg-gradient-to-r group-hover:from-indigo-600 group-hover:to-orange-500 group-hover:bg-clip-text group-hover:text-transparent"}`}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
+                  Courses
+                </span>
               </button>
 
               {/* ── MEGA DROPDOWN ── */}
@@ -493,38 +496,49 @@ export default function Navbar() {
             </li>
             {/* ── END COURSES MEGA MENU ── */}
 
-            <li>
-              <Link
+            <motion.li whileHover={{ y: -4 }}>
+              <NavLink
+                to="/blog"
+                title="Read HSE Blogs & Safety Insights"
+                aria-label="Blog"
+                className={navLinkClass}
+              >
+                Blog
+              </NavLink>
+            </motion.li>
+
+            <motion.li whileHover={{ y: -4 }}>
+              <NavLink
                 to="/about"
-                title="About 1A HK International - Our story, mission and accreditations"
-                aria-label="About 1A HK International"
-                className="text-gray-800 hover:text-indigo-700 transition"
+                title="About 1A HK International"
+                aria-label="About"
+                className={navLinkClass}
               >
                 About
-              </Link>
-            </li>
+              </NavLink>
+            </motion.li>
 
-            <li>
-              <Link
+            <motion.li whileHover={{ y: -4 }}>
+              <NavLink
                 to="/contact"
-                title="Contact 1A HK International - London, Mumbai and Lisbon offices"
-                aria-label="Contact 1A HK International"
-                className="text-gray-800 hover:text-indigo-700 transition"
+                title="Contact 1A HK International"
+                aria-label="Contact"
+                className={navLinkClass}
               >
                 Contact
-              </Link>
-            </li>
+              </NavLink>
+            </motion.li>
 
-            <li>
-              <Link
+            <motion.li whileHover={{ y: -4 }}>
+              <NavLink
                 to="/payment"
-                title="Course payments and enrollment"
-                aria-label="Payments page"
-                className="text-gray-800 hover:text-indigo-700 transition"
+                title="Course Payments"
+                aria-label="Payments"
+                className={navLinkClass}
               >
                 Payments
-              </Link>
-            </li>
+              </NavLink>
+            </motion.li>
 
             {/* AUTH SECTION */}
             {!loading &&
@@ -749,6 +763,22 @@ export default function Navbar() {
                       </motion.div>
                     )}
                   </AnimatePresence>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/blog"
+                    onClick={() => setIsOpen(false)}
+                    className={({ isActive }) =>
+                      `block px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                        isActive
+                          ? "bg-[#1e3a5f] text-white"
+                          : "text-gray-700 hover:bg-gray-100"
+                      }`
+                    }
+                  >
+                    Blog
+                  </NavLink>
                 </li>
 
                 <li>

@@ -6,6 +6,7 @@ import HeroCarousel from "../../components/common/HeroCarousel";
 import SEO from "../../components/SEO";
 import { getPageKeywords } from "../../data/seoKeywords";
 import FaqItem from "../../components/common/FaqItem";
+import BlogPreview from "../../components/blog/BlogPreview";
 
 /* ---------------- COUNTER ---------------- */
 
@@ -61,7 +62,7 @@ function CourseCard({ id, title, org, description, logo, index }) {
       className="bg-white border border-slate-200 rounded-2xl p-6 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer"
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 mb-4">
+      <div className="flex items-center gap-3 mb-3">
         <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center overflow-hidden">
           <img
             src={logo}
@@ -136,6 +137,22 @@ export default function Home() {
       description:
         "International certification for auditing occupational health and safety management systems.",
       logo: "/logos/5-pecb.png",
+    },
+    {
+      id: "esc-l6-d-idhse",
+      title: "European Safety Council Level 6 Diploma in IDHSE",
+      org: "European Safety Council",
+      description:
+        "The European Safety Council Level 6 IDHSE Diploma develops advanced skills in health, safety, and environmental management.",
+      logo: "/logos/6-esc.png",
+    },
+    {
+      id: "hse-internal-audit-compliance-review-training",
+      title: "HSE Internal Audit and Compliance Review Training",
+      org: "1A HK International",
+      description:
+        "The HSE Internal Audit and Compliance Review Training by 1A HK International is a comprehensive, practical, and industry-focused programme designed to equip professionals with the knowledge and skills required to conduct effective health, safety, and environmental audits.",
+      logo: "/logos/hk_logo.jpeg",
     },
   ];
 
@@ -266,6 +283,9 @@ export default function Home() {
 
       <div className="bg-slate-50 text-slate-900">
         {/* HERO */}
+
+        <HeroCarousel />
+
         <section className="pt-16 pb-24 bg-gradient-to-b from-blue-50 to-white">
           <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
             {/* LEFT */}
@@ -313,7 +333,7 @@ export default function Home() {
 
             {/* RIGHT CARD */}
             <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500">
-              <div className="mb-7">
+              <div className="mb-5">
                 <h2 className="text-xl font-bold text-slate-800">
                   Global Safety Certifications
                 </h2>
@@ -370,15 +390,13 @@ export default function Home() {
           </div>
         </section>
 
-        <HeroCarousel />
-
         {/* ABOUT 1A HK International */}
-        <section className="py-20">
+        <section className="py-16">
           <div className="max-w-5xl mx-auto px-6 text-center">
             <h2 className="text-4xl font-extrabold text-blue-900">
               About 1A HK International
             </h2>
-            <p className="mt-6 text-slate-600 text-lg leading-relaxed max-w-3xl mx-auto">
+            <p className="mt-4 text-slate-600 text-lg leading-relaxed max-w-3xl mx-auto">
               1A HK International is a global training and consultancy company
               committed to delivering internationally accredited Health, Safety
               and Environmental education. Our programs are designed to help
@@ -401,7 +419,7 @@ export default function Home() {
                 <div className="text-5xl font-extrabold text-orange-500">
                   <Counter target={stat.number} />
                 </div>
-                <p className="text-slate-600 mt-3">{stat.label}</p>
+                <p className="text-slate-600 mt-2">{stat.label}</p>
               </motion.div>
             ))}
           </div>
@@ -409,11 +427,11 @@ export default function Home() {
 
         {/* COURSES */}
         <section
-          className="py-24 border-t border-slate-200 bg-slate-50"
+          className="py-10 border-t border-slate-200 bg-slate-50"
           aria-label="Featured Safety Certifications"
         >
           <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-14">
+            <div className="text-center mb-10">
               <h2 className="text-4xl font-bold text-slate-900">
                 Featured Safety Certifications
               </h2>
@@ -431,7 +449,7 @@ export default function Home() {
             </div>
 
             {/* Hidden internal-links block for SEO crawling */}
-            <nav aria-label="All courses" className="mt-12 text-center">
+            <nav aria-label="All courses" className="mt-10 text-center">
               <Link
                 to="/courses"
                 title="View all 27 accredited HSE courses – 1A HK International"
@@ -443,14 +461,15 @@ export default function Home() {
           </div>
         </section>
 
-        {/* FAQ */}
+        <BlogPreview />
+
         {/* FAQ */}
         <section
-          className="py-24 bg-white"
+          className="py-10 bg-white"
           aria-label="Frequently Asked Questions"
         >
           <div className="max-w-4xl mx-auto px-6">
-            <h2 className="text-3xl font-bold text-center mb-12">
+            <h2 className="text-3xl font-bold text-center mb-6">
               Frequently Asked Questions
             </h2>
 
@@ -470,7 +489,7 @@ export default function Home() {
         </section>
 
         {/* CTA */}
-        <section className="py-20 px-6">
+        <section className="py-8 px-6">
           <div className="max-w-4xl mx-auto rounded-3xl bg-gradient-to-r from-indigo-900 to-orange-700 text-center p-14 text-white shadow-xl">
             <h2 className="text-3xl font-extrabold">
               Let's Grow and Build a Safer Future Together

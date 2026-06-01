@@ -1,58 +1,4 @@
-// import { Helmet } from "react-helmet";
-
-// const SEO = ({
-//   title,
-//   description,
-//   keywords,
-//   image,
-//   url,
-// }) => {
-//   return (
-//     <Helmet>
-//       {/* Basic */}
-//       <title>{title}</title>
-
-//       <meta name="description" content={description} />
-//       <meta name="keywords" content={keywords} />
-//       <meta name="robots" content="index, follow" />
-
-//       {/* Open Graph */}
-//       <meta property="og:type" content="website" />
-//       <meta property="og:title" content={title} />
-//       <meta property="og:description" content={description} />
-//       <meta property="og:image" content={image} />
-//       <meta property="og:url" content={url} />
-
-//       {/* Twitter */}
-//       <meta name="twitter:card" content="summary_large_image" />
-//       <meta name="twitter:title" content={title} />
-//       <meta name="twitter:description" content={description} />
-//       <meta name="twitter:image" content={image} />
-
-//       {/* Canonical */}
-//       <link rel="canonical" href={url} />
-//     </Helmet>
-//   );
-// };
-
-// export default SEO;
-
 import { Helmet } from "react-helmet";
-
-/**
- * Comprehensive SEO component for 1A HK International LMS.
- *
- * Backwards-compatible: keeps existing props (title, description, keywords, image, url).
- * Adds:
- *   - Brand meta (og:site_name, og:locale, author, theme-color)
- *   - Geo targeting via geoRegion prop ("GB", "IN", "PT")
- *   - JSON-LD structured data via schemaType:
- *       "organization" | "course" | "courselist" | "localbusiness" | "faq"
- *   - courseData prop (for Course schema)
- *   - faqData prop (array of {question, answer} for FAQPage schema)
- *   - localBusinessData prop (for LocalBusiness schema)
- *   - extraSchema prop (raw JSON-LD object for any custom schema)
- */
 
 const SITE_NAME = "1A HK International";
 const SITE_URL = "https://hkinternational.uk";
@@ -98,6 +44,17 @@ const GEO_DATA = {
   PT: { region: "PT-11", placename: "Lisbon, Portugal" },
 };
 
+function countWords(htmlString) {
+  if (!htmlString) return 0;
+
+  const text = htmlString
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return text.split(" ").filter(Boolean).length;
+}
+
 /* ---------- Schema Builders ---------- */
 
 const buildOrganizationSchema = () => ({
@@ -112,15 +69,52 @@ const buildOrganizationSchema = () => ({
     "1A HK International is a globally trusted provider of accredited Health, Safety & Environment (HSE) training and certifications including IOSH, OTHM, OSHA, ISO 45001, CIEH and ESC programs.",
   sameAs: SOCIAL_LINKS,
   address: OFFICES,
+  foundingLocation: "London, United Kingdom",
   contactPoint: [
     {
       "@type": "ContactPoint",
       contactType: "customer service",
       email: "info@hkinternational.uk",
-      areaServed: ["GB", "IN", "PT", "AE", "SA", "QA", "OM", "KW", "BH"],
+      areaServed: [
+        "GB",
+        "IN",
+        "PT",
+        "AE",
+        "SA",
+        "QA",
+        "OM",
+        "KW",
+        "BH",
+        "United Kingdom",
+        "India",
+        "Portugal",
+        "United Arab Emirates",
+        "Saudi Arabia",
+        "Qatar",
+        "Oman",
+        "Kuwait",
+        "Bahrain",
+      ],
       availableLanguage: ["en"],
     },
   ],
+});
+
+const buildWebsiteSchema = () => ({
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: SITE_NAME,
+  url: SITE_URL,
+  publisher: {
+    "@type": "EducationalOrganization",
+    name: SITE_NAME,
+    url: SITE_URL,
+  },
+  potentialAction: {
+    "@type": "SearchAction",
+    target: `${SITE_URL}/search?q={search_term_string}`,
+    "query-input": "required name=search_term_string",
+  },
 });
 
 const buildCourseSchema = (course) => {
@@ -157,8 +151,9 @@ const buildCourseSchema = (course) => {
       : [course.mode || "Online"]
     ).map((m) => ({
       "@type": "CourseInstance",
-      courseMode:
-        String(m).toLowerCase().includes("online") ? "Online" : "Onsite",
+      courseMode: String(m).toLowerCase().includes("online")
+        ? "Online"
+        : "Onsite",
       name: `${course.title} – ${m}`,
       inLanguage: "en",
     })),
@@ -198,8 +193,7 @@ const buildLocalBusinessSchema = (data) => ({
   priceRange: "££",
   address: {
     "@type": "PostalAddress",
-    streetAddress:
-      "Office 108A, 182-184 High Street North, Area 1/1, East Ham",
+    streetAddress: "Office 108A, 182-184 High Street North, Area 1/1, East Ham",
     addressLocality: "London",
     postalCode: "E6 2JA",
     addressCountry: "GB",
@@ -212,13 +206,7 @@ const buildLocalBusinessSchema = (data) => ({
   openingHoursSpecification: [
     {
       "@type": "OpeningHoursSpecification",
-      dayOfWeek: [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-      ],
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
       opens: "09:00",
       closes: "18:00",
     },
@@ -239,6 +227,76 @@ const buildFaqSchema = (faqs = []) => ({
   })),
 });
 
+const buildBlogPostingSchema = (blogData) => {
+  if (!blogData) return null;
+
+  const {
+    title,
+    metaDescription,
+    coverImage,
+    publishedDate,
+    updatedDate,
+    author,
+    category,
+    keywords = [],
+    sections = [],
+    slug,
+  } = blogData;
+
+  const wordCount = sections.reduce(
+    (acc, section) =>
+      acc + countWords(section.heading) + countWords(section.content),
+    0,
+  );
+
+  const imageUrl = coverImage
+    ? coverImage.startsWith("http")
+      ? coverImage
+      : `${SITE_URL}${coverImage}`
+    : `${SITE_URL}${DEFAULT_IMAGE}`;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: title,
+    description: metaDescription,
+    image: imageUrl,
+    datePublished: publishedDate,
+    dateModified: updatedDate || publishedDate,
+    author: {
+      "@type": "Organization",
+      name: author || SITE_NAME,
+      url: SITE_URL,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      logo: {
+        "@type": "ImageObject",
+        url: LOGO_URL,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${SITE_URL}/blog/${slug}`,
+    },
+    keywords: keywords.join(", "),
+    articleSection: category,
+    wordCount,
+  };
+};
+
+const buildBreadcrumbSchema = (breadcrumbs = []) => ({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: breadcrumbs.map((crumb, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    name: crumb.name,
+    item: crumb.url.startsWith("http") ? crumb.url : `${SITE_URL}${crumb.url}`,
+  })),
+});
+
 /* ---------- Main Component ---------- */
 
 const SEO = ({
@@ -253,6 +311,16 @@ const SEO = ({
   faqData,
   localBusinessData,
   extraSchema,
+
+  blogData,
+  breadcrumbs,
+  noIndex = false,
+
+  articlePublishedTime,
+  articleModifiedTime,
+  articleSection,
+  articleTags = [],
+
   geoRegion = "GB",
   siteName = SITE_NAME,
   author = SITE_NAME,
@@ -271,6 +339,7 @@ const SEO = ({
 
   if (schemaType === "organization") {
     schemas.push(buildOrganizationSchema());
+    schemas.push(buildWebsiteSchema());
   }
   if (schemaType === "course" && courseData) {
     schemas.push(buildCourseSchema(courseData));
@@ -284,9 +353,26 @@ const SEO = ({
   if (faqData && Array.isArray(faqData) && faqData.length > 0) {
     schemas.push(buildFaqSchema(faqData));
   }
+  if (schemaType === "blogposting" && blogData) {
+    schemas.push(buildBlogPostingSchema(blogData));
+  }
+
+  if (schemaType === "breadcrumb" && breadcrumbs?.length) {
+    schemas.push(buildBreadcrumbSchema(breadcrumbs));
+  }
   if (extraSchema) {
     schemas.push(extraSchema);
   }
+
+  const derivedPublished = blogData?.publishedDate || articlePublishedTime;
+
+  const derivedModified = blogData?.updatedDate || articleModifiedTime;
+
+  const derivedSection = blogData?.category || articleSection;
+
+  const derivedTags = blogData?.tags?.length ? blogData.tags : articleTags;
+
+  const isBlogPost = schemaType === "blogposting" && blogData;
 
   return (
     <Helmet>
@@ -294,7 +380,10 @@ const SEO = ({
       <title>{title}</title>
       <meta name="description" content={description} />
       {keywords && <meta name="keywords" content={keywords} />}
-      <meta name="robots" content="index, follow" />
+      <meta
+        name="robots"
+        content={noIndex ? "noindex, nofollow" : "index, follow"}
+      />{" "}
       <meta
         name="googlebot"
         content="index, follow, max-image-preview:large, max-snippet:-1"
@@ -303,13 +392,14 @@ const SEO = ({
       <meta name="publisher" content={SITE_NAME} />
       <meta name="theme-color" content={themeColor} />
       <meta name="application-name" content={siteName} />
-
       {/* ---------- Geo Targeting ---------- */}
       <meta name="geo.region" content={geo.region} />
       <meta name="geo.placename" content={geo.placename} />
-
       {/* ---------- Open Graph ---------- */}
-      <meta property="og:type" content={schemaType === "course" ? "article" : "website"} />
+      <meta
+        property="og:type"
+        content={schemaType === "course" || isBlogPost ? "article" : "website"}
+      />
       <meta property="og:site_name" content={siteName} />
       <meta property="og:locale" content="en_GB" />
       <meta property="og:locale:alternate" content="en_US" />
@@ -319,12 +409,23 @@ const SEO = ({
       <meta property="og:image" content={finalImage} />
       <meta property="og:image:alt" content={title} />
       <meta property="og:url" content={finalUrl} />
-
+      {isBlogPost && derivedPublished && (
+        <meta property="article:published_time" content={derivedPublished} />
+      )}
+      {isBlogPost && derivedModified && (
+        <meta property="article:modified_time" content={derivedModified} />
+      )}
+      {isBlogPost && derivedSection && (
+        <meta property="article:section" content={derivedSection} />
+      )}
+      {isBlogPost &&
+        derivedTags.map((tag) => (
+          <meta key={tag} property="article:tag" content={tag} />
+        ))}
       {/* article:publisher for course pages */}
       {schemaType === "course" && (
         <meta property="article:publisher" content={SITE_URL} />
       )}
-
       {/* ---------- Twitter ---------- */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:site" content="@1a_hk85756" />
@@ -333,10 +434,8 @@ const SEO = ({
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={finalImage} />
       <meta name="twitter:image:alt" content={title} />
-
       {/* ---------- Canonical ---------- */}
       <link rel="canonical" href={finalUrl} />
-
       {/* ---------- Structured Data (JSON-LD) ---------- */}
       {schemas.map((schema, i) => (
         <script key={i} type="application/ld+json">
