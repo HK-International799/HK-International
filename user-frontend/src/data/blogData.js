@@ -112,139 +112,139 @@ export const blogPosts = [
     courseLink: "/course/iosh-managing-safely",
   },
 
-  {
-    id: 2,
-    slug: "nebosh-vs-iosh-which-qualification-is-right-for-you",
-    title:
-      "NEBOSH IGC vs IOSH : Which Health & Safety Qualification Is Right for You?",
-    excerpt:
-      "Comparing NEBOSH and IOSH qualifications side-by-side — difficulty, cost, career outcomes, and which is best suited to your role and ambitions in the UK and India.",
-    category: "NEBOSH",
-    tags: [
-      "NEBOSH",
-      "IOSH",
-      "Qualification Comparison",
-      "Health and Safety Career",
-      "NEBOSH IGC",
-      "IOSH Managing Safely",
-    ],
-    author: "1A HK International Training",
-    authorTitle: "Health & Safety Training Specialists",
-    publishedDate: "2026-05-22T09:00:00.000Z",
-    updatedDate: "2026-11-20T10:00:00.000Z",
-    readTime: "11 min read",
-    coverImage: "/images/blog/NEBOSH-vs-IOSH.png",
-    metaTitle:
-      "NEBOSH vs IOSH 2026: Which Qualification Should You Choose? | 1A HK International",
-    metaDescription:
-      "NEBOSH or IOSH — which health and safety qualification is right for you? Compare syllabus depth, exam difficulty, salary outcomes, and career paths for UK and Indian professionals.",
-    keywords: [
-      "NEBOSH vs IOSH",
-      "NEBOSH IGC vs IOSH Managing Safely",
-      "health and safety qualification UK",
-      "HSE qualification India",
-      "NEBOSH salary",
-      "IOSH career progression",
-      "best safety qualification",
-      "NEBOSH or IOSH which is better",
-    ],
-    featured: true,
-    sections: [
-      {
-        id: "nebosh-vs-iosh-overview",
-        heading: "Overview: Two Different Levels of Qualification",
-        content: `<p>When professionals in the UK and India begin researching health and safety qualifications, two names consistently top the list: <strong>NEBOSH</strong> and <strong>IOSH</strong>. Both are internationally respected, both improve workplace safety outcomes — but they target fundamentally different career stages and professional needs.</p>
-<p>The key distinction is <em>depth and rigour</em>. IOSH Managing Safely is a foundational qualification for practising managers and supervisors. NEBOSH qualifications — particularly the <strong>NEBOSH International General Certificate (IGC)</strong> — are higher-level credentials designed for dedicated health and safety professionals.</p>
-<p>Choosing the wrong one wastes time, money, and effort. This guide walks through every meaningful difference so you can make an informed decision aligned to your career goals.</p>`,
-      },
-      {
-        id: "awarding-bodies-history",
-        heading: "The Awarding Bodies: IOSH vs NEBOSH",
-        content: `<p><strong>IOSH (Institution of Occupational Safety and Health)</strong> is the UK's chartered body for health and safety professionals, founded in 1945. It is the largest professional organisation of its kind in the world. IOSH does not just offer qualifications — it sets professional standards, provides CPD resources, and advocates for workplace safety at a policy level. Managing Safely is its flagship training product.</p>
-<p><strong>NEBOSH (National Examination Board in Occupational Safety and Health)</strong> is an independent examination board founded in 1979. It does not provide training directly; instead, it sets syllabi and examination standards that accredited training providers (like 1A HK International) deliver. NEBOSH qualifications are regulated by Ofqual in England and recognised by employers globally.</p>
-<p>Both bodies carry significant credibility in the eyes of UK employers, HSE inspectors, and international procurement teams.</p>`,
-      },
-      {
-        id: "course-level-and-depth",
-        heading: "Course Level, Depth, and Study Time",
-        content: `<p>This is the most critical difference between the two qualifications:</p>
-<table style="width:100%; border-collapse:collapse; margin: 1rem 0;">
-  <thead>
-    <tr style="background:#1e3a5f; color:white;">
-      <th style="padding:12px; text-align:left;">Factor</th>
-      <th style="padding:12px; text-align:left;">IOSH Managing Safely</th>
-      <th style="padding:12px; text-align:left;">NEBOSH IGC</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr style="background:#f8fafc;">
-      <td style="padding:10px; border-bottom:1px solid #e2e8f0;"><strong>Level</strong></td>
-      <td style="padding:10px; border-bottom:1px solid #e2e8f0;">RQF Level 3</td>
-      <td style="padding:10px; border-bottom:1px solid #e2e8f0;">RQF Level 3 (higher depth)</td>
-    </tr>
-    <tr>
-      <td style="padding:10px; border-bottom:1px solid #e2e8f0;"><strong>Study Hours</strong></td>
-      <td style="padding:10px; border-bottom:1px solid #e2e8f0;">~24 hours (3 days)</td>
-      <td style="padding:10px; border-bottom:1px solid #e2e8f0;">130+ hours (8-12 weeks)</td>
-    </tr>
-    <tr style="background:#f8fafc;">
-      <td style="padding:10px; border-bottom:1px solid #e2e8f0;"><strong>Assessment</strong></td>
-      <td style="padding:10px; border-bottom:1px solid #e2e8f0;">MCQ test + risk assessment project</td>
-      <td style="padding:10px; border-bottom:1px solid #e2e8f0;">Open-book exam (NG1) + practical assessment (NG2)</td>
-    </tr>
-    <tr>
-      <td style="padding:10px; border-bottom:1px solid #e2e8f0;"><strong>Pass Rate</strong></td>
-      <td style="padding:10px; border-bottom:1px solid #e2e8f0;">~80-90%</td>
-      <td style="padding:10px; border-bottom:1px solid #e2e8f0;">~50-60% first attempt</td>
-    </tr>
-    <tr style="background:#f8fafc;">
-      <td style="padding:10px;"><strong>Renewal</strong></td>
-      <td style="padding:10px;">3 years (Refresher required)</td>
-      <td style="padding:10px;">No expiry; CPD recommended</td>
-    </tr>
-  </tbody>
-</table>`,
-      },
-      {
-        id: "cost-comparison",
-        heading: "Cost Comparison: UK and India",
-        content: `<p>Cost is a significant practical consideration, especially for self-funding professionals in India.</p>
-<p><strong>IOSH Managing Safely</strong> typically costs <strong>£300-£500</strong> in the UK for classroom delivery. Indian learners can often access online versions for approximately <strong>₹15,000-₹25,000</strong> through accredited providers.</p>
-<p><strong>NEBOSH IGC</strong> is considerably more expensive due to its duration and examination fees. UK classroom courses run <strong>£900-£1,500</strong>. Online and blended options can reduce this significantly. In India, accredited NEBOSH courses typically range from <strong>₹30,000-₹60,000</strong> depending on provider and format.</p>
-<p>Both represent strong returns on investment given the salary uplift they deliver — but the time and financial commitment for NEBOSH should not be underestimated.</p>`,
-      },
-      {
-        id: "career-outcomes-salary",
-        heading: "Career Outcomes and Salary Expectations",
-        content: `<p>This is where the divergence between the two qualifications becomes most apparent:</p>
-<p><strong>IOSH Managing Safely</strong> makes you a safer, more legally aware manager. It adds credibility to a CV and may support a pay review or promotion within your current role. However, it does not, on its own, qualify you for dedicated health and safety positions.</p>
-<p><strong>NEBOSH IGC</strong> is a gateway credential for HSE roles. Advertised Health and Safety Advisor roles in the UK frequently list NEBOSH as either desirable or essential. Average salaries for NEBOSH-certified professionals in the UK start around <strong>£28,000-£35,000</strong> and rise quickly with experience and additional qualifications (NEBOSH Diploma, CMIOSH).</p>
-<p>In India, NEBOSH-certified professionals working in oil and gas, construction, and manufacturing can command salaries <strong>30-50% above</strong> non-certified peers, particularly in roles with multinational or Middle East-linked employers.</p>`,
-      },
-      {
-        id: "which-qualification-to-choose",
-        heading: "Which Qualification Should You Choose?",
-        content: `<p>The answer depends entirely on your current role and career trajectory:</p>
-<p><strong>Choose IOSH Managing Safely if:</strong></p>
-<ul>
-  <li>You manage or supervise a team and want to fulfil your legal duty of care</li>
-  <li>Your employer requires a recognised safety qualification but not a specialist credential</li>
-  <li>You want a quick, affordable qualification achievable in 3 days</li>
-  <li>You plan to use it as a first step before progressing to NEBOSH</li>
-</ul>
-<p><strong>Choose NEBOSH IGC if:</strong></p>
-<ul>
-  <li>You are pursuing a dedicated health and safety career</li>
-  <li>You want to work as an HSE Advisor, Safety Officer, or EHS Manager</li>
-  <li>You are targeting roles in oil and gas, construction, or multinational companies</li>
-  <li>You want a credential with no expiry and international portability</li>
-</ul>
-<p>Many professionals complete IOSH Managing Safely first — gaining the core concepts and employer buy-in — then progress to NEBOSH. This pathway is particularly effective for professionals in India building toward international HSE careers.</p>`,
-      },
-    ],
-    relatedPosts: [1, 3],
-    courseLink: "/course/nebosh-igc",
-  },
+//   {
+//     id: 2,
+//     slug: "nebosh-vs-iosh-which-qualification-is-right-for-you",
+//     title:
+//       "NEBOSH IGC vs IOSH : Which Health & Safety Qualification Is Right for You?",
+//     excerpt:
+//       "Comparing NEBOSH and IOSH qualifications side-by-side — difficulty, cost, career outcomes, and which is best suited to your role and ambitions in the UK and India.",
+//     category: "NEBOSH",
+//     tags: [
+//       "NEBOSH",
+//       "IOSH",
+//       "Qualification Comparison",
+//       "Health and Safety Career",
+//       "NEBOSH IGC",
+//       "IOSH Managing Safely",
+//     ],
+//     author: "1A HK International Training",
+//     authorTitle: "Health & Safety Training Specialists",
+//     publishedDate: "2026-05-22T09:00:00.000Z",
+//     updatedDate: "2026-11-20T10:00:00.000Z",
+//     readTime: "11 min read",
+//     coverImage: "/images/blog/NEBOSH-vs-IOSH.png",
+//     metaTitle:
+//       "NEBOSH vs IOSH 2026: Which Qualification Should You Choose? | 1A HK International",
+//     metaDescription:
+//       "NEBOSH or IOSH — which health and safety qualification is right for you? Compare syllabus depth, exam difficulty, salary outcomes, and career paths for UK and Indian professionals.",
+//     keywords: [
+//       "NEBOSH vs IOSH",
+//       "NEBOSH IGC vs IOSH Managing Safely",
+//       "health and safety qualification UK",
+//       "HSE qualification India",
+//       "NEBOSH salary",
+//       "IOSH career progression",
+//       "best safety qualification",
+//       "NEBOSH or IOSH which is better",
+//     ],
+//     featured: true,
+//     sections: [
+//       {
+//         id: "nebosh-vs-iosh-overview",
+//         heading: "Overview: Two Different Levels of Qualification",
+//         content: `<p>When professionals in the UK and India begin researching health and safety qualifications, two names consistently top the list: <strong>NEBOSH</strong> and <strong>IOSH</strong>. Both are internationally respected, both improve workplace safety outcomes — but they target fundamentally different career stages and professional needs.</p>
+// <p>The key distinction is <em>depth and rigour</em>. IOSH Managing Safely is a foundational qualification for practising managers and supervisors. NEBOSH qualifications — particularly the <strong>NEBOSH International General Certificate (IGC)</strong> — are higher-level credentials designed for dedicated health and safety professionals.</p>
+// <p>Choosing the wrong one wastes time, money, and effort. This guide walks through every meaningful difference so you can make an informed decision aligned to your career goals.</p>`,
+//       },
+//       {
+//         id: "awarding-bodies-history",
+//         heading: "The Awarding Bodies: IOSH vs NEBOSH",
+//         content: `<p><strong>IOSH (Institution of Occupational Safety and Health)</strong> is the UK's chartered body for health and safety professionals, founded in 1945. It is the largest professional organisation of its kind in the world. IOSH does not just offer qualifications — it sets professional standards, provides CPD resources, and advocates for workplace safety at a policy level. Managing Safely is its flagship training product.</p>
+// <p><strong>NEBOSH (National Examination Board in Occupational Safety and Health)</strong> is an independent examination board founded in 1979. It does not provide training directly; instead, it sets syllabi and examination standards that accredited training providers (like 1A HK International) deliver. NEBOSH qualifications are regulated by Ofqual in England and recognised by employers globally.</p>
+// <p>Both bodies carry significant credibility in the eyes of UK employers, HSE inspectors, and international procurement teams.</p>`,
+//       },
+//       {
+//         id: "course-level-and-depth",
+//         heading: "Course Level, Depth, and Study Time",
+//         content: `<p>This is the most critical difference between the two qualifications:</p>
+// <table style="width:100%; border-collapse:collapse; margin: 1rem 0;">
+//   <thead>
+//     <tr style="background:#1e3a5f; color:white;">
+//       <th style="padding:12px; text-align:left;">Factor</th>
+//       <th style="padding:12px; text-align:left;">IOSH Managing Safely</th>
+//       <th style="padding:12px; text-align:left;">NEBOSH IGC</th>
+//     </tr>
+//   </thead>
+//   <tbody>
+//     <tr style="background:#f8fafc;">
+//       <td style="padding:10px; border-bottom:1px solid #e2e8f0;"><strong>Level</strong></td>
+//       <td style="padding:10px; border-bottom:1px solid #e2e8f0;">RQF Level 3</td>
+//       <td style="padding:10px; border-bottom:1px solid #e2e8f0;">RQF Level 3 (higher depth)</td>
+//     </tr>
+//     <tr>
+//       <td style="padding:10px; border-bottom:1px solid #e2e8f0;"><strong>Study Hours</strong></td>
+//       <td style="padding:10px; border-bottom:1px solid #e2e8f0;">~24 hours (3 days)</td>
+//       <td style="padding:10px; border-bottom:1px solid #e2e8f0;">130+ hours (8-12 weeks)</td>
+//     </tr>
+//     <tr style="background:#f8fafc;">
+//       <td style="padding:10px; border-bottom:1px solid #e2e8f0;"><strong>Assessment</strong></td>
+//       <td style="padding:10px; border-bottom:1px solid #e2e8f0;">MCQ test + risk assessment project</td>
+//       <td style="padding:10px; border-bottom:1px solid #e2e8f0;">Open-book exam (NG1) + practical assessment (NG2)</td>
+//     </tr>
+//     <tr>
+//       <td style="padding:10px; border-bottom:1px solid #e2e8f0;"><strong>Pass Rate</strong></td>
+//       <td style="padding:10px; border-bottom:1px solid #e2e8f0;">~80-90%</td>
+//       <td style="padding:10px; border-bottom:1px solid #e2e8f0;">~50-60% first attempt</td>
+//     </tr>
+//     <tr style="background:#f8fafc;">
+//       <td style="padding:10px;"><strong>Renewal</strong></td>
+//       <td style="padding:10px;">3 years (Refresher required)</td>
+//       <td style="padding:10px;">No expiry; CPD recommended</td>
+//     </tr>
+//   </tbody>
+// </table>`,
+//       },
+//       {
+//         id: "cost-comparison",
+//         heading: "Cost Comparison: UK and India",
+//         content: `<p>Cost is a significant practical consideration, especially for self-funding professionals in India.</p>
+// <p><strong>IOSH Managing Safely</strong> typically costs <strong>£300-£500</strong> in the UK for classroom delivery. Indian learners can often access online versions for approximately <strong>₹15,000-₹25,000</strong> through accredited providers.</p>
+// <p><strong>NEBOSH IGC</strong> is considerably more expensive due to its duration and examination fees. UK classroom courses run <strong>£900-£1,500</strong>. Online and blended options can reduce this significantly. In India, accredited NEBOSH courses typically range from <strong>₹30,000-₹60,000</strong> depending on provider and format.</p>
+// <p>Both represent strong returns on investment given the salary uplift they deliver — but the time and financial commitment for NEBOSH should not be underestimated.</p>`,
+//       },
+//       {
+//         id: "career-outcomes-salary",
+//         heading: "Career Outcomes and Salary Expectations",
+//         content: `<p>This is where the divergence between the two qualifications becomes most apparent:</p>
+// <p><strong>IOSH Managing Safely</strong> makes you a safer, more legally aware manager. It adds credibility to a CV and may support a pay review or promotion within your current role. However, it does not, on its own, qualify you for dedicated health and safety positions.</p>
+// <p><strong>NEBOSH IGC</strong> is a gateway credential for HSE roles. Advertised Health and Safety Advisor roles in the UK frequently list NEBOSH as either desirable or essential. Average salaries for NEBOSH-certified professionals in the UK start around <strong>£28,000-£35,000</strong> and rise quickly with experience and additional qualifications (NEBOSH Diploma, CMIOSH).</p>
+// <p>In India, NEBOSH-certified professionals working in oil and gas, construction, and manufacturing can command salaries <strong>30-50% above</strong> non-certified peers, particularly in roles with multinational or Middle East-linked employers.</p>`,
+//       },
+//       {
+//         id: "which-qualification-to-choose",
+//         heading: "Which Qualification Should You Choose?",
+//         content: `<p>The answer depends entirely on your current role and career trajectory:</p>
+// <p><strong>Choose IOSH Managing Safely if:</strong></p>
+// <ul>
+//   <li>You manage or supervise a team and want to fulfil your legal duty of care</li>
+//   <li>Your employer requires a recognised safety qualification but not a specialist credential</li>
+//   <li>You want a quick, affordable qualification achievable in 3 days</li>
+//   <li>You plan to use it as a first step before progressing to NEBOSH</li>
+// </ul>
+// <p><strong>Choose NEBOSH IGC if:</strong></p>
+// <ul>
+//   <li>You are pursuing a dedicated health and safety career</li>
+//   <li>You want to work as an HSE Advisor, Safety Officer, or EHS Manager</li>
+//   <li>You are targeting roles in oil and gas, construction, or multinational companies</li>
+//   <li>You want a credential with no expiry and international portability</li>
+// </ul>
+// <p>Many professionals complete IOSH Managing Safely first — gaining the core concepts and employer buy-in — then progress to NEBOSH. This pathway is particularly effective for professionals in India building toward international HSE careers.</p>`,
+//       },
+//     ],
+//     relatedPosts: [1, 3],
+//     courseLink: "/course/nebosh-igc",
+//   },
 
   {
     id: 3,

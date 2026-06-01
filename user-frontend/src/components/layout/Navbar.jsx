@@ -303,13 +303,44 @@ export default function Navbar() {
                 aria-label="Toggle courses menu"
                 aria-haspopup="true"
                 aria-expanded={coursesOpen}
-                className={`group relative flex items-center gap-1 py-2 rounded-xl font-semibold text-[15px] transition-all duration-300 ${coursesOpen ? "bg-gradient-to-r from-indigo-50 to-orange-50" : "hover:bg-gradient-to-r hover:from-indigo-50 hover:to-orange-50"}`}
+                className={`group relative flex items-center gap-2 px-1 py-2 text-[15px] font-semibold transition-all duration-300 cursor-pointer
+${coursesOpen ? "scale-105" : "hover:scale-105"}`}
               >
                 <span
-                  className={`transition-all duration-300 ${coursesOpen ? "bg-gradient-to-r from-indigo-600 to-orange-500 bg-clip-text text-transparent" : "text-slate-700 group-hover:bg-gradient-to-r group-hover:from-indigo-600 group-hover:to-orange-500 group-hover:bg-clip-text group-hover:text-transparent"}`}
+                  className={`relative transition-all duration-300 ${
+                    coursesOpen
+                      ? "bg-gradient-to-r from-indigo-600 to-orange-500 bg-clip-text text-transparent"
+                      : "text-slate-700 group-hover:bg-gradient-to-r group-hover:from-indigo-600 group-hover:to-orange-500 group-hover:bg-clip-text group-hover:text-transparent"
+                  }`}
                 >
                   Courses
+                  {/* Animated Underline */}
+                  <span
+                    className={`absolute left-1/2 -bottom-1 h-[2px] -translate-x-1/2 rounded-full bg-gradient-to-r from-indigo-600 to-orange-500 transition-all duration-300 ${
+                      coursesOpen ? "w-full" : "w-0 group-hover:w-full"
+                    }`}
+                  />
                 </span>
+
+                {/* Chevron */}
+                <svg
+                  className={`w-4 h-4 transition-all duration-300 ${
+                    coursesOpen
+                      ? "rotate-180 text-orange-500"
+                      : "text-slate-400 group-hover:text-indigo-600"
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
               </button>
 
               {/* ── MEGA DROPDOWN ── */}
