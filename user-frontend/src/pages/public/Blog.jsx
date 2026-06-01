@@ -154,7 +154,7 @@ export default function Blog() {
                 <span className="text-orange-400">Knowledge Hub</span>
               </h1>
               <p className="text-blue-100 text-lg max-w-2xl mx-auto leading-relaxed">
-                Expert guidance on NEBOSH, IOSH, OTHM qualifications, workplace
+                Expert guidance on IOSH, OTHM, OSHA and EOSH qualifications, workplace
                 safety, and building a rewarding health &amp; safety career.
               </p>
             </motion.div>
