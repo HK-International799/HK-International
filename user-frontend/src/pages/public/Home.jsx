@@ -7,6 +7,7 @@ import SEO from "../../components/SEO";
 import { getPageKeywords } from "../../data/seoKeywords";
 import FaqItem from "../../components/common/FaqItem";
 import BlogPreview from "../../components/blog/BlogPreview";
+import Testimonials from "../../components/common/Testimonials";
 
 /* ---------------- COUNTER ---------------- */
 
@@ -462,6 +463,8 @@ export default function Home() {
         </section>
 
         <BlogPreview />
+
+        <Testimonials />
 
         {/* FAQ */}
         <section

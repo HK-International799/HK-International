@@ -1,10 +1,11 @@
 @import "tailwindcss";
 
 @keyframes marquee {
-  0% {
+  from {
     transform: translateX(0);
   }
-  100% {
+
+  to {
     transform: translateX(-50%);
   }
 }
@@ -12,14 +13,17 @@
 .animate-marquee {
   display: flex;
   width: max-content;
-  animation: marquee 25s linear infinite;
+  animation: marquee 30s linear infinite;
+  will-change: transform;
 }
 
+.pause-marquee {
+  animation-play-state: paused;
+}
 
 body {
   user-select: none;
 }
-
 
 /* hide scrollbar */
 .scrollbar-hide::-webkit-scrollbar {

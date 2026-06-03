@@ -113,7 +113,7 @@ export default function Blog() {
     <MainLayout>
       <SEO
         title="Health & Safety Blog | Expert Guidance | 1A HK International"
-        description="Expert articles on NEBOSH, IOSH, OTHM, workplace safety, and health & safety careers. Trusted guidance for professionals in the UK and India."
+        description="Expert articles on IOSH, OTHM, OSHA, workplace safety, and health & safety careers. Trusted guidance for professionals in the UK and India."
         canonical="/blog"
         schemaType="organization"
       />

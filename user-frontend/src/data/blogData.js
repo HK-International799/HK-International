@@ -376,9 +376,8 @@ export const blogPosts = [
 // ─────────────────────────────────────────────────────────────
 export const CATEGORIES = [
   "IOSH",
-  "NEBOSH",
   "OTHM",
-  "Workplace Safety",
+  "OSHA",
   "ISO/PECB",
   "Career Advice",
 ];

@@ -361,47 +361,47 @@ export default function AppRoutes() {
           />
 
           {/* ── AO Portal ───────────────────────────────────────────── */}
-          <Route path="/ao/login" element={<AOLogin />} />
+          {/* <Route path="/ao/login" element={<AOLogin />} />
           <Route
             path="/ao/dashboard"
             element={
-              <AOProtectedRoute>
-                <AODashboard />
-              </AOProtectedRoute>
+              // <AOProtectedRoute>
+              <AODashboard />
+              // </AOProtectedRoute>
             }
           />
           <Route
             path="/ao/learners"
             element={
-              <AOProtectedRoute>
-                <AOLearners />
-              </AOProtectedRoute>
+              // <AOProtectedRoute>
+              <AOLearners />
+              // </AOProtectedRoute>
             }
           />
           <Route
             path="/ao/certifications"
             element={
-              <AOProtectedRoute>
-                <AOCertifications />
-              </AOProtectedRoute>
+              // <AOProtectedRoute>
+              <AOCertifications />
+              // </AOProtectedRoute>
             }
           />
           <Route
             path="/ao/audit-logs"
             element={
-              <AOProtectedRoute>
-                <AOAuditLogs />
-              </AOProtectedRoute>
+              // <AOProtectedRoute>
+              <AOAuditLogs />
+              // </AOProtectedRoute>
             }
           />
           <Route
             path="/ao/reports"
             element={
-              <AOProtectedRoute>
-                <AOReports />
-              </AOProtectedRoute>
+              // <AOProtectedRoute>
+              <AOReports />
+              // </AOProtectedRoute>
             }
-          />
+          /> */}
         </Routes>
       </Suspense>
     </BrowserRouter>
