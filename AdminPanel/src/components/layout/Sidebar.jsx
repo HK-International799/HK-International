@@ -68,8 +68,8 @@ const navGroups = [
       { to: "/admin/crm/dashboard", label: "CRM Dashboard", icon: TrendingUp },
       { to: "/admin/crm/leads", label: "Leads", icon: Users },
       { to: "/admin/crm/pipeline", label: "Pipeline", icon: Kanban },
-      // { to: "/admin/crm/followups", label: "Follow-ups", icon: CalendarClock },
-      // { to: "/admin/crm/tasks", label: "Tasks", icon: CheckSquare },
+      { to: "/admin/crm/followups", label: "Follow-ups", icon: CalendarClock },
+      { to: "/admin/crm/tasks", label: "Tasks", icon: CheckSquare },
       // { to: "/admin/crm/contacts", label: "Contacts", icon: Contact },
       // {
       //   to: "/admin/crm/organisations",
