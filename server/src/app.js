@@ -1,4 +1,3 @@
-
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
@@ -32,11 +31,11 @@ import orientationRoutes from "./routes/orientationRoutes.js";
 import partnerInstituteRoutes from "./routes/partnerInstituteRoutes.js";
 import aoRoutes from "./routes/aoRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
-import quizRoutes from "./routes/quizRoutes.js"
-import chapterRoutes from "./routes/chapterRoutes.js"
+import quizRoutes from "./routes/quizRoutes.js";
+import chapterRoutes from "./routes/chapterRoutes.js";
 import documentRoutes from "./routes/documentRoutes.js";
- import scenarioExamRoutes from "./routes/scenarioExamRoutes.js";
-
+import scenarioExamRoutes from "./routes/scenarioExamRoutes.js";
+import crmRoutes from "./routes/crmRoutes.js";
 
 const app = express();
 
@@ -80,7 +79,7 @@ app.use(
       return callback(new Error("CORS not allowed"));
     },
     credentials: true,
-  })
+  }),
 );
 
 /* ─── Rate Limiting ─────────────────────────────── */
@@ -88,13 +87,12 @@ app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 200,
-  })
+  }),
 );
 
 /* ─── Body Parser ──────────────────────────────── */
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
-
 
 /* ─── Other Middleware ─────────────────────────── */
 app.use(compression());
@@ -138,10 +136,11 @@ app.use("/api/orientation", orientationRoutes);
 app.use("/api/partner-institutes", partnerInstituteRoutes);
 app.use("/api/ao", aoRoutes);
 app.use("/api/contact", contactRoutes);
-app.use("/api/quiz",quizRoutes);
+app.use("/api/quiz", quizRoutes);
 app.use("/api/chapters", chapterRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/scenario-exams", scenarioExamRoutes);
+app.use("/api/crm", crmRoutes);
 
 /* ─── 404 ─────────────────────────────────────── */
 app.use((req, res) => {

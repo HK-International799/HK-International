@@ -1,10 +1,33 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAdminAuth } from "../../contexts/AdminAuthContext";
 import {
-  LayoutDashboard, BookOpen, Users, Layers, Video, ClipboardList,
-  FileText, FileCheck, MessageSquare, Award, BarChart3, MessageCircle,
-  Database, Settings, LogOut, ChevronLeft, ChevronRight, GraduationCap,
-  Building2, ClipboardCheck, Presentation,
+  LayoutDashboard,
+  BookOpen,
+  Users,
+  Layers,
+  Video,
+  ClipboardList,
+  FileText,
+  FileCheck,
+  MessageSquare,
+  Award,
+  BarChart3,
+  MessageCircle,
+  Database,
+  Settings,
+  LogOut,
+  ChevronLeft,
+  ChevronRight,
+  GraduationCap,
+  Building2,
+  ClipboardCheck,
+  Presentation,
+  TrendingUp,
+  CalendarClock,
+  CheckSquare,
+  Contact,
+  Building2 as Building2Icon,
+  Kanban,
 } from "lucide-react";
 
 const navGroups = [
@@ -29,11 +52,33 @@ const navGroups = [
     label: "Assessment",
     items: [
       { to: "/admin/assignments", label: "Assignments", icon: ClipboardList },
-      { to: "/admin/scenario-exams", label: " Scenario-Based Exams", icon: FileCheck },
+      {
+        to: "/admin/scenario-exams",
+        label: " Scenario-Based Exams",
+        icon: FileCheck,
+      },
       { to: "/exams", label: "  Exams", icon: FileCheck },
       { to: "/admin/question-bank", label: "Question Bank", icon: Database },
     ],
   },
+
+  {
+    label: "CRM",
+    items: [
+      { to: "/admin/crm/dashboard", label: "CRM Dashboard", icon: TrendingUp },
+      { to: "/admin/crm/leads", label: "Leads", icon: Users },
+      { to: "/admin/crm/pipeline", label: "Pipeline", icon: Kanban },
+      // { to: "/admin/crm/followups", label: "Follow-ups", icon: CalendarClock },
+      // { to: "/admin/crm/tasks", label: "Tasks", icon: CheckSquare },
+      // { to: "/admin/crm/contacts", label: "Contacts", icon: Contact },
+      // {
+      //   to: "/admin/crm/organisations",
+      //   label: "Organisations",
+      //   icon: Building2Icon,
+      // },
+    ],
+  },
+
   // {
   //   label: "Institutes & Registrations",
   //   items: [
@@ -78,11 +123,16 @@ export default function Sidebar({ collapsed, onToggle }) {
       <div className="flex items-center justify-between px-4 py-5 border-b border-gray-100">
         {!collapsed && (
           <div>
-            <h1 className="text-lg font-bold text-gray-800 tracking-wide">LMS Admin</h1>
+            <h1 className="text-lg font-bold text-gray-800 tracking-wide">
+              LMS Admin
+            </h1>
             <p className="text-[11px] text-gray-400">Control Panel</p>
           </div>
         )}
-        <button onClick={onToggle} className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 transition">
+        <button
+          onClick={onToggle}
+          className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 transition"
+        >
           {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
         </button>
       </div>
@@ -98,7 +148,12 @@ export default function Sidebar({ collapsed, onToggle }) {
             )}
             <div className="space-y-0.5 px-2">
               {group.items.map(({ to, label, icon: Icon }) => (
-                <NavLink key={to} to={to} title={collapsed ? label : ""} className={linkClass}>
+                <NavLink
+                  key={to}
+                  to={to}
+                  title={collapsed ? label : ""}
+                  className={linkClass}
+                >
                   <Icon size={18} className="shrink-0" />
                   {!collapsed && <span className="truncate">{label}</span>}
                   {collapsed && (
@@ -121,13 +176,18 @@ export default function Sidebar({ collapsed, onToggle }) {
               {user?.name?.charAt(0)}
             </div>
             <div className="overflow-hidden">
-              <p className="text-sm font-medium text-gray-800 truncate">{user?.name}</p>
+              <p className="text-sm font-medium text-gray-800 truncate">
+                {user?.name}
+              </p>
               <p className="text-xs text-gray-400 truncate">{user?.email}</p>
             </div>
           </div>
         )}
         <button
-          onClick={() => { logout(); navigate("/login"); }}
+          onClick={() => {
+            logout();
+            navigate("/login");
+          }}
           className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm text-red-500 hover:bg-red-50 transition ${collapsed ? "justify-center" : ""}`}
         >
           <LogOut size={18} />

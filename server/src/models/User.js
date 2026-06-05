@@ -15,7 +15,15 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["student", "tutor", "admin", "super_admin", "partner_institute", "ao"],
+      enum: [
+        "student",
+        "tutor",
+        "admin",
+        "super_admin",
+        "partner_institute",
+        "ao",
+        "sales_agent",
+      ],
       default: "student",
     },
 
@@ -38,7 +46,7 @@ const userSchema = new mongoose.Schema(
       default: null,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 userSchema.index({ role: 1 });

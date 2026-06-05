@@ -35,7 +35,6 @@ export default function Learners() {
     name: "",
     email: "",
     mobile: "",
-    password: "",
     role: "student",
   });
 
@@ -74,7 +73,6 @@ export default function Learners() {
         name: "",
         email: "",
         mobile: "",
-        password: "",
         role: "student",
       });
 
@@ -258,17 +256,6 @@ export default function Learners() {
               }
             />
 
-            <Input
-              label="Password"
-              type="password"
-              value={form.password}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  password: e.target.value,
-                })
-              }
-            />
 
             <Select
               label="Role"

@@ -17,6 +17,14 @@ import ExamList from "./pages/exams/ExamList";
 import CreateExam from "./pages/exams/CreateExam";
 import ExamReport from "./pages/exams/ExamReport";
 import EditExam from "./pages/exams/EditExam";
+import CrmDashboard from "./pages/crm/CrmDashboard";
+import Leads from "./pages/crm/Leads";
+import LeadDetail from "./pages/crm/LeadDetail";
+import Pipeline from "./pages/crm/Pipeline";
+import FollowUps from "./pages/crm/FollowUps";
+import Tasks from "./pages/crm/Tasks";
+import Contacts from "./pages/crm/Contacts";
+import Organisations from "./pages/crm/Organisations";
 
 // Lazy load all pages
 const Dashboard = lazy(() => import("./pages/dashboard/Dashboard"));
@@ -49,6 +57,8 @@ const Settings = lazy(() => import("./pages/settings/Settings"));
 const Institutes = lazy(() => import("./pages/institutes/Institutes"));
 const Registrations = lazy(() => import("./pages/registrations/Registrations"));
 const Orientation = lazy(() => import("./pages/orientation/Orientation"));
+
+// CRM
 
 const AdminScenarioExamList = lazy(
   () => import("./pages/scenarioExam/AdminExamListPage"),
@@ -319,6 +329,72 @@ function App() {
           <Route path="/exams/:examId/edit" element={<EditExam />} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
+
+          {/* ── CRM Module ──────────────────────────────────────────────── */}
+          <Route
+            path="/admin/crm/dashboard"
+            element={
+              <P>
+                <CrmDashboard />
+              </P>
+            }
+          />
+          <Route
+            path="/admin/crm/leads"
+            element={
+              <P>
+                <Leads />
+              </P>
+            }
+          />
+          <Route
+            path="/admin/crm/leads/:id"
+            element={
+              <P>
+                <LeadDetail />
+              </P>
+            }
+          />
+          <Route
+            path="/admin/crm/pipeline"
+            element={
+              <P>
+                <Pipeline />
+              </P>
+            }
+          />
+          <Route
+            path="/admin/crm/followups"
+            element={
+              <P>
+                <FollowUps />
+              </P>
+            }
+          />
+          <Route
+            path="/admin/crm/tasks"
+            element={
+              <P>
+                <Tasks />
+              </P>
+            }
+          />
+          <Route
+            path="/admin/crm/contacts"
+            element={
+              <P>
+                <Contacts />
+              </P>
+            }
+          />
+          <Route
+            path="/admin/crm/organisations"
+            element={
+              <P>
+                <Organisations />
+              </P>
+            }
+          />
         </Routes>
       </Router>
     </AdminAuthProvider>

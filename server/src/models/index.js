@@ -31,3 +31,11 @@ export { default as Registration } from "./Registration.js";
 export { default as OrientationSession } from "./OrientationSession.js";
 export { default as Attendance } from "./Attendance.js";
 export { default as AuditLog } from "./AuditLog.js";
+
+// CRM---------------------------------------------------
+
+export { default as CrmLead } from "./CrmLead.js";
+export { default as CrmFollowUp } from "./CrmFollowUp.js";
+export { default as CrmTask } from "./CrmTask.js";
+export { default as CrmContact } from "./CrmContact.js";
+export { default as CrmOrganisation } from "./CrmOrganisation.js";
