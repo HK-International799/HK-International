@@ -2812,7 +2812,6 @@ export const courses = [
     ],
 
     whoShouldAttend: [
-      
       "Industrial Safety Professionals",
       "Construction Safety Professionals",
       "Oil and Gas Safety Professionals",
@@ -3146,7 +3145,6 @@ export const courses = [
     ],
 
     whoShouldAttend: [
-      
       "Quality and Safety Professionals",
       "Risk Management Professionals",
       "Construction Safety Professionals",
@@ -3441,7 +3439,6 @@ export const courses = [
     ],
 
     whoShouldAttend: [
-      
       "Supervisors and Team Leaders",
       "HSE Managers",
       "Safety Managers",
@@ -3745,7 +3742,6 @@ export const courses = [
     ],
 
     whoShouldAttend: [
-   
       "Risk Management Professionals",
       "Internal Auditors",
       "Oil and Gas Safety Professionals",
@@ -4037,11 +4033,10 @@ export const courses = [
     ],
 
     whoShouldAttend: [
-
       "Compliance Officers",
       "Internal Auditors",
       "EHS Professionals",
-    
+
       "Manufacturing Safety Professionals",
       "Consultants and Trainers",
       "Professionals responsible for HSE documentation and audits",
@@ -4628,10 +4623,10 @@ export const courses = [
 
     whoShouldAttend: [
       "HSE Officers",
-     
+
       "Compliance Officers",
       "Internal Auditors",
-    
+
       "Oil and Gas Safety Professionals",
       "Manufacturing Safety Professionals",
       "Professionals managing contractor safety performance",
@@ -4934,11 +4929,11 @@ export const courses = [
       "HSE Officers",
       "Safety Officers",
       "HSE Engineers",
-     
+
       "Internal Audit Team Members",
       "Compliance Officers",
       "EHS Professionals",
-    
+
       "Oil and Gas Safety Professionals",
       "Professionals involved in HSE system implementation and review",
     ],
@@ -5231,10 +5226,10 @@ export const courses = [
     whoShouldAttend: [
       "HSE Officers",
       "Safety Officers",
- 
+
       "Internal Auditors",
       "Compliance Officers",
-   
+
       "Manufacturing Safety Professionals",
       "Oil and Gas Safety Professionals",
       "Professionals involved in HSE system improvement and performance monitoring",
@@ -5528,10 +5523,10 @@ export const courses = [
       "HSE Officers",
       "Safety Officers",
       "HSE Engineers",
-  
+
       "Safety Managers",
       "Permit Issuers and Receivers",
-  
+
       "Oil and Gas Safety Professionals",
       "Manufacturing Safety Professionals",
       "Professionals responsible for high-risk work activities",
@@ -5823,10 +5818,10 @@ export const courses = [
     whoShouldAttend: [
       "HSE Officers",
       "Safety Officers",
-  
+
       "HSE Managers",
       "Safety Managers",
-      
+
       "Construction Safety Professionals",
       "Manufacturing Safety Professionals",
       "Professionals responsible for workplace risk management",
@@ -5960,6 +5955,659 @@ export const courses = [
 
       description:
         "Ensure effective risk control, improve compliance, and strengthen workplace safety with 1A HK International.",
+    },
+  },
+
+  {
+    id: "foundation-in-project-management",
+
+    title: "Foundation in Project Management",
+
+    organization: "1A HK International",
+
+    accreditation: "Foundation in Project Management Training Certification",
+
+    duration: "Flexible Learning Duration",
+
+    mode: [
+      "Live Online Training",
+      "LMS-Based Learning",
+      "Corporate Training",
+      "Tutor-Led Sessions",
+    ],
+
+    level: "Beginner to Early-Career Project Management Training",
+
+    image: "/logos/hk_logo.jpeg",
+
+    overview:
+      "The Foundation in Project Management course by 1A HK International is a comprehensive entry-level programme designed to provide learners with a strong understanding of project management principles, methodologies, tools, and best practices. The course introduces the complete project lifecycle, including project initiation, planning, execution, monitoring, control, and closure. Through practical examples, case studies, LMS-based learning, live online sessions, and tutor support, learners develop the knowledge and confidence required to contribute effectively to projects across various industries.",
+
+    importance:
+      "Projects drive organisational growth, innovation, and operational success. Regardless of industry, organisations require professionals who understand how projects are planned, managed, and delivered. This course provides a strong foundation in project management concepts, enabling learners to understand project objectives, stakeholder expectations, scheduling, budgeting, communication, and risk management. It serves as an ideal starting point for individuals seeking a career in project management or planning to pursue advanced project management certifications.",
+
+    learningOutcomes: [
+      "Understand the fundamentals of project management",
+      "Learn the project lifecycle and project phases",
+      "Understand project roles, responsibilities, and governance",
+      "Develop project planning and scheduling skills",
+      "Learn basic project budgeting concepts",
+      "Understand project risk identification and management",
+      "Improve stakeholder communication and engagement skills",
+      "Learn project monitoring and reporting techniques",
+      "Understand project quality management fundamentals",
+      "Develop teamwork and collaboration skills",
+      "Understand project documentation requirements",
+      "Build confidence in supporting project delivery",
+    ],
+
+    modules: [
+      {
+        title: "Introduction to Project Management",
+        topics: [
+          "What is a project",
+          "Project management fundamentals",
+          "Project success factors",
+          "Project manager responsibilities",
+        ],
+      },
+      {
+        title: "Project Lifecycle and Frameworks",
+        topics: [
+          "Project phases",
+          "Project lifecycle models",
+          "Predictive and adaptive approaches",
+          "Project governance basics",
+        ],
+      },
+      {
+        title: "Project Initiation",
+        topics: [
+          "Business case concepts",
+          "Project objectives",
+          "Project charter",
+          "Stakeholder identification",
+        ],
+      },
+      {
+        title: "Project Planning Fundamentals",
+        topics: [
+          "Planning processes",
+          "Defining project scope",
+          "Work breakdown structure",
+          "Planning techniques",
+        ],
+      },
+      {
+        title: "Project Scheduling",
+        topics: [
+          "Activity sequencing",
+          "Milestones and timelines",
+          "Gantt charts",
+          "Schedule management basics",
+        ],
+      },
+      {
+        title: "Project Cost and Budget Basics",
+        topics: [
+          "Budget planning",
+          "Cost estimation concepts",
+          "Resource allocation",
+          "Cost control fundamentals",
+        ],
+      },
+      {
+        title: "Project Risk Management",
+        topics: [
+          "Risk identification",
+          "Risk assessment",
+          "Risk response planning",
+          "Risk monitoring",
+        ],
+      },
+      {
+        title: "Stakeholder and Communication Management",
+        topics: [
+          "Stakeholder analysis",
+          "Communication planning",
+          "Managing expectations",
+          "Project meetings and reporting",
+        ],
+      },
+      {
+        title: "Project Quality Fundamentals",
+        topics: [
+          "Quality concepts",
+          "Quality planning",
+          "Quality assurance awareness",
+          "Continuous improvement basics",
+        ],
+      },
+      {
+        title: "Project Execution and Team Coordination",
+        topics: [
+          "Managing project activities",
+          "Team collaboration",
+          "Problem solving",
+          "Project leadership fundamentals",
+        ],
+      },
+      {
+        title: "Monitoring and Controlling Projects",
+        topics: [
+          "Performance measurement",
+          "Progress tracking",
+          "Issue management",
+          "Corrective actions",
+        ],
+      },
+      {
+        title: "Project Closure",
+        topics: [
+          "Project handover",
+          "Lessons learned",
+          "Project evaluation",
+          "Closure documentation",
+        ],
+      },
+      {
+        title: "Practical Project Management Exercises",
+        topics: [
+          "Case studies",
+          "Project planning exercises",
+          "Schedule development practice",
+          "Project simulations",
+        ],
+      },
+      {
+        title: "AI-Enhanced Learning Support",
+        topics: [
+          "Smart learning assistance",
+          "Project planning support",
+          "Performance tracking",
+          "Personalised recommendations",
+        ],
+      },
+      {
+        title: "One-to-One Mentoring and Guidance",
+        topics: [
+          "Tutor support",
+          "Career guidance",
+          "Doubt-solving sessions",
+          "Professional development planning",
+        ],
+      },
+    ],
+
+    whoShouldAttend: [
+      "Students",
+      "Project Coordinators",
+      "Administrative Professionals",
+      "Team Leaders",
+      "Supervisors",
+      "Operations Staff",
+    ],
+
+    certification:
+      "1A HK International provides professional Foundation in Project Management training, including live online sessions, LMS access, practical exercises, tutor support, and learning guidance. Learners who successfully complete the programme receive a Foundation in Project Management Training Certificate from 1A HK International.",
+
+    careerBenefits: [
+      "Strong foundation in project management principles",
+      "Improved planning and organisational skills",
+      "Better understanding of project lifecycles",
+      "Enhanced communication and stakeholder management abilities",
+      "Improved teamwork and collaboration skills",
+      "Greater confidence in project environments",
+      "Increased employability across industries",
+      "Preparation for advanced project management training",
+      "Improved decision-making capabilities",
+      "Enhanced professional credibility",
+      "Career development opportunities in project-based roles",
+      "Understanding of globally recognised project practices",
+    ],
+
+    features: [
+      "Live online training sessions",
+      "Project management templates",
+      "Practical case studies",
+      "Learning Management System (LMS) access",
+      "AI-enhanced learning support",
+      "Tutor-led sessions",
+      "One-to-one mentoring",
+      "Progress tracking",
+      "Flexible learning options",
+      "Industry-focused learning approach",
+    ],
+
+    industries: [
+      "Construction",
+      "Engineering",
+      "Information Technology",
+      "Manufacturing",
+      "Oil and Gas",
+      "Healthcare",
+      "Education",
+      "Finance",
+      "Telecommunications",
+      "Infrastructure Projects",
+      "Consultancy Services",
+    ],
+
+    deliveryMode: [
+      "Live Online Training",
+      "LMS Access",
+      "Practical Assignments",
+      "Case Study Learning",
+      "Tutor-Led Sessions",
+      "One-to-One Counselling",
+      "Online Doubt Solving",
+      "Performance Review Support",
+      "Corporate Batch Training",
+    ],
+
+    faq: [
+      {
+        question: "What is Foundation in Project Management?",
+        answer:
+          "It is an introductory programme designed to teach the fundamentals of project management, including planning, scheduling, communication, risk management, and project delivery.",
+      },
+      {
+        question: "Do I need prior project management experience?",
+        answer:
+          "No. This course is specifically designed for beginners and professionals with little or no project management experience.",
+      },
+      {
+        question: "Is this course suitable for students and fresh graduates?",
+        answer:
+          "Yes. The programme provides an excellent starting point for individuals entering project-based careers.",
+      },
+      {
+        question: "Will I learn project planning and scheduling?",
+        answer:
+          "Yes. The course covers project planning, work breakdown structures, timelines, and scheduling fundamentals.",
+      },
+      {
+        question: "Is tutor support available?",
+        answer:
+          "Yes. Learners receive tutor guidance, mentoring, and doubt-solving support.",
+      },
+      {
+        question: "Can organisations enrol employees?",
+        answer:
+          "Yes. Corporate training and customised batch options are available.",
+      },
+      {
+        question:
+          "Does this course prepare learners for advanced project management studies?",
+        answer:
+          "Yes. It provides a strong foundation for advanced project management programmes and professional certifications.",
+      },
+    ],
+
+    seo: {
+      metaTitle:
+        "Foundation in Project Management Course Online | 1A HK International",
+
+      metaDescription:
+        "Join the Foundation in Project Management course by 1A HK International. Learn project planning, scheduling, communication, risk management, stakeholder engagement, and project delivery fundamentals.",
+
+      keywords: [
+        "foundation in project management",
+        "project management course",
+        "project management fundamentals",
+        "beginner project management training",
+        "project planning course",
+        "project lifecycle training",
+        "online project management course",
+        "project coordinator training",
+        "project scheduling course",
+        "project management certification",
+        "project management basics",
+        "project management training online",
+        "entry level project management course",
+        "1A HK International project management",
+        "foundation project management training",
+      ],
+
+      url: "https://hkinternational.uk/foundation-in-project-management",
+    },
+
+    banner: {
+      title: "Foundation in Project Management",
+
+      subtitle:
+        "Build a strong project management foundation with practical training, live online sessions, LMS access, and expert guidance.",
+
+      description:
+        "Learn how successful projects are planned, managed, and delivered with 1A HK International.",
+    },
+  },
+  {
+    id: "essential-skills-in-project-management",
+
+    title: "Essential Skills in Project Management",
+
+    organization: "1A HK International",
+
+    accreditation:
+      "Essential Skills in Project Management Training Certification",
+
+    duration: "Flexible Learning Duration",
+
+    mode: [
+      "Live Online Training",
+      "LMS-Based Learning",
+      "Corporate Training",
+      "Tutor-Led Sessions",
+    ],
+
+    level: "Intermediate Project Management Skills Development Training",
+
+    image: "/logos/hk_logo.jpeg",
+
+    overview:
+      "The Essential Skills in Project Management course by 1A HK International is a practical and career-focused programme designed for professionals involved in managing, coordinating, supervising, or contributing to projects. The course develops the critical technical and leadership skills required for successful project delivery, including planning, scheduling, communication, stakeholder management, budgeting, risk management, problem-solving, team coordination, and project performance monitoring. Through live online sessions, LMS-based learning, practical case studies, simulations, and expert mentoring, learners gain the confidence and capability to manage projects more effectively across various industries.",
+
+    importance:
+      "Successful projects require more than technical knowledge. Project professionals must possess essential skills such as communication, leadership, organisation, planning, risk management, stakeholder engagement, and decision-making. Organisations worldwide increasingly seek professionals who can coordinate teams, manage resources, solve problems, and deliver results on time and within budget. This course equips learners with the practical competencies needed to improve project performance, strengthen professional credibility, and support successful project outcomes across diverse business environments.",
+
+    learningOutcomes: [
+      "Develop essential project management competencies",
+      "Improve project planning and scheduling skills",
+      "Strengthen stakeholder engagement and communication abilities",
+      "Learn practical project budgeting and cost control techniques",
+      "Develop effective risk identification and mitigation strategies",
+      "Improve project monitoring and performance reporting capabilities",
+      "Enhance leadership and team coordination skills",
+      "Learn conflict resolution and problem-solving techniques",
+      "Improve decision-making in project environments",
+      "Develop organisational and time management skills",
+      "Understand project quality and performance management",
+      "Build confidence in managing projects and project teams",
+    ],
+
+    modules: [
+      {
+        title: "Project Management Essentials",
+        topics: [
+          "Core project management concepts",
+          "Project lifecycle overview",
+          "Project roles and responsibilities",
+          "Project success factors",
+        ],
+      },
+      {
+        title: "Project Planning and Scope Management",
+        topics: [
+          "Project planning techniques",
+          "Defining project scope",
+          "Work breakdown structures",
+          "Scope control methods",
+        ],
+      },
+      {
+        title: "Scheduling and Time Management",
+        topics: [
+          "Project scheduling fundamentals",
+          "Activity sequencing",
+          "Milestones and timelines",
+          "Schedule monitoring and control",
+        ],
+      },
+      {
+        title: "Project Cost and Resource Management",
+        topics: [
+          "Budget development",
+          "Cost estimation techniques",
+          "Resource allocation",
+          "Cost monitoring and control",
+        ],
+      },
+      {
+        title: "Risk Management Skills",
+        topics: [
+          "Risk identification",
+          "Risk analysis and prioritisation",
+          "Risk response planning",
+          "Risk monitoring and reporting",
+        ],
+      },
+      {
+        title: "Communication and Stakeholder Management",
+        topics: [
+          "Communication planning",
+          "Stakeholder analysis",
+          "Managing stakeholder expectations",
+          "Project reporting techniques",
+        ],
+      },
+      {
+        title: "Leadership and Team Management",
+        topics: [
+          "Leadership styles",
+          "Motivating project teams",
+          "Team development",
+          "Building collaboration",
+        ],
+      },
+      {
+        title: "Problem Solving and Decision Making",
+        topics: [
+          "Problem identification",
+          "Root cause analysis",
+          "Decision-making techniques",
+          "Managing project challenges",
+        ],
+      },
+      {
+        title: "Conflict Management and Negotiation",
+        topics: [
+          "Sources of conflict",
+          "Conflict resolution strategies",
+          "Negotiation skills",
+          "Managing difficult situations",
+        ],
+      },
+      {
+        title: "Project Quality and Performance Management",
+        topics: [
+          "Quality planning",
+          "Performance measurement",
+          "Key performance indicators",
+          "Continuous improvement",
+        ],
+      },
+      {
+        title: "Project Monitoring and Control",
+        topics: [
+          "Progress tracking",
+          "Performance reviews",
+          "Issue management",
+          "Corrective action planning",
+        ],
+      },
+      {
+        title: "Project Reporting and Documentation",
+        topics: [
+          "Project documentation standards",
+          "Status reporting",
+          "Lessons learned",
+          "Project closure reporting",
+        ],
+      },
+      {
+        title: "Practical Project Management Simulations",
+        topics: [
+          "Project case studies",
+          "Planning exercises",
+          "Risk management scenarios",
+          "Project performance reviews",
+        ],
+      },
+      {
+        title: "AI-Enhanced Learning Support",
+        topics: [
+          "Smart project planning assistance",
+          "Personalised learning pathways",
+          "Performance tracking",
+          "Project improvement recommendations",
+        ],
+      },
+      {
+        title: "One-to-One Mentoring and Guidance",
+        topics: [
+          "Expert tutor support",
+          "Career development guidance",
+          "Doubt-solving sessions",
+          "Professional improvement planning",
+        ],
+      },
+    ],
+
+    whoShouldAttend: [
+      "Project Coordinators",
+      "Team Leaders",
+      "Supervisors",
+      "Project Administrators",
+      "Department Managers",
+      "Construction Professionals",
+      "IT Professionals",
+      "Project Team Members",
+    ],
+
+    certification:
+      "1A HK International provides professional Essential Skills in Project Management training, including live online sessions, LMS access, practical exercises, project simulations, tutor support, and mentoring. Learners who successfully complete the programme receive an Essential Skills in Project Management Training Certificate from 1A HK International.",
+
+    careerBenefits: [
+      "Enhanced project planning and scheduling capabilities",
+      "Improved leadership and team management skills",
+      "Stronger stakeholder communication abilities",
+      "Better project risk management knowledge",
+      "Improved project budgeting and resource management skills",
+      "Greater confidence in handling project challenges",
+      "Enhanced problem-solving and decision-making abilities",
+      "Improved project performance monitoring skills",
+      "Increased professional credibility",
+      "Career advancement opportunities in project-based roles",
+      "Improved organisational and time management skills",
+      "Preparation for advanced project management certifications",
+    ],
+
+    features: [
+      "Live online training sessions",
+      "Project management templates and tools",
+      "Practical case studies",
+      "Project simulations and exercises",
+      "Learning Management System (LMS) access",
+      "AI-enhanced learning support",
+      "Tutor-led sessions",
+      "One-to-one mentoring",
+      "Performance tracking and feedback",
+      "Flexible learning options",
+    ],
+
+    industries: [
+      "Construction",
+      "Engineering",
+      "Information Technology",
+      "Manufacturing",
+      "Oil and Gas",
+      "Healthcare",
+      "Education",
+      "Finance",
+      "Telecommunications",
+      "Infrastructure Projects",
+      "Consultancy Services",
+    ],
+
+    deliveryMode: [
+      "Live Online Training",
+      "LMS Access",
+      "Project Simulations",
+      "Practical Assignments",
+      "Case Study Learning",
+      "Tutor-Led Sessions",
+      "One-to-One Counselling",
+      "Online Doubt Solving",
+      "Performance Review Support",
+      "Corporate Batch Training",
+    ],
+
+    faq: [
+      {
+        question: "What is the Essential Skills in Project Management course?",
+        answer:
+          "It is a practical project management programme designed to develop the core skills required for successful project planning, execution, communication, leadership, and project delivery.",
+      },
+      {
+        question: "Who should attend this course?",
+        answer:
+          "The course is suitable for project coordinators, supervisors, team leaders, engineers, managers, and professionals involved in project activities.",
+      },
+      {
+        question: "Do I need previous project management experience?",
+        answer:
+          "Basic project knowledge is beneficial, but the course is designed to help both emerging and experienced professionals strengthen practical project management skills.",
+      },
+      {
+        question: "Will I learn project scheduling and budgeting?",
+        answer:
+          "Yes. The programme covers scheduling, resource planning, budgeting, and project performance management fundamentals.",
+      },
+      {
+        question:
+          "Does the course include leadership and communication skills?",
+        answer:
+          "Yes. Leadership, stakeholder management, communication, negotiation, and team coordination are key components of the programme.",
+      },
+      {
+        question: "Is tutor support available?",
+        answer:
+          "Yes. Learners receive tutor guidance, mentoring, performance feedback, and doubt-solving support.",
+      },
+      {
+        question: "Can organisations enrol teams for training?",
+        answer:
+          "Yes. Corporate training and customised project management learning solutions are available for organisations.",
+      },
+    ],
+
+    seo: {
+      metaTitle:
+        "Essential Skills in Project Management Course Online | 1A HK International",
+
+      metaDescription:
+        "Join the Essential Skills in Project Management course by 1A HK International. Learn planning, scheduling, leadership, communication, stakeholder management, budgeting, risk management, and project delivery skills.",
+
+      keywords: [
+        "essential skills in project management",
+        "project management skills training",
+        "project planning course",
+        "project leadership training",
+        "project communication skills",
+        "project scheduling course",
+        "stakeholder management training",
+        "project risk management course",
+        "project management online course",
+        "project coordination training",
+        "project team management course",
+        "project performance management",
+        "project management certification",
+        "1A HK International project management",
+        "project management professional skills",
+      ],
+
+      url: "https://hkinternational.uk/essential-skills-in-project-management",
+    },
+
+    banner: {
+      title: "Essential Skills in Project Management",
+
+      subtitle:
+        "Develop the practical skills required to plan, lead, communicate, monitor, and successfully deliver projects across industries.",
+
+      description:
+        "Build confidence, improve project performance, and strengthen your professional project management capabilities with 1A HK International.",
     },
   },
   {},

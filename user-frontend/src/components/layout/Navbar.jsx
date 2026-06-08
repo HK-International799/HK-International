@@ -198,6 +198,19 @@ export default function Navbar() {
         },
       ],
     },
+    {
+      title: "Project Management",
+      courses: [
+        {
+          name: "Foundation in Project Management",
+          id: "foundation-in-project-management",
+        },
+        {
+          name: "Essential Skills in Project Management",
+          id: "essential-skills-in-project-management",
+        },
+      ],
+    },
   ];
 
   const handleCategoryClick = (index) => {
