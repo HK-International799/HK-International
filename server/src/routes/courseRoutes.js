@@ -32,38 +32,38 @@
 // /**
 //  * 🛠 Admin Only
 //  */
-// router.post("/", roleMiddleware(["admin"]), createCourse);
-// router.delete("/:id", roleMiddleware(["admin"]), deleteCourse);
-// router.post("/:id/assign-tutor", roleMiddleware(["admin"]), assignTutor);
+// router.post("/", roleMiddleware(["admin", "super_admin"]), createCourse);
+// router.delete("/:id", roleMiddleware(["admin", "super_admin"]), deleteCourse);
+// router.post("/:id/assign-tutor", roleMiddleware(["admin", "super_admin"]), assignTutor);
 
 // router.post(
 //   "/full",
 //   authMiddleware,
-//   roleMiddleware(["admin"]),
+//   roleMiddleware(["admin", "super_admin"]),
 //   createFullCourse,
 // );
 // /**
 //  * ✏️ Admin + Tutor
 //  */
-// router.put("/:id", roleMiddleware(["admin", "tutor"]), updateCourse);
+// router.put("/:id", roleMiddleware(["admin", "tutor", "super_admin"]), updateCourse);
 
 // /**
 //  * 📂 Sections (Admin + Tutor)
 //  */
-// router.post("/:id/sections", roleMiddleware(["admin", "tutor"]), addSection);
+// router.post("/:id/sections", roleMiddleware(["admin", "tutor", "super_admin"]), addSection);
 // router.put(
 //   "/sections/:sectionId",
-//   roleMiddleware(["admin", "tutor"]),
+//   roleMiddleware(["admin", "tutor", "super_admin"]),
 //   updateSection,
 // );
 // router.delete(
 //   "/sections/:sectionId",
-//   roleMiddleware(["admin", "tutor"]),
+//   roleMiddleware(["admin", "tutor", "super_admin"]),
 //   deleteSection,
 // );
 
 // //enroll student
-// router.post("/:id/enroll-student", roleMiddleware(["admin"]), enrollStudent);
+// router.post("/:id/enroll-student", roleMiddleware(["admin", "super_admin"]), enrollStudent);
 
 // export default router;
 
@@ -103,48 +103,48 @@ router.get("/:id", getCourseById);
 /**
  * 🛠 Admin Only
  */
-router.post("/", roleMiddleware(["admin"]), createCourse);
-router.delete("/:id", roleMiddleware(["admin"]), deleteCourse);
-router.post("/:id/assign-tutor", roleMiddleware(["admin"]), assignTutor);
+router.post("/", roleMiddleware(["admin", "super_admin"]), createCourse);
+router.delete("/:id", roleMiddleware(["admin", "super_admin"]), deleteCourse);
+router.post("/:id/assign-tutor", roleMiddleware(["admin", "super_admin"]), assignTutor);
 
 router.post(
   "/full",
   authMiddleware,
-  roleMiddleware(["admin"]),
+  roleMiddleware(["admin", "super_admin"]),
   createFullCourse,
 );
 /**
  * ✏️ Admin + Tutor
  */
-router.put("/:id", roleMiddleware(["admin", "tutor"]), updateCourse);
+router.put("/:id", roleMiddleware(["admin", "tutor", "super_admin"]), updateCourse);
 
 /**
  * 📂 Sections (Admin + Tutor)
  */
-router.post("/:id/sections", roleMiddleware(["admin", "tutor"]), addSection);
+router.post("/:id/sections", roleMiddleware(["admin", "tutor", "super_admin"]), addSection);
 router.put(
   "/sections/:sectionId",
-  roleMiddleware(["admin", "tutor"]),
+  roleMiddleware(["admin", "tutor", "super_admin"]),
   updateSection,
 );
 router.delete(
   "/sections/:sectionId",
-  roleMiddleware(["admin", "tutor"]),
+  roleMiddleware(["admin", "tutor", "super_admin"]),
   deleteSection,
 );
 
 //enroll student
-router.post("/:id/enroll-student", roleMiddleware(["admin"]), enrollStudent);
+router.post("/:id/enroll-student", roleMiddleware(["admin", "super_admin"]), enrollStudent);
 
 // ── Admin: Enrollments & Progress ──────────────────────────────────────────
 router.get(
   "/:id/enrollments-progress",
-  roleMiddleware(["admin"]),
+  roleMiddleware(["admin", "super_admin"]),
   getCourseEnrollmentsProgress
 );
 router.delete(
   "/:id/enrollment/:studentId",
-  roleMiddleware(["admin"]),
+  roleMiddleware(["admin", "super_admin"]),
   revokeEnrollment
 );
 
