@@ -26,6 +26,14 @@ import Tasks from "./pages/crm/Tasks";
 import Contacts from "./pages/crm/Contacts";
 import Organisations from "./pages/crm/Organisations";
 
+// Finance
+import FinanceDashboard from "./pages/finance/FinanceDashboard";
+import PaymentsList from "./pages/finance/PaymentsList";
+import RecordPayment from "./pages/finance/RecordPayment";
+import LearnerPaymentProfile from "./pages/finance/LearnerPaymentProfile";
+import FinanceReports from "./pages/finance/FinanceReports";
+import CourseFees from "./pages/finance/CourseFees";
+
 // Lazy load all pages
 const Dashboard = lazy(() => import("./pages/dashboard/Dashboard"));
 const Courses = lazy(() => import("./pages/courses/Courses"));
@@ -392,6 +400,56 @@ function App() {
             element={
               <P>
                 <Organisations />
+              </P>
+            }
+          />
+
+          {/* ── Finance Module ──────────────────────────────────────────────── */}
+          <Route
+            path="/admin/finance/dashboard"
+            element={
+              <P>
+                <FinanceDashboard />
+              </P>
+            }
+          />
+          <Route
+            path="/admin/finance/payments"
+            element={
+              <P>
+                <PaymentsList />
+              </P>
+            }
+          />
+          <Route
+            path="/admin/finance/record"
+            element={
+              <P>
+                <RecordPayment />
+              </P>
+            }
+          />
+          <Route
+            path="/admin/finance/learner/:userId"
+            element={
+              <P>
+                <LearnerPaymentProfile />
+              </P>
+            }
+          />
+          <Route
+            path="/admin/finance/reports"
+            element={
+              <P>
+                <FinanceReports />
+              </P>
+            }
+          />
+          <Route
+            path="/admin/finance/fees"
+            element={
+              <P>
+                <CourseFees />
               </P>
             }
           />

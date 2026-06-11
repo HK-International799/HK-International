@@ -28,6 +28,9 @@ import {
   Contact,
   Building2 as Building2Icon,
   Kanban,
+  PoundSterling,
+  BarChart2,
+  FileBarChart,
 } from "lucide-react";
 
 const navGroups = [
@@ -71,11 +74,7 @@ const navGroups = [
       { to: "/admin/crm/followups", label: "Follow-ups", icon: CalendarClock },
       { to: "/admin/crm/tasks", label: "Tasks", icon: CheckSquare },
       // { to: "/admin/crm/contacts", label: "Contacts", icon: Contact },
-      // {
-      //   to: "/admin/crm/organisations",
-      //   label: "Organisations",
-      //   icon: Building2Icon,
-      // },
+      // { to: "/admin/crm/organisations", label: "Organisations", icon: Building2Icon },
     ],
   },
 
@@ -96,6 +95,24 @@ const navGroups = [
   //     { to: "/admin/certificates", label: "Certificates", icon: Award },
   //   ],
   // },
+  {
+    label: "Finance",
+    items: [
+      {
+        to: "/admin/finance/dashboard",
+        label: "Finance Dashboard",
+        icon: PoundSterling,
+      },
+      { to: "/admin/finance/payments", label: "Payments", icon: BarChart2 },
+      {
+        to: "/admin/finance/record",
+        label: "Record Payment",
+        icon: CheckSquare,
+      },
+      { to: "/admin/finance/fees", label: "Course Fees", icon: FileBarChart },
+      { to: "/admin/finance/reports", label: "Reports", icon: TrendingUp },
+    ],
+  },
   {
     label: "System",
     items: [{ to: "/admin/settings", label: "Settings", icon: Settings }],
