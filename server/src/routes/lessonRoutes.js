@@ -18,7 +18,7 @@ const router = express.Router();
 router.post(
   "/",
   authMiddleware,
-  roleMiddleware(["admin", "tutor"]),
+  roleMiddleware(["admin", "super_admin", "tutor"]),
   createLesson
 );
 
@@ -29,7 +29,7 @@ router.get("/:id", authMiddleware, getLesson);
 router.delete(
   "/:id",
   authMiddleware,
-  roleMiddleware(["admin", "tutor"]),
+  roleMiddleware(["admin", "super_admin", "tutor"]),
   deleteLesson
 );
 
@@ -37,7 +37,7 @@ router.delete(
 router.put(
   "/:id",
   authMiddleware,
-  roleMiddleware(["admin", "tutor"]),
+  roleMiddleware(["admin", "super_admin", "tutor"]),
   updateLesson
 );
 
@@ -45,7 +45,7 @@ router.put(
 router.post(
   "/:id/material",
   authMiddleware,
-  roleMiddleware(["admin", "tutor"]),
+  roleMiddleware(["admin", "super_admin", "tutor"]),
   upload.single("file"),
   addMaterial
 );
@@ -53,7 +53,7 @@ router.post(
 router.post(
   "/:id/assign-quiz",
   authMiddleware,
-  roleMiddleware(["admin", "tutor"]),
+  roleMiddleware(["admin", "super_admin", "tutor"]),
   assignQuiz
 );
 

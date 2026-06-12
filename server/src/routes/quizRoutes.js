@@ -13,11 +13,11 @@ const router = express.Router();
 
 router.use(authMiddleware);
 
-router.post("/", roleMiddleware(["admin", "tutor"]), createQuiz);
+router.post("/", roleMiddleware(["admin", "super_admin", "tutor"]), createQuiz);
 
 router.post(
   "/:quizId/questions",
-  roleMiddleware(["admin", "tutor"]),
+  roleMiddleware(["admin", "super_admin", "tutor"]),
   addQuestion
 );
 
@@ -25,7 +25,7 @@ router.get("/:id", getQuiz);
 
 router.put(
   "/:id/publish",
-  roleMiddleware(["admin", "tutor"]),
+  roleMiddleware(["admin", "super_admin", "tutor"]),
   publishQuiz
 );
 

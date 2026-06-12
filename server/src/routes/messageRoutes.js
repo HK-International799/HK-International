@@ -27,35 +27,35 @@ router.put("/:id/read", authMiddleware, markRead);
 router.get(
   "/admin/course/:courseId",
   authMiddleware,
-  roleMiddleware(["admin"]),
+  roleMiddleware(["admin", "super_admin"]),
   adminGetCourseMessages
 );
 
 router.post(
   "/admin/send",
   authMiddleware,
-  roleMiddleware(["admin"]),
+  roleMiddleware(["admin", "super_admin"]),
   adminSendMessage
 );
 
 router.delete(
   "/admin/delete",
   authMiddleware,
-  roleMiddleware(["admin"]),
+  roleMiddleware(["admin", "super_admin"]),
   adminDeleteMessages
 );
 
 router.get(
   "/admin/download",
   authMiddleware,
-  roleMiddleware(["admin"]),
+  roleMiddleware(["admin", "super_admin"]),
   adminDownloadMessages
 );
 
 router.delete(
   "/admin/message/:messageId",
   authMiddleware,
-  roleMiddleware(["admin"]),
+  roleMiddleware(["admin", "super_admin"]),
   adminDeleteSingleMessage
 );
 
@@ -63,21 +63,21 @@ router.delete(
 router.post(
   "/admin/block",
   authMiddleware,
-  roleMiddleware(["admin"]),
+  roleMiddleware(["admin", "super_admin"]),
   blockUser
 );
 
 router.delete(
   "/admin/block/:userId",
   authMiddleware,
-  roleMiddleware(["admin"]),
+  roleMiddleware(["admin", "super_admin"]),
   unblockUser
 );
 
 router.get(
   "/admin/blocked",
   authMiddleware,
-  roleMiddleware(["admin"]),
+  roleMiddleware(["admin", "super_admin"]),
   getBlockedUsers
 );
 

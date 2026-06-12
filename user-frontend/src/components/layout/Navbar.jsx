@@ -100,7 +100,7 @@ export default function Navbar() {
         },
         {
           name: "OSHA 30 Hour General Industry Certificate",
-          id: "osha-general",
+          id: "osha-30-hours-general-industry-certificate",
         },
       ],
     },

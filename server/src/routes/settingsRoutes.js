@@ -3,7 +3,7 @@ import { getSettings, upsertSetting, deleteSetting, bulkUpdateSettings } from ".
 import authMiddleware from "../middleware/authMiddleware.js";
 import roleMiddleware from "../middleware/roleMiddleware.js";
 const router = express.Router();
-router.use(authMiddleware, roleMiddleware(["admin"]));
+router.use(authMiddleware, roleMiddleware(["admin","super_admin"]));
 router.get("/", getSettings);
 router.post("/", upsertSetting);
 router.put("/bulk", bulkUpdateSettings);

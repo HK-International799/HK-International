@@ -1614,7 +1614,7 @@ export const courses = [
   },
 
   {
-    id: "osha-general",
+    id: "osha-30-hours-general-industry-certificate",
 
     title: "OSHA 30 Hours General Industry Certificate",
 

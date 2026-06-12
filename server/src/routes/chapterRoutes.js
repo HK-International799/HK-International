@@ -35,10 +35,10 @@ router.get(
 
 /* ── Chapter CRUD (Admin / Tutor only) ────────────────────────── */
 // POST /api/chapters  — create new chapter
-router.post("/", roleMiddleware(["admin", "tutor"]), createChapter);
+router.post("/", roleMiddleware(["admin", "tutor", "super_admin"]), createChapter);
 
 // PUT /api/chapters/:id  — update chapter info
-router.put("/:id", roleMiddleware(["admin", "tutor"]), updateChapter);
+router.put("/:id", roleMiddleware(["admin", "tutor", "super_admin"]), updateChapter);
 
 // DELETE /api/chapters/:id  — remove chapter + quiz
 router.delete("/:id", roleMiddleware(["admin"]), deleteChapter);
@@ -47,7 +47,7 @@ router.delete("/:id", roleMiddleware(["admin"]), deleteChapter);
 // POST /api/chapters/:id/upload-document  — upload PDF/DOC
 router.post(
   "/:id/upload-document",
-  roleMiddleware(["admin", "tutor"]),
+  roleMiddleware(["admin", "tutor", "super_admin"]),
   upload.single("document"),
   uploadChapterDocument,
 );
@@ -56,14 +56,14 @@ router.post(
 // POST /api/chapters/:id/create-quiz  — create quiz for chapter
 router.post(
   "/:id/create-quiz",
-  roleMiddleware(["admin", "tutor"]),
+  roleMiddleware(["admin", "tutor", "super_admin"]),
   createChapterQuiz,
 );
 
 // POST /api/chapters/:id/quiz/add-question  — add MCQ question
 router.post(
   "/:id/quiz/add-question",
-  roleMiddleware(["admin", "tutor"]),
+  roleMiddleware(["admin", "tutor", "super_admin"]),
   addQuizQuestion,
 );
 

@@ -25,9 +25,9 @@ router.get("/", getAllDocuments);
 router.get("/:id", getDocumentById);
 
 // ✅ Review
-router.put("/:id/review", roleMiddleware(["admin", "tutor"]), reviewDocument);
+router.put("/:id/review", roleMiddleware(["admin", "tutor","super_admin"]), reviewDocument);
 
 // ✅ Delete
-router.delete("/:id", roleMiddleware(["admin"]), deleteDocument);
+router.delete("/:id", roleMiddleware(["admin", "super_admin"]), deleteDocument);
 
 export default router;

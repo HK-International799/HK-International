@@ -3,7 +3,7 @@ import { createLiveClass, getAllLiveClasses, getLiveClassById, updateLiveClass, 
 import authMiddleware from "../middleware/authMiddleware.js";
 import roleMiddleware from "../middleware/roleMiddleware.js";
 const router = express.Router();
-router.use(authMiddleware, roleMiddleware(["admin", "tutor"]));
+router.use(authMiddleware, roleMiddleware(["admin", "super_admin", "tutor"]));
 router.post("/", createLiveClass);
 router.get("/", getAllLiveClasses);
 router.get("/:id", getLiveClassById);

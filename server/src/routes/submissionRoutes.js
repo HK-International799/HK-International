@@ -46,7 +46,7 @@
 // router.get(
 //   "/",
 //   authMiddleware,
-//   roleMiddleware(["tutor", "admin"]),
+//   roleMiddleware(["tutor", "admin", "super_admin"]),
 //   listSubmissions
 // );
 
@@ -54,7 +54,7 @@
 // router.get(
 //   "/:id",
 //   authMiddleware,
-//   roleMiddleware(["tutor", "admin", "student"]),
+//   roleMiddleware(["tutor", "admin", "super_admin", "student"]),
 //   getSubmissionById
 // );
 
@@ -62,7 +62,7 @@
 // router.put(
 //   "/:id/grade",
 //   authMiddleware,
-//   roleMiddleware(["tutor", "admin"]),
+//   roleMiddleware(["tutor", "admin", "super_admin"]),
 //   gradeSubmission
 // );
 
@@ -70,7 +70,7 @@
 // router.patch(
 //   "/:id/annotations",
 //   authMiddleware,
-//   roleMiddleware(["tutor", "admin"]),
+//   roleMiddleware(["tutor", "admin", "super_admin"]),
 //   saveAnnotations
 // );
 
@@ -124,7 +124,7 @@ router.get(
 router.get(
   "/",
   authMiddleware,
-  roleMiddleware(["tutor", "admin"]),
+  roleMiddleware(["tutor", "admin", "super_admin"]),
   listSubmissions
 );
 
@@ -132,7 +132,7 @@ router.get(
 router.get(
   "/:id",
   authMiddleware,
-  roleMiddleware(["tutor", "admin", "student"]),
+  roleMiddleware(["tutor", "admin", "super_admin", "student"]),
   getSubmissionById
 );
 
@@ -140,7 +140,7 @@ router.get(
 router.put(
   "/:id/grade",
   authMiddleware,
-  roleMiddleware(["tutor", "admin"]),
+  roleMiddleware(["tutor", "admin", "super_admin"]),
   gradeSubmission
 );
 
@@ -148,7 +148,7 @@ router.put(
 router.patch(
   "/:id/annotations",
   authMiddleware,
-  roleMiddleware(["tutor", "admin"]),
+  roleMiddleware(["tutor", "admin", "super_admin"]),
   saveAnnotations
 );
 

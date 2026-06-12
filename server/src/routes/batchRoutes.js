@@ -3,7 +3,7 @@ import { createBatch, getAllBatches, getBatchById, updateBatch, deleteBatch, add
 import authMiddleware from "../middleware/authMiddleware.js";
 import roleMiddleware from "../middleware/roleMiddleware.js";
 const router = express.Router();
-router.use(authMiddleware, roleMiddleware(["admin", "tutor"]));
+router.use(authMiddleware, roleMiddleware(["admin", "super_admin", "tutor"]));
 router.post("/", createBatch);
 router.get("/", getAllBatches);
 router.get("/:id", getBatchById);

@@ -3,7 +3,7 @@ import { getDashboardStats, getAnalyticsOverview, getReportsData } from "../cont
 import authMiddleware from "../middleware/authMiddleware.js";
 import roleMiddleware from "../middleware/roleMiddleware.js";
 const router = express.Router();
-router.use(authMiddleware, roleMiddleware(["admin", "tutor"]));
+router.use(authMiddleware, roleMiddleware(["admin", "super_admin", "tutor"]));
 router.get("/dashboard", getDashboardStats);
 router.get("/overview", getAnalyticsOverview);
 router.get("/reports", getReportsData);
