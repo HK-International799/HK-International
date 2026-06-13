@@ -32,12 +32,22 @@ const PaymentPage = () => {
 
   /* ---------------- Phone Change ---------------- */
 
+  // const handlePhoneChange = (value, country) => {
+  //   setForm({
+  //     ...form,
+  //     phone: value,
+  //     country: country.name,
+  //   });
+  // };
+
   const handlePhoneChange = (value, country) => {
-    setForm({
-      ...form,
-      phone: value,
-      country: country.name,
-    });
+    const cleaned = value.replace(/[^\d]/g, "");
+
+    setForm((prev) => ({
+      ...prev,
+      phone: cleaned,
+      country: country?.name || "India",
+    }));
   };
 
   /* ---------------- Validation ---------------- */
@@ -86,7 +96,7 @@ const PaymentPage = () => {
       const data = await initiatePayment(form);
 
       if (!data.success) {
-        setError(data.message);
+        setError(data.message || "Payment initiation failed");
         setLoading(false);
         return;
       }
@@ -107,13 +117,9 @@ const PaymentPage = () => {
           });
 
           if (verifyRes.success) {
-            navigate(
-              `/payment-success?orderId=${response.razorpay_order_id}`
-            );
+            navigate(`/payment-success?orderId=${response.razorpay_order_id}`);
           } else {
-            navigate(
-              "/payment-failed?reason=verification_failed"
-            );
+            navigate("/payment-failed?reason=verification_failed");
           }
         },
 
@@ -144,32 +150,37 @@ const PaymentPage = () => {
         navigate("/payment-failed?reason=payment_failed");
       });
 
-      rzp.open();
+      setTimeout(() => {
+        rzp.open();
+      }, 100);
     } catch (err) {
       console.error(err);
-      setError("Payment initiation failed");
       setLoading(false);
+      setError(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Payment initiation failed",
+      );
     }
   };
 
   return (
     <MainLayout>
-          <h1 className="text-center"><span className="text-red-600 font-bold">Note :</span> Make sure to enter correct credentials. Company will not be responsible if you enter incorrect data. </h1>
+      <h1 className="text-center">
+        <span className="text-red-600 font-bold">Note :</span> Make sure to
+        enter correct credentials. Company will not be responsible if you enter
+        incorrect data.{" "}
+      </h1>
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-green-50 flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
-
           {/* Header */}
 
           <div className="text-center mb-6">
             <CreditCard size={40} className="mx-auto text-indigo-600" />
 
-            <h2 className="text-2xl font-bold mt-3">
-              Make Payment
-            </h2>
+            <h2 className="text-2xl font-bold mt-3">Make Payment</h2>
 
-            <p className="text-gray-500">
-              Secure Global Razorpay Payment
-            </p>
+            <p className="text-gray-500">Secure Global Razorpay Payment</p>
           </div>
 
           {error && (
@@ -179,7 +190,6 @@ const PaymentPage = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-
             <Input
               name="name"
               placeholder="Full Name"
@@ -257,13 +267,7 @@ const PaymentPage = () => {
   );
 };
 
-const Input = ({
-  name,
-  placeholder,
-  value,
-  onChange,
-  type = "text",
-}) => (
+const Input = ({ name, placeholder, value, onChange, type = "text" }) => (
   <input
     type={type}
     name={name}

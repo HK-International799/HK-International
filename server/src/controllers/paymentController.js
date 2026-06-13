@@ -23,8 +23,16 @@ const isValidEmail = (email) => {
 
 /* ---------------- Phone Validation (International) ---------------- */
 
+// const isValidPhone = (phone) => {
+//   return /^\+?[1-9]\d{7,14}$/.test(phone);
+// };
+
 const isValidPhone = (phone) => {
-  return /^\+?[1-9]\d{7,14}$/.test(phone);
+  const clean = String(phone).replace(/\s/g, "");
+
+  return /^[1-9]\d{7,14}$/.test(
+    clean.startsWith("+") ? clean.substring(1) : clean,
+  );
 };
 
 /* ---------------- Create Order ---------------- */
@@ -110,7 +118,6 @@ export const initiatePayment = async (req, res) => {
       order,
       key: process.env.RAZORPAY_KEY_ID,
     });
-
   } catch (error) {
     console.error("INITIATE ERROR:", error);
 
@@ -125,11 +132,8 @@ export const initiatePayment = async (req, res) => {
 
 export const verifyPayment = async (req, res) => {
   try {
-    const {
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature,
-    } = req.body;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+      req.body;
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return res.status(400).json({
@@ -150,7 +154,7 @@ export const verifyPayment = async (req, res) => {
     if (expectedSignature !== razorpay_signature) {
       await Payment.findOneAndUpdate(
         { orderId: razorpay_order_id },
-        { status: "failed" }
+        { status: "failed" },
       );
 
       return res.status(400).json({
@@ -189,7 +193,6 @@ export const verifyPayment = async (req, res) => {
       message: "Payment verified",
       redirect: `${process.env.FRONTEND_URL}/payment-success?orderId=${razorpay_order_id}`,
     });
-
   } catch (error) {
     console.error("VERIFY ERROR:", error);
 
@@ -232,7 +235,7 @@ export const razorpayWebhook = async (req, res) => {
           status: "success",
           webhookVerified: true,
           razorpayResponse: paymentData,
-        }
+        },
       );
     }
 
@@ -245,7 +248,7 @@ export const razorpayWebhook = async (req, res) => {
           status: "failed",
           webhookVerified: true,
           razorpayResponse: paymentData,
-        }
+        },
       );
     }
 
@@ -258,12 +261,11 @@ export const razorpayWebhook = async (req, res) => {
           status: "success",
           webhookVerified: true,
           razorpayResponse: orderData,
-        }
+        },
       );
     }
 
     res.status(200).json({ success: true });
-
   } catch (error) {
     console.error("WEBHOOK ERROR:", error);
 
@@ -293,7 +295,6 @@ export const getTransactionByOrderId = async (req, res) => {
       success: true,
       data: txn,
     });
-
   } catch (error) {
     console.error("GET TXN ERROR:", error);
 
