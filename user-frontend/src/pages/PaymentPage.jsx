@@ -150,17 +150,30 @@ const PaymentPage = () => {
         navigate("/payment-failed?reason=payment_failed");
       });
 
-      setTimeout(() => {
+      try {
         rzp.open();
-      }, 100);
-    } catch (err) {
-      console.error(err);
-      setLoading(false);
-      setError(
-        err?.response?.data?.message ||
-          err?.message ||
+      } catch (e) {
+        console.log("OPEN ERROR", e);
+
+        window.location.href = `https://api.razorpay.com/v1/checkout/embedded?order_id=${data.order.id}`;
+      }
+    } catch (error) {
+      console.log("FULL ERROR");
+
+      console.log({
+        message: error.message,
+        code: error.code,
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+
+      return {
+        success: false,
+        message:
+          error.response?.data?.message ||
+          error.message ||
           "Payment initiation failed",
-      );
+      };
     }
   };
 

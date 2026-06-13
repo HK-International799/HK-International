@@ -155,8 +155,6 @@
 
 // export default app;
 
-
-
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
@@ -210,6 +208,7 @@ const allowedOrigins = [
   "http://localhost:5175",
   "http://127.0.0.1:5173",
   "https://hkinternational.uk",
+  "https://www.hkinternational.uk",
   "https://admin-hkinternational.vercel.app",
   "https://checkout.razorpay.com",
   process.env.CLIENT_URL_STUDENT,
