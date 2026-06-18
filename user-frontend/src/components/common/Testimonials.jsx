@@ -33,7 +33,7 @@ export default function Testimonials() {
       company: "",
       rating: 5,
       feedback:
-        "I had a great learning experience with 1A HK International while attending the Risk Assessment, IOSH, and OSHA training programs. A special thanks to Mr. Ashish Ved Sir for his outstanding guidance and practical approach to teaching. His ability to explain complex safety concepts through real-world examples made the sessions highly engaging and easy to understand. The interactive sessions, practical case studies, and expert support significantly enhanced my knowledge and confidence in Occupational Health and Safety.",
+        "I had a great learning experience with 1A HK International while attending the Risk Assessment, IOSH, and OSHA training programs. A special thanks to Mr. Ashish Ved Sir for his outstanding guidance and practical approach to teaching. The interactive sessions, practical case studies, and expert support significantly enhanced my knowledge and confidence in Occupational Health and Safety.",
     },
 
     {
