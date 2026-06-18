@@ -405,7 +405,7 @@ export const blogPosts = [
     coverImage: "/images/blog/iosh-level-3-complete-guide.png",
 
     metaTitle:
-      "IOSH Level 3 Certificate – Complete Guide 2026 | 1A HK International",
+      "IOSH Level 3 Certificate - Complete Guide 2026 | 1A HK International",
 
     metaDescription:
       "Complete IOSH Level 3 Certificate guide for UK and India. Learn syllabus, exam format, assessment, duration, TechIOSH pathway, career benefits, and enrolment details.",
@@ -591,7 +591,7 @@ Pass Mark: 50%
 
 <li><strong>Fast Track:</strong> Approximately 5 weeks</li>
 
-<li><strong>Part-Time:</strong> Around 12–15 weeks</li>
+<li><strong>Part-Time:</strong> Around 12-15 weeks</li>
 
 <li><strong>Flexible Learning:</strong> Up to 6 months</li>
 

@@ -464,7 +464,7 @@ export default function Home() {
 
         <BlogPreview />
 
-        {/* <Testimonials /> */}
+        <Testimonials />
 
         {/* FAQ */}
         <section

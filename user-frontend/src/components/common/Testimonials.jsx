@@ -8,23 +8,112 @@ export default function Testimonials() {
   const testimonials = [
     {
       id: 1,
-      name: "Mohammed Arif",
-      position: "Senior HSE Officer",
-      company: "Saudi Arabia",
+      name: "Santi Somroop",
+      position: "OSHA 30-Hour Construction Safety and Health Course",
+      company: "",
       rating: 5,
       feedback:
-        "The training methodology was highly practical and aligned with international safety standards. After completing the course, I secured a better opportunity in Saudi Arabia.",
+        "The training was very informative, well-structured, and easy to understand. The trainer explained every topic with practical examples. I gained valuable knowledge that I can apply in real-life work situations. I highly recommend this institute to anyone who wants to build a strong career in the safety field.",
     },
+
     {
-      id: 1,
-      name: "Mohammed Arif",
-      position: "Senior HSE Officer",
-      company: "Saudi Arabia",
+      id: 2,
+      name: "Aman Yadav",
+      position: "OSHA 30-Hour Construction Industry",
+      company: "",
       rating: 5,
       feedback:
-        "The training methodology was highly practical and aligned with international safety standards. After completing the course, I secured a better opportunity in Saudi Arabia.",
+        "World best institute of iosh osha. The training was well-structured, informative, and easy to understand. The trainers are highly experienced and supportive. I gained valuable knowledge that will help me ensure safety and health in the workplace. Highly recommended!",
     },
-    
+
+    {
+      id: 3,
+      name: "Fardin Fardin",
+      position: "Risk Assessment, IOSH & OSHA Learner",
+      company: "",
+      rating: 5,
+      feedback:
+        "I had a great learning experience with 1A HK International while attending the Risk Assessment, IOSH, and OSHA training programs. A special thanks to Mr. Ashish Ved Sir for his outstanding guidance and practical approach to teaching. His ability to explain complex safety concepts through real-world examples made the sessions highly engaging and easy to understand. The interactive sessions, practical case studies, and expert support significantly enhanced my knowledge and confidence in Occupational Health and Safety.",
+    },
+
+    {
+      id: 4,
+      name: "Santosh Kumar Paswan",
+      position: "IOSH & OSHA Learner",
+      company: "",
+      rating: 5,
+      feedback:
+        "Great experience with 1A HK International! Sumitra Mem was my coach, and her support and expertise were excellent. Fully satisfied with the training and services.",
+    },
+
+    // {
+    //   id: 5,
+    //   name: "Nitanya Mohapatra",
+    //   position: "",
+    //   company: "",
+    //   rating: 5,
+    //   feedback: "Great IOSH & OSHA Training...",
+    // },
+
+    {
+      id: 6,
+      name: "Pankaj Pandey",
+      position: "",
+      company: "",
+      rating: 5,
+      feedback:
+        "Thank you very much 1A HK International and all trainer. Your class was a great one. I personally learned a lot from the...",
+    },
+
+    {
+      id: 7,
+      name: "Sangram Jena",
+      position: "",
+      company: "",
+      rating: 5,
+      feedback:
+        "Excellent training session. The content was clear, informative, and easy to understand. Thank you for the valuable learning experience.",
+    },
+
+    {
+      id: 8,
+      name: "AKASH BHATIA",
+      position: "",
+      company: "",
+      rating: 5,
+      feedback:
+        "Had a really good learning experience with this institute. The trainers are knowledgeable, supportive, and explain...",
+    },
+
+    {
+      id: 9,
+      name: "Sumitra Rani Dash",
+      position: "",
+      company: "",
+      rating: 5,
+      feedback:
+        "Mr. Ashish Ved Sir is highly knowledgeable and always encourages interaction, ensuring that all participants understand the subject thoroughly. His guidance and support throughout the course were truly commendable.",
+    },
+
+    {
+      id: 10,
+      name: "Shreejith Das",
+      position: "",
+      company: "",
+      rating: 5,
+      feedback:
+        "Excellent training institute with highly experienced tutors and practical learning methods. The sessions were...",
+    },
+
+    {
+      id: 11,
+      name: "NARTU HARA PRASAD PATRA",
+      position: "",
+      company: "",
+      rating: 5,
+      feedback:
+        "Great institution with professional approach and excellent support for students. Highly recommended.",
+    },
   ];
 
   return (
@@ -116,7 +205,7 @@ export default function Testimonials() {
             >
               {/* Top */}
               <div>
-                <div className="flex justify-between items-start mb-6">
+                <div className="flex justify-between items-start mb-4">
                   <div className="flex gap-4">
                     <div className="w-16 h-16 rounded-full bg-gradient-to-r from-indigo-600 to-orange-500 flex items-center justify-center text-white font-bold text-xl">
                       {item.name.charAt(0)}
