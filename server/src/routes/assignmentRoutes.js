@@ -28,7 +28,7 @@ const router = express.Router();
 router.post(
   "/",
   authMiddleware,
-  roleMiddleware(["tutor", "admin"]),
+  roleMiddleware(["tutor", "admin", "super_admin"]),
   upload.single("file"),
   createAssignment
 );
@@ -39,7 +39,7 @@ router.get("/:id", authMiddleware, getAssignmentById);
 router.put(
   "/:id",
   authMiddleware,
-  roleMiddleware(["tutor", "admin"]),
+  roleMiddleware(["tutor", "admin", "super_admin"]),
   upload.single("file"),
   updateAssignment
 );
@@ -47,7 +47,7 @@ router.put(
 router.delete(
   "/:id",
   authMiddleware,
-  roleMiddleware(["tutor", "admin"]),
+  roleMiddleware(["tutor", "admin", "super_admin"]),
   deleteAssignment
 );
 
@@ -56,7 +56,7 @@ router.delete(
 router.patch(
   "/:id/publish",
   authMiddleware,
-  roleMiddleware(["tutor", "admin"]),
+  roleMiddleware(["tutor", "admin", "super_admin"]),
   togglePublish
 );
 

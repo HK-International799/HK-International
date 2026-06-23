@@ -16,7 +16,7 @@
 //     throw new ApiError(400, "Password must be at least 8 characters");
 //   }
 
-//   if (role && !["student", "tutor", "admin"].includes(role)) {
+//   if (role && !["student", "tutor", "admin", "finance", "sales_agent"].includes(role)) {
 //     throw new ApiError(400, "Invalid role");
 //   }
 
@@ -147,6 +147,9 @@
 
 
 
+
+
+
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -233,6 +236,10 @@ export const loginUser = asyncHandler(async (req, res) => {
     process.env.JWT_SECRET,
     { expiresIn: "7d" },
   );
+
+  // Additive: track last login for the Learner 360° profile. Fire-and-forget
+  // so it can never affect or delay the existing login response.
+  User.findByIdAndUpdate(user._id, { lastLoginAt: new Date() }).catch(() => {});
 
   res.json({
     success: true,

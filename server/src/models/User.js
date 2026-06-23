@@ -23,6 +23,7 @@
 //         "partner_institute",
 //         "ao",
 //         "sales_agent",
+//         "finance",
 //       ],
 //       default: "student",
 //     },
@@ -52,7 +53,6 @@
 // userSchema.index({ role: 1 });
 
 // export default mongoose.model("User", userSchema);
-
 
 
 
@@ -105,10 +105,30 @@ const userSchema = new mongoose.Schema(
       ref: "AwardingOrganisation",
       default: null,
     },
+
+    // ── Learner 360° / Public Self-Registration fields (additive) ─────────
+    // All optional/defaulted so existing users and existing auth/login code
+    // paths are completely unaffected.
+    firstName: { type: String, default: "" },
+    lastName: { type: String, default: "" },
+    dateOfBirth: { type: Date, default: null },
+    countryCode: { type: String, default: "" },
+    address: { type: String, default: "" },
+    country: { type: String, default: "" },
+    lastLoginAt: { type: Date, default: null },
+
+    // How this user account was created — purely informational, never read
+    // by existing auth/login logic.
+    registeredVia: {
+      type: String,
+      enum: ["self", "institute", "admin"],
+      default: "admin",
+    },
   },
   { timestamps: true },
 );
 
 userSchema.index({ role: 1 });
+userSchema.index({ mobile: 1 });
 
 export default mongoose.model("User", userSchema);

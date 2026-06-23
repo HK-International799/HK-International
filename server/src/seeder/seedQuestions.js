@@ -23,604 +23,306 @@ const questions = [
     correctAnswer: "Manage risks and ensure safe working conditions",
     marks: 2,
   },
-
   {
     type: "mcq",
-    prompt: "What is the first step in the risk assessment process?",
+    prompt: "What is the primary mission of OSHA?",
     options: [
-      "Review controls",
-      "Identify hazards",
-      "Investigate incidents",
-      "Provide PPE",
+      "Maximizing production efficiency",
+      "Prioritizing financial gains",
+      "Ensuring safe and healthful working conditions",
+      "Minimizing operational costs",
     ],
-    correctAnswer: "Identify hazards",
+    correctAnswer: "Ensuring safe and healthful working conditions",
     marks: 2,
   },
 
   {
     type: "mcq",
-    prompt: "A hazard is best defined as:",
+    prompt: "What does OSHA stand for?",
     options: [
-      "An accident that has occurred",
-      "Anything with the potential to cause harm",
-      "The likelihood of injury",
-      "A control measure",
+      "Occupational Safety and Health Act",
+      "Office of Safety and Hazard Assessment",
+      "Organization for Safety and Health Advocacy",
+      "Occupational Safety and Health Administration",
     ],
-    correctAnswer: "Anything with the potential to cause harm",
+    correctAnswer: "Occupational Safety and Health Administration",
     marks: 2,
   },
 
   {
     type: "mcq",
-    prompt: "Risk is the combination of:",
+    prompt: "When is fall protection required in construction?",
     options: [
-      "Training and supervision",
-      "Hazard and cost",
-      "Likelihood and consequence",
-      "Inspection and audit",
+      "Only for workers at significant heights",
+      "Whenever a worker is at a height of 6 feet or more",
+      "Only for specific trades",
+      "When convenient for the worker",
     ],
-    correctAnswer: "Likelihood and consequence",
+    correctAnswer: "Whenever a worker is at a height of 6 feet or more",
     marks: 2,
   },
 
   {
     type: "mcq",
-    prompt: "Which control measure is highest in the hierarchy of controls?",
-    options: ["PPE", "Administrative controls", "Elimination", "Warning signs"],
-    correctAnswer: "Elimination",
+    prompt: "Which of the following is a fall protection system?",
+    options: ["Hard hat", "Safety glasses", "Guardrails", "Work boots"],
+    correctAnswer: "Guardrails",
     marks: 2,
   },
 
   {
     type: "mcq",
-    prompt: "What does PPE stand for?",
+    prompt: "What is the purpose of a personal fall arrest system?",
     options: [
-      "Personal Protective Equipment",
-      "Personal Prevention Equipment",
-      "Practical Protection Equipment",
-      "Protective Process Equipment",
+      "Minimizing safety incidents",
+      "Preventing falls",
+      "Limiting worker mobility",
+      "Ignoring safety regulations",
     ],
-    correctAnswer: "Personal Protective Equipment",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "Why should risk assessments be reviewed regularly?",
-    options: [
-      "To increase paperwork",
-      "To ensure they remain effective and relevant",
-      "To reduce training",
-      "To replace inspections",
-    ],
-    correctAnswer: "To ensure they remain effective and relevant",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "What is the purpose of workplace inspections?",
-    options: [
-      "To identify hazards and unsafe conditions",
-      "To calculate profits",
-      "To monitor attendance",
-      "To assess salaries",
-    ],
-    correctAnswer: "To identify hazards and unsafe conditions",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "Which of the following is a proactive safety measure?",
-    options: [
-      "Accident investigation",
-      "Safety inspection",
-      "Insurance claim",
-      "Compensation payment",
-    ],
-    correctAnswer: "Safety inspection",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "What should managers encourage workers to report?",
-    options: [
-      "Only injuries",
-      "Only property damage",
-      "Near misses and hazards",
-      "Only serious incidents",
-    ],
-    correctAnswer: "Near misses and hazards",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "What is a near miss?",
-    options: [
-      "An accident causing injury",
-      "An event causing property damage",
-      "An event that could have caused harm but did not",
-      "A completed risk assessment",
-    ],
-    correctAnswer: "An event that could have caused harm but did not",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "Why should near misses be investigated?",
-    options: [
-      "To assign blame",
-      "To prevent future incidents",
-      "To reduce training",
-      "To avoid inspections",
-    ],
-    correctAnswer: "To prevent future incidents",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "What is the immediate cause of an accident?",
-    options: [
-      "A system failure",
-      "An unsafe act or condition present at the time",
-      "Management culture",
-      "Company policy",
-    ],
-    correctAnswer: "An unsafe act or condition present at the time",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "An underlying cause of an accident is:",
-    options: [
-      "The injury itself",
-      "A factor that allowed the unsafe act or condition",
-      "The emergency response",
-      "The insurance claim",
-    ],
-    correctAnswer: "A factor that allowed the unsafe act or condition",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "What is a root cause?",
-    options: [
-      "The deepest systemic reason an incident occurred",
-      "The first aid treatment provided",
-      "The immediate injury",
-      "The cost of the incident",
-    ],
-    correctAnswer: "The deepest systemic reason an incident occurred",
+    correctAnswer: "Preventing falls",
     marks: 2,
   },
 
   {
     type: "mcq",
     prompt:
-      "What should be done immediately after making an injured person safe?",
+      "What is the correct procedure for using a ladder as a fall protection device?",
     options: [
-      "Interview witnesses",
-      "Preserve the scene",
-      "Review policies",
-      "Write the final report",
+      "Tie-off to the ladder",
+      "Extend the ladder 3 feet above the landing surface",
+      "Ignore ladder use for fall protection",
+      "Use the ladder horizontally",
     ],
-    correctAnswer: "Preserve the scene",
+    correctAnswer: "Extend the ladder 3 feet above the landing surface",
     marks: 2,
   },
 
   {
     type: "mcq",
-    prompt: "Why is preserving the scene important after an accident?",
+    prompt: "Why is it important to identify and label electrical hazards?",
     options: [
-      "To improve productivity",
-      "To protect evidence",
-      "To reduce costs",
-      "To avoid reporting",
+      "To expedite operations",
+      "To maximize financial gains",
+      "To prioritize regulatory compliance",
+      "To prevent accidents and injuries",
     ],
-    correctAnswer: "To protect evidence",
+    correctAnswer: "To prevent accidents and injuries",
     marks: 2,
   },
 
   {
     type: "mcq",
-    prompt: "What should investigators collect during an investigation?",
+    prompt: "When should electrical equipment be inspected?",
     options: [
-      "Rumours",
-      "Evidence and witness information",
-      "Personal opinions only",
-      "Marketing reports",
+      "Only if it malfunctions",
+      "Regularly, as part of a preventive maintenance program",
+      "Whenever convenient for the worker",
+      "When regulatory authorities request it",
     ],
-    correctAnswer: "Evidence and witness information",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "RIDDOR stands for:",
-    options: [
-      "Reporting of Injuries, Diseases and Dangerous Occurrences Regulations",
-      "Risk Identification and Duty of Reporting",
-      "Regulations for Industrial Damage and Operations",
-      "Recording Incidents and Dangerous Operations Register",
-    ],
-    correctAnswer:
-      "Reporting of Injuries, Diseases and Dangerous Occurrences Regulations",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "A work-related fatality must be reported under:",
-    options: ["COSHH", "RIDDOR", "PPE Regulations", "HASAWA only"],
-    correctAnswer: "RIDDOR",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "What is the most common cause of major workplace injuries?",
-    options: ["Fire", "Electrical shock", "Slips, trips and falls", "Noise"],
-    correctAnswer: "Slips, trips and falls",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "Which is a common cause of slips and trips?",
-    options: [
-      "Clean walkways",
-      "Good lighting",
-      "Trailing cables",
-      "Safety signs",
-    ],
-    correctAnswer: "Trailing cables",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "What should be done after a spill occurs?",
-    options: [
-      "Ignore it",
-      "Clean it immediately and use warning signs",
-      "Cover it with paper",
-      "Wait for maintenance",
-    ],
-    correctAnswer: "Clean it immediately and use warning signs",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "How many elements are needed for a fire to continue burning?",
-    options: ["One", "Two", "Three", "Four"],
-    correctAnswer: "Three",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "Which element is NOT part of the fire triangle?",
-    options: ["Fuel", "Oxygen", "Heat", "Water"],
-    correctAnswer: "Water",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "Removing fuel from a work area helps to:",
-    options: [
-      "Increase fire risk",
-      "Prevent fires",
-      "Increase oxygen",
-      "Reduce inspections",
-    ],
-    correctAnswer: "Prevent fires",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "Work-related stress can lead to:",
-    options: [
-      "Improved concentration",
-      "Anxiety and ill health",
-      "Higher productivity only",
-      "Reduced training needs",
-    ],
-    correctAnswer: "Anxiety and ill health",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "Which is a common sign of work-related stress?",
-    options: [
-      "Improved attendance",
-      "Increased absence",
-      "Better sleep",
-      "Fewer mistakes",
-    ],
-    correctAnswer: "Increased absence",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "A manager can help reduce stress by:",
-    options: [
-      "Ignoring concerns",
-      "Keeping workloads manageable",
-      "Increasing pressure",
-      "Removing breaks",
-    ],
-    correctAnswer: "Keeping workloads manageable",
+    correctAnswer: "Regularly, as part of a preventive maintenance program",
     marks: 2,
   },
 
   {
     type: "mcq",
     prompt:
-      "Exposure above what noise level requires action according to the course?",
-    options: ["60 dB(A)", "75 dB(A)", "85 dB(A)", "100 dB(A)"],
-    correctAnswer: "85 dB(A)",
+      "What is the minimum safe distance for equipment working near power lines?",
+    options: ["5 feet", "10 feet", "15 feet", "20 feet"],
+    correctAnswer: "10 feet",
     marks: 2,
   },
 
   {
     type: "mcq",
-    prompt: "Hearing damage caused by excessive noise is generally:",
-    options: ["Temporary", "Permanent", "Minor", "Predictable"],
-    correctAnswer: "Permanent",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "COSHH relates to:",
+    prompt: "What should be inspected before using a scaffold?",
     options: [
-      "Fire prevention",
-      "Control of Substances Hazardous to Health",
-      "Manual handling",
-      "Environmental protection",
+      "Only the top platform",
+      "Only the guardrails",
+      "All components of the scaffold",
+      "Nothing, scaffolds don't need inspection",
     ],
-    correctAnswer: "Control of Substances Hazardous to Health",
+    correctAnswer: "All components of the scaffold",
     marks: 2,
   },
-
   {
     type: "mcq",
-    prompt: "Before using a chemical, workers should check the:",
+    prompt: "How should ladders be positioned for use?",
     options: [
-      "Payroll record",
-      "Safety Data Sheet",
-      "Attendance register",
-      "Training certificate",
+      "At any angle that is comfortable for the worker",
+      "Against a structure at a 45-degree angle",
+      "Straight up and down, perpendicular to the surface",
+      "Leaning on another ladder for support",
     ],
-    correctAnswer: "Safety Data Sheet",
+    correctAnswer: "Against a structure at a 45-degree angle",
     marks: 2,
   },
 
   {
     type: "mcq",
-    prompt: "Which is a preferred control for hazardous chemicals?",
+    prompt: "What is the maximum allowable gap between the planks?",
+    options: ["1 inches", "2 inches", "12 inches", "6 inches"],
+    correctAnswer: "1 inches",
+    marks: 2,
+  },
+
+  {
+    type: "mcq",
+    prompt:
+      "What is the primary hazard associated with excavations and trenches?",
     options: [
-      "Substitution",
-      "Ignoring the hazard",
-      "Increasing exposure",
-      "Removing labels",
+      "Falling objects",
+      "Cave-ins",
+      "Electrical shocks",
+      "Confined spaces",
     ],
-    correctAnswer: "Substitution",
+    correctAnswer: "Cave-ins",
     marks: 2,
   },
 
   {
     type: "mcq",
-    prompt: "Local Exhaust Ventilation (LEV) is used to:",
+    prompt:
+      "What is the minimum slope required for a stable excavation in soil?",
+    options: ["1:1", "2:1", "3:1", "4:1"],
+    correctAnswer: "1:1",
+    marks: 2,
+  },
+
+  {
+    type: "mcq",
+    prompt: "When is a protective system required for excavations?",
     options: [
-      "Increase temperature",
-      "Control airborne contaminants",
-      "Reduce lighting",
-      "Improve payroll",
+      "Only for deep excavations",
+      "When soil conditions pose a cave-in hazard",
+      "Only for excavations near structures",
+      "Never, protective systems are optional",
     ],
-    correctAnswer: "Control airborne contaminants",
+    correctAnswer: "When soil conditions pose a cave-in hazard",
     marks: 2,
   },
 
   {
     type: "mcq",
-    prompt: "Extreme temperatures can affect:",
+    prompt: "What is a common protective system for trenching?",
     options: [
-      "Only machinery",
-      "Concentration and health",
-      "Company profits only",
-      "Training records",
+      "Ignoring safety regulations",
+      "Sloping or benching",
+      "Using the same trench for multiple workers",
+      "No protective system is needed",
     ],
-    correctAnswer: "Concentration and health",
+    correctAnswer: "Sloping or benching",
     marks: 2,
   },
 
   {
     type: "mcq",
-    prompt: "Which is an example of a proactive indicator?",
+    prompt: "Why is soil classification important in excavation safety?",
     options: [
-      "Number of accidents",
-      "Number of safety inspections completed",
-      "Compensation claims",
-      "Lost workdays",
+      "To prioritize financial gains",
+      "To expedite operations",
+      "To determine appropriate protective measures",
+      "To minimize safety incidents",
     ],
-    correctAnswer: "Number of safety inspections completed",
+    correctAnswer: "To determine appropriate protective measures",
     marks: 2,
   },
 
   {
     type: "mcq",
-    prompt: "Which is an example of a reactive indicator?",
+    prompt: "What defines a confined space?",
     options: [
-      "Toolbox talks delivered",
-      "Training completion rate",
-      "Number of accidents reported",
-      "Risk assessments completed",
+      "Any enclosed area with limited access",
+      "A space with sufficient ventilation",
+      "Open areas without any barriers",
+      "Spaces with unlimited entry points",
     ],
-    correctAnswer: "Number of accidents reported",
+    correctAnswer: "Any enclosed area with limited access",
     marks: 2,
   },
 
   {
     type: "mcq",
-    prompt: "What do proactive indicators help organisations do?",
+    prompt: "Why is it crucial to have a permit for confined space entry?",
     options: [
-      "Identify problems before accidents occur",
-      "Record past injuries only",
-      "Calculate salaries",
-      "Avoid inspections",
+      "To maximize operational speed",
+      "To expedite operations",
+      "To ensure proper safety measures are in place",
+      "Permits are not necessary for confined spaces",
     ],
-    correctAnswer: "Identify problems before accidents occur",
+    correctAnswer: "To ensure proper safety measures are in place",
     marks: 2,
   },
 
   {
     type: "mcq",
-    prompt: "An audit is mainly used to:",
+    prompt: "What is a key consideration during confined space entry?",
     options: [
-      "Check whether the safety management system is working",
-      "Train new employees",
-      "Calculate profits",
-      "Issue penalties",
+      "Ignoring safety regulations",
+      "Continuous ventilation",
+      "Limited communication",
+      "Fast entry and exit",
     ],
-    correctAnswer: "Check whether the safety management system is working",
+    correctAnswer: "Continuous ventilation",
     marks: 2,
   },
 
   {
     type: "mcq",
-    prompt: "An internal audit is carried out by:",
+    prompt: "When is atmospheric testing necessary in confined spaces?",
     options: [
-      "External regulators",
-      "Independent consultants only",
-      "Staff within the organisation",
-      "Customers",
+      "Only if the space is completely sealed",
+      "Never, atmospheric testing is optional",
+      "Before entry and periodically during work",
+      "Only if the space is poorly ventilated",
     ],
-    correctAnswer: "Staff within the organisation",
+    correctAnswer: "Before entry and periodically during work",
     marks: 2,
   },
 
   {
     type: "mcq",
-    prompt: "A major advantage of an external audit is:",
+    prompt: "What is the primary hazard in confined spaces?",
+    options: ["Falls", "Fire hazards", "Respiratory hazards", "Noise hazards"],
+    correctAnswer: "Respiratory hazards",
+    marks: 2,
+  },
+
+  {
+    type: "mcq",
+    prompt: "How can electrical fires be prevented on a construction site?",
     options: [
-      "Lower cost",
-      "Independence and objectivity",
-      "Faster recruitment",
-      "Reduced training",
+      "Overloading circuits",
+      "Ignoring electrical safety guidelines",
+      "Regularly inspecting and maintaining equipment",
+      "Using damaged electrical cords",
     ],
-    correctAnswer: "Independence and objectivity",
+    correctAnswer: "Regularly inspecting and maintaining equipment",
     marks: 2,
   },
 
   {
     type: "mcq",
-    prompt: "Strong and active leadership means managers should:",
+    prompt: "What is the purpose of a fire extinguisher?",
     options: [
-      "Avoid discussing safety",
-      "Visibly support and promote safety",
-      "Leave safety to workers",
-      "Focus only on production",
+      "Ignoring safety regulations",
+      "To be used as a temporary lighting source",
+      "To extinguish small fires",
+      "To provide ventilation in case of fire",
     ],
-    correctAnswer: "Visibly support and promote safety",
+    correctAnswer: "To extinguish small fires",
     marks: 2,
   },
 
   {
     type: "mcq",
-    prompt: "Why is worker involvement important?",
+    prompt: "Why is regular inspection of tools and equipment important?",
     options: [
-      "Workers understand the real risks",
-      "It reduces inspections",
-      "It removes legal duties",
-      "It replaces training",
+      "To maximize operational speed",
+      "To expedite operations",
+      "To prevent accidents and ensure proper functioning",
+      "Ignoring safety regulations",
     ],
-    correctAnswer: "Workers understand the real risks",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "Workers should be involved in:",
-    options: [
-      "Risk assessments and inspections",
-      "Payroll processing only",
-      "Marketing activities",
-      "Sales meetings",
-    ],
-    correctAnswer: "Risk assessments and inspections",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "Assessment and review help organisations:",
-    options: [
-      "Hide problems",
-      "Identify and improve weaknesses",
-      "Reduce communication",
-      "Avoid audits",
-    ],
-    correctAnswer: "Identify and improve weaknesses",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "What gets measured gets:",
-    options: ["Ignored", "Managed", "Delayed", "Cancelled"],
-    correctAnswer: "Managed",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "Near miss reporting is considered a:",
-    options: [
-      "Reactive measure only",
-      "Proactive indicator",
-      "Legal penalty",
-      "Root cause",
-    ],
-    correctAnswer: "Proactive indicator",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "The IOSH Managing Safely course encourages managers to:",
-    options: [
-      "React only after accidents",
-      "Manage safety proactively",
-      "Avoid worker consultation",
-      "Focus only on compliance",
-    ],
-    correctAnswer: "Manage safety proactively",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "Which statement best reflects good health and safety management?",
-    options: [
-      "Safety is everyone's responsibility",
-      "Only the safety officer is responsible",
-      "Workers manage safety alone",
-      "Managers are not involved",
-    ],
-    correctAnswer: "Safety is everyone's responsibility",
+    correctAnswer: "To prevent accidents and ensure proper functioning",
     marks: 2,
   },
 ];
@@ -628,7 +330,7 @@ const questions = [
 // ================= QUIZ ID =================
 
 // Existing quiz where questions should be inserted
-const QUIZ_ID = "6a1a8b652167ae49b44aa6a9";
+const QUIZ_ID = "6a35726c130a0e0175577477";
 
 // ================= SEED FUNCTION =================
 

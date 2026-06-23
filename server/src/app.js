@@ -36,6 +36,7 @@
 // import documentRoutes from "./routes/documentRoutes.js";
 // import scenarioExamRoutes from "./routes/scenarioExamRoutes.js";
 // import crmRoutes from "./routes/crmRoutes.js";
+// import financeRoutes from "./routes/financeRoutes.js";
 
 // const app = express();
 
@@ -50,6 +51,7 @@
 //   "http://localhost:5175",
 //   "http://127.0.0.1:5173",
 //   "https://hkinternational.uk",
+//   "https://www.hkinternational.uk",
 //   "https://admin-hkinternational.vercel.app",
 //   "https://checkout.razorpay.com",
 //   process.env.CLIENT_URL_STUDENT,
@@ -141,6 +143,7 @@
 // app.use("/api/documents", documentRoutes);
 // app.use("/api/scenario-exams", scenarioExamRoutes);
 // app.use("/api/crm", crmRoutes);
+// app.use("/api/finance", financeRoutes);
 
 // /* ─── 404 ─────────────────────────────────────── */
 // app.use((req, res) => {
@@ -155,6 +158,11 @@
 
 // export default app;
 
+
+
+
+
+
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
@@ -165,6 +173,7 @@ import errorMiddleware from "./middleware/errorMiddleware.js";
 
 /* ── Routes ───────────────────────────────────────── */
 import authRoutes from "./routes/authRoutes.js";
+import registrationRoutes from "./routes/registrationRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import assignmentRoutes from "./routes/assignmentRoutes.js";
 import submissionRoutes from "./routes/submissionRoutes.js";
@@ -273,6 +282,7 @@ app.use("/api/payment", paymentRoutes);
 
 /* ─── API Routes ───────────────────────────────── */
 app.use("/api/auth", authRoutes);
+app.use("/api/registration", registrationRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/assignments", assignmentRoutes);
 app.use("/api/submissions", submissionRoutes);

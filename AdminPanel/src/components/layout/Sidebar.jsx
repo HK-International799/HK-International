@@ -31,6 +31,7 @@ import {
   PoundSterling,
   BarChart2,
   FileBarChart,
+  UserPlus
 } from "lucide-react";
 
 const navGroups = [
@@ -48,6 +49,7 @@ const navGroups = [
       { to: "/admin/courses", label: "Courses", icon: BookOpen },
       // { to: "/admin/batches", label: "Batches", icon: Layers },
       { to: "/admin/learners", label: "Learners", icon: GraduationCap },
+      { to: "/admin/registrations", label: "Registration", icon: UserPlus },
       // { to: "/admin/live-classes", label: "Live Classes", icon: Video },
     ],
   },
