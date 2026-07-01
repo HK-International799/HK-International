@@ -1,4 +1,9 @@
-import { Helmet } from "react-helmet";
+
+
+// React 19 natively hoists <title>, <meta>, and <link> tags rendered
+// anywhere in the component tree up to <head> — no library required.
+// (react-helmet was removed: it is unmaintained since 2020 and is a known
+// source of bugs on React 18/19; see package.json diff instructions.)
 
 const SITE_NAME = "1A HK International";
 const SITE_URL = "https://hkinternational.uk";
@@ -188,7 +193,7 @@ const buildLocalBusinessSchema = (data) => ({
   name: SITE_NAME,
   image: LOGO_URL,
   url: SITE_URL,
-  telephone: data?.telephone || "+44 000 000 0000",
+  ...(data?.telephone ? { telephone: data.telephone } : {}),
   email: "info@hkinternational.uk",
   priceRange: "££",
   address: {
@@ -375,7 +380,7 @@ const SEO = ({
   const isBlogPost = schemaType === "blogposting" && blogData;
 
   return (
-    <Helmet>
+    <>
       {/* ---------- Basic ---------- */}
       <title>{title}</title>
       <meta name="description" content={description} />
@@ -442,7 +447,7 @@ const SEO = ({
           {JSON.stringify(schema)}
         </script>
       ))}
-    </Helmet>
+    </>
   );
 };
 

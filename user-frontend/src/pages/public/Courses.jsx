@@ -191,7 +191,7 @@ export default function Courses() {
   return (
     <MainLayout>
       <SEO
-        title="All Health & Safety Courses | IOSH, OTHM, OSHA, ISO, CIEH – 1A HK International"
+        title="All Health & Safety Courses | IOSH, OTHM, OSHA, ISO, CIEH - 1A HK International"
         description="Explore 27+ accredited courses: IOSH Managing Safely, OTHM Level 6 & 7, ISO 45001 Lead Auditor, OSHA 30, CIEH food safety & more. Online & classroom."
         keywords={getPageKeywords("courses")}
         url="https://hkinternational.uk/courses"
@@ -277,7 +277,7 @@ export default function Courses() {
                 >
                   <img
                     src={course.image}
-                    alt={`${course.title} – accredited HSE course`}
+                    alt={`${course.title} - accredited HSE course`}
                     loading="lazy"
                     className="h-48 w-full object-cover"
                   />
@@ -311,7 +311,7 @@ export default function Courses() {
 
                     <Link
                       to={`/course/${course.id}`}
-                      title={`View ${course.title} – 1A HK International`}
+                      title={`View ${course.title} - 1A HK International`}
                       aria-label={`View details for ${course.title}`}
                       className="block text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-medium"
                     >

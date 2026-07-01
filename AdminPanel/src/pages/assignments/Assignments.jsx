@@ -1,3 +1,5 @@
+
+
 // import { useEffect, useState, useRef } from "react";
 // import { useNavigate } from "react-router-dom";
 // import AdminLayout from "../../components/layout/AdminLayout";
@@ -861,8 +863,6 @@
 
 
 
-
-
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../components/layout/AdminLayout";
@@ -912,9 +912,30 @@ const emptyForm = {
   dueDate: "",
   totalMarks: "",
   isPublished: false,
+  // ✅ Module 1 — Assessment Creation fields (additive)
+  assessmentType: "general",
+  instructions: "",
+  passingMarks: "",
+  maxAttempts: 1,
+  allowResubmission: true,
+  maxResubmissions: 3,
+  requireAdminApproval: false,
+  showCorrectAnswers: false,
+  gradingPrompt: "",
+  answerKey: "",
+  useAnswerKeyForGrading: false,
+  aiGradingEnabled: false,
 };
 
-const emptyQuestion = { type: "text", prompt: "", marks: 5, options: [] };
+const emptyQuestion = {
+  type: "short_answer",
+  prompt: "",
+  marks: 5,
+  options: [],
+  correctAnswer: "",
+  correctAnswers: [],
+  rubric: "",
+};
 
 export default function Assignments() {
   const navigate = useNavigate();
@@ -974,6 +995,18 @@ export default function Assignments() {
       dueDate: a.dueDate ? a.dueDate.slice(0, 10) : "",
       totalMarks: a.totalMarks ?? "",
       isPublished: a.isPublished || false,
+      assessmentType: a.assessmentType || "general",
+      instructions: a.instructions || "",
+      passingMarks: a.passingMarks ?? "",
+      maxAttempts: a.maxAttempts ?? 1,
+      allowResubmission: a.allowResubmission ?? true,
+      maxResubmissions: a.maxResubmissions ?? 3,
+      requireAdminApproval: a.requireAdminApproval || false,
+      showCorrectAnswers: a.showCorrectAnswers || false,
+      gradingPrompt: a.gradingPrompt || "",
+      answerKey: a.answerKey || "",
+      useAnswerKeyForGrading: a.useAnswerKeyForGrading || false,
+      aiGradingEnabled: a.aiGradingEnabled || false,
     });
     setQuestions(
       (a.questions || []).map((q) => ({
@@ -981,6 +1014,9 @@ export default function Assignments() {
         prompt: q.prompt || "",
         marks: q.marks ?? 5,
         options: q.options || [],
+        correctAnswer: q.correctAnswer || "",
+        correctAnswers: q.correctAnswers || [],
+        rubric: q.rubric || "",
       })),
     );
     setFile(null);
@@ -1057,6 +1093,20 @@ export default function Assignments() {
       if (questions.length > 0)
         fd.append("questions", JSON.stringify(questions));
       if (file) fd.append("file", file);
+
+      // ✅ Module 1 — Assessment Creation fields
+      fd.append("assessmentType", form.assessmentType || "general");
+      fd.append("instructions", form.instructions || "");
+      if (form.passingMarks !== "") fd.append("passingMarks", form.passingMarks);
+      fd.append("maxAttempts", form.maxAttempts || 1);
+      fd.append("allowResubmission", form.allowResubmission);
+      fd.append("maxResubmissions", form.maxResubmissions ?? 3);
+      fd.append("requireAdminApproval", form.requireAdminApproval);
+      fd.append("showCorrectAnswers", form.showCorrectAnswers);
+      fd.append("gradingPrompt", form.gradingPrompt || "");
+      fd.append("answerKey", form.answerKey || "");
+      fd.append("useAnswerKeyForGrading", form.useAnswerKeyForGrading);
+      fd.append("aiGradingEnabled", form.aiGradingEnabled);
 
       if (editTarget) {
         await updateAssignment(editTarget._id, fd);
@@ -1394,6 +1444,125 @@ export default function Assignments() {
               />
             </div>
 
+            {/* ✅ Module 1 — Assessment configuration */}
+            <div className="border-t border-gray-100 pt-4">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                Assessment Settings
+              </p>
+              <div className="grid md:grid-cols-2 gap-4">
+                <Select
+                  label="Assessment Type"
+                  value={form.assessmentType}
+                  onChange={(e) => setForm({ ...form, assessmentType: e.target.value })}
+                  options={[
+                    { value: "general", label: "General" },
+                    { value: "mcq_exam", label: "MCQ Exam (auto-graded)" },
+                    { value: "written_assessment", label: "Written Assessment" },
+                    { value: "project_submission", label: "Project Submission" },
+                  ]}
+                />
+                <Input
+                  label="Passing Marks"
+                  type="number"
+                  min={0}
+                  value={form.passingMarks}
+                  onChange={(e) => setForm({ ...form, passingMarks: e.target.value })}
+                  placeholder="e.g. 40"
+                />
+                <Input
+                  label="Max Attempts"
+                  type="number"
+                  min={1}
+                  value={form.maxAttempts}
+                  onChange={(e) => setForm({ ...form, maxAttempts: e.target.value })}
+                />
+                <Input
+                  label="Max Resubmissions"
+                  type="number"
+                  min={0}
+                  value={form.maxResubmissions}
+                  onChange={(e) => setForm({ ...form, maxResubmissions: e.target.value })}
+                />
+                <Textarea
+                  label="Instructions for Students"
+                  value={form.instructions}
+                  onChange={(e) => setForm({ ...form, instructions: e.target.value })}
+                  className="md:col-span-2"
+                  rows={2}
+                />
+              </div>
+
+              <div className="flex flex-wrap gap-5 mt-4">
+                <label className="flex items-center gap-2 text-sm text-gray-700">
+                  <input
+                    type="checkbox"
+                    checked={form.allowResubmission}
+                    onChange={(e) => setForm({ ...form, allowResubmission: e.target.checked })}
+                  />
+                  Allow resubmission
+                </label>
+                <label className="flex items-center gap-2 text-sm text-gray-700">
+                  <input
+                    type="checkbox"
+                    checked={form.requireAdminApproval}
+                    onChange={(e) => setForm({ ...form, requireAdminApproval: e.target.checked })}
+                  />
+                  Require admin approval before completion
+                </label>
+                <label className="flex items-center gap-2 text-sm text-gray-700">
+                  <input
+                    type="checkbox"
+                    checked={form.showCorrectAnswers}
+                    onChange={(e) => setForm({ ...form, showCorrectAnswers: e.target.checked })}
+                  />
+                  Show correct answers after grading
+                </label>
+              </div>
+            </div>
+
+            {/* ✅ Module 5 — AI grading configuration (written_assessment / project_submission) */}
+            {["written_assessment", "project_submission"].includes(form.assessmentType) && (
+              <div className="border-t border-gray-100 pt-4">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                  AI Grading
+                </p>
+                <label className="flex items-center gap-2 text-sm text-gray-700 mb-3">
+                  <input
+                    type="checkbox"
+                    checked={form.aiGradingEnabled}
+                    onChange={(e) => setForm({ ...form, aiGradingEnabled: e.target.checked })}
+                  />
+                  Enable AI grading for this assessment
+                </label>
+                {form.aiGradingEnabled && (
+                  <div className="space-y-3">
+                    <Textarea
+                      label="Grading Prompt (instructions for the AI grader)"
+                      value={form.gradingPrompt}
+                      onChange={(e) => setForm({ ...form, gradingPrompt: e.target.value })}
+                      rows={2}
+                    />
+                    <label className="flex items-center gap-2 text-sm text-gray-700">
+                      <input
+                        type="checkbox"
+                        checked={form.useAnswerKeyForGrading}
+                        onChange={(e) =>
+                          setForm({ ...form, useAnswerKeyForGrading: e.target.checked })
+                        }
+                      />
+                      Use the answer key below as the authoritative reference
+                    </label>
+                    <Textarea
+                      label="Answer Key / Model Solution"
+                      value={form.answerKey}
+                      onChange={(e) => setForm({ ...form, answerKey: e.target.value })}
+                      rows={3}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* File upload */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -1497,11 +1666,19 @@ export default function Assignments() {
                           updateQuestion(i, "type", e.target.value)
                         }
                         options={[
-                          { value: "text", label: "Text answer" },
-                          { value: "mcq", label: "Multiple choice" },
-                          { value: "file", label: "File upload" },
+                          { value: "short_answer", label: "Short answer" },
+                          { value: "long_answer", label: "Long answer" },
+                          { value: "single_choice", label: "Single choice (MCQ)" },
+                          { value: "multiple_choice", label: "Multiple choice" },
+                          { value: "true_false", label: "True / False" },
+                          { value: "file_upload", label: "File upload" },
+                          // legacy values kept selectable so existing
+                          // assignments edited in-place still render correctly
+                          { value: "text", label: "Text answer (legacy)" },
+                          { value: "mcq", label: "Multiple choice (legacy)" },
+                          { value: "file", label: "File upload (legacy)" },
                         ]}
-                        className="flex-shrink-0 w-40"
+                        className="flex-shrink-0 w-48"
                       />
                       <Input
                         type="number"
@@ -1529,33 +1706,86 @@ export default function Assignments() {
                       placeholder="Question prompt..."
                     />
 
-                    {q.type === "mcq" && (
+                    {["mcq", "single_choice", "multiple_choice", "true_false"].includes(q.type) && (
                       <div className="space-y-2 ml-2">
-                        {(q.options || []).map((opt, oi) => (
-                          <div key={oi} className="flex items-center gap-2">
-                            <input
-                              value={opt}
-                              onChange={(e) =>
-                                updateOption(i, oi, e.target.value)
-                              }
-                              placeholder={`Option ${oi + 1}`}
-                              className="flex-1 px-3 py-1.5 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-200"
-                            />
-                            <button onClick={() => removeOption(i, oi)}>
-                              <X
-                                size={13}
-                                className="text-gray-400 hover:text-red-400"
-                              />
-                            </button>
+                        {/* True/False — fixed options, no editing needed */}
+                        {q.type === "true_false" ? (
+                          <div className="flex gap-4">
+                            {["True", "False"].map((opt) => (
+                              <label key={opt} className="flex items-center gap-1.5 text-sm text-gray-700">
+                                <input
+                                  type="radio"
+                                  name={`correct-${i}`}
+                                  checked={q.correctAnswer === opt}
+                                  onChange={() => updateQuestion(i, "correctAnswer", opt)}
+                                />
+                                {opt}
+                              </label>
+                            ))}
                           </div>
-                        ))}
-                        <button
-                          onClick={() => addOption(i)}
-                          className="text-xs text-indigo-600 hover:underline mt-1"
-                        >
-                          + Add option
-                        </button>
+                        ) : (
+                          <>
+                            {(q.options || []).map((opt, oi) => (
+                              <div key={oi} className="flex items-center gap-2">
+                                {q.type === "multiple_choice" ? (
+                                  <input
+                                    type="checkbox"
+                                    checked={(q.correctAnswers || []).includes(opt)}
+                                    onChange={(e) => {
+                                      const current = q.correctAnswers || [];
+                                      const next = e.target.checked
+                                        ? [...current, opt]
+                                        : current.filter((c) => c !== opt);
+                                      updateQuestion(i, "correctAnswers", next);
+                                    }}
+                                  />
+                                ) : (
+                                  <input
+                                    type="radio"
+                                    name={`correct-${i}`}
+                                    checked={q.correctAnswer === opt}
+                                    onChange={() => updateQuestion(i, "correctAnswer", opt)}
+                                  />
+                                )}
+                                <input
+                                  value={opt}
+                                  onChange={(e) =>
+                                    updateOption(i, oi, e.target.value)
+                                  }
+                                  placeholder={`Option ${oi + 1}`}
+                                  className="flex-1 px-3 py-1.5 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                                />
+                                <button onClick={() => removeOption(i, oi)}>
+                                  <X
+                                    size={13}
+                                    className="text-gray-400 hover:text-red-400"
+                                  />
+                                </button>
+                              </div>
+                            ))}
+                            <button
+                              onClick={() => addOption(i)}
+                              className="text-xs text-indigo-600 hover:underline mt-1"
+                            >
+                              + Add option
+                            </button>
+                            <p className="text-[11px] text-gray-400">
+                              {q.type === "multiple_choice"
+                                ? "Tick every option that should count as correct."
+                                : "Select the radio button next to the correct option."}
+                            </p>
+                          </>
+                        )}
                       </div>
+                    )}
+
+                    {["short_answer", "long_answer", "text"].includes(q.type) && (
+                      <Textarea
+                        value={q.rubric || ""}
+                        onChange={(e) => updateQuestion(i, "rubric", e.target.value)}
+                        placeholder="Optional rubric / grading guidance for this question (used by AI grading and manual reviewers)"
+                        rows={2}
+                      />
                     )}
                   </div>
                 ))}

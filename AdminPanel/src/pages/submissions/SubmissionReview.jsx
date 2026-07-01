@@ -1,4 +1,6 @@
 
+
+
 // import { useCallback, useEffect, useRef, useState } from "react";
 // import { useNavigate, useParams } from "react-router-dom";
 // import AdminLayout from "../../components/layout/AdminLayout";
@@ -107,8 +109,18 @@
 //       const sub = await getSubmissionById(id);
 //       setSubmission(sub);
 
+//       // FIX: ALWAYS hydrate document annotations from the API response, not
+//       // only when status === "graded". A submission can have annotations saved
+//       // (via the inline "Save Annotations" button in the annotator modal)
+//       // BEFORE it gets a totalScore / feedback. Gating on status === "graded"
+//       // is exactly why annotations seemed to vanish after reload.
+//       //
+//       // Canonical field: `annotations`. We still fall back to the legacy
+//       // `documentAnnotations` so previously-graded rows keep working, but all
+//       // NEW writes go to `annotations` (see handleGrade below).
+//       setDocAnnotations(sub.annotations || sub.documentAnnotations || []);
+
 //       if (sub.status === "graded") {
-//         setDocAnnotations(sub.annotations || sub.documentAnnotations || []);
 //         setTotalScore(String(sub.totalScore ?? ""));
 //         setFeedback(sub.feedback || "");
 
@@ -155,18 +167,31 @@
 //     const curr = docAnnotations || [];
 //     const changed = JSON.stringify(prev) !== JSON.stringify(curr);
 
+//     // Close the modal optimistically — the save runs in the background and
+//     // we refresh from the server afterwards. Closing first keeps the UX snappy
+//     // and prevents the modal from "freezing" while we wait on the network.
+//     setAnnotatorOpen(false);
+
 //     if (changed && submission?._id) {
 //       setAutoSavingAnnotations(true);
 //       try {
 //         await saveAnnotations(submission._id, curr);
+//         // FIX: After a successful save, reload from the server so the local
+//         // state (and the badge count on the "Open" tile) reflects what was
+//         // actually persisted. This is the same data the page would fetch on
+//         // a hard reload, so it guarantees the UI matches what the user will
+//         // see on F5.
+//         await loadSubmission();
 //       } catch (err) {
 //         console.error("Auto-save annotations failed:", err);
+//         // Keep the in-memory annotations so the user can retry; do NOT roll
+//         // back to annotationsAtModalOpenRef — that would silently destroy
+//         // their work.
 //       } finally {
 //         setAutoSavingAnnotations(false);
 //       }
 //     }
-//     setAnnotatorOpen(false);
-//   }, [docAnnotations, submission?._id]);
+//   }, [docAnnotations, submission?._id, loadSubmission]);
 
 //   const handleAnnotatorOpen = useCallback(() => {
 //     annotationsAtModalOpenRef.current = [...(docAnnotations || [])];
@@ -195,6 +220,11 @@
 //         feedback,
 //         questionGrades: qGrades,
 //         reviewAnnotations,
+//         // FIX: Use the canonical field name `annotations` so the read path
+//         // (loadSubmission) and write path agree. Keep `documentAnnotations`
+//         // as well for one release so a backend that still expects the old
+//         // name doesn't break — it's harmless extra payload otherwise.
+//         annotations: docAnnotations,
 //         documentAnnotations: docAnnotations,
 //       });
 
@@ -644,10 +674,65 @@
 //         feedback={feedback}
 //         totalScore={totalScore !== "" ? Number(totalScore) : null}
 //         maxMarks={maxMarks || null}
+//         // FIX: Hand the modal everything it needs to produce a FULL evaluation
+//         // report (student details, assignment metadata, submission timing,
+//         // per-question grading, review meta). The modal forwards this to
+//         // DocumentAnnotator's "Download Reviewed" feature.
+//         reportContext={{
+//           student: studentId
+//             ? {
+//                 name: studentId.name,
+//                 email: studentId.email,
+//                 rollNumber: studentId.rollNumber,
+//               }
+//             : null,
+//           assignment: assignment
+//             ? {
+//                 title: assignment.title,
+//                 description: assignment.description,
+//                 createdAt: assignment.createdAt,
+//                 dueDate: assignment.dueDate,
+//                 totalMarks: assignment.totalMarks,
+//               }
+//             : null,
+//           submission: {
+//             submittedAt: submission.createdAt,
+//             isLate: submission.isLate,
+//             fileName: submissionFile?.originalName,
+//             fileUrl: submissionFile?.url,
+//           },
+//           evaluation: {
+//             totalScore: totalScore !== "" ? Number(totalScore) : null,
+//             maxMarks: maxMarks || null,
+//             feedback,
+//             questionGrades: (answers || []).map((ans) => {
+//               const q = ans.questionId;
+//               const qId = q?._id || ans.questionId;
+//               const grade = questionGrades[ans._id] || {};
+//               return {
+//                 questionText:
+//                   q?.text || q?.questionText || `Question ${qId || ""}`,
+//                 marks: grade.marks,
+//                 isCorrect: grade.isCorrect,
+//                 icon: annotations[qId],
+//                 answer: ans.answer || ans.text || "",
+//               };
+//             }),
+//           },
+//           review: {
+//             reviewedAt:
+//               submission.status === "graded"
+//                 ? submission.gradedAt || submission.updatedAt
+//                 : null,
+//             status: submission.status,
+//           },
+//         }}
 //       />
 //     </AdminLayout>
 //   );
 // }
+
+
 
 
 
@@ -662,6 +747,11 @@ import {
   getSubmissionById,
   gradeSubmission,
   saveAnnotations,
+  aiGradeText,
+  aiReviewProject,
+  acceptAiDraft,
+  approveSubmission,
+  requestResubmission,
 } from "../../services/assignmentService";
 
 import {
@@ -679,6 +769,9 @@ import {
   MessageSquare,
   Star,
   TrendingUp,
+  Sparkles,
+  ShieldCheck,
+  RotateCcw,
 } from "lucide-react";
 import DocumentAnnotatorModal from "../../components/documentViewer/DocumentAnnotatorModal";
 
@@ -740,6 +833,13 @@ export default function SubmissionReview() {
   const annotationsAtModalOpenRef = useRef([]);
   const [autoSavingAnnotations, setAutoSavingAnnotations] = useState(false);
 
+  // ✅ Module 5/6 — AI grading + approval workflow state
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState("");
+  const [actionLoading, setActionLoading] = useState(false);
+  const [resubmitFeedback, setResubmitFeedback] = useState("");
+  const [showResubmitBox, setShowResubmitBox] = useState(false);
+
   const feedbackRef = useAutoExpand(feedback);
 
   // Auto-calculate total from per-question grades
@@ -773,8 +873,8 @@ export default function SubmissionReview() {
       // NEW writes go to `annotations` (see handleGrade below).
       setDocAnnotations(sub.annotations || sub.documentAnnotations || []);
 
-      if (sub.status === "graded") {
-        setTotalScore(String(sub.totalScore ?? ""));
+      if (["graded", "ai_reviewed", "approved"].includes(sub.status)) {
+        setTotalScore(sub.totalScore != null ? String(sub.totalScore) : "");
         setFeedback(sub.feedback || "");
 
         const ann = {};
@@ -892,6 +992,110 @@ export default function SubmissionReview() {
     }
   };
 
+  // ✅ Module 5 — AI Grading Engine actions
+
+  const handleAiGradeText = async () => {
+    setAiError("");
+    setAiLoading(true);
+    try {
+      await aiGradeText(id);
+      await loadSubmission();
+    } catch (err) {
+      setAiError(err.response?.data?.message || "AI grading failed");
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleAiReviewProject = async () => {
+    setAiError("");
+    setAiLoading(true);
+    try {
+      await aiReviewProject(id);
+      await loadSubmission();
+    } catch (err) {
+      setAiError(err.response?.data?.message || "AI review failed");
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  // "Accept Draft" — use the AI's numbers exactly as generated.
+  const handleAcceptAiDraft = async () => {
+    setAiError("");
+    setAiLoading(true);
+    try {
+      await acceptAiDraft(id, {});
+      await loadSubmission();
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 4000);
+    } catch (err) {
+      setAiError(err.response?.data?.message || "Failed to accept AI draft");
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  // "Accept & Edit" — admin has already tweaked totalScore/feedback/
+  // questionGrades in the normal grading panel; commit those values
+  // through the accept-ai-draft endpoint so it's recorded as an
+  // AI-assisted grade rather than a from-scratch manual grade.
+  const handleAcceptAiDraftWithEdits = async () => {
+    setAiError("");
+    setAiLoading(true);
+    try {
+      const qGrades = Object.entries(questionGrades).map(([answerId, g]) => ({
+        answerId,
+        marksAwarded: g.marks,
+        isCorrect: g.isCorrect,
+      }));
+      await acceptAiDraft(id, {
+        totalScore: totalScore !== "" ? Number(totalScore) : undefined,
+        feedback,
+        questionGrades: qGrades,
+      });
+      await loadSubmission();
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 4000);
+    } catch (err) {
+      setAiError(err.response?.data?.message || "Failed to save edited AI draft");
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  // ✅ Module 6 — Approval workflow
+
+  const handleApprove = async () => {
+    setError("");
+    setActionLoading(true);
+    try {
+      await approveSubmission(id);
+      await loadSubmission();
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 4000);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to approve submission");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleRequestResubmission = async () => {
+    setError("");
+    setActionLoading(true);
+    try {
+      await requestResubmission(id, resubmitFeedback);
+      setShowResubmitBox(false);
+      setResubmitFeedback("");
+      await loadSubmission();
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to request resubmission");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <AdminLayout>
@@ -968,15 +1172,31 @@ export default function SubmissionReview() {
               )}
               <Badge
                 variant={
-                  submission.status === "graded"
+                  ["graded", "approved"].includes(submission.status)
                     ? "success"
                     : submission.status === "submitted"
                       ? "primary"
-                      : "warning"
+                      : submission.status === "resubmission_required"
+                        ? "danger"
+                        : "warning"
                 }
               >
                 {submission.status}
               </Badge>
+              {submission.passFail && submission.passFail !== "pending" && (
+                <Badge variant={submission.passFail === "pass" ? "success" : "danger"}>
+                  {submission.passFail === "pass" ? "Pass" : "Fail"}
+                </Badge>
+              )}
+              {submission.approvalStatus === "pending" && (
+                <Badge variant="warning">Approval Pending</Badge>
+              )}
+              {submission.approvalStatus === "approved" && (
+                <Badge variant="success">
+                  <ShieldCheck size={11} className="inline mr-1" />
+                  Approved
+                </Badge>
+              )}
             </div>
           </div>
         </div>
@@ -1309,6 +1529,169 @@ export default function SubmissionReview() {
                   by {submission.gradedBy?.name || "—"}
                 </p>
               )}
+
+              {/* ✅ Module 5 — AI Grading Engine panel */}
+              {assignment?.aiGradingEnabled && (
+                <div className="mt-5 pt-5 border-t border-gray-100">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 flex items-center gap-1.5">
+                    <Sparkles size={13} className="text-indigo-500" /> AI Grading
+                  </p>
+
+                  {aiError && (
+                    <div className="mb-3 bg-red-50 text-red-700 px-3 py-2 rounded-lg text-xs border border-red-200">
+                      {aiError}
+                    </div>
+                  )}
+
+                  {!submission.aiDraft?.generatedAt && (
+                    <Button
+                      variant="secondary"
+                      className="w-full justify-center"
+                      disabled={aiLoading}
+                      onClick={
+                        assignment?.assessmentType === "project_submission"
+                          ? handleAiReviewProject
+                          : handleAiGradeText
+                      }
+                    >
+                      {aiLoading ? (
+                        <>
+                          <Loader2 size={15} className="animate-spin" /> Generating AI draft…
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles size={15} /> Generate AI Draft
+                        </>
+                      )}
+                    </Button>
+                  )}
+
+                  {submission.aiDraft?.generatedAt && (
+                    <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-3.5 space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-indigo-700">AI Draft</span>
+                        <span className="text-xs text-indigo-400">
+                          {new Date(submission.aiDraft.generatedAt).toLocaleString()}
+                        </span>
+                      </div>
+                      <p className="text-sm font-bold text-indigo-900">
+                        Suggested score: {submission.aiDraft.score ?? "—"}
+                        {maxMarks > 0 ? ` / ${maxMarks}` : ""}
+                      </p>
+                      <Badge variant={submission.aiDraft.suggestedPass ? "success" : "danger"}>
+                        AI suggests: {submission.aiDraft.suggestedPass ? "Pass" : "Fail"}
+                      </Badge>
+                      {submission.aiDraft.overallFeedback && (
+                        <p className="text-xs text-indigo-800 leading-relaxed">
+                          {submission.aiDraft.overallFeedback}
+                        </p>
+                      )}
+                      {submission.aiDraft.accepted ? (
+                        <p className="text-xs font-medium text-emerald-600 flex items-center gap-1">
+                          <CheckCircle2 size={12} /> Draft accepted
+                        </p>
+                      ) : (
+                        <div className="flex gap-2 pt-1">
+                          <Button
+                            size="sm"
+                            className="flex-1 justify-center"
+                            disabled={aiLoading}
+                            onClick={handleAcceptAiDraft}
+                          >
+                            Accept Draft
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            className="flex-1 justify-center"
+                            disabled={aiLoading}
+                            onClick={handleAcceptAiDraftWithEdits}
+                          >
+                            Accept &amp; Edit
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ✅ Module 6 — Approve / Request Resubmission actions */}
+              <div className="mt-5 pt-5 border-t border-gray-100 space-y-2.5">
+                {["graded", "ai_reviewed"].includes(submission.status) &&
+                  submission.approvalStatus !== "approved" && (
+                    <Button
+                      variant="secondary"
+                      className="w-full justify-center"
+                      disabled={actionLoading}
+                      onClick={handleApprove}
+                    >
+                      <ShieldCheck size={15} /> Approve Completion
+                    </Button>
+                  )}
+
+                {submission.approvalStatus === "approved" && (
+                  <p className="text-xs text-center text-emerald-600 font-medium flex items-center justify-center gap-1">
+                    <ShieldCheck size={13} /> Approved by{" "}
+                    {submission.approvedBy?.name || "admin"} on{" "}
+                    {submission.approvedAt
+                      ? new Date(submission.approvedAt).toLocaleDateString()
+                      : ""}
+                  </p>
+                )}
+
+                {submission.status !== "resubmission_required" &&
+                  assignment?.allowResubmission !== false && (
+                    <>
+                      {!showResubmitBox ? (
+                        <Button
+                          variant="secondary"
+                          className="w-full justify-center"
+                          onClick={() => setShowResubmitBox(true)}
+                        >
+                          <RotateCcw size={15} /> Request Resubmission
+                        </Button>
+                      ) : (
+                        <div className="space-y-2">
+                          <textarea
+                            value={resubmitFeedback}
+                            onChange={(e) => setResubmitFeedback(e.target.value)}
+                            placeholder="Explain what the student needs to fix before resubmitting…"
+                            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                            rows={3}
+                          />
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              className="flex-1 justify-center"
+                              disabled={actionLoading}
+                              onClick={handleRequestResubmission}
+                            >
+                              Send Back to Student
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              className="flex-1 justify-center"
+                              onClick={() => setShowResubmitBox(false)}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                {submission.status === "resubmission_required" && (
+                  <p className="text-xs text-center text-orange-500 font-medium">
+                    Waiting for student to resubmit
+                    {submission.resubmissionFeedback
+                      ? `: "${submission.resubmissionFeedback}"`
+                      : ""}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </div>

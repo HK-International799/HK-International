@@ -14,6 +14,7 @@ import {
   submitRegistration,
   uploadRegistrationDocuments,
 } from "../../services/registrationService";
+import SEO from "../../components/SEO";
 
 const STEPS = [
   "Personal Information",
@@ -210,6 +211,12 @@ export default function LearnerRegistration() {
   if (result) {
     return (
       <MainLayout>
+        <SEO
+          title="Registration Submitted | 1A HK International"
+          description="Your learner registration has been submitted successfully."
+          url="https://hkinternational.uk/learner-registration"
+          noIndex={true}
+        />
         <div className="min-h-[80vh] flex justify-center items-center px-5">
           <div className="bg-white shadow-xl rounded-3xl p-10 max-w-xl w-full text-center">
             <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-6" />
@@ -279,6 +286,15 @@ export default function LearnerRegistration() {
 
   return (
     <MainLayout>
+      {/* This is a hidden, unlinked self-registration URL shared only with
+          specific learners — it must never be indexed or appear in search
+          results, so noIndex is hardcoded true (not tied to any prop). */}
+      <SEO
+        title="Learner Registration | 1A HK International"
+        description="Register for your accredited HSE course with 1A HK International."
+        url="https://hkinternational.uk/learner-registration"
+        noIndex={true}
+      />
       <div className="max-w-3xl mx-auto px-4 py-10">
         <h1 className="text-3xl font-bold text-gray-800 text-center">
           Learner Registration

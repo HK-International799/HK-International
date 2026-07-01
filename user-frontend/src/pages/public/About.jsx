@@ -41,7 +41,7 @@ export default function About() {
   return (
     <MainLayout>
       <SEO
-        title="About 1A HK International | Accredited HSE Training Provider – UK, India, Portugal"
+        title="About 1A HK International | Accredited HSE Training Provider - UK, India, Portugal"
         description="1A HK International is an accredited HSE training provider with offices in London, Mumbai and Lisbon. Accredited by IOSH, OTHM, PECB, OSHA, CIEH & ESC."
         keywords={getPageKeywords("about")}
         url="https://hkinternational.uk/about"
@@ -108,7 +108,7 @@ export default function About() {
           >
             <img
               src="/images/ourmissionandvision.jpg"
-              alt="1A HK International – mission and vision for global HSE excellence"
+              alt="1A HK International - mission and vision for global HSE excellence"
               className="rounded-2xl w-full h-full object-cover"
               loading="lazy"
             />

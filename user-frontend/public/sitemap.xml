@@ -211,6 +211,74 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- HSE Audit & Compliance Training (previously missing from sitemap) -->
+  <url>
+    <loc>https://hkinternational.uk/course/hse-internal-audit-compliance-review-training</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hkinternational.uk/course/hse-management-system-review-internal-audit-awareness</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hkinternational.uk/course/hse-plan-documentation-review-training</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hkinternational.uk/course/hse-quality-assurance-continuous-improvement-training</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hkinternational.uk/course/contractor-hse-audit-performance-monitoring</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hkinternational.uk/course/incident-investigation-corrective-action-audit-follow-up-training</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hkinternational.uk/course/occupational-health-safety-risk-management-audit-readiness</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hkinternational.uk/course/permit-to-work-compliance-auditing-training</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hkinternational.uk/course/risk-assessment-review-control-verification-training</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hkinternational.uk/course/workplace-inspection-audit-reporting-training</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Project Management & CSP Courses (previously missing from sitemap) -->
+  <url>
+    <loc>https://hkinternational.uk/course/essential-skills-in-project-management</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hkinternational.uk/course/foundation-in-project-management</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hkinternational.uk/course/certified-safety-professional-csp-exam-preparation</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 
   <!-- Blogs -->
    <url>
@@ -236,6 +304,11 @@
   <url>
     <loc>https://hkinternational.uk/blog/iosh-level-3-complete-guide</loc>
     <!-- <lastmod>2026-05-12</lastmod> -->
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://hkinternational.uk/blog/nebosh-vs-iosh-which-qualification-is-right-for-you</loc>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
