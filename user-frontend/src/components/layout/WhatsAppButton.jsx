@@ -15,6 +15,7 @@ export default function WhatsAppButton() {
         href="https://whatsapp.com/channel/0029VbCdy5D8kyyNaJ53EW47"
         target="_blank"
         rel="noopener noreferrer"
+        aria-label="Join our WhatsApp channel"
         className="
         relative
         flex

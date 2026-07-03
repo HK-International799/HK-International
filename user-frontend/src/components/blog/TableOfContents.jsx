@@ -82,7 +82,7 @@ export default function TableOfContents({ sections }) {
           </span>
         </div>
         {/* Only show chevron on mobile */}
-        <span className="lg:hidden text-gray-400">
+        <span className="lg:hidden text-gray-600">
           {isOpen ? (
             <ChevronUp size={16} aria-hidden="true" />
           ) : (
@@ -125,7 +125,7 @@ export default function TableOfContents({ sections }) {
                         className={`flex-shrink-0 w-5 h-5 rounded-full text-xs flex items-center justify-center font-bold mt-0.5 ${
                           isActive
                             ? "bg-[#1e3a5f] text-white"
-                            : "bg-gray-100 text-gray-400"
+                            : "bg-gray-100 text-gray-600"
                         }`}
                         aria-hidden="true"
                       >
@@ -162,7 +162,7 @@ export default function TableOfContents({ sections }) {
                     className={`flex-shrink-0 w-5 h-5 rounded-full text-xs flex items-center justify-center font-bold mt-0.5 ${
                       isActive
                         ? "bg-[#1e3a5f] text-white"
-                        : "bg-gray-100 text-gray-400"
+                        : "bg-gray-100 text-gray-600"
                     }`}
                     aria-hidden="true"
                   >

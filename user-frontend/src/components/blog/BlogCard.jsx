@@ -65,7 +65,7 @@ export default function BlogCard({ post }) {
 
         {/* Meta row */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
-          <div className="flex items-center gap-3 text-xs text-gray-400">
+          <div className="flex items-center gap-3 text-xs text-gray-600">
             <span className="flex items-center gap-1">
               <Calendar size={13} aria-hidden="true" />
               <time dateTime={post.publishedDate}>

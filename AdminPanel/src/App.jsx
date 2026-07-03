@@ -496,6 +496,7 @@ import RecordPayment from "./pages/finance/RecordPayment";
 import LearnerPaymentProfile from "./pages/finance/LearnerPaymentProfile";
 import FinanceReports from "./pages/finance/FinanceReports";
 import CourseFees from "./pages/finance/CourseFees";
+import ShippingLabelSheets from "./Tools/ShippingLabelSheets";
 
 // Lazy load all pages
 const Dashboard = lazy(() => import("./pages/dashboard/Dashboard"));
@@ -922,6 +923,16 @@ function App() {
             element={
               <P>
                 <CourseFees />
+              </P>
+            }
+          />
+
+          {/* ====================================tools============================== */}
+          <Route
+            path="/tools/label-maker"
+            element={
+              <P>
+                <ShippingLabelSheets />
               </P>
             }
           />

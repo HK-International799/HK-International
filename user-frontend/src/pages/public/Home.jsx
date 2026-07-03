@@ -8,6 +8,7 @@ import { getPageKeywords } from "../../data/seoKeywords";
 import FaqItem from "../../components/common/FaqItem";
 import BlogPreview from "../../components/blog/BlogPreview";
 import Testimonials from "../../components/common/Testimonials";
+import { courses as allCourses } from "../../data/coursesData";
 
 /* ---------------- COUNTER ---------------- */
 
@@ -59,7 +60,7 @@ function CourseCard({ id, title, org, description, logo, index }) {
       tabIndex={0}
       onKeyDown={(e) => e.key === "Enter" && navigate(`/course/${id}`)}
       aria-label={`View ${title} course details`}
-      title={`View ${title} - 1A HK International`}
+      title={`View ${title} – 1A HK International`}
       className="bg-white border border-slate-200 rounded-2xl p-6 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer"
     >
       {/* Logo */}
@@ -273,7 +274,7 @@ export default function Home() {
   return (
     <MainLayout>
       <SEO
-        title="1A HK International | Accredited Health & Safety Courses Online - IOSH, OTHM, OSHA, ISO"
+        title="1A HK International | Accredited Health & Safety Courses Online – IOSH, OTHM, OSHA, ISO"
         description="1A HK International offers IOSH, OTHM, OSHA, ISO 45001, CIEH & ESC accredited HSE training online & classroom. UK accredited. London, Mumbai, Lisbon."
         keywords={getPageKeywords("home")}
         url="https://hkinternational.uk/"
@@ -453,10 +454,10 @@ export default function Home() {
             <nav aria-label="All courses" className="mt-10 text-center">
               <Link
                 to="/courses"
-                title="View all 27 accredited HSE courses - 1A HK International"
+                title={`View all ${allCourses.length} accredited HSE courses – 1A HK International`}
                 className="inline-block text-indigo-700 font-semibold hover:underline"
               >
-                Browse all 27 accredited courses →
+                Browse all {allCourses.length} accredited courses →
               </Link>
             </nav>
           </div>
@@ -509,7 +510,7 @@ export default function Home() {
               onClick={() => navigate("/contact")}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
-              aria-label="Enroll today - contact 1A HK International"
+              aria-label="Enroll today – contact 1A HK International"
               className="mt-8 bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-xl font-semibold shadow-md"
             >
               Enroll Today

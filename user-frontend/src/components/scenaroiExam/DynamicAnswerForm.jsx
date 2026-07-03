@@ -1,174 +1,3 @@
-// /**
-//  * DynamicAnswerForm
-//  *
-//  * Renders a question's formSchema as a live form. Values are managed
-//  * by the parent (controlled component) and returned via onChange.
-//  *
-//  * Props:
-//  *   - schema:  Array of field specs (fieldId, label, type, required, options, placeholder)
-//  *   - value:   Object map { [fieldId]: value }
-//  *   - onChange(nextValue): called whenever any field changes
-//  *   - disabled: boolean (true when exam is submitted)
-//  */
-// export default function DynamicAnswerForm({
-//   schema = [],
-//   value = {},
-//   onChange,
-//   disabled = false,
-// }) {
-//   const setField = (fieldId, newVal) => {
-//     onChange?.({ ...value, [fieldId]: newVal });
-//   };
-
-//   if (!schema.length) {
-//     return (
-//       <div className="border border-dashed rounded-md p-4 text-sm text-gray-500">
-//         No answer fields defined for this question.
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="space-y-4">
-//       {schema.map((f) => {
-//         const v = value[f.fieldId];
-//         const common =
-//           "w-full border rounded-md p-2 text-sm disabled:bg-gray-50 disabled:text-gray-500";
-
-//         return (
-//           <div key={f.fieldId}>
-//             <label className="block text-sm font-medium text-gray-700 mb-1">
-//               {f.label}
-//               {f.required && <span className="text-red-500 ml-1">*</span>}
-//             </label>
-
-//             {f.type === "text" && (
-//               <input
-//                 type="text"
-//                 className={common}
-//                 placeholder={f.placeholder || ""}
-//                 value={v ?? ""}
-//                 onChange={(e) => setField(f.fieldId, e.target.value)}
-//                 disabled={disabled}
-//               />
-//             )}
-
-//             {f.type === "number" && (
-//               <input
-//                 type="number"
-//                 className={common}
-//                 placeholder={f.placeholder || ""}
-//                 value={v ?? ""}
-//                 onChange={(e) => setField(f.fieldId, e.target.value)}
-//                 disabled={disabled}
-//               />
-//             )}
-
-//             {f.type === "textarea" && (
-//               <textarea
-//                 rows={4}
-//                 className={common}
-//                 placeholder={f.placeholder || ""}
-//                 value={v ?? ""}
-//                 onChange={(e) => setField(f.fieldId, e.target.value)}
-//                 disabled={disabled}
-//               />
-//             )}
-
-//             {f.type === "dropdown" && (
-//               <select
-//                 className={common}
-//                 value={v ?? ""}
-//                 onChange={(e) => setField(f.fieldId, e.target.value)}
-//                 disabled={disabled}
-//               >
-//                 <option value="">-- Select --</option>
-//                 {(f.options || []).map((opt, i) => (
-//                   <option key={i} value={opt}>
-//                     {opt}
-//                   </option>
-//                 ))}
-//               </select>
-//             )}
-
-//             {f.type === "radio" && (
-//               <div className="space-y-1">
-//                 {(f.options || []).map((opt, i) => (
-//                   <label
-//                     key={i}
-//                     className="flex items-center gap-2 text-sm text-gray-700"
-//                   >
-//                     <input
-//                       type="radio"
-//                       name={f.fieldId}
-//                       value={opt}
-//                       checked={v === opt}
-//                       onChange={(e) => setField(f.fieldId, e.target.value)}
-//                       disabled={disabled}
-//                     />
-//                     {opt}
-//                   </label>
-//                 ))}
-//               </div>
-//             )}
-
-//             {f.type === "checkbox" && (
-//               <div className="space-y-1">
-//                 {(f.options || []).map((opt, i) => {
-//                   const arr = Array.isArray(v) ? v : [];
-//                   const checked = arr.includes(opt);
-//                   return (
-//                     <label
-//                       key={i}
-//                       className="flex items-center gap-2 text-sm text-gray-700"
-//                     >
-//                       <input
-//                         type="checkbox"
-//                         checked={checked}
-//                         onChange={(e) => {
-//                           const next = e.target.checked
-//                             ? [...arr, opt]
-//                             : arr.filter((x) => x !== opt);
-//                           setField(f.fieldId, next);
-//                         }}
-//                         disabled={disabled}
-//                       />
-//                       {opt}
-//                     </label>
-//                   );
-//                 })}
-//               </div>
-//             )}
-
-//             {f.type === "file" && (
-//               <div className="space-y-1">
-//                 {/*
-//                  * For file fields we accept a URL. In a fuller implementation
-//                  * this would upload to Cloudinary/etc. and save the URL. Here
-//                  * we allow pasting a URL to keep scope tight and reuse
-//                  * existing upload infrastructure if the team already has one.
-//                  */}
-//                 <input
-//                   type="url"
-//                   className={common}
-//                   placeholder={f.placeholder || "Paste file URL"}
-//                   value={v ?? ""}
-//                   onChange={(e) => setField(f.fieldId, e.target.value)}
-//                   disabled={disabled}
-//                 />
-//                 <p className="text-xs text-gray-400">
-//                   Paste a URL to your uploaded file (e.g. Google Drive share
-//                   link).
-//                 </p>
-//               </div>
-//             )}
-//           </div>
-//         );
-//       })}
-//     </div>
-//   );
-// }
-
 
 
 
@@ -198,7 +27,7 @@ export default function DynamicAnswerForm({
   if (!subQuestions.length) {
     return (
       <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center">
-        <p className="text-sm text-gray-400">
+        <p className="text-sm text-gray-600">
           No questions defined for this scenario.
         </p>
       </div>
@@ -233,7 +62,7 @@ export default function DynamicAnswerForm({
                 </label>
               </div>
               {sq.maxMarks > 0 && (
-                <span className="flex-shrink-0 text-xs text-gray-400 bg-gray-100 rounded-full px-2 py-0.5 font-medium">
+                <span className="flex-shrink-0 text-xs text-gray-600 bg-gray-100 rounded-full px-2 py-0.5 font-medium">
                   {sq.maxMarks} mark{sq.maxMarks !== 1 ? "s" : ""}
                 </span>
               )}
@@ -257,7 +86,7 @@ export default function DynamicAnswerForm({
                 disabled={disabled}
               />
               {!disabled && (
-                <div className="absolute bottom-2 right-2.5 text-[10px] text-gray-400">
+                <div className="absolute bottom-2 right-2.5 text-[10px] text-gray-600">
                   {charCount > 0 && `${charCount} chars`}
                 </div>
               )}

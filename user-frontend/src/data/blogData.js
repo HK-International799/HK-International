@@ -402,7 +402,7 @@ export const blogPosts = [
 
     readTime: "14 min read",
 
-    coverImage: "/images/blog/iosh-level-3-complete-guide.png",
+    coverImage: "/images/blog/iosh-level-3-complete-guide.webp",
 
     metaTitle:
       "IOSH Level 3 Certificate - Complete Guide 2026 | 1A HK International",

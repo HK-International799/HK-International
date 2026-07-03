@@ -90,7 +90,7 @@ export default function BlogPreview() {
         >
           <Link
             to="/blog"
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-[#1e3a5f] text-white font-semibold text-sm hover:bg-orange-500 transition-all duration-200 shadow-md hover:shadow-lg"
+            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-[#1e3a5f] text-white font-semibold text-sm hover:bg-orange-700 transition-all duration-200 shadow-md hover:shadow-lg"
           >
             View All Posts
             <ArrowRight size={15} aria-hidden="true" />

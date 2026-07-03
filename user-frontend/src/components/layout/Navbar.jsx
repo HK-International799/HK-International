@@ -600,6 +600,7 @@ ${coursesOpen ? "scale-105" : "hover:scale-105"}`}
                       <img
                         src={user.data.avatar}
                         alt={user.data.name}
+                        loading="lazy"
                         className="w-8 h-8 rounded-full object-cover border-2 border-orange-400"
                       />
                     ) : (

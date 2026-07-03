@@ -131,9 +131,15 @@
     <!-- Preload main logo for instant LCP -->
     <link rel="preload" as="image" href="/images/hk_logo.png" />
 
+    <!-- Preload the homepage hero's first slide (its LCP image on most
+         visits). Vite/React is a single index.html for the whole SPA, so
+         this preload ships on every route — a small, deliberate tradeoff
+         since Home is the highest-traffic entry page. -->
+    <link rel="preload" as="image" href="/slides/osha_iosh_slideshow.webp" />
+
     <!-- =========================================================
          DEFAULT JSON-LD: Organization
-         (Page-specific schemas are injected by react-helmet via <SEO />)
+         (Page-specific schemas are injected by the <SEO /> component)
     ========================================================== -->
     <script type="application/ld+json">
     {

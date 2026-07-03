@@ -36,7 +36,7 @@ export default function BlogSidebar({ currentPostId, courseLink }) {
           </p>
           <Link
             to={courseLink || "/courses"}
-            className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-orange-500 hover:bg-orange-400 text-white font-semibold text-sm transition-colors duration-200"
+            className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-orange-700 hover:bg-orange-800 text-white font-semibold text-sm transition-colors duration-200"
           >
             Explore Courses
             <ArrowRight size={14} aria-hidden="true" />

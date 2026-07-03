@@ -307,10 +307,5 @@
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
-  <url>
-    <loc>https://hkinternational.uk/blog/nebosh-vs-iosh-which-qualification-is-right-for-you</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.7</priority>
-  </url>
 
 </urlset>

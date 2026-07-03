@@ -9,7 +9,9 @@ import {
 } from "react-icons/fa";
 import { useState } from "react";
 
-/* All 27 accredited courses — used to build internal links for SEO crawlability. */
+/* All accredited courses — used to build internal links for SEO crawlability.
+   Keep in sync with src/data/coursesData.js and public/sitemap.xml whenever
+   a course is added or removed. */
 const ALL_COURSES = [
   { id: "iosh-managing-safely", title: "IOSH Managing Safely Certificate" },
   { id: "iosh-level3", title: "IOSH Level 3 Certificate in OSH" },
@@ -44,10 +46,6 @@ const ALL_COURSES = [
     id: "osha-construction",
     title: "OSHA 30 Hour Construction Safety Certificate (USA)",
   },
-  {
-    id: "osha-general",
-    title: "OSHA 30 Hour General Industry Certificate (USA)",
-  },
   { id: "cieh-level1-food", title: "CIEH Level 1 Award in Food Safety" },
   { id: "cieh-level2-food", title: "CIEH Level 2 Award in Food Safety" },
   { id: "cieh-level3-food", title: "CIEH Level 3 Award in Food Safety" },
@@ -68,6 +66,66 @@ const ALL_COURSES = [
   { id: "confined-space-safety", title: "Confined Space Safety Training" },
   { id: "permit-to-work", title: "Permit to Work (PTW) Training" },
   { id: "e-waste-management", title: "E-Waste Management Training" },
+
+  /* Added — were present in coursesData.js but missing from this
+     hand-maintained internal-links list (found during SEO audit,
+     see also the same gap that existed in public/sitemap.xml). */
+  {
+    id: "osha-30-hours-general-industry-certificate",
+    title: "OSHA 30 Hours General Industry Certificate",
+  },
+  {
+    id: "hse-internal-audit-compliance-review-training",
+    title: "HSE Internal Audit and Compliance Review Training",
+  },
+  {
+    id: "hse-management-system-review-internal-audit-awareness",
+    title: "HSE Management System Review and Internal Audit Awareness",
+  },
+  {
+    id: "hse-plan-documentation-review-training",
+    title: "HSE Plan and Documentation Review Training",
+  },
+  {
+    id: "hse-quality-assurance-continuous-improvement-training",
+    title: "HSE Quality Assurance and Continuous Improvement Training",
+  },
+  {
+    id: "contractor-hse-audit-performance-monitoring",
+    title: "Contractor HSE Audit and Performance Monitoring",
+  },
+  {
+    id: "incident-investigation-corrective-action-audit-follow-up-training",
+    title: "Incident Investigation, Corrective Action and Audit Follow-up Training",
+  },
+  {
+    id: "occupational-health-safety-risk-management-audit-readiness",
+    title: "Occupational Health and Safety Risk Management and Audit Readiness",
+  },
+  {
+    id: "permit-to-work-compliance-auditing-training",
+    title: "Permit-to-Work Compliance and Auditing Training",
+  },
+  {
+    id: "risk-assessment-review-control-verification-training",
+    title: "Risk Assessment Review and Control Verification Training",
+  },
+  {
+    id: "workplace-inspection-audit-reporting-training",
+    title: "Workplace Inspection and Audit Reporting Training",
+  },
+  {
+    id: "essential-skills-in-project-management",
+    title: "Essential Skills in Project Management",
+  },
+  {
+    id: "foundation-in-project-management",
+    title: "Foundation in Project Management",
+  },
+  {
+    id: "certified-safety-professional-csp-exam-preparation",
+    title: "Certified Safety Professional (CSP) Exam Preparation Course",
+  },
 ];
 
 export default function Footer() {
@@ -130,7 +188,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/courses"
-                  title="Browse all 27 accredited HSE courses"
+                  title={`Browse all ${ALL_COURSES.length} accredited HSE courses`}
                   className="hover:text-white transition"
                 >
                   Courses
