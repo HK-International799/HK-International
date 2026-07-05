@@ -1,296 +1,1804 @@
-import { useCallback, useState } from "react";
+// import React, { useRef, useState } from "react";
+// const logo = "/hk_logo.png";
 
-const LOGO_SRC = "/logo.png";
+// /* ============================================================================
+//    Defaults
+// ============================================================================ */
 
-const TO_FIELDS = [
-  { key: "name", label: "Name" },
-  { key: "company", label: "Company (Opt.)" },
-  { key: "addr1", label: "Addr Line 1" },
-  { key: "addr2", label: "Addr Line 2" },
-  { key: "area", label: "Area/Locality" },
-];
+// const DEFAULT_SENDER = {
+//   name: "1A HK International — c/o Anurag Pandey",
+//   line1: "Premashree House, New Colony, Kakarmatta, BLW",
+//   line2: "Varanasi, Uttar Pradesh – 221004, India",
+//   mobile: "+91-7991845638",
+//   email: "info@hkinternational.uk",
+//   website: "hkinternational.uk",
+// };
 
-const TO_FIELDS_SPLIT = [
-  [{ key: "city", label: "City" }, { key: "state", label: "State" }],
-  [{ key: "pin", label: "PIN Code" }, { key: "country", label: "Country" }],
-];
+// const blankTo = () => ({
+//   name: "",
+//   company: "",
+//   addr1: "",
+//   addr2: "",
+//   area: "",
+//   city: "",
+//   state: "",
+//   pin: "",
+//   country: "",
+//   mobile: "",
+// });
 
-const defaultTo = () => ({
-  name: "", company: "", addr1: "", addr2: "", area: "",
-  city: "", state: "", pin: "", country: "", mobile: "",
-});
+// /* ============================================================================
+//    Small inline icons (no icon library dependency)
+// ============================================================================ */
 
-const defaultFrom = () => ({
+// const PinIcon = ({ className, color }) => (
+//   <svg className={className} viewBox="0 0 24 24" fill="none">
+//     <path
+//       d="M12 22s7-7.58 7-13A7 7 0 0 0 5 9c0 5.42 7 13 7 13Z"
+//       stroke={color}
+//       strokeWidth="1.8"
+//       strokeLinejoin="round"
+//     />
+//     <circle cx="12" cy="9" r="2.4" stroke={color} strokeWidth="1.8" />
+//   </svg>
+// );
+
+// const BuildingIcon = ({ className, color }) => (
+//   <svg className={className} viewBox="0 0 24 24" fill="none">
+//     <path
+//       d="M4 21V9.5L12 4l8 5.5V21"
+//       stroke={color}
+//       strokeWidth="1.8"
+//       strokeLinejoin="round"
+//       strokeLinecap="round"
+//     />
+//     <path
+//       d="M9 21v-6h6v6"
+//       stroke={color}
+//       strokeWidth="1.8"
+//       strokeLinejoin="round"
+//     />
+//     <path
+//       d="M9 12h.01M15 12h.01M9 9h.01M15 9h.01"
+//       stroke={color}
+//       strokeWidth="1.8"
+//       strokeLinecap="round"
+//     />
+//   </svg>
+// );
+
+// const ShieldIcon = ({ className, color }) => (
+//   <svg className={className} viewBox="0 0 24 24" fill="none">
+//     <path
+//       d="M12 2 2 7v6c0 5 4.2 8.6 10 9 5.8-.4 10-4 10-9V7L12 2Z"
+//       stroke={color}
+//       strokeWidth="1.7"
+//       strokeLinejoin="round"
+//     />
+//     <path d="M12 8v5" stroke={color} strokeWidth="1.9" strokeLinecap="round" />
+//     <circle cx="12" cy="16.3" r="1" fill={color} />
+//   </svg>
+// );
+
+// const PlusIcon = ({ className }) => (
+//   <svg className={className} viewBox="0 0 24 24" fill="none">
+//     <path
+//       d="M12 5v14M5 12h14"
+//       stroke="#fff"
+//       strokeWidth="2.4"
+//       strokeLinecap="round"
+//     />
+//   </svg>
+// );
+
+// const PrinterIcon = ({ className }) => (
+//   <svg className={className} viewBox="0 0 24 24" fill="none">
+//     <path
+//       d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-2M6 14h12v7H6v-7Z"
+//       stroke="#fff"
+//       strokeWidth="1.8"
+//       strokeLinejoin="round"
+//     />
+//   </svg>
+// );
+
+// const TrashIcon = ({ className }) => (
+//   <svg className={className} viewBox="0 0 24 24" fill="none">
+//     <path
+//       d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0-1 14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6h14Z"
+//       stroke="currentColor"
+//       strokeWidth="1.8"
+//       strokeLinejoin="round"
+//     />
+//   </svg>
+// );
+
+// const CopyIcon = ({ className }) => (
+//   <svg className={className} viewBox="0 0 24 24" fill="none">
+//     <rect
+//       x="9"
+//       y="9"
+//       width="12"
+//       height="12"
+//       rx="2"
+//       stroke="currentColor"
+//       strokeWidth="1.8"
+//     />
+//     <path
+//       d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"
+//       stroke="currentColor"
+//       strokeWidth="1.8"
+//     />
+//   </svg>
+// );
+
+// /* ============================================================================
+//    FieldInput — one editable "TO" field with a small caption + dotted line
+// ============================================================================ */
+
+// function FieldInput({ label, value, onChange }) {
+//   return (
+//     <div className="flex items-baseline gap-[1.4mm] mb-[1.55mm] leading-none">
+//       <span className="text-[6.1pt] font-bold tracking-[0.4px] text-slate-500 uppercase whitespace-nowrap">
+//         {label}
+//       </span>
+//       <input
+//         type="text"
+//         value={value}
+//         onChange={(e) => onChange(e.target.value)}
+//         className="flex-1 min-w-[6mm] h-[3.3mm] text-[7.4pt] font-medium text-[#1E2230] bg-transparent border-0
+//                    border-b border-dotted border-[#A9AEBA] focus:border-solid focus:border-[#3C4CA0]
+//                    focus:bg-[#3C4CA0]/5 outline-none px-0 py-0 rounded-none"
+//       />
+//     </div>
+//   );
+// }
+
+// /* ============================================================================
+//    AddressLabel — a single 105mm x 148.5mm label (TO / FROM / warning banner)
+// ============================================================================ */
+
+// function AddressLabel({
+//   label,
+//   onToChange,
+//   onFromChange,
+//   onWarnChange,
+//   onDuplicate,
+// }) {
+//   return (
+//     <div className="p-[5mm] flex items-center justify-center relative">
+//       <div
+//         className="relative w-full h-full border-[0.5pt] border-[#D7D2C4] rounded-[4mm]
+//                    p-[4.5mm_5.5mm_4mm_5.5mm] flex flex-col bg-white overflow-hidden break-inside-avoid"
+//       >
+//         {/* Top gradient accent bar */}
+//         <div
+//           className="absolute top-0 left-0 right-0 h-[1.1mm]"
+//           style={{
+//             background:
+//               "linear-gradient(90deg,#3C4CA0 0%,#7A2E8C 33%,#B5306E 60%,#E15A2E 100%)",
+//           }}
+//         />
+
+//         {/* Logo */}
+//         <div className="flex justify-center items-center pt-[2.6mm] pb-[1.6mm]">
+//           <img
+//             src={logo}
+//             alt="1A HK International"
+//             className="h-[15mm] w-auto block"
+//           />
+//         </div>
+//         <div
+//           className="h-[0.5pt] mb-[2.6mm]"
+//           style={{
+//             background:
+//               "linear-gradient(90deg,rgba(199,154,70,0) 0%,#C79A46 20%,#C79A46 80%,rgba(199,154,70,0) 100%)",
+//           }}
+//         />
+
+//         {/* TO header */}
+//         <div className="flex items-center gap-[1.6mm] mb-[1.6mm]">
+//           <PinIcon className="w-[4.2mm] h-[4.2mm]" color="#3C4CA0" />
+//           <span className="text-[8.4pt] font-extrabold tracking-[1.6px] text-[#3C4CA0]">
+//             TO
+//           </span>
+//           <span className="flex-1 border-t border-[#C9CDD6] ml-[1.2mm]" />
+//           <button
+//             type="button"
+//             onClick={onDuplicate}
+//             title="Copy this label's details to the other 3 on this sheet"
+//             className="print:hidden flex items-center gap-1 text-[7.5px] text-slate-400 hover:text-[#3C4CA0]"
+//           >
+//             <CopyIcon className="w-3 h-3" /> copy×4
+//           </button>
+//         </div>
+
+//         {/* TO fields */}
+//         <div className="mb-[2.4mm]">
+//           <FieldInput
+//             label="Name"
+//             value={label.to.name}
+//             onChange={(v) => onToChange("name", v)}
+//           />
+//           <FieldInput
+//             label="Company (Opt.)"
+//             value={label.to.company}
+//             onChange={(v) => onToChange("company", v)}
+//           />
+//           <FieldInput
+//             label="Addr Line 1"
+//             value={label.to.addr1}
+//             onChange={(v) => onToChange("addr1", v)}
+//           />
+//           <FieldInput
+//             label="Addr Line 2"
+//             value={label.to.addr2}
+//             onChange={(v) => onToChange("addr2", v)}
+//           />
+//           <FieldInput
+//             label="Area/Locality"
+//             value={label.to.area}
+//             onChange={(v) => onToChange("area", v)}
+//           />
+//           <div className="flex gap-[2.2mm]">
+//             <div className="flex-1">
+//               <FieldInput
+//                 label="City"
+//                 value={label.to.city}
+//                 onChange={(v) => onToChange("city", v)}
+//               />
+//             </div>
+//             <div className="flex-1">
+//               <FieldInput
+//                 label="State"
+//                 value={label.to.state}
+//                 onChange={(v) => onToChange("state", v)}
+//               />
+//             </div>
+//           </div>
+//           <div className="flex gap-[2.2mm]">
+//             <div className="flex-1">
+//               <FieldInput
+//                 label="PIN Code"
+//                 value={label.to.pin}
+//                 onChange={(v) => onToChange("pin", v)}
+//               />
+//             </div>
+//             <div className="flex-1">
+//               <FieldInput
+//                 label="Country"
+//                 value={label.to.country}
+//                 onChange={(v) => onToChange("country", v)}
+//               />
+//             </div>
+//           </div>
+//           <FieldInput
+//             label="Mobile"
+//             value={label.to.mobile}
+//             onChange={(v) => onToChange("mobile", v)}
+//           />
+//         </div>
+
+//         {/* FROM header */}
+//         <div className="flex items-center gap-[1.6mm] ">
+//           <BuildingIcon className="w-[4.2mm] h-[4.2mm]" color="#7A2E8C" />
+//           <span className="text-[8.4pt] font-extrabold tracking-[1.6px] text-[#7A2E8C]">
+//             FROM
+//           </span>
+//           <span className="flex-1 border-t border-[#C9CDD6] ml-[1.2mm]" />
+//         </div>
+
+//         {/* FROM block */}
+//         <div className="bg-[#FAF9F6] border-[0.5pt] border-[#ECE7DA] rounded-[2mm] p-[2mm_3mm_2mm_3mm] mb-[2.4mm]">
+//           <input
+//             value={label.from.name}
+//             onChange={(e) => onFromChange("name", e.target.value)}
+//             className="w-full text-[8.6pt] font-extrabold text-[#1E2230] bg-transparent outline-none border-0
+//                      focus:bg-[#7A2E8C]/5 rounded-[1mm]"
+//           />
+//           <input
+//             value={label.from.line1}
+//             onChange={(e) => onFromChange("line1", e.target.value)}
+//             className="w-full text-[7.1pt] text-[#333844] bg-transparent outline-none border-0 leading-[1.42]
+//                        focus:bg-[#7A2E8C]/5 rounded-[1mm]"
+//           />
+//           <input
+//             value={label.from.line2}
+//             onChange={(e) => onFromChange("line2", e.target.value)}
+//             className="w-full text-[7.1pt] text-[#333844] bg-transparent outline-none border-0 leading-[1.42]
+//                        focus:bg-[#7A2E8C]/5 rounded-[1mm]"
+//           />
+//           <div className="flex items-center gap-[1mm] text-[7.1pt] text-[#333844]">
+//             <span className="text-slate-500 font-bold whitespace-nowrap">
+//               Mob:
+//             </span>
+//             <input
+//               value={label.from.mobile}
+//               onChange={(e) => onFromChange("mobile", e.target.value)}
+//               className="flex-1 min-w-0 bg-transparent outline-none border-0 focus:bg-[#7A2E8C]/5 rounded-[1mm]"
+//             />
+//             <span className="text-slate-500 font-bold whitespace-nowrap ml-[2mm]">
+//               Email:
+//             </span>
+//             <input
+//               value={label.from.email}
+//               onChange={(e) => onFromChange("email", e.target.value)}
+//               className="flex-1 min-w-0 bg-transparent outline-none border-0 focus:bg-[#7A2E8C]/5 rounded-[1mm]"
+//             />
+//           </div>
+//           <div className="flex items-center gap-[1mm] text-[7.1pt]">
+//             <span className="text-slate-500 font-bold whitespace-nowrap">
+//               Web:
+//             </span>
+//             <input
+//               value={label.from.website}
+//               onChange={(e) => onFromChange("website", e.target.value)}
+//               className="flex-1 min-w-0 bg-transparent outline-none border-0 text-[#3C4CA0] font-bold
+//                          focus:bg-[#7A2E8C]/5 rounded-[1mm]"
+//             />
+//           </div>
+//         </div>
+
+//         {/* Warning banner */}
+//         <div className="mt-auto border border-[#C81E2C] rounded-[2mm] bg-[#FFF6F6] p-[2mm_2.6mm_2mm_2.6mm] flex items-center gap-[2mm]">
+//           <ShieldIcon className="w-[8mm] h-[8mm] shrink-0" color="#C81E2C" />
+//           <div className="flex-1 min-w-0">
+//             <input
+//               value={label.bend}
+//               onChange={(e) => onWarnChange("bend", e.target.value)}
+//               className="w-full text-[12.5pt] font-black tracking-[1px] text-[#C81E2C] bg-transparent outline-none
+//                          border-0 leading-tight mb-[0.8mm] focus:bg-[#C81E2C]/5 rounded-[1mm]"
+//             />
+//             <input
+//               value={label.subLine1}
+//               onChange={(e) => onWarnChange("subLine1", e.target.value)}
+//               className="w-full text-[6.4pt] font-bold tracking-[0.3px] text-[#7A2129] uppercase bg-transparent
+//                          outline-none border-0 leading-[1.42] focus:bg-[#C81E2C]/5 rounded-[1mm]"
+//             />
+//             <input
+//               value={label.subLine2}
+//               onChange={(e) => onWarnChange("subLine2", e.target.value)}
+//               className="w-full text-[6.4pt] font-bold tracking-[0.3px] text-[#7A2129] uppercase bg-transparent
+//                          outline-none border-0 leading-[1.42] focus:bg-[#C81E2C]/5 rounded-[1mm]"
+//             />
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// /* ============================================================================
+//    Sheet — one A4 page containing a 2x2 grid of 4 AddressLabel components
+// ============================================================================ */
+
+// function Sheet({ sheet, index, total, onUpdate, onRemove, onDuplicate }) {
+//   const isLast = index === total - 1;
+
+//   return (
+//     <div className="max-w-[210mm] mx-auto my-4 print:my-0 print:max-w-none">
+//       {/* Screen-only sheet header */}
+//       <div className="flex items-center justify-between max-w-[210mm] mx-auto mb-1.5 px-1 print:hidden">
+//         <div className="text-[11.5px] font-extrabold text-slate-500 tracking-wide">
+//           Sheet <span className="text-[#3C4CA0]">{index + 1}</span>{" "}
+//           <span className="text-slate-400 font-medium">· A4 · 4 labels</span>
+//         </div>
+//         <button
+//           type="button"
+//           onClick={onRemove}
+//           title="Remove this sheet"
+//           className="w-6.5 h-6.5 inline-flex items-center justify-center rounded-md border border-slate-200
+//                      text-slate-500 hover:bg-red-50 hover:border-red-200 hover:text-red-600"
+//         >
+//           <TrashIcon className="w-3.5 h-3.5" />
+//         </button>
+//       </div>
+
+//       {/* The physical A4 sheet: exact 210mm x 297mm, 2x2 grid.
+//           NOTE: grid tracks are set via inline style with fixed mm values
+//           (not Tailwind's 1fr-based grid-cols-2/grid-rows-2) so the 2x2
+//           layout can never be affected by any parent height quirks. */}
+//       <div
+//         className="relative bg-white shadow-lg print:shadow-none"
+//         style={{
+//           width: "210mm",
+//           height: "297mm",
+//           display: "grid",
+//           gridTemplateColumns: "105mm 105mm",
+//           gridTemplateRows: "148.5mm 148.5mm",
+//           breakInside: "avoid",
+//           pageBreakInside: "avoid",
+//           breakAfter: isLast ? "auto" : "page",
+//           pageBreakAfter: isLast ? "auto" : "always",
+//         }}
+//       >
+//         {/* Dotted cut guides */}
+//         <div className="absolute inset-y-0 left-1/2 border-l-[0.35mm] border-dotted border-[#A9AEBA] pointer-events-none z-[5]" />
+//         <div className="absolute inset-x-0 top-1/2 border-t-[0.35mm] border-dotted border-[#A9AEBA] pointer-events-none z-[5]" />
+
+//         {sheet.labels.map((label, li) => (
+//           <AddressLabel
+//             key={label.id}
+//             label={label}
+//             onToChange={(k, v) => onUpdate(li, "to", k, v)}
+//             onFromChange={(k, v) => onUpdate(li, "from", k, v)}
+//             onWarnChange={(k, v) => onUpdate(li, "warn", k, v)}
+//             onDuplicate={() => onDuplicate(li)}
+//           />
+//         ))}
+//       </div>
+//     </div>
+//   );
+// }
+
+// /* ============================================================================
+//    AddressLabelSheet — top-level component (default export)
+// ============================================================================ */
+
+// export default function AddressLabelSheet() {
+//   const idRef = useRef(0);
+//   const nextId = () => `id-${++idRef.current}`;
+
+//   const [sender, setSender] = useState({ ...DEFAULT_SENDER });
+
+//   const makeLabel = (senderSnap) => ({
+//     id: nextId(),
+//     to: blankTo(),
+//     from: { ...senderSnap },
+//     bend: "DO NOT BEND",
+//     subLine1: "Official Training Certificate Enclosed",
+//     subLine2: "Handle With Care · Important Document",
+//   });
+
+//   const makeSheet = (senderSnap) => ({
+//     id: nextId(),
+//     labels: Array.from({ length: 4 }, () => makeLabel(senderSnap)),
+//   });
+
+//   const [sheets, setSheets] = useState(() => [makeSheet(DEFAULT_SENDER)]);
+
+//   const addSheet = () => setSheets((prev) => [...prev, makeSheet(sender)]);
+
+//   const removeSheet = (id) =>
+//     setSheets((prev) =>
+//       prev.length <= 1 ? prev : prev.filter((s) => s.id !== id),
+//     );
+
+//   const updateLabelField = (sheetId, labelIndex, section, key, value) => {
+//     setSheets((prev) =>
+//       prev.map((s) => {
+//         if (s.id !== sheetId) return s;
+//         return {
+//           ...s,
+//           labels: s.labels.map((lab, i) => {
+//             if (i !== labelIndex) return lab;
+//             if (section === "to")
+//               return { ...lab, to: { ...lab.to, [key]: value } };
+//             if (section === "from")
+//               return { ...lab, from: { ...lab.from, [key]: value } };
+//             if (section === "warn") return { ...lab, [key]: value };
+//             return lab;
+//           }),
+//         };
+//       }),
+//     );
+//   };
+
+//   // "copy×4" — duplicates one label's TO + FROM + warning text to the other
+//   // 3 labels on the same sheet. Handy when you need 4 copies of one address.
+//   const duplicateLabelAcrossSheet = (sheetId, labelIndex) => {
+//     setSheets((prev) =>
+//       prev.map((s) => {
+//         if (s.id !== sheetId) return s;
+//         const source = s.labels[labelIndex];
+//         return {
+//           ...s,
+//           labels: s.labels.map((lab, i) =>
+//             i === labelIndex ? lab : { ...source, id: nextId() },
+//           ),
+//         };
+//       }),
+//     );
+//   };
+
+//   const clearAllToFields = () => {
+//     if (
+//       !window.confirm(
+//         'Clear all "TO" address fields on every sheet? Sender details will be kept.',
+//       )
+//     )
+//       return;
+//     setSheets((prev) =>
+//       prev.map((s) => ({
+//         ...s,
+//         labels: s.labels.map((l) => ({ ...l, to: blankTo() })),
+//       })),
+//     );
+//   };
+
+//   const applySenderToAllLabels = () => {
+//     setSheets((prev) =>
+//       prev.map((s) => ({
+//         ...s,
+//         labels: s.labels.map((l) => ({ ...l, from: { ...sender } })),
+//       })),
+//     );
+//   };
+
+//   const handlePrint = () => window.print();
+
+//   return (
+//     <div className="min-h-screen print:min-h-0 bg-[#EDEEF1] print:bg-white">
+//       {/* Global @page rule — required for correct A4 print sizing.
+//           Also defensively resets html/body/#root in case your app shell
+//           has its own height/overflow rules that could otherwise squeeze
+//           or clip this fixed-size 210mm x 297mm sheet during print. */}
+//       <style>{`
+//         @page { size: 210mm 297mm; margin: 0; }
+//         @media print {
+//           html, body, #root {
+//             margin: 0 !important;
+//             padding: 0 !important;
+//             width: auto !important;
+//             height: auto !important;
+//             min-height: 0 !important;
+//             overflow: visible !important;
+//             background: #fff !important;
+//           }
+//         }
+//       `}</style>
+
+//       {/* Toolbar (screen only) */}
+//       <div className="sticky top-0 z-[100] flex flex-wrap items-center justify-center gap-2 px-3.5 py-2.5 bg-white border-b border-slate-200 shadow-sm print:hidden">
+//         <div className="text-[13px] font-extrabold text-[#1E2230] mr-2.5">
+//           1A HK International
+//           <small className="block font-medium text-slate-500 text-[10.5px]">
+//             Editable shipping address label sheets
+//           </small>
+//         </div>
+//         <button
+//           type="button"
+//           onClick={addSheet}
+//           className="inline-flex items-center gap-1.5 rounded-md bg-[#3C4CA0] hover:bg-[#33408C] text-white text-[12.5px] font-bold px-3.5 py-2"
+//         >
+//           <PlusIcon className="w-3.5 h-3.5" /> Add New Sheet (4 Labels)
+//         </button>
+//         <button
+//           type="button"
+//           onClick={handlePrint}
+//           className="inline-flex items-center gap-1.5 rounded-md bg-[#C81E2C] hover:bg-[#A9101D] text-white text-[12.5px] font-bold px-3.5 py-2"
+//         >
+//           <PrinterIcon className="w-3.5 h-3.5" /> Print All Sheets
+//         </button>
+//         <button
+//           type="button"
+//           onClick={clearAllToFields}
+//           className="rounded-md text-[12.5px] font-bold px-3.5 py-2 text-slate-500 hover:bg-slate-100 hover:text-[#1E2230]"
+//         >
+//           Clear All Fields
+//         </button>
+//       </div>
+
+//       Default sender panel (screen only) — set once, reuse everywhere
+//       <div className="max-w-[200mm] h-60 mx-auto mt-3 px-3.5 py-3 bg-linear-to-r from-indigo-400 to-orange-300 border border-slate-200 rounded-lg print:hidden">
+//         <div className="flex items-center justify-between mb-2">
+//           <span className="text-[12px] font-extrabold text-[#7A2E8C]">Default Sender (used for new sheets)</span>
+//           <button
+//             type="button"
+//             onClick={applySenderToAllLabels}
+//             className="text-[11px] font-bold text-[#7A2E8C] hover:underline"
+//           >
+//             Apply to all existing labels →
+//           </button>
+//         </div>
+//         <div className="grid grid-cols-2 gap-2">
+//           <input
+//             value={sender.name}
+//             onChange={(e) => setSender({ ...sender, name: e.target.value })}
+//             placeholder="Sender name"
+//             className="col-span-2 text-[12px] border border-slate-200 rounded px-2 py-1 outline-none focus:border-[#7A2E8C]"
+//           />
+//           <input
+//             value={sender.line1}
+//             onChange={(e) => setSender({ ...sender, line1: e.target.value })}
+//             placeholder="Address line 1"
+//             className="col-span-2 text-[12px] border border-slate-200 rounded px-2 py-1 outline-none focus:border-[#7A2E8C]"
+//           />
+//           <input
+//             value={sender.line2}
+//             onChange={(e) => setSender({ ...sender, line2: e.target.value })}
+//             placeholder="Address line 2 / City / State / PIN"
+//             className="col-span-2 text-[12px] border border-slate-200 rounded px-2 py-1 outline-none focus:border-[#7A2E8C]"
+//           />
+//           <input
+//             value={sender.mobile}
+//             onChange={(e) => setSender({ ...sender, mobile: e.target.value })}
+//             placeholder="Mobile"
+//             className="text-[12px] border border-slate-200 rounded px-2 py-1 outline-none focus:border-[#7A2E8C]"
+//           />
+//           <input
+//             value={sender.email}
+//             onChange={(e) => setSender({ ...sender, email: e.target.value })}
+//             placeholder="Email"
+//             className="text-[12px] border border-slate-200 rounded px-2 py-1 outline-none focus:border-[#7A2E8C]"
+//           />
+//           <input
+//             value={sender.website}
+//             onChange={(e) => setSender({ ...sender, website: e.target.value })}
+//             placeholder="Website"
+//             className="col-span-2 text-[12px] border border-slate-200 rounded px-2 py-1 outline-none focus:border-[#7A2E8C]"
+//           />
+//         </div>
+//       </div>
+
+//       {/* Hint (screen only) */}
+//       <div className="max-w-[210mm] mx-auto mt-2 px-3.5 py-2 bg-[#FFF7E8] border border-[#F0DDAE] rounded-lg text-[11.5px] text-[#7A5A16] text-center print:hidden">
+//         <b className="text-[#5C4310]">Click any field to type directly.</b> Use
+//         “Add New Sheet” for more A4 pages (4 fresh labels each, all
+//         independently editable), then “Print All Sheets” to print everything in
+//         one go.
+//       </div>
+
+//       {/* Sheets */}
+//       <div className="pt-3.5 pb-14 print:p-0">
+//         {sheets.map((sheet, i) => (
+//           <Sheet
+//             key={sheet.id}
+//             sheet={sheet}
+//             index={i}
+//             total={sheets.length}
+//             onUpdate={(labelIndex, section, key, value) =>
+//               updateLabelField(sheet.id, labelIndex, section, key, value)
+//             }
+//             onRemove={() => removeSheet(sheet.id)}
+//             onDuplicate={(labelIndex) =>
+//               duplicateLabelAcrossSheet(sheet.id, labelIndex)
+//             }
+//           />
+//         ))}
+//       </div>
+//     </div>
+//   );
+// }
+
+import React, { useRef, useState, useCallback, useMemo } from "react";
+const logo = "/hk_logo.png";
+
+/* ============================================================================
+   CONSTANTS & DEFAULTS
+============================================================================ */
+
+const LABELS_PER_SHEET = 4;
+
+const DEFAULT_SENDER = {
   name: "1A HK International — c/o Anurag Pandey",
   line1: "Premashree House, New Colony, Kakarmatta, BLW",
   line2: "Varanasi, Uttar Pradesh – 221004, India",
-  contact: "+91-7991845638",
+  mobile: "+91-7991845638",
   email: "info@hkinternational.uk",
-  web: "hkinternational.uk",
-});
+  website: "hkinternational.uk",
+};
 
-const defaultWarning = () => ({
+const DEFAULT_WARNING = {
   bend: "DO NOT BEND",
-  sub: "Official Training Certificate Enclosed\nHandle With Care · Important Document",
+  subLine1: "Official Training Certificate Enclosed",
+  subLine2: "Handle With Care · Important Document",
+};
+
+/** Returns a blank "TO" address object */
+const blankTo = () => ({
+  name: "",
+  company: "",
+  addr1: "",
+  addr2: "",
+  area: "",
+  city: "",
+  state: "",
+  pin: "",
+  country: "",
+  mobile: "",
 });
 
-const defaultLabel = () => ({
-  to: defaultTo(),
-  from: defaultFrom(),
-  warning: defaultWarning(),
+/* ============================================================================
+   ID GENERATOR — module-level so it survives across renders
+============================================================================ */
+
+let _id = 0;
+const nextId = () => `id-${++_id}`;
+
+/* ============================================================================
+   LABEL FACTORY
+   Creates a single label object with the given sender snapshot.
+============================================================================ */
+
+const makeLabel = (senderSnap) => ({
+  id: nextId(),
+  to: blankTo(),
+  from: { ...senderSnap },
+  ...DEFAULT_WARNING,
 });
 
-const defaultSheet = () => ({
-  id: crypto.randomUUID(),
-  labels: [defaultLabel(), defaultLabel(), defaultLabel(), defaultLabel()],
-});
+/* ============================================================================
+   SHEET PAGINATION HELPER
+   Given a flat array of labels, returns them chunked into groups of 4.
+   Each chunk is a "virtual sheet" — no sheet state is stored separately;
+   sheets are always derived from the labels array.
+============================================================================ */
 
-function EditLine({ value, onChange, className = "" }) {
-  return (
-    <input
-      type="text"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className={
-        "flex-1 min-w-[24px] h-[13px] bg-transparent border-b border-dotted border-gray-400 " +
-        "text-[7.4pt] text-gray-900 font-medium outline-none px-0 " +
-        "focus:border-solid focus:border-blue-700 focus:bg-blue-50/40 " + className
-      }
-    />
-  );
-}
+const chunkIntoSheets = (labels) => {
+  const sheets = [];
+  for (let i = 0; i < labels.length; i += LABELS_PER_SHEET) {
+    sheets.push(labels.slice(i, i + LABELS_PER_SHEET));
+  }
+  return sheets;
+};
 
-function ToBlock({ to, onChange }) {
-  const set = (key) => (val) => onChange({ ...to, [key]: val });
-  return (
-    <div className="mb-[9px]">
-      {TO_FIELDS.map((f) => (
-        <div key={f.key} className="flex items-baseline gap-[5px] mb-[6px]">
-          <span className="text-[6.1pt] font-bold tracking-wide text-gray-500 uppercase whitespace-nowrap w-[70px]">
-            {f.label}
-          </span>
-          <EditLine value={to[f.key]} onChange={set(f.key)} />
-        </div>
-      ))}
-      {TO_FIELDS_SPLIT.map((pair, i) => (
-        <div key={i} className="flex items-baseline gap-[8px] mb-[6px]">
-          {pair.map((f) => (
-            <span key={f.key} className="flex items-baseline gap-[5px] flex-1">
-              <span className="text-[6.1pt] font-bold tracking-wide text-gray-500 uppercase whitespace-nowrap">
-                {f.label}
-              </span>
-              <EditLine value={to[f.key]} onChange={set(f.key)} />
-            </span>
-          ))}
-        </div>
-      ))}
-      <div className="flex items-baseline gap-[5px] mb-[6px]">
-        <span className="text-[6.1pt] font-bold tracking-wide text-gray-500 uppercase whitespace-nowrap w-[70px]">
-          Mobile
-        </span>
-        <EditLine value={to.mobile} onChange={set("mobile")} />
-      </div>
-    </div>
-  );
-}
+/* ============================================================================
+   UNDO / REDO HOOK
+   Wraps any state with a history stack.
+   Returns [currentState, setState, undo, redo, canUndo, canRedo].
+============================================================================ */
 
-function FromBlock({ from, onChange }) {
-  const set = (key) => (e) => onChange({ ...from, [key]: e.target.value });
-  const inputCls =
-    "bg-transparent outline-none focus:bg-purple-50 rounded-[1mm] px-0.5";
-  return (
-    <div className="bg-[#faf9f6] border border-[#ece7da] rounded-[2mm] px-[11px] pt-[9px] pb-[8px] mb-[9px]">
-      <input value={from.name} onChange={set("name")}
-        className={`w-full text-[8.6pt] font-extrabold text-gray-900 mb-[2px] ${inputCls}`} />
-      <input value={from.line1} onChange={set("line1")}
-        className={`w-full text-[7.1pt] text-gray-700 leading-[1.42] ${inputCls}`} />
-      <input value={from.line2} onChange={set("line2")}
-        className={`w-full text-[7.1pt] text-gray-700 leading-[1.42] ${inputCls}`} />
-      <div className="flex items-center text-[7.1pt] text-gray-700 leading-[1.42] gap-[6px]">
-        <span className="text-gray-500 font-bold shrink-0">Mob:</span>
-        <input value={from.contact} onChange={set("contact")} className={`w-[85px] ${inputCls}`} />
-        <span className="text-gray-500 font-bold shrink-0">Email:</span>
-        <input value={from.email} onChange={set("email")} className={`flex-1 ${inputCls}`} />
-      </div>
-      <div className="flex items-center text-[7.1pt] gap-[6px]">
-        <span className="text-gray-500 font-bold shrink-0">Web:</span>
-        <input value={from.web} onChange={set("web")}
-          className={`flex-1 text-blue-700 font-bold ${inputCls}`} />
-      </div>
-    </div>
-  );
-}
+const MAX_HISTORY = 50;
 
-function WarningBlock({ warning, onChange }) {
-  return (
-    <div className="mt-auto border border-red-600 rounded-[2mm] bg-red-50 px-[10px] py-[8px] flex items-center gap-[8px]">
-      <svg viewBox="0 0 24 24" fill="none" className="w-[8mm] h-[8mm] shrink-0">
-        <path d="M12 2 2 7v6c0 5 4.2 8.6 10 9 5.8-.4 10-4 10-9V7L12 2Z" stroke="#C81E2C" strokeWidth="1.7" strokeLinejoin="round" />
-        <path d="M12 8v5" stroke="#C81E2C" strokeWidth="1.9" strokeLinecap="round" />
-        <circle cx="12" cy="16.3" r="1" fill="#C81E2C" />
-      </svg>
-      <div className="flex-1">
-        <input
-          value={warning.bend}
-          onChange={(e) => onChange({ ...warning, bend: e.target.value })}
-          className="w-full bg-transparent outline-none text-[12.5pt] font-black tracking-wide text-red-600 leading-[1.05] mb-[3px] focus:bg-red-100 rounded-[1mm]"
-        />
-        <textarea
-          value={warning.sub}
-          onChange={(e) => onChange({ ...warning, sub: e.target.value })}
-          rows={2}
-          className="w-full bg-transparent outline-none resize-none text-[6.4pt] font-bold tracking-wide text-red-800 leading-[1.42] uppercase focus:bg-red-100 rounded-[1mm]"
-        />
-      </div>
-    </div>
-  );
-}
+function useUndoable(initialState) {
+  const [history, setHistory] = useState({
+    past: [],
+    present: initialState,
+    future: [],
+  });
 
-function Label({ label, onChange }) {
-  return (
-    <div className="relative w-full h-full border border-[#d7d2c4] rounded-[4mm] px-[14px] pt-[3mm] pb-[10px] flex flex-col bg-white overflow-hidden">
-      <div className="absolute top-0 left-0 right-0 h-[1.1mm] bg-gradient-to-r from-[#3C4CA0] via-[#7A2E8C] to-[#E15A2E]" />
-      <div className="flex justify-center pt-[7px] pb-[5px]">
-        <img
-          src={LOGO_SRC}
-          alt="1A HK International"
-          className="h-[15mm] w-auto"
-          onError={(e) => (e.currentTarget.style.display = "none")}
-        />
-      </div>
-      <div className="h-px bg-gradient-to-r from-transparent via-[#C79A46] to-transparent mb-[8px]" />
-
-      <div className="flex items-center gap-[5px] mb-[5px]">
-        <svg viewBox="0 0 24 24" fill="none" className="w-[15px] h-[15px] shrink-0">
-          <path d="M12 22s7-7.58 7-13A7 7 0 0 0 5 9c0 5.42 7 13 7 13Z" stroke="#3C4CA0" strokeWidth="1.8" strokeLinejoin="round" />
-          <circle cx="12" cy="9" r="2.4" stroke="#3C4CA0" strokeWidth="1.8" />
-        </svg>
-        <span className="text-[8.4pt] font-extrabold tracking-[1.6px] text-blue-700">TO</span>
-        <span className="flex-1 border-t border-gray-300 ml-[4px]" />
-      </div>
-
-      <ToBlock to={label.to} onChange={(to) => onChange({ ...label, to })} />
-
-      <div className="flex items-center gap-[5px] mb-[5px]">
-        <svg viewBox="0 0 24 24" fill="none" className="w-[15px] h-[15px] shrink-0">
-          <path d="M4 21V9.5L12 4l8 5.5V21" stroke="#7A2E8C" strokeWidth="1.8" strokeLinejoin="round" strokeLinecap="round" />
-          <path d="M9 21v-6h6v6" stroke="#7A2E8C" strokeWidth="1.8" strokeLinejoin="round" />
-          <path d="M9 12h.01M15 12h.01M9 9h.01M15 9h.01" stroke="#7A2E8C" strokeWidth="1.8" strokeLinecap="round" />
-        </svg>
-        <span className="text-[8.4pt] font-extrabold tracking-[1.6px] text-purple-700">FROM</span>
-        <span className="flex-1 border-t border-gray-300 ml-[4px]" />
-      </div>
-
-      <FromBlock from={label.from} onChange={(from) => onChange({ ...label, from })} />
-      <WarningBlock warning={label.warning} onChange={(warning) => onChange({ ...label, warning })} />
-    </div>
-  );
-}
-
-export default function ShippingLabelSheets() {
-  const [sheets, setSheets] = useState([defaultSheet()]);
-
-  const addSheet = useCallback(() => setSheets((p) => [...p, defaultSheet()]), []);
-
-  const removeSheet = useCallback((id) => {
-    setSheets((prev) => {
-      if (prev.length <= 1) {
-        alert('At least one sheet is required. Add another sheet first, or use "Clear All Fields" instead.');
-        return prev;
-      }
-      return prev.filter((s) => s.id !== id);
+  const setState = useCallback((updater) => {
+    setHistory((h) => {
+      const next = typeof updater === "function" ? updater(h.present) : updater;
+      return {
+        past: [...h.past.slice(-MAX_HISTORY + 1), h.present],
+        present: next,
+        future: [],
+      };
     });
   }, []);
 
-  const updateLabel = useCallback((sheetId, labelIndex, newLabel) => {
-    setSheets((prev) =>
-      prev.map((s) =>
-        s.id !== sheetId ? s : { ...s, labels: s.labels.map((l, i) => (i === labelIndex ? newLabel : l)) }
-      )
-    );
+  const undo = useCallback(() => {
+    setHistory((h) => {
+      if (!h.past.length) return h;
+      const previous = h.past[h.past.length - 1];
+      return {
+        past: h.past.slice(0, -1),
+        present: previous,
+        future: [h.present, ...h.future],
+      };
+    });
   }, []);
 
-  const clearAllTo = useCallback(() => {
-    if (!confirm('Clear all "TO" address fields on every sheet? Sender details and warning text will be kept.')) return;
-    setSheets((prev) => prev.map((s) => ({ ...s, labels: s.labels.map((l) => ({ ...l, to: defaultTo() })) })));
+  const redo = useCallback(() => {
+    setHistory((h) => {
+      if (!h.future.length) return h;
+      const next = h.future[0];
+      return {
+        past: [...h.past, h.present],
+        present: next,
+        future: h.future.slice(1),
+      };
+    });
   }, []);
 
-  // Ease-of-prep: copy one filled-in label to all 4 slots on its sheet
-  const duplicateToWholeSheet = useCallback((sheetId, labelIndex) => {
-    setSheets((prev) =>
-      prev.map((s) => {
-        if (s.id !== sheetId) return s;
-        const source = s.labels[labelIndex];
-        return { ...s, labels: s.labels.map(() => ({ ...source, to: { ...source.to } })) };
-      })
-    );
-  }, []);
+  return [
+    history.present,
+    setState,
+    undo,
+    redo,
+    history.past.length > 0,
+    history.future.length > 0,
+  ];
+}
 
-  const handlePrint = () => window.print();
+/* ============================================================================
+   INLINE ICONS  (no icon-library dependency)
+============================================================================ */
 
+const PinIcon = ({ className, color }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none">
+    <path
+      d="M12 22s7-7.58 7-13A7 7 0 0 0 5 9c0 5.42 7 13 7 13Z"
+      stroke={color}
+      strokeWidth="1.8"
+      strokeLinejoin="round"
+    />
+    <circle cx="12" cy="9" r="2.4" stroke={color} strokeWidth="1.8" />
+  </svg>
+);
+
+const BuildingIcon = ({ className, color }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none">
+    <path
+      d="M4 21V9.5L12 4l8 5.5V21"
+      stroke={color}
+      strokeWidth="1.8"
+      strokeLinejoin="round"
+      strokeLinecap="round"
+    />
+    <path
+      d="M9 21v-6h6v6"
+      stroke={color}
+      strokeWidth="1.8"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M9 12h.01M15 12h.01M9 9h.01M15 9h.01"
+      stroke={color}
+      strokeWidth="1.8"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+const ShieldIcon = ({ className, color }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none">
+    <path
+      d="M12 2 2 7v6c0 5 4.2 8.6 10 9 5.8-.4 10-4 10-9V7L12 2Z"
+      stroke={color}
+      strokeWidth="1.7"
+      strokeLinejoin="round"
+    />
+    <path d="M12 8v5" stroke={color} strokeWidth="1.9" strokeLinecap="round" />
+    <circle cx="12" cy="16.3" r="1" fill={color} />
+  </svg>
+);
+
+const PlusIcon = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none">
+    <path
+      d="M12 5v14M5 12h14"
+      stroke="#fff"
+      strokeWidth="2.4"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+const PrinterIcon = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none">
+    <path
+      d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-2M6 14h12v7H6v-7Z"
+      stroke="#fff"
+      strokeWidth="1.8"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const TrashIcon = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none">
+    <path
+      d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0-1 14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6h14Z"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const CopyIcon = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none">
+    <rect
+      x="9"
+      y="9"
+      width="12"
+      height="12"
+      rx="2"
+      stroke="currentColor"
+      strokeWidth="1.8"
+    />
+    <path
+      d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"
+      stroke="currentColor"
+      strokeWidth="1.8"
+    />
+  </svg>
+);
+
+const UndoIcon = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none">
+    <path
+      d="M3 7h10a6 6 0 0 1 0 12H9"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M3 7l4-4M3 7l4 4"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const RedoIcon = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none">
+    <path
+      d="M21 7H11a6 6 0 0 0 0 12h4"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M21 7l-4-4M21 7l-4 4"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const DuplicateIcon = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none">
+    <rect
+      x="8"
+      y="8"
+      width="12"
+      height="12"
+      rx="2"
+      stroke="currentColor"
+      strokeWidth="1.8"
+    />
+    <path
+      d="M4 16V4a1 1 0 0 1 1-1h12"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+const ClipboardIcon = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none">
+    <path
+      d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinejoin="round"
+    />
+    <rect
+      x="9"
+      y="3"
+      width="6"
+      height="4"
+      rx="1"
+      stroke="currentColor"
+      strokeWidth="1.8"
+    />
+  </svg>
+);
+
+/* ============================================================================
+   FIELD INPUT
+   One editable field with a label caption and a dotted underline.
+   Memoised so it only re-renders when its own value changes.
+============================================================================ */
+
+const FieldInput = React.memo(function FieldInput({ label, value, onChange }) {
   return (
-    <div className="min-h-screen">
-      <div className="print:hidden sticky top-0 z-50 flex flex-wrap items-center justify-center gap-2 px-4 py-3 bg-white border-b border-gray-200 shadow-sm">
-        <div className="mr-3">
-          <div className="text-[13px] font-extrabold text-gray-900">1A HK International</div>
-          <div className="text-[10.5px] text-gray-500">Editable shipping address label sheets</div>
+    <div className="flex items-baseline gap-[1.4mm] mb-[1.55mm] leading-none">
+      <span className="text-[6.1pt] font-bold tracking-[0.4px] text-slate-500 uppercase whitespace-nowrap">
+        {label}
+      </span>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="flex-1 min-w-[6mm] h-[3.3mm] text-[7.4pt] font-medium text-[#1E2230] bg-transparent border-0
+                   border-b border-dotted border-[#A9AEBA] focus:border-solid focus:border-[#3C4CA0]
+                   focus:bg-[#3C4CA0]/5 outline-none px-0 py-0 rounded-none"
+      />
+    </div>
+  );
+});
+
+/* ============================================================================
+   LABEL ACTION MENU
+   Small row of icon-buttons shown above each label on screen.
+   Separated out for clarity; completely hidden on print.
+============================================================================ */
+
+const LabelActions = React.memo(function LabelActions({
+  onCopyFour,
+  onDuplicate,
+  onCopy,
+  onPaste,
+  onRemove,
+  canPaste,
+  isOnly,
+}) {
+  return (
+    <div className="print:hidden flex items-center gap-2 text-xs text-slate-600 h-1">
+      {/* Copy ×4 — original feature: fill other 3 slots on this sheet */}
+      <button
+        type="button"
+        onClick={onCopyFour}
+        title="Copy this label's details to the other 3 on this sheet"
+        className="flex items-center gap-0.5 hover:text-[#3C4CA0]"
+      >
+        <CopyIcon className="w-3 h-3" /> ×4
+      </button>
+
+      {/* Duplicate — insert a copy directly after this label */}
+      <button
+        type="button"
+        onClick={onDuplicate}
+        title="Duplicate this label (inserts after)"
+        className="flex items-center gap-0.5 hover:text-[#3C4CA0]"
+      >
+        <DuplicateIcon className="w-3 h-3" /> dup
+      </button>
+
+      {/* Copy — store in clipboard state */}
+      <button
+        type="button"
+        onClick={onCopy}
+        title="Copy this label to clipboard"
+        className="flex items-center gap-0.5 hover:text-[#7A2E8C]"
+      >
+        <ClipboardIcon className="w-3 h-3" /> copy
+      </button>
+
+      {/* Paste — available only when clipboard has content */}
+      {canPaste && (
+        <button
+          type="button"
+          onClick={onPaste}
+          title="Paste clipboard label here"
+          className="flex items-center gap-0.5 hover:text-[#7A2E8C]"
+        >
+          <ClipboardIcon className="w-3 h-3" /> paste
+        </button>
+      )}
+
+      {/* Remove — disabled when only 1 label exists */}
+      {!isOnly && (
+        <button
+          type="button"
+          onClick={onRemove}
+          title="Remove this label"
+          className="flex items-center gap-0.5 hover:text-red-600 ml-1"
+        >
+          <TrashIcon className="w-3 h-3" /> del
+        </button>
+      )}
+    </div>
+  );
+});
+
+/* ============================================================================
+   ADDRESS LABEL
+   Renders a single 105 × 148.5 mm label with TO / FROM / warning sections.
+   All field callbacks are memoised at the parent level.
+============================================================================ */
+
+const AddressLabel = React.memo(function AddressLabel({
+  label,
+  onToChange,
+  onFromChange,
+  onWarnChange,
+  onCopyFour,
+  onDuplicate,
+  onCopy,
+  onPaste,
+  onRemove,
+  canPaste,
+  isOnly,
+}) {
+  return (
+    <div className="p-[5mm] flex items-center justify-center relative">
+      <div
+        className="relative w-full h-full border-[0.5pt] border-[#D7D2C4] rounded-[4mm]
+                   p-[4.5mm_5.5mm_4mm_5.5mm] flex flex-col bg-white overflow-hidden break-inside-avoid"
+      >
+        <LabelActions
+          onCopyFour={onCopyFour}
+          onDuplicate={onDuplicate}
+          onCopy={onCopy}
+          onPaste={onPaste}
+          onRemove={onRemove}
+          canPaste={canPaste}
+          isOnly={isOnly}
+        />
+        {/* Top gradient accent bar */}
+        <div
+          className="absolute top-0 left-0 right-0 h-[1.1mm]"
+          style={{
+            background:
+              "linear-gradient(90deg,#3C4CA0 0%,#7A2E8C 33%,#B5306E 60%,#E15A2E 100%)",
+          }}
+        />
+
+        {/* Logo */}
+        <div className="flex justify-center items-center pt-[2.6mm] pb-[1.6mm]">
+          <img
+            src={logo}
+            alt="1A HK International"
+            className="h-[15mm] w-auto block"
+          />
         </div>
-        <button onClick={addSheet}
-          className="px-4 py-2 rounded-md text-[12.5px] font-bold text-white bg-[#3C4CA0] hover:bg-[#33408C]">
-          + Add New Sheet (4 Labels)
-        </button>
-        <button onClick={handlePrint}
-          className="px-4 py-2 rounded-md text-[12.5px] font-bold text-white bg-[#C81E2C] hover:bg-[#A9101D]">
-          🖨 Print All Sheets
-        </button>
-        <button onClick={clearAllTo}
-          className="px-4 py-2 rounded-md text-[12.5px] font-bold text-gray-500 hover:bg-gray-100 hover:text-gray-900">
-          Clear All Fields
-        </button>
-      </div>
 
-      <div className="print:hidden max-w-[210mm] mx-auto mt-3 px-4 py-2 bg-amber-50 border border-amber-200 rounded-lg text-[11.5px] text-amber-800 text-center">
-        Click directly on any field to type. Hover a label and hit <b>“Copy to sheet”</b> to fill all 4 slots on that
-        sheet with the same recipient, then <b>Print All Sheets</b> when ready.
-      </div>
+        {/* Gold divider */}
+        <div
+          className="h-[0.5pt] mb-[2.6mm]"
+          style={{
+            background:
+              "linear-gradient(90deg,rgba(199,154,70,0) 0%,#C79A46 20%,#C79A46 80%,rgba(199,154,70,0) 100%)",
+          }}
+        />
 
-      <div className="py-4 pb-16">
-        {sheets.map((sheet, sIdx) => (
-          <div key={sheet.id} className="print-sheet relative max-w-[210mm] mx-auto my-4">
-            <div className="print:hidden flex items-center justify-between max-w-[210mm] mx-auto mb-1.5 px-1">
-              <div className="text-[11.5px] font-extrabold text-gray-500">
-                Sheet <span className="text-blue-700">{sIdx + 1}</span>{" "}
-                <span className="text-gray-400 font-medium">· A4 · 4 labels</span>
-              </div>
-              <button onClick={() => removeSheet(sheet.id)} title="Remove this sheet"
-                className="w-[26px] h-[26px] flex items-center justify-center rounded-md border border-gray-200 bg-white text-gray-500 hover:bg-red-50 hover:border-red-200 hover:text-red-600">
-                ✕
-              </button>
+        {/* TO header + action buttons */}
+        <div className="flex items-center gap-[1.6mm] mb-[1.6mm]">
+          <PinIcon className="w-[4.2mm] h-[4.2mm]" color="#3C4CA0" />
+          <span className="text-[8.4pt] font-extrabold tracking-[1.6px] text-[#3C4CA0]">
+            TO
+          </span>
+          <span className="flex-1 border-t border-[#C9CDD6] ml-[1.2mm]" />
+        </div>
+
+        {/* TO fields */}
+        <div className="mb-[2.4mm]">
+          <FieldInput
+            label="Name"
+            value={label.to.name}
+            onChange={(v) => onToChange("name", v)}
+          />
+          <FieldInput
+            label="Company (Opt.)"
+            value={label.to.company}
+            onChange={(v) => onToChange("company", v)}
+          />
+          <FieldInput
+            label="Addr Line 1"
+            value={label.to.addr1}
+            onChange={(v) => onToChange("addr1", v)}
+          />
+          <FieldInput
+            label="Addr Line 2"
+            value={label.to.addr2}
+            onChange={(v) => onToChange("addr2", v)}
+          />
+          <FieldInput
+            label="Area/Locality"
+            value={label.to.area}
+            onChange={(v) => onToChange("area", v)}
+          />
+          <div className="flex gap-[2.2mm]">
+            <div className="flex-1">
+              <FieldInput
+                label="City"
+                value={label.to.city}
+                onChange={(v) => onToChange("city", v)}
+              />
             </div>
-
-            <div className="relative w-[210mm] h-[297mm] bg-white shadow-lg print:shadow-none grid grid-cols-2 grid-rows-2">
-              <div className="pointer-events-none absolute top-0 bottom-0 left-1/2 border-l border-dotted border-gray-300" />
-              <div className="pointer-events-none absolute left-0 right-0 top-1/2 border-t border-dotted border-gray-300" />
-              {sheet.labels.map((label, lIdx) => (
-                <div key={lIdx} className="relative p-[5mm] group print:break-inside-avoid">
-                  <button
-                    onClick={() => duplicateToWholeSheet(sheet.id, lIdx)}
-                    title="Copy this recipient to all 4 labels on this sheet"
-                    className="print:hidden absolute top-[2px] right-[2px] z-10 opacity-0 group-hover:opacity-100 transition-opacity text-[9px] px-2 py-1 rounded bg-gray-800/80 text-white hover:bg-gray-900"
-                  >
-                    Copy to sheet
-                  </button>
-                  <Label label={label} onChange={(l) => updateLabel(sheet.id, lIdx, l)} />
-                </div>
-              ))}
+            <div className="flex-1">
+              <FieldInput
+                label="State"
+                value={label.to.state}
+                onChange={(v) => onToChange("state", v)}
+              />
             </div>
           </div>
-        ))}
+          <div className="flex gap-[2.2mm]">
+            <div className="flex-1">
+              <FieldInput
+                label="PIN Code"
+                value={label.to.pin}
+                onChange={(v) => onToChange("pin", v)}
+              />
+            </div>
+            <div className="flex-1">
+              <FieldInput
+                label="Country"
+                value={label.to.country}
+                onChange={(v) => onToChange("country", v)}
+              />
+            </div>
+          </div>
+          <FieldInput
+            label="Mobile"
+            value={label.to.mobile}
+            onChange={(v) => onToChange("mobile", v)}
+          />
+        </div>
+
+        {/* FROM header */}
+        <div className="flex items-center gap-[1.6mm]">
+          <BuildingIcon className="w-[4.2mm] h-[4.2mm]" color="#7A2E8C" />
+          <span className="text-[8.4pt] font-extrabold tracking-[1.6px] text-[#7A2E8C]">
+            FROM
+          </span>
+          <span className="flex-1 border-t border-[#C9CDD6] ml-[1.2mm]" />
+        </div>
+
+        {/* FROM block */}
+        <div className="bg-[#FAF9F6] border-[0.5pt] border-[#ECE7DA] rounded-[2mm] p-[2mm_3mm_2mm_3mm] mb-[2.4mm]">
+          <input
+            value={label.from.name}
+            onChange={(e) => onFromChange("name", e.target.value)}
+            className="w-full text-[8.6pt] font-extrabold text-[#1E2230] bg-transparent outline-none border-0 focus:bg-[#7A2E8C]/5 rounded-[1mm]"
+          />
+          <input
+            value={label.from.line1}
+            onChange={(e) => onFromChange("line1", e.target.value)}
+            className="w-full text-[7.1pt] text-[#333844] bg-transparent outline-none border-0 leading-[1.42] focus:bg-[#7A2E8C]/5 rounded-[1mm]"
+          />
+          <input
+            value={label.from.line2}
+            onChange={(e) => onFromChange("line2", e.target.value)}
+            className="w-full text-[7.1pt] text-[#333844] bg-transparent outline-none border-0 leading-[1.42] focus:bg-[#7A2E8C]/5 rounded-[1mm]"
+          />
+          <div className="flex items-center gap-[1mm] text-[7.1pt] text-[#333844]">
+            <span className="text-slate-500 font-bold whitespace-nowrap">
+              Mob:
+            </span>
+            <input
+              value={label.from.mobile}
+              onChange={(e) => onFromChange("mobile", e.target.value)}
+              className="flex-1 min-w-0 bg-transparent outline-none border-0 focus:bg-[#7A2E8C]/5 rounded-[1mm]"
+            />
+            <span className="text-slate-500 font-bold whitespace-nowrap ml-[2mm]">
+              Email:
+            </span>
+            <input
+              value={label.from.email}
+              onChange={(e) => onFromChange("email", e.target.value)}
+              className="flex-1 min-w-0 bg-transparent outline-none border-0 focus:bg-[#7A2E8C]/5 rounded-[1mm]"
+            />
+          </div>
+          <div className="flex items-center gap-[1mm] text-[7.1pt]">
+            <span className="text-slate-500 font-bold whitespace-nowrap">
+              Web:
+            </span>
+            <input
+              value={label.from.website}
+              onChange={(e) => onFromChange("website", e.target.value)}
+              className="flex-1 min-w-0 bg-transparent outline-none border-0 text-[#3C4CA0] font-bold focus:bg-[#7A2E8C]/5 rounded-[1mm]"
+            />
+          </div>
+        </div>
+
+        {/* Warning banner */}
+        <div className="mt-auto border border-[#C81E2C] rounded-[2mm] bg-[#FFF6F6] p-[2mm_2.6mm_2mm_2.6mm] flex items-center gap-[2mm]">
+          <ShieldIcon className="w-[8mm] h-[8mm] shrink-0" color="#C81E2C" />
+          <div className="flex-1 min-w-0">
+            <input
+              value={label.bend}
+              onChange={(e) => onWarnChange("bend", e.target.value)}
+              className="w-full text-[12.5pt] font-black tracking-[1px] text-[#C81E2C] bg-transparent outline-none border-0 leading-tight mb-[0.8mm] focus:bg-[#C81E2C]/5 rounded-[1mm]"
+            />
+            <input
+              value={label.subLine1}
+              onChange={(e) => onWarnChange("subLine1", e.target.value)}
+              className="w-full text-[6.4pt] font-bold tracking-[0.3px] text-[#7A2129] uppercase bg-transparent outline-none border-0 leading-[1.42] focus:bg-[#C81E2C]/5 rounded-[1mm]"
+            />
+            <input
+              value={label.subLine2}
+              onChange={(e) => onWarnChange("subLine2", e.target.value)}
+              className="w-full text-[6.4pt] font-bold tracking-[0.3px] text-[#7A2129] uppercase bg-transparent outline-none border-0 leading-[1.42] focus:bg-[#C81E2C]/5 rounded-[1mm]"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+/* ============================================================================
+   SHEET
+   One A4 page containing up to LABELS_PER_SHEET (4) labels.
+   Receives a flat slice of the labels array and the absolute start index.
+============================================================================ */
+
+const Sheet = React.memo(function Sheet({
+  labels,
+  sheetIndex,
+  totalSheets,
+  startIndex,
+  onUpdate,
+  onRemoveSheet,
+  onCopyFour,
+  onDuplicate,
+  onCopy,
+  onPaste,
+  onRemoveLabel,
+  canPaste,
+  totalLabels,
+}) {
+  const isLast = sheetIndex === totalSheets - 1;
+
+  return (
+    <div className="max-w-[210mm] mx-auto my-4 print:my-0 print:max-w-none">
+      {/* Screen-only sheet header */}
+      <div className="flex items-center justify-between max-w-[210mm] mx-auto mb-1.5 px-1 print:hidden">
+        <div className="text-[11.5px] font-extrabold text-slate-500 tracking-wide">
+          Sheet <span className="text-[#3C4CA0]">{sheetIndex + 1}</span>{" "}
+          <span className="text-slate-400 font-medium">
+            · A4 · {labels.length} label{labels.length !== 1 ? "s" : ""}
+          </span>
+        </div>
+        {totalSheets > 1 && (
+          <button
+            type="button"
+            onClick={onRemoveSheet}
+            title="Remove all labels on this sheet"
+            className="w-6.5 h-6.5 inline-flex items-center justify-center rounded-md border border-slate-200
+                       text-slate-500 hover:bg-red-50 hover:border-red-200 hover:text-red-600"
+          >
+            <TrashIcon className="w-3.5 h-3.5" />
+          </button>
+        )}
       </div>
 
-      <div className="print:hidden fixed right-4 bottom-4 z-50 flex flex-col gap-2 sm:hidden">
-        <button onClick={addSheet} className="w-11 h-11 rounded-full bg-[#3C4CA0] text-white text-xl shadow-lg">+</button>
-        <button onClick={handlePrint} className="w-11 h-11 rounded-full bg-[#C81E2C] text-white text-lg shadow-lg">🖨</button>
+      {/* Physical A4 sheet — exact 210mm × 297mm, 2×2 grid */}
+      <div
+        className="relative bg-white shadow-lg print:shadow-none"
+        style={{
+          width: "210mm",
+          height: "297mm",
+          display: "grid",
+          gridTemplateColumns: "105mm 105mm",
+          gridTemplateRows: "148.5mm 148.5mm",
+          breakInside: "avoid",
+          pageBreakInside: "avoid",
+          breakAfter: isLast ? "auto" : "page",
+          pageBreakAfter: isLast ? "auto" : "always",
+        }}
+      >
+        {/* Dotted cut guides */}
+        <div className="absolute inset-y-0 left-1/2 border-l-[0.35mm] border-dotted border-[#A9AEBA] pointer-events-none z-[5]" />
+        <div className="absolute inset-x-0 top-1/2 border-t-[0.35mm] border-dotted border-[#A9AEBA] pointer-events-none z-[5]" />
+
+        {labels.map((label, localIndex) => {
+          const globalIndex = startIndex + localIndex;
+          return (
+            <AddressLabel
+              key={label.id}
+              label={label}
+              onToChange={(k, v) => onUpdate(globalIndex, "to", k, v)}
+              onFromChange={(k, v) => onUpdate(globalIndex, "from", k, v)}
+              onWarnChange={(k, v) => onUpdate(globalIndex, "warn", k, v)}
+              onCopyFour={() => onCopyFour(sheetIndex, localIndex)}
+              onDuplicate={() => onDuplicate(globalIndex)}
+              onCopy={() => onCopy(globalIndex)}
+              onPaste={() => onPaste(globalIndex)}
+              onRemove={() => onRemoveLabel(globalIndex)}
+              canPaste={canPaste}
+              isOnly={totalLabels === 1}
+            />
+          );
+        })}
+
+        {/* Empty placeholder cells (when a sheet has fewer than 4 labels) */}
+        {Array.from({ length: LABELS_PER_SHEET - labels.length }).map(
+          (_, i) => (
+            <div key={`empty-${i}`} className="p-[5mm]">
+              <div className="w-full h-full border-[0.5pt] border-dashed border-[#D7D2C4] rounded-[4mm] bg-[#FAFAFA] flex items-center justify-center print:border-transparent print:bg-white">
+                <span className="text-[9px] text-slate-300 print:hidden">
+                  empty slot
+                </span>
+              </div>
+            </div>
+          ),
+        )}
+      </div>
+    </div>
+  );
+});
+
+/* ============================================================================
+   DEFAULT SENDER PANEL
+   Lets the user set sender details once and push them to all labels.
+============================================================================ */
+
+const SenderPanel = React.memo(function SenderPanel({
+  sender,
+  onChange,
+  onApplyAll,
+}) {
+  const field = (key, placeholder, colSpan = "") => (
+    <input
+      value={sender[key]}
+      onChange={(e) => onChange(key, e.target.value)}
+      placeholder={placeholder}
+      className={`${colSpan} text-[12px] border border-slate-200 rounded px-2 py-1 outline-none focus:border-[#7A2E8C]`}
+    />
+  );
+
+  return (
+    <div className="max-w-[200mm] h-60 mx-auto mt-3 px-3.5 py-3 bg-linear-to-r from-indigo-400 to-orange-300 border border-slate-200 rounded-lg print:hidden">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-[12px] font-extrabold text-[#7A2E8C]">
+          Default Sender (used for new labels &amp; sheets)
+        </span>
+        <button
+          type="button"
+          onClick={onApplyAll}
+          className="text-[11px] font-bold text-[#7A2E8C] hover:underline"
+        >
+          Apply to all existing labels →
+        </button>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {field("name", "Sender name", "col-span-2")}
+        {field("line1", "Address line 1", "col-span-2")}
+        {field("line2", "Address line 2 / City / State / PIN", "col-span-2")}
+        {field("mobile", "Mobile")}
+        {field("email", "Email")}
+        {field("website", "Website", "col-span-2")}
+      </div>
+    </div>
+  );
+});
+
+/* ============================================================================
+   TOOLBAR
+   Sticky top bar with all global actions.
+============================================================================ */
+
+const Toolbar = React.memo(function Toolbar({
+  onAddLabel,
+  onAddSheet,
+  onPrint,
+  onClearAll,
+  onUndo,
+  onRedo,
+  canUndo,
+  canRedo,
+  labelCount,
+  sheetCount,
+}) {
+  return (
+    <div className="sticky top-0 z-[100] flex flex-wrap items-center justify-center gap-2 px-3.5 py-2.5 bg-white border-b border-slate-200 shadow-sm print:hidden">
+      <div className="text-[13px] font-extrabold text-[#1E2230] mr-2.5">
+        1A HK International
+        <small className="block font-medium text-slate-500 text-[10.5px]">
+          {labelCount} label{labelCount !== 1 ? "s" : ""} · {sheetCount} sheet
+          {sheetCount !== 1 ? "s" : ""}
+        </small>
+      </div>
+
+      {/* Add single label */}
+      <button
+        type="button"
+        onClick={onAddLabel}
+        className="inline-flex items-center gap-1.5 rounded-md bg-[#3C4CA0] hover:bg-[#33408C] text-white text-[12.5px] font-bold px-3.5 py-2"
+      >
+        <PlusIcon className="w-3.5 h-3.5" /> Add Label
+      </button>
+
+      {/* Add full sheet (4 blank labels) */}
+      <button
+        type="button"
+        onClick={onAddSheet}
+        className="inline-flex items-center gap-1.5 rounded-md bg-[#3C4CA0] hover:bg-[#33408C] text-white text-[12.5px] font-bold px-3.5 py-2"
+      >
+        <PlusIcon className="w-3.5 h-3.5" /> Add Sheet (4)
+      </button>
+
+      {/* Print */}
+      <button
+        type="button"
+        onClick={onPrint}
+        className="inline-flex items-center gap-1.5 rounded-md bg-[#C81E2C] hover:bg-[#A9101D] text-white text-[12.5px] font-bold px-3.5 py-2"
+      >
+        <PrinterIcon className="w-3.5 h-3.5" /> Print All
+      </button>
+
+      {/* Undo */}
+      <button
+        type="button"
+        onClick={onUndo}
+        disabled={!canUndo}
+        title="Undo (Ctrl+Z)"
+        className="inline-flex items-center gap-1 rounded-md text-[12.5px] font-bold px-3 py-2
+                   text-slate-500 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed"
+      >
+        <UndoIcon className="w-4 h-4" />
+      </button>
+
+      {/* Redo */}
+      <button
+        type="button"
+        onClick={onRedo}
+        disabled={!canRedo}
+        title="Redo (Ctrl+Y)"
+        className="inline-flex items-center gap-1 rounded-md text-[12.5px] font-bold px-3 py-2
+                   text-slate-500 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed"
+      >
+        <RedoIcon className="w-4 h-4" />
+      </button>
+
+      {/* Clear all TO fields */}
+      <button
+        type="button"
+        onClick={onClearAll}
+        className="rounded-md text-[12.5px] font-bold px-3.5 py-2 text-slate-500 hover:bg-slate-100 hover:text-[#1E2230]"
+      >
+        Clear All Fields
+      </button>
+    </div>
+  );
+});
+
+/* ============================================================================
+   ROOT COMPONENT — AddressLabelSheet
+   
+   State model:
+     labels  — flat array of all label objects (single source of truth)
+     sender  — default sender details for new labels
+     clipboard — a single copied label object (null if empty)
+
+   Sheets are always *derived* from `labels` via chunkIntoSheets().
+   Add/remove/duplicate operations mutate `labels`; sheets auto-adjust.
+============================================================================ */
+
+export default function AddressLabelSheet() {
+  /* ── Sender state (not part of undo history) ─────────────────────────── */
+  const [sender, setSender] = useState({ ...DEFAULT_SENDER });
+
+  /* ── Clipboard state (not undoable — intentional) ────────────────────── */
+  const [clipboard, setClipboard] = useState(null);
+
+  /* ── Labels — undoable source of truth ───────────────────────────────── */
+  const [labels, setLabels, undo, redo, canUndo, canRedo] = useUndoable([
+    makeLabel(DEFAULT_SENDER),
+    makeLabel(DEFAULT_SENDER),
+    makeLabel(DEFAULT_SENDER),
+    makeLabel(DEFAULT_SENDER),
+  ]);
+
+  /* ── Derived: sheets (memoised, recomputed only when labels changes) ─── */
+  const sheets = useMemo(() => chunkIntoSheets(labels), [labels]);
+
+  /* ── Keyboard shortcuts for undo/redo ────────────────────────────────── */
+  React.useEffect(() => {
+    const handler = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      }
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        (e.key === "y" || (e.key === "z" && e.shiftKey))
+      ) {
+        e.preventDefault();
+        redo();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [undo, redo]);
+
+  /* ── Label mutations ─────────────────────────────────────────────────── */
+
+  /** Add a single blank label at the end */
+  const handleAddLabel = useCallback(() => {
+    setLabels((prev) => [...prev, makeLabel(sender)]);
+  }, [setLabels, sender]);
+
+  /** Add 4 blank labels (a full sheet's worth) */
+  const handleAddSheet = useCallback(() => {
+    setLabels((prev) => [
+      ...prev,
+      makeLabel(sender),
+      makeLabel(sender),
+      makeLabel(sender),
+      makeLabel(sender),
+    ]);
+  }, [setLabels, sender]);
+
+  /** Remove a single label by its global index */
+  const handleRemoveLabel = useCallback(
+    (globalIndex) => {
+      setLabels((prev) => {
+        if (prev.length <= 1) return prev; // always keep at least 1
+        return prev.filter((_, i) => i !== globalIndex);
+      });
+    },
+    [setLabels],
+  );
+
+  /** Remove all labels that belong to a given sheet */
+  const handleRemoveSheet = useCallback(
+    (sheetIndex) => {
+      setLabels((prev) => {
+        const start = sheetIndex * LABELS_PER_SHEET;
+        const end = start + LABELS_PER_SHEET;
+        const next = prev.filter((_, i) => i < start || i >= end);
+        return next.length ? next : prev; // don't allow zero labels
+      });
+    },
+    [setLabels],
+  );
+
+  /** Duplicate a label — insert a copy immediately after the original */
+  const handleDuplicate = useCallback(
+    (globalIndex) => {
+      setLabels((prev) => {
+        const source = prev[globalIndex];
+        const copy = {
+          ...source,
+          id: nextId(),
+          to: { ...source.to },
+          from: { ...source.from },
+        };
+        const next = [...prev];
+        next.splice(globalIndex + 1, 0, copy);
+        return next;
+      });
+    },
+    [setLabels],
+  );
+
+  /** Copy ×4 — fill the other 3 slots on the same sheet from one source */
+  const handleCopyFour = useCallback(
+    (sheetIndex, localIndex) => {
+      setLabels((prev) => {
+        const start = sheetIndex * LABELS_PER_SHEET;
+        const source = prev[start + localIndex];
+        return prev.map((lab, i) => {
+          const isOnThisSheet = i >= start && i < start + LABELS_PER_SHEET;
+          const isSelf = i === start + localIndex;
+          if (!isOnThisSheet || isSelf) return lab;
+          return {
+            ...source,
+            id: nextId(),
+            to: { ...source.to },
+            from: { ...source.from },
+          };
+        });
+      });
+    },
+    [setLabels],
+  );
+
+  /** Store a label in the clipboard (does not remove the original) */
+  const handleCopy = useCallback(
+    (globalIndex) => {
+      setClipboard((prev) => {
+        const source = labels[globalIndex];
+        return { ...source, to: { ...source.to }, from: { ...source.from } };
+      });
+    },
+    [labels],
+  );
+
+  /** Paste clipboard label at a position (replaces the target label's content) */
+  const handlePaste = useCallback(
+    (globalIndex) => {
+      if (!clipboard) return;
+      setLabels((prev) =>
+        prev.map((lab, i) =>
+          i === globalIndex
+            ? { ...clipboard, id: lab.id } // keep original id, replace all content
+            : lab,
+        ),
+      );
+    },
+    [setLabels, clipboard],
+  );
+
+  /** Update a single field on a single label */
+  const handleUpdateField = useCallback(
+    (globalIndex, section, key, value) => {
+      setLabels((prev) =>
+        prev.map((lab, i) => {
+          if (i !== globalIndex) return lab;
+          if (section === "to")
+            return { ...lab, to: { ...lab.to, [key]: value } };
+          if (section === "from")
+            return { ...lab, from: { ...lab.from, [key]: value } };
+          if (section === "warn") return { ...lab, [key]: value };
+          return lab;
+        }),
+      );
+    },
+    [setLabels],
+  );
+
+  /* ── Sender panel handlers ───────────────────────────────────────────── */
+
+  const handleSenderChange = useCallback((key, value) => {
+    setSender((prev) => ({ ...prev, [key]: value }));
+  }, []);
+
+  /** Push current sender details to every label's FROM section */
+  const handleApplySenderToAll = useCallback(() => {
+    setLabels((prev) => prev.map((lab) => ({ ...lab, from: { ...sender } })));
+  }, [setLabels, sender]);
+
+  /* ── Global bulk actions ─────────────────────────────────────────────── */
+
+  const handleClearAll = useCallback(() => {
+    if (
+      !window.confirm(
+        'Clear all "TO" address fields? Sender details will be kept.',
+      )
+    )
+      return;
+    setLabels((prev) => prev.map((l) => ({ ...l, to: blankTo() })));
+  }, [setLabels]);
+
+  const handlePrint = useCallback(() => window.print(), []);
+
+  /* ── Render ──────────────────────────────────────────────────────────── */
+
+  return (
+    <div className="min-h-screen print:min-h-0 bg-[#EDEEF1] print:bg-white">
+      {/* @page rule — ensures correct A4 sizing on print */}
+      <style>{`
+        @page { size: 210mm 297mm; margin: 0; }
+        @media print {
+          html, body, #root {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: auto !important;
+            height: auto !important;
+            min-height: 0 !important;
+            overflow: visible !important;
+            background: #fff !important;
+          }
+        }
+      `}</style>
+
+      {/* Sticky toolbar */}
+      <Toolbar
+        onAddLabel={handleAddLabel}
+        onAddSheet={handleAddSheet}
+        onPrint={handlePrint}
+        onClearAll={handleClearAll}
+        onUndo={undo}
+        onRedo={redo}
+        canUndo={canUndo}
+        canRedo={canRedo}
+        labelCount={labels.length}
+        sheetCount={sheets.length}
+      />
+
+      {/* Default sender panel */}
+      <SenderPanel
+        sender={sender}
+        onChange={handleSenderChange}
+        onApplyAll={handleApplySenderToAll}
+      />
+
+      {/* Hint bar */}
+      <div className="max-w-[210mm] mx-auto mt-2 px-3.5 py-2 bg-[#FFF7E8] border border-[#F0DDAE] rounded-lg text-[11.5px] text-[#7A5A16] text-center print:hidden">
+        <b className="text-[#5C4310]">Click any field to type directly.</b> Use{" "}
+        <b>Add Label</b> for a single label or <b>Add Sheet</b> for 4 at once.
+        Labels auto-paginate into A4 sheets (4 per page). <b>Ctrl+Z</b> /{" "}
+        <b>Ctrl+Y</b> to undo/redo.
+      </div>
+
+      {/* Auto-paginated sheets */}
+      <div className="pt-3.5 pb-14 print:p-0">
+        {sheets.map((sheetLabels, sheetIndex) => (
+          <Sheet
+            key={sheetIndex}
+            labels={sheetLabels}
+            sheetIndex={sheetIndex}
+            totalSheets={sheets.length}
+            startIndex={sheetIndex * LABELS_PER_SHEET}
+            onUpdate={handleUpdateField}
+            onRemoveSheet={() => handleRemoveSheet(sheetIndex)}
+            onCopyFour={handleCopyFour}
+            onDuplicate={handleDuplicate}
+            onCopy={handleCopy}
+            onPaste={handlePaste}
+            onRemoveLabel={handleRemoveLabel}
+            canPaste={!!clipboard}
+            totalLabels={labels.length}
+          />
+        ))}
       </div>
     </div>
   );

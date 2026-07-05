@@ -8,155 +8,166 @@ import { getPageKeywords } from "../../data/seoKeywords";
 
 /* NAVBAR COURSE MENU */
 const courseMenu = [
-  {
-    title: "IOSH UK",
-    courses: [
-      { name: "IOSH Managing Safely", id: "iosh-managing-safely" },
-      { name: "IOSH Level 3 Certificate", id: "iosh-level3" },
-    ],
-  },
-
-  {
-    title: "OTHM UK",
-    courses: [{ name: "OTHM Level 6 Diploma in OHS", id: "othm-level6" }],
-  },
-
-  {
-    title: "PECB (Canada)",
-    courses: [
-      { name: "ISO 45001 Lead Auditor Certificate", id: "iso-45001-auditor" },
-      { name: "ISO 9001 Lead Auditor Certificate", id: "iso-9001-auditor" },
-    ],
-  },
-
-  {
-    title: "CIEH UK",
-    courses: [{ name: "Level 3 Health & Safety", id: "cieh-level3" }],
-  },
-
-  {
-    title: "OSHA USA",
-    courses: [
-      {
-        name: "OSHA 30 Hour Construction Certificate",
-        id: "osha-construction",
-      },
-      { name: "OSHA 30 Hour General Industry Certificate", id: "osha-general" },
-    ],
-  },
-
-  {
-    title: "European Safety Council",
-    courses: [
-      {
-        name: "ESC Level 6 Diploma in IDHSE",
-        id: "esc-l6-d-idhse",
-      },
-      {
-        name: "ESC Level 7 Diploma in OSH",
-        id: "esc-l7-d-osh",
-      },
-      {
-        name: "ESC Level 7 Diploma in PSM",
-        id: "esc-l7-d-psm",
-      },
-    ],
-  },
-
-  {
-    title: "BCRSP Canada",
-    courses: [{ name: "CRSP Certification", id: "crsp-certification" }],
-  },
-  {
-    title: "CSP Exam Preparation",
-    courses: [
-      {
-        name: "CSP Exam Preparation",
-        id: "certified-safety-professional-csp-exam-preparation",
-      },
-    ],
-  },
-
-  {
-    title: "EOSH UK",
-    courses: [
-      {
-        name: "EOSH Train The Trainer Certificate",
-        id: "eosh-train-the-trainer",
-      },
-    ],
-  },
-
-  {
-    title: "HSE Training Courses",
-    courses: [
-      { name: "SHE / HSE Plan Training", id: "she-hse-plan-training" },
-      { name: "Behaviour-Based Safety (BBS)", id: "bbs-training" },
-      { name: "Confined Space Safety", id: "confined-space-safety" },
-      { name: "Permit To Work", id: "permit-to-work" },
-      { name: "E-Waste Management", id: "e-waste-management" },
-    ],
-  },
-  {
-    title: "1A HK International",
-    courses: [
-      {
-        name: "HSE Internal Audit and Compliance Review Training",
-        id: "hse-internal-audit-compliance-review-training",
-      },
-      {
-        name: "Workplace Inspection and Audit Reporting Training",
-        id: "workplace-inspection-audit-reporting-training",
-      },
-      {
-        name: "Occupational Health and Safety Risk Management and Audit Readiness",
-        id: "occupational-health-safety-risk-management-audit-readiness",
-      },
-      {
-        name: "HSE Plan and Documentation Review",
-        id: "hse-plan-documentation-review-training",
-      },
-      {
-        name: "Incident Investigation, Corrective Action and Audit Follow-up Training",
-        id: "incident-investigation-corrective-action-audit-follow-up-training",
-      },
-
-      {
-        name: "Contractor HSE Audit and Performance Monitoring",
-        id: "contractor-hse-audit-performance-monitoring",
-      },
-      {
-        name: "HSE Management System Review and Internal Audit Awareness",
-        id: "hse-management-system-review-internal-audit-awareness",
-      },
-      {
-        name: "HSE Quality Assurance and Continuous Improvement Training",
-        id: "hse-quality-assurance-continuous-improvement-training",
-      },
-      {
-        name: "Permit-to-Work compliance and Auditing",
-        id: "permit-to-work-compliance-auditing-training",
-      },
-      {
-        name: "Risk Assessment Review and Control Verification Training",
-        id: "risk-assessment-review-control-verification-training",
-      },
-    ],
-  },
-  {
-    title: "Project Management",
-    courses: [
-      {
-        name: "Foundation in Project Management",
-        id: "foundation-in-project-management",
-      },
-      {
-        name: "Essential Skills in Project Management",
-        id: "essential-skills-in-project-management",
-      },
-    ],
-  },
-];
+    {
+      title: "IOSH UK",
+      courses: [
+        { name: "IOSH Managing Safely", id: "iosh-managing-safely" },
+        { name: "IOSH Level 3 Certificate", id: "iosh-level3" },
+      ],
+    },
+    {
+      title: "OTHM UK",
+      courses: [
+        { name: "Level 4 IQA Award", id: "othm-iqa-award" },
+        { name: "Level 4 IQA Certificate", id: "othm-iqa-certificate" },
+        { name: "Level 5 Diploma in Law", id: "othm-level5-law" },
+        { name: "Level 6 Diploma in OHS", id: "othm-level6" },
+        { name: "Level 7 Diploma in OHS Management", id: "othm-level7-ohs" },
+        { name: "Level 7 Diploma in Risk Management", id: "othm-level7-risk" },
+        {
+          name: "Level 7 Diploma in Environmental Management",
+          id: "othm-level7-environment",
+        },
+      ],
+    },
+    {
+      title: "PECB (Canada)",
+      courses: [
+        { name: "ISO 45001 Lead Auditor Certificate", id: "iso-45001-auditor" },
+        { name: "ISO 9001 Lead Auditor Certificate", id: "iso-9001-auditor" },
+      ],
+    },
+    {
+      title: "CIEH UK",
+      courses: [
+        { name: "Level 1 Food Safety", id: "cieh-level1-food" },
+        { name: "Level 2 Food Safety", id: "cieh-level2-food" },
+        { name: "Level 3 Food Safety", id: "cieh-level3-food" },
+        { name: "Level 2 First Aid at Work", id: "cieh-level2-firstaid" },
+        { name: "Level 3 First Aid at Work", id: "cieh-level3-firstaid" },
+      ],
+    },
+    {
+      title: "OSHA USA",
+      courses: [
+        {
+          name: "OSHA 30 Hour Construction Certificate (PECB Certified-Canada)",
+          id: "osha-construction",
+        },
+        {
+          name: "OSHA 30 Hour General Industry Certificate",
+          id: "osha-30-hours-general-industry-certificate",
+        },
+      ],
+    },
+    {
+      title: "European Safety Council",
+      courses: [
+        {
+          name: "European Safety Council Level 6 Diploma in IDHSE (OPQUAL-UK)",
+          id: "esc-l6-d-idhse",
+        },
+        {
+          name: "European Safety Council Level 7 Diploma in OSH (OFQUAL-UK)",
+          id: "esc-l7-d-osh",
+        },
+        {
+          name: "European Safety Council Level 7 Diploma in PSM (OFQUAL-UK)",
+          id: "esc-l7-d-psm",
+        },
+      ],
+    },
+    {
+      title: "BCRSP Canada",
+      courses: [{ name: "CRSP Certification", id: "crsp-certification" }],
+    },
+    {
+      title: "CSP Exam Preparation",
+      courses: [
+        {
+          name: "CSP Exam Preparation",
+          id: "certified-safety-professional-csp-exam-preparation",
+        },
+      ],
+    },
+    {
+      title: "EOSH UK",
+      courses: [
+        {
+          name: "EOSH Train The Trainer Certificate",
+          id: "eosh-train-the-trainer",
+        },
+      ],
+    },
+    {
+      title: "HSE Training Courses",
+      courses: [
+        { name: "SHE/HSE Plan Training", id: "she-hse-plan-training" },
+        { name: "Behaviour-Based Safety (BBS) Training", id: "bbs-training" },
+        { name: "Confined Space Safety Training", id: "confined-space-safety" },
+        { name: "Permit to Work Training", id: "permit-to-work" },
+        { name: "E-Waste Management Training", id: "e-waste-management" },
+      ],
+    },
+    {
+      title: "Quality & Auditing",
+      courses: [
+        {
+          name: "HSE Internal Audit and Compliance Review Training",
+          id: "hse-internal-audit-compliance-review-training",
+        },
+        {
+          name: "Workplace Inspection and Audit Reporting Training",
+          id: "workplace-inspection-audit-reporting-training",
+        },
+        {
+          name: "Occupational Health and Safety Risk Management and Audit Readiness",
+          id: "occupational-health-safety-risk-management-audit-readiness",
+        },
+        {
+          name: "HSE Plan and Documentation Review",
+          id: "hse-plan-documentation-review-training",
+        },
+        {
+          name: "Incident Investigation, Corrective Action and Audit Follow-up Training",
+          id: "incident-investigation-corrective-action-audit-follow-up-training",
+        },
+        {
+          name: "Contractor HSE Audit and Performance Monitoring",
+          id: "contractor-hse-audit-performance-monitoring",
+        },
+        {
+          name: "HSE Management System Review and Internal Audit Awareness",
+          id: "hse-management-system-review-internal-audit-awareness",
+        },
+        {
+          name: "HSE Quality Assurance and Continuous Improvement Training",
+          id: "hse-quality-assurance-continuous-improvement-training",
+        },
+        {
+          name: "Permit-to-Work Compliance and Auditing",
+          id: "permit-to-work-compliance-auditing-training",
+        },
+        {
+          name: "Risk Assessment Review and Control Verification Training",
+          id: "risk-assessment-review-control-verification-training",
+        },
+      ],
+    },
+    {
+      title: "Project Management",
+      courses: [
+        {
+          name: "Foundation in Project Management",
+          id: "foundation-in-project-management",
+        },
+        {
+          name: "Essential Skills in Project Management",
+          id: "essential-skills-in-project-management",
+        },
+      ],
+    },
+  ];
 
 /* FLATTEN ALL COURSES FOR PAGE */
 const coursesData = courseMenu.flatMap((category) =>
