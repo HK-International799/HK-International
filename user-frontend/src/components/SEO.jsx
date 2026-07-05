@@ -1,5 +1,3 @@
-
-
 // React 19 natively hoists <title>, <meta>, and <link> tags rendered
 // anywhere in the component tree up to <head> — no library required.
 // (react-helmet was removed: it is unmaintained since 2020 and is a known
@@ -362,7 +360,7 @@ const SEO = ({
     schemas.push(buildBlogPostingSchema(blogData));
   }
 
-  if (schemaType === "breadcrumb" && breadcrumbs?.length) {
+  if (breadcrumbs?.length) {
     schemas.push(buildBreadcrumbSchema(breadcrumbs));
   }
   if (extraSchema) {

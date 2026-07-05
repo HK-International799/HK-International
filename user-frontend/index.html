@@ -7,20 +7,32 @@
 
     <!-- =========================================================
          PRIMARY META TAGS
+
+         IMPORTANT — SPA indexing note (read before editing):
+         This is a client-rendered Vite/React SPA: every route (/, /about,
+         /course/:id, /blog/:slug ...) is served from this SAME index.html.
+         The <SEO /> component (src/components/SEO.jsx) renders the real,
+         per-page <title>, description, canonical, hreflang, OG and Twitter
+         tags on every route via React 19's native head-tag hoisting.
+
+         React only de-dupes tags that IT renders — it cannot see or remove
+         hand-written tags already sitting in this file. So a hard-coded
+         <title>/description/canonical/hreflang HERE would sit in the DOM
+         *alongside* the SEO component's tags on every non-home route,
+         producing two conflicting <title> elements and two conflicting
+         <link rel="canonical"> elements pointing at different URLs.
+
+         That is a direct, well-documented cause of Search Console's
+         "Alternate page with proper canonical tag" / "Discovered - currently
+         not indexed" / "Crawled - currently not indexed" exclusions — Google
+         does not know which canonical to trust and, in this site's case,
+         picked the homepage for every route, so every non-home page (~32+
+         course/about/blog pages) is currently sitting unindexed.
+
+         Do NOT re-add a static title/description/canonical/hreflang below.
+         Every route already sets these correctly via <SEO />. If you need a
+         fallback for non-JS clients, add it to the <noscript> block instead.
     ========================================================== -->
-    <title>1A HK International | Accredited Health & Safety Courses Online – IOSH, OTHM, OSHA, ISO</title>
-    <meta
-      name="title"
-      content="1A HK International | Accredited Health & Safety Courses Online – IOSH, OTHM, OSHA, ISO"
-    />
-    <meta
-      name="description"
-      content="1A HK International offers UK-accredited online HSE training: IOSH Managing Safely, OTHM Level 6 & 7 Diplomas, OSHA 30, CIEH, PECB ISO 45001 & ISO 9001 Lead Auditor, European Safety Council and EOSH courses. Globally recognised certificates. Offices in London, Mumbai and Lisbon."
-    />
-    <meta
-      name="keywords"
-      content="1A HK International, HK International UK, accredited health and safety courses, online HSE training, IOSH Managing Safely online, IOSH Level 3 Certificate, OTHM Level 6 Diploma OHS, OTHM Level 7 Diploma, OSHA 30 Hour Construction, OSHA 30 General Industry, CIEH Food Safety Level 1 2 3, CIEH First Aid at Work, PECB ISO 45001 Lead Auditor, PECB ISO 9001 Lead Auditor, European Safety Council Level 6 IDHSE, European Safety Council Level 7 OSH, European Safety Council Level 7 PSM, EOSH Train the Trainer, NEBOSH alternative, HSE training London, HSE training Mumbai, HSE training Lisbon, health and safety certification UK, occupational health safety courses, NVQ HSE diploma, internal quality assurance IQA, risk management diploma, environmental management diploma, food safety certificate, first aid training online, behaviour based safety BBS, confined space training, permit to work training, e-waste management training"
-    />
 
     <meta name="author" content="1A HK International" />
     <meta name="publisher" content="1A HK International" />
@@ -60,33 +72,25 @@
 
     <!-- =========================================================
          CANONICAL & ALTERNATES
+         Intentionally NOT set here — see note above. Every route sets its
+         own canonical via <SEO url={...} />. A static one here would
+         override/conflict with the correct per-page canonical on every
+         route except "/".
     ========================================================== -->
-    <link rel="canonical" href="https://hkinternational.uk/" />
-    <link rel="alternate" hreflang="en" href="https://hkinternational.uk/" />
-    <link rel="alternate" hreflang="en-GB" href="https://hkinternational.uk/" />
-    <link rel="alternate" hreflang="en-IN" href="https://hkinternational.uk/" />
-    <link rel="alternate" hreflang="x-default" href="https://hkinternational.uk/" />
 
     <!-- Sitemap discovery -->
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
 
     <!-- =========================================================
          OPEN GRAPH (Facebook, LinkedIn, WhatsApp, etc.)
+         og:type / og:title / og:description / og:url are set per-page by
+         <SEO /> (same conflict risk as title/canonical above) — only truly
+         global, non-page-specific fields live here.
     ========================================================== -->
-    <meta property="og:type" content="website" />
     <meta property="og:site_name" content="1A HK International" />
     <meta property="og:locale" content="en_GB" />
     <meta property="og:locale:alternate" content="en_US" />
     <meta property="og:locale:alternate" content="en_IN" />
-    <meta property="og:url" content="https://hkinternational.uk/" />
-    <meta
-      property="og:title"
-      content="1A HK International | Accredited Health & Safety Courses – IOSH, OTHM, OSHA, ISO"
-    />
-    <meta
-      property="og:description"
-      content="UK-accredited online HSE training. IOSH, OTHM, OSHA, CIEH, PECB ISO 45001 & ISO 9001, European Safety Council, EOSH. Globally recognised certificates. Offices in London, Mumbai and Lisbon."
-    />
     <meta property="og:image" content="https://hkinternational.uk/images/hk_logo.png" />
     <meta property="og:image:secure_url" content="https://hkinternational.uk/images/hk_logo.png" />
     <meta property="og:image:type" content="image/png" />
@@ -103,19 +107,12 @@
 
     <!-- =========================================================
          TWITTER / X CARD
+         twitter:title / twitter:description / twitter:url are set per-page
+         by <SEO /> — only global fields live here.
     ========================================================== -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@1a_hk85756" />
     <meta name="twitter:creator" content="@1a_hk85756" />
-    <meta name="twitter:url" content="https://hkinternational.uk/" />
-    <meta
-      name="twitter:title"
-      content="1A HK International | Accredited Health & Safety Courses Online"
-    />
-    <meta
-      name="twitter:description"
-      content="UK-accredited online HSE training. IOSH, OTHM, OSHA, CIEH, PECB ISO 45001 & ISO 9001, European Safety Council, EOSH."
-    />
     <meta name="twitter:image" content="https://hkinternational.uk/images/hk_logo.png" />
     <meta name="twitter:image:alt" content="1A HK International - Accredited HSE Training" />
 

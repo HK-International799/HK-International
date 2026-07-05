@@ -100,25 +100,26 @@ export default function BlogPost() {
     { name: post.title, url: `/blog/${post.slug}` },
   ];
 
-  const canonicalUrl = `/blog/${post.slug}`;
-  const postUrl = `${SITE_URL}${canonicalUrl}`;
+  const postUrl = `${SITE_URL}/blog/${post.slug}`;
 
   return (
     <MainLayout>
       {/* Reading progress */}
       <ReadingProgressBar />
 
-      {/* SEO */}
+      {/* SEO — single call: breadcrumbs are merged in here (see SEO.jsx)
+          instead of a second <SEO> render, which used to emit a second,
+          contradictory <title>/canonical pair with no url/title of its own
+          and silently overwrite the correct ones with the homepage. */}
       <SEO
         title={post.metaTitle}
         description={post.metaDescription}
-        canonical={canonicalUrl}
+        url={postUrl}
         image={post.coverImage}
         schemaType="blogposting"
         blogData={post}
+        breadcrumbs={breadcrumbs}
       />
-      {/* Breadcrumb schema (separate Helmet via SEO schemaType=breadcrumb) */}
-      <SEO schemaType="breadcrumb" breadcrumbs={breadcrumbs} />
 
       <main>
         {/* ── Cover Image Hero ─────────────────────────────── */}
