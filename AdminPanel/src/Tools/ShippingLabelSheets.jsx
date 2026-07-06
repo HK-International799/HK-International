@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useCallback, useMemo } from "react";
 const logo = "/hk_logo.png";
 
@@ -23,17 +22,16 @@ const DEFAULT_WARNING = {
   subLine2: "Handle With Care · Important Document",
 };
 
-/** Returns a blank "TO" address object */
+/**
+ * Returns a blank "TO" address object.
+ * Simplified to just 3 fields — Name, Address (a single free-text block the
+ * receiver's full address can be pasted into in one go), and Mobile No —
+ * instead of 9 separate structured fields. Much faster to fill from a
+ * pasted order/courier address.
+ */
 const blankTo = () => ({
   name: "",
-  company: "",
-  addr1: "",
-  addr2: "",
-  area: "",
-  city: "",
-  state: "",
-  pin: "",
-  country: "",
+  address: "",
   mobile: "",
 });
 
@@ -316,11 +314,13 @@ const ClipboardIcon = ({ className }) => (
 
 /* ============================================================================
    FIELD INPUT
-   One editable field with a label caption and a dotted underline.
-   Memoised so it only re-renders when its own value changes.
+   One editable single-line field with a label caption and a dotted
+   underline. Memoised so it only re-renders when its own value changes.
+   Used for Name / Mobile No in the TO section, and reusable anywhere a
+   simple captioned line is needed.
 ============================================================================ */
 
-const FieldInput = React.memo(function FieldInput({ label, value, onChange }) {
+const FieldInput = React.memo(function FieldInput({ label, value, onChange, placeholder }) {
   return (
     <div className="flex items-baseline gap-[1.4mm] mb-[1.55mm] leading-none">
       <span className="text-[6.1pt] font-bold tracking-[0.4px] text-slate-500 uppercase whitespace-nowrap">
@@ -330,9 +330,38 @@ const FieldInput = React.memo(function FieldInput({ label, value, onChange }) {
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
         className="flex-1 min-w-[6mm] h-[3.3mm] text-[7.4pt] font-medium text-[#1E2230] bg-transparent border-0
                    border-b border-dotted border-[#A9AEBA] focus:border-solid focus:border-[#3C4CA0]
-                   focus:bg-[#3C4CA0]/5 outline-none px-0 py-0 rounded-none"
+                   focus:bg-[#3C4CA0]/5 outline-none px-0 py-0 rounded-none placeholder:text-slate-300"
+      />
+    </div>
+  );
+});
+
+/* ============================================================================
+   ADDRESS FIELD
+   A single free-text multi-line block for the recipient's full address —
+   lets you paste an entire address (house/street, area, city, state, PIN,
+   country) in one action instead of splitting it across separate fields.
+   Memoised for the same reason as FieldInput.
+============================================================================ */
+
+const AddressField = React.memo(function AddressField({ value, onChange }) {
+  return (
+    <div className="flex flex-col gap-[0.6mm] mb-[1.55mm]">
+      <span className="text-[6.1pt] font-bold tracking-[0.4px] text-slate-500 uppercase whitespace-nowrap">
+        Address
+      </span>
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={"Paste full address here — house/street,\narea, city, state, PIN, country"}
+        rows={5}
+        className="w-full h-[24mm] text-[7.4pt] font-medium text-[#1E2230] bg-transparent border-0
+                   border-b border-dotted border-[#A9AEBA] focus:border-solid focus:border-[#3C4CA0]
+                   focus:bg-[#3C4CA0]/5 outline-none px-0 py-0 rounded-none resize-none leading-[1.45]
+                   placeholder:text-slate-300 placeholder:leading-[1.45]"
       />
     </div>
   );
@@ -415,7 +444,8 @@ const LabelActions = React.memo(function LabelActions({
 /* ============================================================================
    ADDRESS LABEL
    Renders a single 105 × 148.5 mm label with TO / FROM / warning sections.
-   All field callbacks are memoised at the parent level.
+   The TO section is just 3 fields: Name, Address (free-text paste target),
+   Mobile No. All field callbacks are memoised at the parent level.
 ============================================================================ */
 
 const AddressLabel = React.memo(function AddressLabel({
@@ -482,69 +512,23 @@ const AddressLabel = React.memo(function AddressLabel({
           <span className="flex-1 border-t border-[#C9CDD6] ml-[1.2mm]" />
         </div>
 
-        {/* TO fields */}
+        {/* TO fields — Name / Address (paste-friendly) / Mobile No */}
         <div className="mb-[2.4mm]">
           <FieldInput
             label="Name"
             value={label.to.name}
             onChange={(v) => onToChange("name", v)}
+            placeholder="Recipient's full name"
+          />
+          <AddressField
+            value={label.to.address}
+            onChange={(v) => onToChange("address", v)}
           />
           <FieldInput
-            label="Company (Opt.)"
-            value={label.to.company}
-            onChange={(v) => onToChange("company", v)}
-          />
-          <FieldInput
-            label="Addr Line 1"
-            value={label.to.addr1}
-            onChange={(v) => onToChange("addr1", v)}
-          />
-          <FieldInput
-            label="Addr Line 2"
-            value={label.to.addr2}
-            onChange={(v) => onToChange("addr2", v)}
-          />
-          <FieldInput
-            label="Area/Locality"
-            value={label.to.area}
-            onChange={(v) => onToChange("area", v)}
-          />
-          <div className="flex gap-[2.2mm]">
-            <div className="flex-1">
-              <FieldInput
-                label="City"
-                value={label.to.city}
-                onChange={(v) => onToChange("city", v)}
-              />
-            </div>
-            <div className="flex-1">
-              <FieldInput
-                label="State"
-                value={label.to.state}
-                onChange={(v) => onToChange("state", v)}
-              />
-            </div>
-          </div>
-          <div className="flex gap-[2.2mm]">
-            <div className="flex-1">
-              <FieldInput
-                label="PIN Code"
-                value={label.to.pin}
-                onChange={(v) => onToChange("pin", v)}
-              />
-            </div>
-            <div className="flex-1">
-              <FieldInput
-                label="Country"
-                value={label.to.country}
-                onChange={(v) => onToChange("country", v)}
-              />
-            </div>
-          </div>
-          <FieldInput
-            label="Mobile"
+            label="Mobile No."
             value={label.to.mobile}
             onChange={(v) => onToChange("mobile", v)}
+            placeholder="10-digit mobile number"
           />
         </div>
 
@@ -1111,7 +1095,8 @@ export default function AddressLabelSheet() {
 
       {/* Hint bar */}
       <div className="max-w-[210mm] mx-auto mt-2 px-3.5 py-2 bg-[#FFF7E8] border border-[#F0DDAE] rounded-lg text-[11.5px] text-[#7A5A16] text-center print:hidden">
-        <b className="text-[#5C4310]">Click any field to type directly.</b> Use{" "}
+        <b className="text-[#5C4310]">Click any field to type directly.</b> The{" "}
+        <b>Address</b> field accepts a full pasted address in one go. Use{" "}
         <b>Add Label</b> for a single label or <b>Add Sheet</b> for 4 at once.
         Labels auto-paginate into A4 sheets (4 per page). <b>Ctrl+Z</b> /{" "}
         <b>Ctrl+Y</b> to undo/redo.
