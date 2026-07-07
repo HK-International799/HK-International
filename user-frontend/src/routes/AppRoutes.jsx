@@ -20,8 +20,6 @@ const Contact = lazy(() => import("../pages/public/Contact"));
 const Courses = lazy(() => import("../pages/public/Courses"));
 const CourseDetails = lazy(() => import("../pages/public/CourseDetails"));
 const NotFound = lazy(() => import("../pages/public/NotFound"));
-// Public self-registration — intentionally NOT linked from any nav/sidebar.
-const LearnerRegistration = lazy(() => import("../pages/public/LearnerRegistration"));
 
 // ─── Auth Pages ───────────────────────────────────────────────────────────────
 const Login = lazy(() => import("../pages/auth/Login"));
@@ -129,7 +127,6 @@ export default function AppRoutes() {
           <Route path="/courses" element={<Courses />} />
           <Route path="/course/:id" element={<CourseDetails />} />
           {/* Public, no login required, intentionally hidden from nav/sidebar */}
-          <Route path="/learner-registration" element={<LearnerRegistration />} />
 
           {/* ---------Profiles--------------------------------------------- */}
           <Route path="/profile/ashish" element={<AshishVed />} />

@@ -158,7 +158,7 @@ export default function CoursePage() {
             <button
               aria-label={`Enroll in ${course.title} - contact 1A HK International`}
               className="bg-orange-600 hover:bg-orange-700 px-6 py-3 rounded-lg font-semibold transition"
-              onClick={() => navigate("/contact")}
+              onClick={() => navigate("/register")}
             >
               Enroll Now
             </button>
@@ -283,7 +283,7 @@ export default function CoursePage() {
         <button
           aria-label={`Enroll in ${course.title} now`}
           className="bg-white text-orange-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
-          onClick={() => navigate("/contact")}
+          onClick={() => navigate("/register")}
         >
           Enroll Now
         </button>
