@@ -31,7 +31,10 @@ import {
   PoundSterling,
   BarChart2,
   FileBarChart,
-  UserPlus
+  UserPlus,
+  PackageOpen,
+  Truck,
+  Wallet,
 } from "lucide-react";
 
 const navGroups = [
@@ -113,6 +116,17 @@ const navGroups = [
       },
       { to: "/admin/finance/fees", label: "Course Fees", icon: FileBarChart },
       { to: "/admin/finance/reports", label: "Reports", icon: TrendingUp },
+    ],
+  },
+  {
+    label: "Dispatch",
+    items: [
+      { to: "/admin/dispatch/dashboard", label: "Dispatch Dashboard", icon: PackageOpen },
+      { to: "/admin/dispatch/certificates", label: "Certificates", icon: Award },
+      { to: "/admin/dispatch/batches", label: "Courier Batches", icon: Truck },
+      { to: "/admin/dispatch/expenses", label: "Expenses", icon: Wallet },
+      { to: "/admin/dispatch/reports", label: "Dispatch Reports", icon: FileBarChart },
+      { to: "/admin/dispatch/sender", label: "Sender Settings", icon: Settings },
     ],
   },
   {

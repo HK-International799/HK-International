@@ -39,6 +39,8 @@ import documentRoutes from "./routes/documentRoutes.js";
 import scenarioExamRoutes from "./routes/scenarioExamRoutes.js";
 import crmRoutes from "./routes/crmRoutes.js";
 import financeRoutes from "./routes/financeRoutes.js";
+import dispatchRoutes from "./routes/dispatchRoutes.js";
+
 
 const app = express();
 
@@ -147,6 +149,8 @@ app.use("/api/documents", documentRoutes);
 app.use("/api/scenario-exams", scenarioExamRoutes);
 app.use("/api/crm", crmRoutes);
 app.use("/api/finance", financeRoutes);
+app.use("/api/dispatch", dispatchRoutes);
+
 
 /* ─── 404 ─────────────────────────────────────── */
 app.use((req, res) => {

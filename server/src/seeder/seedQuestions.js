@@ -10,327 +10,291 @@ dotenv.config();
 // ================= QUESTIONS =================
 
 const questions = [
-  {
-    type: "mcq",
-    prompt:
-      "What is one of the main responsibilities of a manager regarding workplace safety?",
-    options: [
-      "Ignore safety concerns",
-      "Manage risks and ensure safe working conditions",
-      "Focus only on production targets",
-      "Delegate all safety responsibilities",
-    ],
-    correctAnswer: "Manage risks and ensure safe working conditions",
-    marks: 2,
-  },
-  {
-    type: "mcq",
-    prompt: "What is the primary mission of OSHA?",
-    options: [
-      "Maximizing production efficiency",
-      "Prioritizing financial gains",
-      "Ensuring safe and healthful working conditions",
-      "Minimizing operational costs",
-    ],
-    correctAnswer: "Ensuring safe and healthful working conditions",
-    marks: 2,
-  },
+{
+  type: "mcq",
+  prompt:
+    "Which ergonomic discipline primarily focuses on reducing musculoskeletal disorders caused by lifting, posture, and repetitive work?",
+  options: [
+    "Organisational ergonomics",
+    "Physical ergonomics",
+    "Cognitive ergonomics",
+    "Environmental ergonomics",
+  ],
+  correctAnswer: "Physical ergonomics",
+  marks: 2,
+},
 
-  {
-    type: "mcq",
-    prompt: "What does OSHA stand for?",
-    options: [
-      "Occupational Safety and Health Act",
-      "Office of Safety and Hazard Assessment",
-      "Organization for Safety and Health Advocacy",
-      "Occupational Safety and Health Administration",
-    ],
-    correctAnswer: "Occupational Safety and Health Administration",
-    marks: 2,
-  },
+{
+  type: "mcq",
+  prompt:
+    "What is a common consequence of poorly designed manual handling tasks?",
+  options: [
+    "Improved productivity",
+    "Musculoskeletal disorders",
+    "Lower equipment costs",
+    "Reduced training needs",
+  ],
+  correctAnswer: "Musculoskeletal disorders",
+  marks: 2,
+},
 
-  {
-    type: "mcq",
-    prompt: "When is fall protection required in construction?",
-    options: [
-      "Only for workers at significant heights",
-      "Whenever a worker is at a height of 6 feet or more",
-      "Only for specific trades",
-      "When convenient for the worker",
-    ],
-    correctAnswer: "Whenever a worker is at a height of 6 feet or more",
-    marks: 2,
-  },
+{
+  type: "mcq",
+  prompt:
+    "Poor workstation design is most likely to result in:",
+  options: [
+    "Higher employee motivation",
+    "Discomfort, fatigue, and chronic injury",
+    "Reduced maintenance costs",
+    "Improved production speed",
+  ],
+  correctAnswer: "Discomfort, fatigue, and chronic injury",
+  marks: 2,
+},
 
-  {
-    type: "mcq",
-    prompt: "Which of the following is a fall protection system?",
-    options: ["Hard hat", "Safety glasses", "Guardrails", "Work boots"],
-    correctAnswer: "Guardrails",
-    marks: 2,
-  },
+{
+  type: "mcq",
+  prompt:
+    "Which control is most effective for reducing injuries caused by repetitive work?",
+  options: [
+    "Ignoring the issue",
+    "Task rotation, mechanisation, and redesign",
+    "Increasing overtime",
+    "Reducing break times",
+  ],
+  correctAnswer: "Task rotation, mechanisation, and redesign",
+  marks: 2,
+},
 
-  {
-    type: "mcq",
-    prompt: "What is the purpose of a personal fall arrest system?",
-    options: [
-      "Minimizing safety incidents",
-      "Preventing falls",
-      "Limiting worker mobility",
-      "Ignoring safety regulations",
-    ],
-    correctAnswer: "Preventing falls",
-    marks: 2,
-  },
+{
+  type: "mcq",
+  prompt:
+    "Cognitive ergonomics is mainly concerned with:",
+  options: [
+    "Machine maintenance schedules",
+    "How people process information and make decisions",
+    "Fire evacuation procedures",
+    "Building construction methods",
+  ],
+  correctAnswer: "How people process information and make decisions",
+  marks: 2,
+},
 
-  {
-    type: "mcq",
-    prompt:
-      "What is the correct procedure for using a ladder as a fall protection device?",
-    options: [
-      "Tie-off to the ladder",
-      "Extend the ladder 3 feet above the landing surface",
-      "Ignore ladder use for fall protection",
-      "Use the ladder horizontally",
-    ],
-    correctAnswer: "Extend the ladder 3 feet above the landing surface",
-    marks: 2,
-  },
+{
+  type: "mcq",
+  prompt:
+    "Poor cognitive design can lead to:",
+  options: [
+    "Improved concentration",
+    "Systematic human error",
+    "Reduced workload",
+    "Better communication",
+  ],
+  correctAnswer: "Systematic human error",
+  marks: 2,
+},
 
-  {
-    type: "mcq",
-    prompt: "Why is it important to identify and label electrical hazards?",
-    options: [
-      "To expedite operations",
-      "To maximize financial gains",
-      "To prioritize regulatory compliance",
-      "To prevent accidents and injuries",
-    ],
-    correctAnswer: "To prevent accidents and injuries",
-    marks: 2,
-  },
+{
+  type: "mcq",
+  prompt:
+    "According to cognitive ergonomics, human error is often caused by:",
+  options: [
+    "Worker laziness",
+    "Poorly designed systems",
+    "Excessive supervision",
+    "High salaries",
+  ],
+  correctAnswer: "Poorly designed systems",
+  marks: 2,
+},
 
-  {
-    type: "mcq",
-    prompt: "When should electrical equipment be inspected?",
-    options: [
-      "Only if it malfunctions",
-      "Regularly, as part of a preventive maintenance program",
-      "Whenever convenient for the worker",
-      "When regulatory authorities request it",
-    ],
-    correctAnswer: "Regularly, as part of a preventive maintenance program",
-    marks: 2,
-  },
+{
+  type: "mcq",
+  prompt:
+    "Which feature improves the usability of workplace controls?",
+  options: [
+    "Hidden labels",
+    "Clearly labelled and colour-coded controls",
+    "Complex operating procedures",
+    "Random control layouts",
+  ],
+  correctAnswer: "Clearly labelled and colour-coded controls",
+  marks: 2,
+},
 
-  {
-    type: "mcq",
-    prompt:
-      "What is the minimum safe distance for equipment working near power lines?",
-    options: ["5 feet", "10 feet", "15 feet", "20 feet"],
-    correctAnswer: "10 feet",
-    marks: 2,
-  },
+{
+  type: "mcq",
+  prompt:
+    "Safe work procedures should be:",
+  options: [
+    "Written in technical language only",
+    "Based on the logical sequence of the task",
+    "Created without consulting workers",
+    "Changed daily",
+  ],
+  correctAnswer: "Based on the logical sequence of the task",
+  marks: 2,
+},
 
-  {
-    type: "mcq",
-    prompt: "What should be inspected before using a scaffold?",
-    options: [
-      "Only the top platform",
-      "Only the guardrails",
-      "All components of the scaffold",
-      "Nothing, scaffolds don't need inspection",
-    ],
-    correctAnswer: "All components of the scaffold",
-    marks: 2,
-  },
-  {
-    type: "mcq",
-    prompt: "How should ladders be positioned for use?",
-    options: [
-      "At any angle that is comfortable for the worker",
-      "Against a structure at a 45-degree angle",
-      "Straight up and down, perpendicular to the surface",
-      "Leaning on another ladder for support",
-    ],
-    correctAnswer: "Against a structure at a 45-degree angle",
-    marks: 2,
-  },
+{
+  type: "mcq",
+  prompt:
+    "Accessible workplace information should be:",
+  options: [
+    "Available only in English",
+    "Suitable for workers' language and reading ability",
+    "Restricted to supervisors",
+    "Stored only electronically",
+  ],
+  correctAnswer: "Suitable for workers' language and reading ability",
+  marks: 2,
+},
 
-  {
-    type: "mcq",
-    prompt: "What is the maximum allowable gap between the planks?",
-    options: ["1 inches", "2 inches", "12 inches", "6 inches"],
-    correctAnswer: "1 inches",
-    marks: 2,
-  },
+{
+  type: "mcq",
+  prompt:
+    "Effective ergonomic design recognises that workers differ in:",
+  options: [
+    "Body size, capability, language, and experience",
+    "Only their age",
+    "Only their physical strength",
+    "Only their qualifications",
+  ],
+  correctAnswer: "Body size, capability, language, and experience",
+  marks: 2,
+},
 
-  {
-    type: "mcq",
-    prompt:
-      "What is the primary hazard associated with excavations and trenches?",
-    options: [
-      "Falling objects",
-      "Cave-ins",
-      "Electrical shocks",
-      "Confined spaces",
-    ],
-    correctAnswer: "Cave-ins",
-    marks: 2,
-  },
+{
+  type: "mcq",
+  prompt:
+    "Designing work for an 'average worker' may:",
+  options: [
+    "Improve safety for everyone",
+    "Exclude many members of the workforce",
+    "Eliminate all ergonomic risks",
+    "Reduce training requirements",
+  ],
+  correctAnswer: "Exclude many members of the workforce",
+  marks: 2,
+},
 
-  {
-    type: "mcq",
-    prompt:
-      "What is the minimum slope required for a stable excavation in soil?",
-    options: ["1:1", "2:1", "3:1", "4:1"],
-    correctAnswer: "1:1",
-    marks: 2,
-  },
+{
+  type: "mcq",
+  prompt:
+    "In the manual handling example, what engineering solution provided the greatest improvement?",
+  options: [
+    "Additional lifting training",
+    "Mechanical handling equipment such as a lift table",
+    "Longer working hours",
+    "More warning signs",
+  ],
+  correctAnswer: "Mechanical handling equipment such as a lift table",
+  marks: 2,
+},
 
-  {
-    type: "mcq",
-    prompt: "When is a protective system required for excavations?",
-    options: [
-      "Only for deep excavations",
-      "When soil conditions pose a cave-in hazard",
-      "Only for excavations near structures",
-      "Never, protective systems are optional",
-    ],
-    correctAnswer: "When soil conditions pose a cave-in hazard",
-    marks: 2,
-  },
+{
+  type: "mcq",
+  prompt:
+    "Why is logistics safety important to an organisation?",
+  options: [
+    "It only protects warehouse workers",
+    "It supports customer satisfaction, business continuity, and reputation",
+    "It eliminates the need for transport planning",
+    "It only reduces insurance costs",
+  ],
+  correctAnswer: "It supports customer satisfaction, business continuity, and reputation",
+  marks: 2,
+},
 
-  {
-    type: "mcq",
-    prompt: "What is a common protective system for trenching?",
-    options: [
-      "Ignoring safety regulations",
-      "Sloping or benching",
-      "Using the same trench for multiple workers",
-      "No protective system is needed",
-    ],
-    correctAnswer: "Sloping or benching",
-    marks: 2,
-  },
+{
+  type: "mcq",
+  prompt:
+    "Which of the following is a common warehouse OSH risk?",
+  options: [
+    "Sunburn",
+    "Racking collapse and forklift interaction",
+    "Food contamination",
+    "Noise from aircraft",
+  ],
+  correctAnswer: "Racking collapse and forklift interaction",
+  marks: 2,
+},
 
-  {
-    type: "mcq",
-    prompt: "Why is soil classification important in excavation safety?",
-    options: [
-      "To prioritize financial gains",
-      "To expedite operations",
-      "To determine appropriate protective measures",
-      "To minimize safety incidents",
-    ],
-    correctAnswer: "To determine appropriate protective measures",
-    marks: 2,
-  },
+{
+  type: "mcq",
+  prompt:
+    "The supply chain includes:",
+  options: [
+    "Only the manufacturer",
+    "Every organisation contributing materials, products, or services",
+    "Only transport companies",
+    "Only suppliers within the same country",
+  ],
+  correctAnswer: "Every organisation contributing materials, products, or services",
+  marks: 2,
+},
 
-  {
-    type: "mcq",
-    prompt: "What defines a confined space?",
-    options: [
-      "Any enclosed area with limited access",
-      "A space with sufficient ventilation",
-      "Open areas without any barriers",
-      "Spaces with unlimited entry points",
-    ],
-    correctAnswer: "Any enclosed area with limited access",
-    marks: 2,
-  },
+{
+  type: "mcq",
+  prompt:
+    "A serious incident at a key supplier may cause:",
+  options: [
+    "Improved productivity",
+    "Production interruption",
+    "Lower customer demand",
+    "Reduced legal obligations",
+  ],
+  correctAnswer: "Production interruption",
+  marks: 2,
+},
 
-  {
-    type: "mcq",
-    prompt: "Why is it crucial to have a permit for confined space entry?",
-    options: [
-      "To maximize operational speed",
-      "To expedite operations",
-      "To ensure proper safety measures are in place",
-      "Permits are not necessary for confined spaces",
-    ],
-    correctAnswer: "To ensure proper safety measures are in place",
-    marks: 2,
-  },
+{
+  type: "mcq",
+  prompt:
+    "When selecting a contractor, organisations should assess:",
+  options: [
+    "Only the lowest quotation",
+    "Competence, experience, OSH systems, and supervision",
+    "The contractor's office location only",
+    "How quickly the work can begin",
+  ],
+  correctAnswer: "Competence, experience, OSH systems, and supervision",
+  marks: 2,
+},
 
-  {
-    type: "mcq",
-    prompt: "What is a key consideration during confined space entry?",
-    options: [
-      "Ignoring safety regulations",
-      "Continuous ventilation",
-      "Limited communication",
-      "Fast entry and exit",
-    ],
-    correctAnswer: "Continuous ventilation",
-    marks: 2,
-  },
+{
+  type: "mcq",
+  prompt:
+    "Contractor management should be viewed as:",
+  options: [
+    "A one-time prequalification exercise",
+    "An ongoing process from selection to post-work review",
+    "Only a legal requirement before work starts",
+    "The contractor's responsibility only",
+  ],
+  correctAnswer: "An ongoing process from selection to post-work review",
+  marks: 2,
+},
 
-  {
-    type: "mcq",
-    prompt: "When is atmospheric testing necessary in confined spaces?",
-    options: [
-      "Only if the space is completely sealed",
-      "Never, atmospheric testing is optional",
-      "Before entry and periodically during work",
-      "Only if the space is poorly ventilated",
-    ],
-    correctAnswer: "Before entry and periodically during work",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "What is the primary hazard in confined spaces?",
-    options: ["Falls", "Fire hazards", "Respiratory hazards", "Noise hazards"],
-    correctAnswer: "Respiratory hazards",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "How can electrical fires be prevented on a construction site?",
-    options: [
-      "Overloading circuits",
-      "Ignoring electrical safety guidelines",
-      "Regularly inspecting and maintaining equipment",
-      "Using damaged electrical cords",
-    ],
-    correctAnswer: "Regularly inspecting and maintaining equipment",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "What is the purpose of a fire extinguisher?",
-    options: [
-      "Ignoring safety regulations",
-      "To be used as a temporary lighting source",
-      "To extinguish small fires",
-      "To provide ventilation in case of fire",
-    ],
-    correctAnswer: "To extinguish small fires",
-    marks: 2,
-  },
-
-  {
-    type: "mcq",
-    prompt: "Why is regular inspection of tools and equipment important?",
-    options: [
-      "To maximize operational speed",
-      "To expedite operations",
-      "To prevent accidents and ensure proper functioning",
-      "Ignoring safety regulations",
-    ],
-    correctAnswer: "To prevent accidents and ensure proper functioning",
-    marks: 2,
-  },
+{
+  type: "mcq",
+  prompt:
+    "The level of supply-chain OSH control should be based on:",
+  options: [
+    "The contract value only",
+    "The level of risk involved",
+    "The supplier's location",
+    "The organisation's annual profit",
+  ],
+  correctAnswer: "The level of risk involved",
+  marks: 2,
+},
 ];
 
 // ================= QUIZ ID =================
 
 // Existing quiz where questions should be inserted
-const QUIZ_ID = "6a35726c130a0e0175577477";
+const QUIZ_ID = "6a5ca123697b98d1a5f9bd8f";
 
 // ================= SEED FUNCTION =================
 

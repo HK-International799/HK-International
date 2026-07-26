@@ -745,6 +745,370 @@ Pass Mark: 50%
 
     courseLink: "/course/iosh-level3",
   },
+  // {
+  //   id: 6,
+
+  //   slug: "othm-level-4-award-internal-quality-assurance-iqa-guide",
+
+  //   title:
+  //     "OTHM Level 4 Award in Internal Quality Assurance (IQA): Complete Guide 2026",
+
+  //   excerpt:
+  //     "Everything you need to know about the OTHM Level 4 Award in Internal Quality Assurance of Assessment Processes and Practice — entry requirements, unit structure, assessment, career progression and why it matters for assessors and quality assurance professionals worldwide.",
+
+  //   category: "Education & Quality Assurance",
+
+  //   tags: [
+  //     "OTHM Level 4",
+  //     "Internal Quality Assurance",
+  //     "IQA Award",
+  //     "IQA Qualification UK",
+  //     "Assessment Processes",
+  //     "Quality Assurance Training",
+  //     "OTHM Qualifications",
+  //     "Internal Verifier Course",
+  //     "Education and Training",
+  //     "Assessor to IQA",
+  //     "OTHM UK",
+  //     "RQF Level 4",
+  //     "1A HK International",
+  //     "Vocational Training UK",
+  //     "Quality Assurance Career",
+  //   ],
+
+  //   author: "1A HK International Training",
+
+  //   authorTitle: "International Health & Safety Training Specialists",
+
+  //   publishedDate: "2026-07-24",
+
+  //   updatedDate: "2026-07-24",
+
+  //   readTime: "8 min read",
+
+  //   coverImage: "/images/blog/othm-level-4-iqa-award-cover.webp",
+
+  //   metaTitle:
+  //     "OTHM Level 4 Award in Internal Quality Assurance (IQA) | 1A HK International",
+
+  //   metaDescription:
+  //     "Explore the OTHM Level 4 Award in Internal Quality Assurance of Assessment Processes and Practice — units, entry requirements, assessment, duration and career paths. Enrol with 1A HK International.",
+
+  //   keywords: [
+  //     "OTHM Level 4 IQA Award",
+  //     "Internal Quality Assurance qualification",
+  //     "OTHM Level 4 Internal Quality Assurance",
+  //     "IQA course UK",
+  //     "internal quality assurer qualification",
+  //     "OTHM IQA Award online",
+  //     "IQA award vs certificate",
+  //     "OTHM Level 4 Award entry requirements",
+  //     "internal verifier qualification",
+  //     "quality assurance of assessment processes",
+  //     "OTHM approved centre India",
+  //     "IQA qualification UAE",
+  //     "IQA qualification Qatar",
+  //     "IQA qualification Saudi Arabia",
+  //     "IQA course Oman",
+  //     "IQA course Bahrain",
+  //     "IQA course Kuwait",
+  //     "IQA training Africa",
+  //     "become an internal quality assurer",
+  //     "OTHM Level 4 units",
+  //     "OTHM qualification number 603/5203/6",
+  //     "RQF Level 4 equivalence",
+  //     "IQA assessor progression",
+  //     "leading internal quality assurance OTHM",
+  //     "OTHM Level 4 Certificate IQA",
+  //     "assessment verification qualification",
+  //     "internal quality assurance training online",
+  //     "OTHM distance learning IQA",
+  //     "IQA qualification for teachers",
+  //     "IQA qualification for trainers",
+  //     "quality assurance practitioner course",
+  //     "how to become an IQA in UK",
+  //     "OTHM recognised qualification",
+  //     "Ofqual regulated IQA qualification",
+  //     "IQA course fees India",
+  //     "OTHM Level 4 duration",
+  //     "internal quality assurance principles and practices",
+  //     "assessing quality of assessment",
+  //     "IQA career opportunities",
+  //     "quality assurance jobs education sector",
+  //     "OTHM Level 4 study modes",
+  //     "online IQA course for assessors",
+  //     "vocational education quality assurance",
+  //     "OTHM qualifications international recognition",
+  //     "1A HK International OTHM courses",
+  //     "IQA qualification for HR trainers",
+  //     "internal quality assurance best practices",
+  //     "OTHM Level 4 vs Level 3 assessor",
+  //     "what is an internal quality assurer",
+  //     "IQA qualification eligibility",
+  //     "OTHM Level 4 assessment criteria",
+  //     "quality assurance in training centres",
+  //     "internal verifier to lead IQA",
+  //     "OTHM course syllabus IQA",
+  //   ],
+
+  //   featured: true,
+
+  //   sections: [
+  //     {
+  //       id: "introduction",
+  //       heading: "Introduction",
+  //       content: `<p>Quality assurance is the backbone of every credible education and training system. Behind every fair, consistent, and standards-compliant assessment sits an <strong>Internal Quality Assurer (IQA)</strong> making sure the process holds up to scrutiny.</p><p>The <strong>OTHM Level 4 Award in Internal Quality Assurance of Assessment Processes and Practice</strong> is a UK-regulated qualification built for exactly this role. Whether you are an experienced assessor ready to step up, or a training coordinator formalising your quality assurance responsibilities, this qualification gives you a recognised, structured route into the IQA profession.</p><p>In this guide, <strong>1A HK International</strong> breaks down everything you need to know — what the qualification covers, who it is for, how it is assessed, and where it can take your career.</p>`,
+  //     },
+
+  //     {
+  //       id: "what-is-the-qualification",
+  //       heading: "What is the OTHM Level 4 IQA Award",
+  //       content: `<p>The OTHM Level 4 Award in Internal Quality Assurance of Assessment Processes and Practice (Qualification Number: <strong>603/5203/6</strong>) is designed to develop a learner's understanding of the theory and practice behind the internal quality assurance role in education and training.</p><p>It builds the knowledge needed to work as an effective quality assurance practitioner, combining theoretical understanding with practical application in areas such as performance monitoring, planning, and accountability.</p><p>OTHM also offers a related, more advanced qualification: the <strong>OTHM Level 4 Certificate in Leading the Internal Quality Assurance of Assessment Processes and Practice</strong> (603/5202/4), which adds a leadership unit for those managing IQA teams. This guide focuses primarily on the Award, while comparing both later on.</p>`,
+  //     },
+
+  //     {
+  //       id: "who-should-take-it",
+  //       heading: "Who Should Take This Qualification",
+  //       content: `<p>This qualification is ideal for professionals who are already involved in assessment or training and want formal recognition to move into quality assurance. It suits:</p><ul><li>Experienced assessors ready to progress into an internal quality assurance role</li><li>Trainers and tutors supporting assessment activities within their organisation</li><li>Assessment coordinators who need a recognised IQA credential</li><li>Team leaders overseeing assessors informally and wanting to formalise the role</li><li>Education and training managers responsible for maintaining assessment standards</li></ul><p>If you are currently monitoring or sampling assessment decisions without a formal qualification behind you, this Award closes that gap.</p>`,
+  //     },
+
+  //     {
+  //       id: "entry-requirements",
+  //       heading: "Entry Requirements",
+  //       content: `<p>OTHM does not set fixed formal entry requirements for this Level 4 qualification. Learners must be at least 18 years old, and centres are responsible for ensuring each learner has the capability to meet the learning and assessment demands of the course.</p><p>In practice, most learners already have some experience in assessing, training, or supporting learning, which helps them apply the qualification's content in a real workplace context.</p><p>As the qualification is delivered in English, learners who are not from a majority English-speaking background may need to provide evidence of English language competency.</p>`,
+  //     },
+
+  //     {
+  //       id: "qualification-structure",
+  //       heading: "Qualification Structure",
+  //       content: `<p>The OTHM Level 4 Award consists of <strong>2 mandatory units</strong> totalling <strong>12 credits</strong>:</p><table><tr><th>Unit</th><th>Credits</th></tr><tr><td>Understanding the Principles and Practices of Internally Assuring the Quality of Assessment</td><td>6</td></tr><tr><td>Internally Assure the Quality of Assessment</td><td>6</td></tr></table><p>Learners who want the extended <strong>Level 4 Certificate</strong> complete an additional third unit, <em>Plan, Allocate and Monitor Work in Own Area of Responsibility</em>, bringing the total to <strong>18 credits</strong> across 3 mandatory units.</p><p>At <strong>RQF Level 4</strong>, this qualification is academically equivalent to a Higher National Certificate (HNC) and Year 1 of a three-year UK Bachelor's degree.</p>`,
+  //     },
+
+  //     {
+  //       id: "assessment-and-verification",
+  //       heading: "Assessment and Verification",
+  //       content: `<p>All units are <strong>internally assessed</strong> by the approved centre and <strong>externally verified by OTHM</strong>. The qualification is criterion-referenced, meaning learners must provide evidence covering every learning outcome and assessment criterion to achieve a pass.</p><p>Typical evidence includes written assignments, portfolio-based evidence, and records demonstrating real IQA activity such as sampling assessment decisions. Assessors judge whether learners have met the required standard, and a clear audit trail supports each decision — ensuring transparency and consistency across centres.</p>`,
+  //     },
+
+  //     {
+  //       id: "duration-and-study-modes",
+  //       heading: "Duration and Study Modes",
+  //       content: `<p>The qualification is intentionally flexible. Most learners complete the Award within <strong>4 to 8 months</strong>, depending on their pace and prior experience.</p><p>Delivery methods include:</p><ul><li>Face-to-face classroom learning</li><li>Live online tutorials and lectures</li><li>Distance and self-paced online learning</li><li>Blended formats combining online study with practical application at work</li></ul><p>This flexibility makes the qualification accessible to working professionals across the UK, India, the UAE, Qatar, Saudi Arabia, Oman, Bahrain, Kuwait, and other regions where OTHM qualifications are recognised.</p>`,
+  //     },
+
+  //     {
+  //       id: "career-opportunities",
+  //       heading: "Career Opportunities and Progression",
+  //       content: `<p>Completing the OTHM Level 4 IQA Award opens the door to roles such as:</p><ul><li>Internal Quality Assurer (IQA) / Internal Verifier</li><li>Assessment Coordinator</li><li>Quality Assurance Officer in education or training providers</li><li>Training Centre Compliance Support</li></ul><p>From here, learners can progress to the <strong>OTHM Level 4 Certificate in Leading Internal Quality Assurance</strong> for team-leadership responsibilities, or continue toward Level 5 qualifications in education and training leadership. Many progress into broader education management or compliance roles within vocational training organisations.</p>`,
+  //     },
+
+  //     {
+  //       id: "award-vs-certificate",
+  //       heading: "Award vs Certificate: Which One Do You Need?",
+  //       content: `<p>OTHM offers two related qualifications under this subject area. Here is how they compare:</p><table><tr><th>Feature</th><th>Level 4 Award (603/5203/6)</th><th>Level 4 Certificate (603/5202/4)</th></tr><tr><td>Mandatory Units</td><td>2</td><td>3</td></tr><tr><td>Total Credits</td><td>12</td><td>18</td></tr><tr><td>Focus</td><td>Core IQA principles and practice</td><td>IQA plus planning and leading a team</td></tr><tr><td>Best suited for</td><td>New or aspiring IQAs</td><td>IQAs moving into a leadership role</td></tr></table><p>Many learners start with the Award and later top up to the Certificate as their responsibilities grow.</p>`,
+  //     },
+
+  //     {
+  //       id: "why-choose-1a-hk-international",
+  //       heading: "Why Choose 1A HK International",
+  //       content: `<p><strong>1A HK International</strong> is an approved centre offering the OTHM Level 4 Award in Internal Quality Assurance of Assessment Processes and Practice with flexible online study designed around working professionals.</p><p>With offices supporting learners across London, Lisbon, and Mumbai, and a learner base spanning the UK, India, the Middle East, and Africa, 1A HK International provides structured tutor support, clear assessment guidance, and a straightforward path from enrolment to certification.</p><p>If you are ready to move into a formal quality assurance role, explore the course page to see current intake dates and registration details.</p>`,
+  //     },
+
+  //     {
+  //       id: "conclusion",
+  //       heading: "Conclusion",
+  //       content: `<p>The OTHM Level 4 Award in Internal Quality Assurance of Assessment Processes and Practice is a focused, practical qualification for anyone ready to take on formal responsibility for assessment quality. It requires no rigid entry barriers, fits around full-time work, and is recognised by OTHM-approved centres internationally.</p><p>For assessors and trainers looking to build credibility and open new career paths in quality assurance, this Award is a clear, achievable next step. <strong>1A HK International</strong> can help you get there.</p><h3>Frequently Asked Questions</h3><p><strong>Is the OTHM Level 4 IQA Award recognised outside the UK?</strong> Yes, OTHM qualifications are recognised internationally through approved centres across regions including India, the UAE, Qatar, and other Gulf and African countries.</p><p><strong>Do I need a teaching qualification first?</strong> No, but prior experience in assessing or training is helpful for applying the coursework in practice.</p><p><strong>Can I study this qualification fully online?</strong> Yes, OTHM approved centres including 1A HK International offer distance and online delivery.</p>`,
+  //     },
+  //   ],
+
+  //   relatedPosts: [1, 2, 3],
+
+  //   courseLink: "https://hkinternational.uk/course/othm-iqa-award",
+  // },
+
+  {
+    id: 6,
+
+    slug: "othm-level-4-iqa-award-complete-guide",
+
+    title:
+      "OTHM Level 4 Award in Internal Quality Assurance (IQA): Complete Guide 2026",
+
+    excerpt:
+      "Everything you need to know about the OTHM Level 4 Award in Internal Quality Assurance of Assessment Processes and Practice — structure, entry requirements, assessment, career paths and how to enrol through 1A HK International.",
+
+    category: "Quality Assurance & Assessment",
+
+    tags: [
+      "OTHM Level 4",
+      "Internal Quality Assurance",
+      "IQA Award",
+      "OTHM Qualifications",
+      "Assessment Processes and Practice",
+      "Ofqual Regulated",
+      "IQA Certification UK",
+      "Quality Assurance Training",
+      "Assessor Development",
+      "Education and Training Careers",
+      "OTHM UK",
+      "IQA Course Online",
+      "1A HK International",
+      "RQF Level 4",
+      "Internal Verifier Training",
+    ],
+
+    author: "1A HK International Training",
+
+    authorTitle: "International Health & Safety Training Specialists",
+
+    publishedDate: "2026-07-26",
+
+    updatedDate: "2026-07-26",
+
+    readTime: "9 min read",
+
+    coverImage: "/images/blog/OTHM_level4_blog_thumbnail.png",
+
+    metaTitle:
+      "OTHM Level 4 Award in Internal Quality Assurance (IQA) | Complete Guide",
+
+    metaDescription:
+      "Explore the OTHM Level 4 Award in Internal Quality Assurance of Assessment Processes and Practice — structure, entry requirements, assessment method and careers. Enrol with 1A HK International.",
+
+    keywords: [
+      "OTHM Level 4 Award",
+      "Internal Quality Assurance",
+      "IQA Award",
+      "OTHM IQA qualification",
+      "OTHM Level 4 IQA",
+      "Internal Quality Assurance of Assessment Processes and Practice",
+      "IQA course UK",
+      "IQA course online",
+      "become an Internal Quality Assurer",
+      "IQA qualification UK",
+      "OTHM qualifications UK",
+      "Ofqual regulated IQA course",
+      "RQF Level 4 IQA",
+      "internal verifier qualification",
+      "IQA training online",
+      "quality assurance qualification education",
+      "assessor quality assurance course",
+      "OTHM IQA India",
+      "OTHM IQA UAE",
+      "OTHM IQA Qatar",
+      "OTHM IQA Saudi Arabia",
+      "OTHM IQA Oman",
+      "OTHM IQA Bahrain",
+      "OTHM IQA Kuwait",
+      "OTHM IQA Africa",
+      "IQA course for teachers",
+      "IQA course for trainers",
+      "internal quality assurer job role",
+      "how to become IQA",
+      "IQA sampling strategy",
+      "assessment standardisation training",
+      "IQA Award vs Certificate",
+      "OTHM Level 4 Certificate Leading IQA",
+      "quality assurance practitioner course",
+      "education and training qualifications UK",
+      "distance learning IQA course",
+      "online IQA qualification",
+      "IQA course entry requirements",
+      "assessment quality assurance training",
+      "internal verifier training online",
+      "OTHM Ofqual regulated qualification",
+      "IQA qualification for assessors",
+      "vocational education quality assurance",
+      "IQA career progression",
+      "quality assurance officer training",
+      "assessment coordinator qualification",
+      "OTHM 603/5203/6",
+      "IQA qualification international recognition",
+      "OTHM approved centre course",
+      "IQA course for training providers",
+      "quality assurance in FE colleges",
+      "internal quality assurance best practice",
+      "assessor and IQA training UK",
+      "OTHM Level 4 course structure",
+      "IQA qualification credits and units",
+    ],
+
+    featured: true,
+
+    sections: [
+      {
+        id: "introduction",
+        heading: "Introduction",
+        content: `<p>Consistent, fair and well-documented assessment is the backbone of every credible education and training system. When assessors make decisions about a learner's competence, someone needs to check that those decisions are accurate, evidence-based and applied consistently across the board. That role belongs to the <strong>Internal Quality Assurer (IQA)</strong>.</p><p>The <strong>OTHM Level 4 Award in Internal Quality Assurance of Assessment Processes and Practice</strong> is the UK-regulated qualification built specifically for this role. Whether you are an experienced assessor ready to step into quality assurance, a trainer supporting assessment decisions, or a compliance-focused professional working in a training centre, this Award gives you the formal recognition and practical knowledge to do the job properly.</p><p>In this guide, we cover the qualification structure, entry requirements, assessment method, career paths, and how to enrol through <strong>1A HK International</strong>, a UK-accredited training provider delivering OTHM, IOSH, OSHA and other internationally recognised programmes online.</p>`,
+      },
+      {
+        id: "what-is-othm-iqa-award",
+        heading:
+          "What Is the OTHM Level 4 Award in Internal Quality Assurance?",
+        content: `<p>The OTHM Level 4 Award in Internal Quality Assurance of Assessment Processes and Practice (<strong>Qualification Number: 603/5203/6</strong>) is regulated by <strong>Ofqual</strong>, the qualifications regulator for England, under OTHM's recognition number RN5284.</p><p>The qualification sits at <strong>RQF Level 4</strong>, which places it broadly in line with a Higher National Certificate (HNC) or the first year of a UK bachelor's degree in terms of academic demand. Its objective is straightforward: to develop your understanding of the theory and practice behind internal quality assurance so you can confidently monitor assessment decisions, support assessors, and maintain consistent standards within your organisation.</p><p>It combines theoretical knowledge with practical, workplace-based evidence, meaning what you learn is directly applicable to real assessment environments rather than being purely academic.</p>`,
+      },
+      {
+        id: "who-should-take-it",
+        heading: "Who Should Take This Qualification?",
+        content: `<p>The OTHM Level 4 IQA Award is designed for people already working around assessment, or looking to move into a formal quality assurance role. It's a strong fit if you are:</p><ul><li>A qualified assessor looking to progress into internal quality assurance</li><li>A trainer or tutor who supports or reviews assessment decisions</li><li>An education or training coordinator responsible for maintaining standards</li><li>A compliance or standards officer in a training centre or college</li><li>A professional preparing for progression to lead IQA or education leadership roles</li></ul><p>If you're currently sampling learner evidence or coaching assessors informally, this Award turns that experience into a recognised, portable qualification.</p>`,
+      },
+      {
+        id: "entry-requirements",
+        heading: "Entry Requirements",
+        content: `<p>OTHM does not set rigid entry requirements for this qualification. In practice:</p><ul><li>Learners should be <strong>18 years or older</strong></li><li>OTHM does not specify mandatory prior qualifications, though centres must ensure learners have sufficient capability to meet the learning and assessment criteria</li><li>Relevant experience in teaching, training or assessing is strongly recommended, since the qualification builds directly on assessment practice</li><li>Learners whose first language is not English, or who are not from a majority English-speaking country, must provide evidence of English language competency</li></ul><p>This flexible approach makes the Award accessible to working professionals across the UK, India, the UAE, Qatar, Saudi Arabia, Oman, Bahrain, Kuwait, and other regions where OTHM qualifications are delivered.</p>`,
+      },
+      {
+        id: "qualification-structure",
+        heading: "Qualification Structure and Units",
+        content: `<p>The OTHM Level 4 Award consists of <strong>2 mandatory units</strong> for a combined total of <strong>12 credits</strong>:</p><table><tr><th>Unit</th><th>Credits</th></tr><tr><td>Understanding the Principles and Practices of Internally Assuring the Quality of Assessment</td><td>6</td></tr><tr><td>Internally Assure the Quality of Assessment</td><td>6</td></tr></table><p>Both units are mandatory, and together they cover the full cycle of internal quality assurance — from understanding the regulatory framework to actively carrying out sampling, feedback and standardisation activities.</p>`,
+      },
+      {
+        id: "learning-outcomes",
+        heading: "What You Will Learn",
+        content: `<p>By the end of the Award, learners are able to:</p><ul><li>Explain the principles, regulations and requirements underpinning internal quality assurance of assessment</li><li>Understand different types of assessment methods and how to judge their appropriateness</li><li>Plan and carry out sampling strategies to monitor assessor decisions</li><li>Provide constructive, evidence-based feedback to assessors</li><li>Maintain accurate records and audit trails to support quality assurance judgements</li><li>Contribute to standardisation activities across a team of assessors</li></ul><p>These outcomes reflect real day-to-day IQA responsibilities, not abstract theory, which is why the qualification is widely respected by training providers and colleges.</p>`,
+      },
+      {
+        id: "assessment-method",
+        heading: "Assessment Method",
+        content: `<p>There are no written exams. Assessment for the OTHM Level 4 IQA Award is <strong>internally assessed by the centre and externally verified by OTHM</strong>. Learners build a portfolio of evidence — such as observation records, sampling reports, feedback documentation and reflective accounts — that demonstrates they have met every learning outcome and assessment criterion.</p><p>An assessor at your training centre judges whether the evidence meets the required standard, keeping an audit trail of how that judgement was reached. OTHM then externally verifies a sample of this evidence to ensure consistency and rigour across all approved centres.</p>`,
+      },
+      {
+        id: "duration-study-modes",
+        heading: "Duration and Study Modes",
+        content: `<p>The qualification is deliberately flexible to accommodate working professionals. It can be delivered:</p><ul><li>Face-to-face through lectures, tutorials and seminars</li><li>Fully online, with distance learning support</li><li>Through blended delivery combining both formats</li></ul><p>Because the qualification is portfolio-based rather than exam-based, the time it takes to complete depends largely on how quickly you can gather workplace evidence and engage with your assigned assessor. Many learners complete it alongside their existing assessing or training role.</p>`,
+      },
+      {
+        id: "career-opportunities",
+        heading: "Career Opportunities After Completion",
+        content: `<p>Completing the OTHM Level 4 IQA Award opens the door to recognised quality assurance roles, including:</p><ul><li>Internal Quality Assurer (IQA) / Internal Verifier</li><li>Assessment Coordinator</li><li>Quality Assurance Officer in an FE college or private training provider</li><li>Standards and Compliance Officer</li></ul><p>It also creates a natural progression path. Learners who want to lead a team of IQAs, rather than simply monitor assessments, typically progress to the <strong>OTHM Level 4 Certificate in Leading the Internal Quality Assurance of Assessment Processes and Practice</strong> (Qualification Number: 603/5202/4), or further on to Level 5 qualifications in education and training leadership.</p>`,
+      },
+      {
+        id: "award-vs-certificate-comparison",
+        heading:
+          "OTHM Level 4 Award vs Level 4 Certificate: Which One Is Right for You?",
+        content: `<p>OTHM offers two related qualifications in this subject area, and it's worth understanding the difference before you enrol:</p><table><tr><th>Feature</th><th>Level 4 Award</th><th>Level 4 Certificate (Leading IQA)</th></tr><tr><td>Units</td><td>2 mandatory units</td><td>3 mandatory units</td></tr><tr><td>Total Credits</td><td>12 credits</td><td>18 credits</td></tr><tr><td>Focus</td><td>Monitoring and sampling assessment decisions</td><td>Leading a team of IQAs and managing the wider IQA process</td></tr><tr><td>Best suited to</td><td>Those stepping into an IQA role for the first time</td><td>Experienced IQAs moving into a leadership or oversight role</td></tr></table><p>If you're new to quality assurance, the Award is the right starting point. If you already hold IQA experience and want to manage a team, the Certificate — which adds a unit on planning, allocating and monitoring work in your own area of responsibility — is the natural next step.</p>`,
+      },
+      {
+        id: "why-choose-1a-hk-international",
+        heading: "Why Choose 1A HK International",
+        content: `<p><strong>1A HK International</strong> is a UK-accredited training provider with offices in London, Lisbon and Mumbai, delivering OTHM, IOSH, OSHA, CIEH and PECB qualifications to learners worldwide. We support learners across the UK, India, the UAE, Qatar, Saudi Arabia, Oman, Bahrain, Kuwait and Africa with flexible, fully online delivery and dedicated assessor support throughout the portfolio process.</p><p>Our team guides you from enrolment through to final verification, helping you build strong, well-evidenced portfolios that meet OTHM's external verification standards the first time.</p><p>Ready to formalise your IQA expertise? Visit our <strong>OTHM Level 4 Award in Internal Quality Assurance</strong> course page to check current intake dates and enrol.</p>`,
+      },
+      {
+        id: "faqs",
+        heading: "Frequently Asked Questions",
+        content: `<h3>Is the OTHM Level 4 IQA Award internationally recognised?</h3><p>Yes. It is regulated by Ofqual in the UK and is delivered through OTHM-approved centres internationally, including across India, the Middle East and Africa.</p><h3>Do I need a Level 3 assessor qualification first?</h3><p>OTHM does not mandate it, but prior assessing or training experience is strongly recommended since the qualification builds directly on assessment practice.</p><h3>Is this qualification exam-based?</h3><p>No. It is assessed entirely through portfolio evidence, internally assessed by your centre and externally verified by OTHM.</p><h3>What can I do after completing the Award?</h3><p>You can work as an Internal Quality Assurer, or progress to the OTHM Level 4 Certificate in Leading Internal Quality Assurance for team leadership responsibilities.</p>`,
+      },
+      {
+        id: "conclusion",
+        heading: "Conclusion",
+        content: `<p>The OTHM Level 4 Award in Internal Quality Assurance of Assessment Processes and Practice is a focused, practical, Ofqual-regulated qualification for anyone ready to take formal ownership of assessment quality. With just two mandatory units, a portfolio-based assessment method, and flexible online delivery, it's an achievable next step for assessors, trainers and education professionals worldwide.</p><p><strong>1A HK International</strong> is here to support you through every stage of that journey. Explore the course page and get in touch with our team to start your OTHM Level 4 IQA Award today.</p>`,
+      },
+    ],
+
+    relatedPosts: [1, 2, 3],
+
+    courseLink: "/course/othm-iqa-award",
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────
