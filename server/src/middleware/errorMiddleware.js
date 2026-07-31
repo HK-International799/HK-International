@@ -1,6 +1,30 @@
+import multer from "multer";
 import ApiError from "../utils/ApiError.js";
 
 const errorMiddleware = (err, req, res, _next) => {
+  // Multer upload errors (file too large, wrong field name, etc.)
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      err = new ApiError(413, "File is too large.");
+    } else if (err.code === "LIMIT_UNEXPECTED_FILE") {
+      err = new ApiError(
+        400,
+        `Unexpected file field: "${err.field}". Expected field name "file".`
+      );
+    } else {
+      err = new ApiError(400, err.message || "File upload error.");
+    }
+  }
+
+  // fileFilter rejections in upload.js reject with a plain Error, not
+  // an ApiError — surface them as 400s rather than 500s.
+  if (
+    !err.statusCode &&
+    /only (pdf|jpg|png|webp)/i.test(err.message || "")
+  ) {
+    err = new ApiError(400, err.message);
+  }
+
   // Mongoose validation error
   if (err.name === "ValidationError") {
     const messages = Object.values(err.errors).map((e) => e.message);
