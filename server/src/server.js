@@ -8,6 +8,9 @@ import Message from "./models/Message.js";
 import BlockedUser from "./models/BlockedUser.js";
 import app from "./app.js";
 
+// Trust Vercel's reverse proxy.
+// Required for express-rate-limit to correctly handle X-Forwarded-For.
+app.set("trust proxy", 1);
 const httpServer = createServer(app);
 
 /* ───────────────── SOCKET.IO CONFIG ───────────────── */

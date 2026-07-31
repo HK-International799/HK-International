@@ -1,4 +1,3 @@
-
 // import Submission from "../models/Submission.js";
 // import Answer from "../models/Answer.js";
 // import Assignment from "../models/Assignment.js";
@@ -328,7 +327,6 @@
 //   return { annotations: submission.annotations, count: clean.length };
 // };
 
-
 // // ─── RESUBMIT (Student) ──────────────────────────────────────────────────────
 // /**
 //  * Replace an existing submission's file (PDF) before the due date.
@@ -432,12 +430,6 @@
 //     .populate("answers");
 // };
 
-
-
-
-
-
-
 import Submission from "../models/Submission.js";
 import Answer from "../models/Answer.js";
 import Assignment from "../models/Assignment.js";
@@ -456,7 +448,7 @@ import {
 
 const assertEnrolled = (user, courseId) => {
   const enrolled = user.enrolledCourses?.some(
-    (id) => id.toString() === courseId.toString()
+    (id) => id.toString() === courseId.toString(),
   );
   if (!enrolled) throw new ApiError(403, "You are not enrolled in this course");
 };
@@ -489,9 +481,15 @@ const autoGradeAnswer = (question, rawAnswer) => {
   const maxMarks = Number(question.marks) || 0;
   const selected = (rawAnswer?.selectedOption || "").trim();
 
-  if (question.type === "multiple_choice" && (question.correctAnswers || []).length > 0) {
+  if (
+    question.type === "multiple_choice" &&
+    (question.correctAnswers || []).length > 0
+  ) {
     const selectedSet = new Set(
-      selected.split(",").map((s) => s.trim()).filter(Boolean)
+      selected
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
     );
     const correctSet = new Set(question.correctAnswers.map((s) => s.trim()));
     const isCorrect =
@@ -505,7 +503,10 @@ const autoGradeAnswer = (question, rawAnswer) => {
 
   const isCorrect =
     selected.length > 0 &&
-    selected.toLowerCase() === String(question.correctAnswer || "").trim().toLowerCase();
+    selected.toLowerCase() ===
+      String(question.correctAnswer || "")
+        .trim()
+        .toLowerCase();
 
   return {
     isCorrect,
@@ -533,7 +534,7 @@ const runAutoGrading = (questions, answers) => {
       continue;
     }
     const ans = answers.find(
-      (a) => String(a.questionId) === String(question._id)
+      (a) => String(a.questionId) === String(question._id),
     );
     const graded = autoGradeAnswer(question, ans || {});
     if (!graded) continue;
@@ -569,7 +570,8 @@ export const submitAssignmentService = async ({
   fileBuffer,
   fileOriginalName,
 }) => {
-  const assignment = await Assignment.findById(assignmentId).populate("questions");
+  const assignment =
+    await Assignment.findById(assignmentId).populate("questions");
   if (!assignment) throw new ApiError(404, "Assignment not found");
   if (!assignment.isPublished)
     throw new ApiError(403, "This assignment is not yet published");
@@ -577,7 +579,8 @@ export const submitAssignmentService = async ({
   const student = await User.findById(studentId).select("enrolledCourses");
   assertEnrolled(student, assignment.courseId);
 
-  const isLate = assignment.dueDate && new Date() > new Date(assignment.dueDate);
+  const isLate =
+    assignment.dueDate && new Date() > new Date(assignment.dueDate);
 
   const existing = await Submission.findOne({ assignmentId, studentId });
   if (existing)
@@ -598,7 +601,7 @@ export const submitAssignmentService = async ({
     const result = await uploadPdfToCloudinary(
       fileBuffer,
       fileOriginalName,
-      "assignments/submissions"
+      "assignments/submissions",
     );
     submissionFile = {
       url: result.url,
@@ -613,7 +616,9 @@ export const submitAssignmentService = async ({
     status: "submitted",
     isLate: !!isLate,
     submissionFile,
-    approvalStatus: assignment.requireAdminApproval ? "pending" : "not_required",
+    approvalStatus: assignment.requireAdminApproval
+      ? "pending"
+      : "not_required",
   });
 
   if (answers.length > 0) {
@@ -623,7 +628,7 @@ export const submitAssignmentService = async ({
         submissionId: submission._id,
         textAnswer: ans.textAnswer || "",
         selectedOption: ans.selectedOption || "",
-      }))
+      })),
     );
     submission.answers = answerDocs.map((a) => a._id);
 
@@ -638,8 +643,8 @@ export const submitAssignmentService = async ({
           Answer.findByIdAndUpdate(p.answerId, {
             marksAwarded: p.marksAwarded,
             isCorrect: p.isCorrect,
-          })
-        )
+          }),
+        ),
       );
       submission.correctCount = correctCount;
       submission.wrongCount = wrongCount;
@@ -648,8 +653,13 @@ export const submitAssignmentService = async ({
       // auto-gradable): finalize score + pass/fail immediately.
       if (allAutoGradable) {
         submission.totalScore = autoScore;
-        submission.passFail = computePassFail(autoScore, assignment.passingMarks);
-        submission.status = assignment.requireAdminApproval ? "submitted" : "graded";
+        submission.passFail = computePassFail(
+          autoScore,
+          assignment.passingMarks,
+        );
+        submission.status = assignment.requireAdminApproval
+          ? "submitted"
+          : "graded";
         if (!assignment.requireAdminApproval) {
           submission.gradedAt = new Date();
         }
@@ -660,7 +670,10 @@ export const submitAssignmentService = async ({
   }
 
   return Submission.findById(submission._id)
-    .populate("assignmentId", "title dueDate totalMarks assessmentType passingMarks")
+    .populate(
+      "assignmentId",
+      "title dueDate totalMarks assessmentType passingMarks",
+    )
     .populate("answers");
 };
 
@@ -673,13 +686,19 @@ export const getMySubmissionService = async (assignmentId, studentId) => {
       select:
         "title dueDate totalMarks questions courseId assessmentType passingMarks showCorrectAnswers requireAdminApproval allowResubmission maxResubmissions instructions",
       populate: [
-        { path: "questions", select: "prompt type marks options correctAnswer correctAnswers" },
+        {
+          path: "questions",
+          select: "prompt type marks options correctAnswer correctAnswers",
+        },
         { path: "courseId", select: "title" },
       ],
     })
     .populate({
       path: "answers",
-      populate: { path: "questionId", select: "prompt type marks options correctAnswer correctAnswers" },
+      populate: {
+        path: "questionId",
+        select: "prompt type marks options correctAnswer correctAnswers",
+      },
     })
     .populate("gradedBy", "name email")
     .populate("approvedBy", "name email");
@@ -697,17 +716,23 @@ export const getMySubmissionService = async (assignmentId, studentId) => {
 
   if (!canShowAnswers) {
     if (result.assignmentId?.questions) {
-      result.assignmentId.questions = result.assignmentId.questions.map((q) => ({
-        ...q,
-        correctAnswer: undefined,
-        correctAnswers: undefined,
-      }));
+      result.assignmentId.questions = result.assignmentId.questions.map(
+        (q) => ({
+          ...q,
+          correctAnswer: undefined,
+          correctAnswers: undefined,
+        }),
+      );
     }
     if (result.answers) {
       result.answers = result.answers.map((a) => ({
         ...a,
         questionId: a.questionId
-          ? { ...a.questionId, correctAnswer: undefined, correctAnswers: undefined }
+          ? {
+              ...a.questionId,
+              correctAnswer: undefined,
+              correctAnswers: undefined,
+            }
           : a.questionId,
       }));
     }
@@ -731,14 +756,17 @@ export const listSubmissionsService = async ({
 
   if (assignmentId) {
     if (user.role === "tutor") {
-      const assignment = await Assignment.findById(assignmentId).select("createdBy");
+      const assignment =
+        await Assignment.findById(assignmentId).select("createdBy");
       if (!assignment) throw new ApiError(404, "Assignment not found");
       if (assignment.createdBy.toString() !== user._id.toString())
         throw new ApiError(403, "Access denied");
     }
     filter.assignmentId = assignmentId;
   } else if (user.role === "tutor") {
-    const tutorAssignments = await Assignment.find({ createdBy: user._id }).select("_id");
+    const tutorAssignments = await Assignment.find({
+      createdBy: user._id,
+    }).select("_id");
     filter.assignmentId = { $in: tutorAssignments.map((a) => a._id) };
   }
 
@@ -749,12 +777,16 @@ export const listSubmissionsService = async ({
   // parent Assignment, so resolve matching assignment ids first, then
   // intersect with any existing assignmentId constraint above.
   if (assessmentType) {
-    const typedAssignments = await Assignment.find({ assessmentType }).select("_id");
+    const typedAssignments = await Assignment.find({ assessmentType }).select(
+      "_id",
+    );
     const typedIds = typedAssignments.map((a) => String(a._id));
 
     if (filter.assignmentId && filter.assignmentId.$in) {
       const existingIds = filter.assignmentId.$in.map(String);
-      filter.assignmentId = { $in: existingIds.filter((id) => typedIds.includes(id)) };
+      filter.assignmentId = {
+        $in: existingIds.filter((id) => typedIds.includes(id)),
+      };
     } else if (filter.assignmentId) {
       // single explicit assignmentId — keep only if it matches the type
       filter.assignmentId = typedIds.includes(String(filter.assignmentId))
@@ -768,7 +800,13 @@ export const listSubmissionsService = async ({
   // A null assignmentId (explicit mismatch above) should yield zero
   // results rather than an unfiltered query.
   if (filter.assignmentId === null) {
-    return { submissions: [], total: 0, page: Number(page), limit: Number(limit), totalPages: 0 };
+    return {
+      submissions: [],
+      total: 0,
+      page: Number(page),
+      limit: Number(limit),
+      totalPages: 0,
+    };
   }
 
   const skip = (Number(page) - 1) * Number(limit);
@@ -776,7 +814,10 @@ export const listSubmissionsService = async ({
   const [submissions, total] = await Promise.all([
     Submission.find(filter)
       .populate("studentId", "name email avatar")
-      .populate("assignmentId", "title totalMarks dueDate courseId assessmentType requireAdminApproval")
+      .populate(
+        "assignmentId",
+        "title totalMarks dueDate courseId assessmentType requireAdminApproval",
+      )
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(Number(limit)),
@@ -803,14 +844,16 @@ export const getSubmissionByIdService = async (id, user) => {
         "title dueDate totalMarks questions courseId createdBy file assessmentType passingMarks requireAdminApproval gradingPrompt answerKey useAnswerKeyForGrading aiGradingEnabled showCorrectAnswers allowResubmission maxResubmissions",
       populate: {
         path: "questions",
-        select: "prompt type marks options correctAnswer correctAnswers rubric aiRules",
+        select:
+          "prompt type marks options correctAnswer correctAnswers rubric aiRules",
       },
     })
     .populate({
       path: "answers",
       populate: {
         path: "questionId",
-        select: "prompt type marks options correctAnswer correctAnswers rubric aiRules",
+        select:
+          "prompt type marks options correctAnswer correctAnswers rubric aiRules",
       },
     })
     .populate("gradedBy", "name email")
@@ -846,11 +889,11 @@ export const gradeSubmissionService = async (
     annotations: docAnnotations,
     documentAnnotations,
   },
-  gradedBy
+  gradedBy,
 ) => {
   const submission = await Submission.findById(id).populate(
     "assignmentId",
-    "totalMarks passingMarks requireAdminApproval"
+    "totalMarks passingMarks requireAdminApproval",
   );
   if (!submission) throw new ApiError(404, "Submission not found");
 
@@ -861,7 +904,7 @@ export const gradeSubmissionService = async (
   if (maxMarks > 0 && Number(totalScore) > maxMarks)
     throw new ApiError(
       400,
-      `Score (${totalScore}) cannot exceed total marks (${maxMarks})`
+      `Score (${totalScore}) cannot exceed total marks (${maxMarks})`,
     );
 
   if (questionGrades.length > 0) {
@@ -869,7 +912,7 @@ export const gradeSubmissionService = async (
       Answer.findByIdAndUpdate(answerId, {
         ...(marks !== undefined && { marksAwarded: marks }),
         ...(isCorrect !== undefined && { isCorrect }),
-      })
+      }),
     );
     await Promise.all(updateOps);
   }
@@ -881,12 +924,15 @@ export const gradeSubmissionService = async (
   submission.gradedAt = new Date();
   submission.passFail = computePassFail(
     Number(totalScore),
-    submission.assignmentId?.passingMarks
+    submission.assignmentId?.passingMarks,
   );
   // Grading does not by itself complete the approval workflow — if the
   // assignment requires admin approval, the submission still needs an
   // explicit Approve action (MODULE 6) even though it now has a grade.
-  if (submission.assignmentId?.requireAdminApproval && submission.approvalStatus !== "approved") {
+  if (
+    submission.assignmentId?.requireAdminApproval &&
+    submission.approvalStatus !== "approved"
+  ) {
     submission.approvalStatus = "pending";
   }
 
@@ -906,7 +952,7 @@ export const gradeSubmissionService = async (
           typeof a.page === "number" &&
           typeof a.xPct === "number" &&
           typeof a.yPct === "number" &&
-          VALID_TYPES.includes(a.type)
+          VALID_TYPES.includes(a.type),
       )
       .map((a) => ({
         id: a.id,
@@ -937,14 +983,17 @@ export const gradeSubmissionService = async (
 export const saveAnnotationsService = async (id, annotations, user) => {
   const submission = await Submission.findById(id).populate(
     "assignmentId",
-    "createdBy"
+    "createdBy",
   );
   if (!submission) throw new ApiError(404, "Submission not found");
 
   if (user.role === "tutor") {
     const createdBy = submission.assignmentId?.createdBy?.toString();
     if (createdBy && createdBy !== user._id.toString()) {
-      throw new ApiError(403, "You are not allowed to annotate this submission");
+      throw new ApiError(
+        403,
+        "You are not allowed to annotate this submission",
+      );
     }
   } else if (user.role === "student") {
     throw new ApiError(403, "Students cannot save annotations");
@@ -959,7 +1008,7 @@ export const saveAnnotationsService = async (id, annotations, user) => {
         typeof a.page === "number" &&
         typeof a.xPct === "number" &&
         typeof a.yPct === "number" &&
-        VALID_TYPES.includes(a.type)
+        VALID_TYPES.includes(a.type),
     )
     .map((a) => ({
       id: a.id,
@@ -975,7 +1024,6 @@ export const saveAnnotationsService = async (id, annotations, user) => {
 
   return { annotations: submission.annotations, count: clean.length };
 };
-
 
 // ─── RESUBMIT (Student) ──────────────────────────────────────────────────────
 /**
@@ -997,24 +1045,43 @@ export const resubmitAssignmentService = async ({
   fileOriginalName,
   fileMimetype,
 }) => {
-  // 1. File required
+  // ============================================================
+  // 1. FILE VALIDATION
+  // ============================================================
+
   if (!fileBuffer || !fileOriginalName) {
     throw new ApiError(400, "A PDF file is required to resubmit.");
   }
 
-  // PDF-only validation
   const isPdfByMime = fileMimetype === "application/pdf";
   const isPdfByExt = /\.pdf$/i.test(fileOriginalName);
-  if (!isPdfByMime && !isPdfByExt) {
-    throw new ApiError(400, "Only PDF files are allowed for resubmission.");
+
+  if (!isPdfByMime || !isPdfByExt) {
+    throw new ApiError(
+      400,
+      "Only PDF files are allowed for resubmission."
+    );
   }
 
-  // 2. Load assignment (need dueDate, courseId for late check)
-  const assignment = await Assignment.findById(assignmentId);
-  if (!assignment) throw new ApiError(404, "Assignment not found");
+  // ============================================================
+  // 2. LOAD ASSIGNMENT
+  // ============================================================
 
-  // 3. Find existing submission
-  const submission = await Submission.findOne({ assignmentId, studentId });
+  const assignment = await Assignment.findById(assignmentId);
+
+  if (!assignment) {
+    throw new ApiError(404, "Assignment not found");
+  }
+
+  // ============================================================
+  // 3. FIND EXISTING SUBMISSION
+  // ============================================================
+
+  const submission = await Submission.findOne({
+    assignmentId,
+    studentId,
+  });
+
   if (!submission) {
     throw new ApiError(
       404,
@@ -1022,91 +1089,219 @@ export const resubmitAssignmentService = async ({
     );
   }
 
-  // 4. Due-date validation
-  if (assignment.dueDate && new Date() > new Date(assignment.dueDate)) {
+  // ============================================================
+  // 4. DUE DATE VALIDATION
+  // ============================================================
+
+  if (
+    assignment.dueDate &&
+    new Date() > new Date(assignment.dueDate)
+  ) {
     throw new ApiError(
       403,
       "Due date has passed. You cannot update your submission."
     );
   }
 
-  // 5. Resubmission gating (MODULE 9)
-  //    - Finalized submissions (graded / ai_reviewed / approved) can only
-  //      be replaced if the admin explicitly flagged resubmission_required.
-  //    - Otherwise, fall back to the original "graded blocks resubmit"
-  //      rule for full backward compatibility with the existing UI.
-  const FINALIZED_STATUSES = ["graded", "ai_reviewed", "approved"];
+  // ============================================================
+  // 5. RESUBMISSION GATING
+  // ============================================================
+
+  const FINALIZED_STATUSES = [
+    "graded",
+    "ai_reviewed",
+    "approved",
+  ];
+
   if (FINALIZED_STATUSES.includes(submission.status)) {
-    throw new ApiError(403, "Graded submissions cannot be replaced.");
+    throw new ApiError(
+      403,
+      "Graded submissions cannot be replaced."
+    );
   }
 
-  if (assignment.allowResubmission === false && submission.resubmissionCount > 0) {
-    throw new ApiError(403, "Resubmission is not allowed for this assignment.");
+  if (
+    assignment.allowResubmission === false &&
+    submission.resubmissionCount > 0
+  ) {
+    throw new ApiError(
+      403,
+      "Resubmission is not allowed for this assignment."
+    );
   }
 
-  const maxResubmissions = Number(assignment.maxResubmissions ?? 3);
-  if (maxResubmissions > 0 && submission.resubmissionCount >= maxResubmissions) {
+  const maxResubmissions = Number(
+    assignment.maxResubmissions ?? 3
+  );
+
+  if (
+    maxResubmissions > 0 &&
+    submission.resubmissionCount >= maxResubmissions
+  ) {
     throw new ApiError(
       403,
       `Maximum number of resubmissions (${maxResubmissions}) reached.`
     );
   }
 
-  // Snapshot the previous attempt into history before overwriting it.
-  submission.submissionHistory = submission.submissionHistory || [];
+  // ============================================================
+  // 6. SAVE OLD FILE REFERENCE
+  // ============================================================
+
+  const oldPublicId =
+    submission.submissionFile?.public_id || null;
+
+  // ============================================================
+  // 7. SNAPSHOT PREVIOUS ATTEMPT
+  // ============================================================
+
+  submission.submissionHistory =
+    submission.submissionHistory || [];
+
   submission.submissionHistory.push({
-    submittedAt: submission.updatedAt || submission.createdAt || new Date(),
+    submittedAt:
+      submission.updatedAt ||
+      submission.createdAt ||
+      new Date(),
+
     submissionFile: submission.submissionFile,
     totalScore: submission.totalScore,
     feedback: submission.feedback,
     status: submission.status,
   });
 
-  // 6. Delete previous Cloudinary file (best-effort, swallow errors)
-  if (submission.submissionFile?.public_id) {
-    try {
-      await deletePdfFromCloudinary(submission.submissionFile.public_id);
-    } catch (err) {
-      console.error("Cloudinary delete failed during resubmit:", err.message);
-    }
+  // ============================================================
+  // 8. UPLOAD NEW PDF FIRST
+  // ============================================================
+
+  console.log("RESUBMIT: Starting Cloudinary upload", {
+    assignmentId,
+    studentId: String(studentId),
+    fileOriginalName,
+    fileMimetype,
+    bufferExists: !!fileBuffer,
+    bufferSize: fileBuffer?.length || 0,
+  });
+
+  let uploaded;
+
+  try {
+    uploaded = await uploadPdfToCloudinary(
+      fileBuffer,
+      fileOriginalName,
+      "assignments/submissions"
+    );
+
+    console.log("RESUBMIT: Cloudinary upload successful", {
+      public_id: uploaded?.public_id,
+      hasUrl: !!uploaded?.url,
+    });
+  } catch (error) {
+    console.error("RESUBMIT: Cloudinary upload FAILED", {
+      message: error?.message,
+      name: error?.name,
+      http_code: error?.http_code,
+      stack: error?.stack,
+    });
+
+    throw new ApiError(
+      500,
+      `Failed to upload resubmitted PDF: ${
+        error?.message || "Unknown Cloudinary error"
+      }`
+    );
   }
 
-  // 7. Upload new file
-  const uploaded = await uploadPdfToCloudinary(
-    fileBuffer,
-    fileOriginalName,
-    "assignments/submissions"
-  );
+  // ============================================================
+  // 9. UPDATE SUBMISSION FILE
+  // ============================================================
 
-  // 8. Update submissionFile
   submission.submissionFile = {
     url: uploaded.url,
     public_id: uploaded.public_id,
     originalName: fileOriginalName,
   };
 
-  // 9. Recalculate isLate
+  // ============================================================
+  // 10. RECALCULATE LATE STATUS
+  // ============================================================
+
   submission.isLate = !!(
-    assignment.dueDate && new Date() > new Date(assignment.dueDate)
+    assignment.dueDate &&
+    new Date() > new Date(assignment.dueDate)
   );
 
-  // 10. Reset grading state completely + increment resubmission tracking
+  // ============================================================
+  // 11. RESET GRADING STATE
+  // ============================================================
+
   submission.status = "submitted";
+
   submission.totalScore = null;
   submission.feedback = "";
+
   submission.gradedBy = null;
   submission.gradedAt = null;
+
   submission.annotations = [];
   submission.reviewAnnotations = [];
-  submission.passFail = "pending";
-  submission.approvalStatus = assignment.requireAdminApproval ? "pending" : "not_required";
-  submission.resubmissionCount = (submission.resubmissionCount || 0) + 1;
 
-  // 11. Save and return populated submission
+  submission.passFail = "pending";
+
+  submission.approvalStatus =
+    assignment.requireAdminApproval
+      ? "pending"
+      : "not_required";
+
+  submission.resubmissionCount =
+    (submission.resubmissionCount || 0) + 1;
+
+  // ============================================================
+  // 12. SAVE NEW SUBMISSION
+  // ============================================================
+
   await submission.save();
 
+  console.log("RESUBMIT: MongoDB submission updated", {
+    submissionId: String(submission._id),
+    resubmissionCount: submission.resubmissionCount,
+  });
+
+  // ============================================================
+  // 13. DELETE OLD CLOUDINARY FILE AFTER SUCCESS
+  // ============================================================
+
+  if (
+    oldPublicId &&
+    oldPublicId !== uploaded.public_id
+  ) {
+    try {
+      await deletePdfFromCloudinary(oldPublicId);
+
+      console.log(
+        "RESUBMIT: Previous Cloudinary file deleted",
+        {
+          oldPublicId,
+        }
+      );
+    } catch (err) {
+      // Don't fail the submission if cleanup fails.
+      console.error(
+        "RESUBMIT: Previous Cloudinary file cleanup failed:",
+        err.message
+      );
+    }
+  }
+
+  // ============================================================
+  // 14. RETURN UPDATED SUBMISSION
+  // ============================================================
+
   return Submission.findById(submission._id)
-    .populate("assignmentId", "title dueDate totalMarks")
+    .populate(
+      "assignmentId",
+      "title dueDate totalMarks"
+    )
     .populate("answers");
 };
 
@@ -1125,23 +1320,33 @@ export const aiGradeTextService = async (submissionId, user) => {
   const submission = await Submission.findById(submissionId)
     .populate({
       path: "assignmentId",
-      select: "questions gradingPrompt answerKey useAnswerKeyForGrading aiGradingEnabled createdBy totalMarks",
-      populate: { path: "questions", select: "prompt type marks rubric correctAnswer" },
+      select:
+        "questions gradingPrompt answerKey useAnswerKeyForGrading aiGradingEnabled createdBy totalMarks",
+      populate: {
+        path: "questions",
+        select: "prompt type marks rubric correctAnswer",
+      },
     })
     .populate("answers");
 
   if (!submission) throw new ApiError(404, "Submission not found");
 
   const assignment = submission.assignmentId;
-  if (user.role === "tutor" && assignment.createdBy?.toString() !== user._id.toString()) {
+  if (
+    user.role === "tutor" &&
+    assignment.createdBy?.toString() !== user._id.toString()
+  ) {
     throw new ApiError(403, "Access denied");
   }
 
   const textQuestions = (assignment.questions || []).filter((q) =>
-    ["text", "short_answer", "long_answer"].includes(q.type)
+    ["text", "short_answer", "long_answer"].includes(q.type),
   );
   if (textQuestions.length === 0) {
-    throw new ApiError(400, "This submission has no text answers for AI to grade");
+    throw new ApiError(
+      400,
+      "This submission has no text answers for AI to grade",
+    );
   }
 
   const answersPayload = (submission.answers || []).map((a) => ({
@@ -1157,7 +1362,10 @@ export const aiGradeTextService = async (submissionId, user) => {
 
   // Map AI question grades to their answer ids for later "accept" application
   const answerByQuestion = new Map(
-    (submission.answers || []).map((a) => [String(a.questionId?._id || a.questionId), a])
+    (submission.answers || []).map((a) => [
+      String(a.questionId?._id || a.questionId),
+      a,
+    ]),
   );
   const questionGradesWithAnswerIds = aiResult.questionGrades.map((g) => ({
     questionId: g.questionId,
@@ -1188,8 +1396,8 @@ export const aiGradeTextService = async (submissionId, user) => {
           aiSuggestedMarks: g.marksAwarded,
           aiSuggestedFeedback: g.feedbackText,
           aiSuggestedCorrect: g.isCorrect,
-        })
-      )
+        }),
+      ),
   );
 
   return Submission.findById(submission._id)
@@ -1207,26 +1415,36 @@ export const aiGradeTextService = async (submissionId, user) => {
 export const aiReviewProjectService = async (submissionId, user) => {
   const submission = await Submission.findById(submissionId).populate({
     path: "assignmentId",
-    select: "gradingPrompt answerKey useAnswerKeyForGrading totalMarks createdBy",
+    select:
+      "gradingPrompt answerKey useAnswerKeyForGrading totalMarks createdBy",
   });
 
   if (!submission) throw new ApiError(404, "Submission not found");
 
   const assignment = submission.assignmentId;
-  if (user.role === "tutor" && assignment.createdBy?.toString() !== user._id.toString()) {
+  if (
+    user.role === "tutor" &&
+    assignment.createdBy?.toString() !== user._id.toString()
+  ) {
     throw new ApiError(403, "Access denied");
   }
 
   if (!submission.submissionFile?.url) {
-    throw new ApiError(400, "This submission has no uploaded file for AI to review");
+    throw new ApiError(
+      400,
+      "This submission has no uploaded file for AI to review",
+    );
   }
 
-  const aiResult = await reviewProjectSubmission(submission.submissionFile.url, {
-    gradingPrompt: assignment.gradingPrompt,
-    answerKey: assignment.answerKey,
-    useAnswerKeyForGrading: assignment.useAnswerKeyForGrading,
-    totalMarks: assignment.totalMarks,
-  });
+  const aiResult = await reviewProjectSubmission(
+    submission.submissionFile.url,
+    {
+      gradingPrompt: assignment.gradingPrompt,
+      answerKey: assignment.answerKey,
+      useAnswerKeyForGrading: assignment.useAnswerKeyForGrading,
+      totalMarks: assignment.totalMarks,
+    },
+  );
 
   submission.aiDraft = {
     questionGrades: [],
@@ -1261,11 +1479,11 @@ export const aiReviewProjectService = async (submissionId, user) => {
 export const acceptAiDraftService = async (
   id,
   { totalScore, feedback, questionGrades } = {},
-  gradedBy
+  gradedBy,
 ) => {
   const submission = await Submission.findById(id).populate(
     "assignmentId",
-    "totalMarks passingMarks requireAdminApproval"
+    "totalMarks passingMarks requireAdminApproval",
   );
   if (!submission) throw new ApiError(404, "Submission not found");
 
@@ -1281,7 +1499,9 @@ export const acceptAiDraftService = async (
       : Number(submission.aiDraft.score ?? 0);
 
   const finalFeedback =
-    feedback !== undefined ? feedback : submission.aiDraft.overallFeedback || "";
+    feedback !== undefined
+      ? feedback
+      : submission.aiDraft.overallFeedback || "";
 
   const finalQuestionGrades =
     Array.isArray(questionGrades) && questionGrades.length > 0
@@ -1290,7 +1510,10 @@ export const acceptAiDraftService = async (
 
   const maxMarks = Number(submission.assignmentId?.totalMarks || 0);
   if (maxMarks > 0 && finalScore > maxMarks) {
-    throw new ApiError(400, `Score (${finalScore}) cannot exceed total marks (${maxMarks})`);
+    throw new ApiError(
+      400,
+      `Score (${finalScore}) cannot exceed total marks (${maxMarks})`,
+    );
   }
 
   if (finalQuestionGrades.length > 0) {
@@ -1299,10 +1522,12 @@ export const acceptAiDraftService = async (
         .filter((g) => g.answerId)
         .map((g) =>
           Answer.findByIdAndUpdate(g.answerId, {
-            ...(g.marksAwarded !== undefined && { marksAwarded: g.marksAwarded }),
+            ...(g.marksAwarded !== undefined && {
+              marksAwarded: g.marksAwarded,
+            }),
             ...(g.isCorrect !== undefined && { isCorrect: g.isCorrect }),
-          })
-        )
+          }),
+        ),
     );
   }
 
@@ -1311,9 +1536,15 @@ export const acceptAiDraftService = async (
   submission.status = "graded";
   submission.gradedBy = gradedBy;
   submission.gradedAt = new Date();
-  submission.passFail = computePassFail(finalScore, submission.assignmentId?.passingMarks);
+  submission.passFail = computePassFail(
+    finalScore,
+    submission.assignmentId?.passingMarks,
+  );
   submission.aiDraft.accepted = true;
-  if (submission.assignmentId?.requireAdminApproval && submission.approvalStatus !== "approved") {
+  if (
+    submission.assignmentId?.requireAdminApproval &&
+    submission.approvalStatus !== "approved"
+  ) {
     submission.approvalStatus = "pending";
   }
 
@@ -1340,7 +1571,7 @@ export const approveSubmissionService = async (id, approvedBy) => {
   if (!["graded", "ai_reviewed"].includes(submission.status)) {
     throw new ApiError(
       400,
-      "Only graded submissions can be approved. Grade this submission first."
+      "Only graded submissions can be approved. Grade this submission first.",
     );
   }
 
@@ -1366,12 +1597,15 @@ export const approveSubmissionService = async (id, approvedBy) => {
 export const requestResubmissionService = async (id, feedback, user) => {
   const submission = await Submission.findById(id).populate(
     "assignmentId",
-    "allowResubmission maxResubmissions createdBy"
+    "allowResubmission maxResubmissions createdBy",
   );
   if (!submission) throw new ApiError(404, "Submission not found");
 
   const assignment = submission.assignmentId;
-  if (user.role === "tutor" && assignment.createdBy?.toString() !== user._id.toString()) {
+  if (
+    user.role === "tutor" &&
+    assignment.createdBy?.toString() !== user._id.toString()
+  ) {
     throw new ApiError(403, "Access denied");
   }
 
@@ -1380,10 +1614,13 @@ export const requestResubmissionService = async (id, feedback, user) => {
   }
 
   const maxResubmissions = Number(assignment.maxResubmissions ?? 3);
-  if (maxResubmissions > 0 && submission.resubmissionCount >= maxResubmissions) {
+  if (
+    maxResubmissions > 0 &&
+    submission.resubmissionCount >= maxResubmissions
+  ) {
     throw new ApiError(
       403,
-      `Maximum number of resubmissions (${maxResubmissions}) already reached.`
+      `Maximum number of resubmissions (${maxResubmissions}) already reached.`,
     );
   }
 

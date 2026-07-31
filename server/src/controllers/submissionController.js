@@ -211,15 +211,28 @@ export const saveAnnotations = asyncHandler(async (req, res) => {
 // Student replaces their existing submission file with a new PDF
 // (only allowed before due date and before grading).
 export const resubmitAssignment = asyncHandler(async (req, res) => {
+  if (!req.file) {
+    return apiResponse(
+      res,
+      400,
+      "A PDF file is required to resubmit the assignment."
+    );
+  }
+
   const submission = await resubmitAssignmentService({
     assignmentId: req.params.assignmentId,
     studentId: req.user._id,
-    fileBuffer: req.file?.buffer,
-    fileOriginalName: req.file?.originalname,
-    fileMimetype: req.file?.mimetype,
+    fileBuffer: req.file.buffer,
+    fileOriginalName: req.file.originalname,
+    fileMimetype: req.file.mimetype,
   });
 
-  return apiResponse(res, 200, "Submission updated successfully", submission);
+  return apiResponse(
+    res,
+    200,
+    "Submission updated successfully",
+    submission
+  );
 });
 
 /* ════════════════════════════════════════════════════════════════
