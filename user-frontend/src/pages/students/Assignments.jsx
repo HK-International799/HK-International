@@ -1,4 +1,8 @@
+
+
+
 // import { useEffect, useState, useRef, useCallback } from "react";
+// import { Link } from "react-router-dom";
 // import {
 //   FileText,
 //   Calendar,
@@ -107,6 +111,21 @@
 //       cls: "bg-emerald-100 text-emerald-700 border border-emerald-200",
 //       icon: <CheckCheck size={11} />,
 //       label: "Graded",
+//     },
+//     approved: {
+//       cls: "bg-emerald-100 text-emerald-700 border border-emerald-200",
+//       icon: <CheckCheck size={11} />,
+//       label: "Approved",
+//     },
+//     ai_reviewed: {
+//       cls: "bg-violet-100 text-violet-700 border border-violet-200",
+//       icon: <Clock size={11} />,
+//       label: "AI Reviewed",
+//     },
+//     resubmission_required: {
+//       cls: "bg-orange-100 text-orange-700 border border-orange-200",
+//       icon: <RotateCcw size={11} />,
+//       label: "Resubmission Needed",
 //     },
 //     submitted: {
 //       cls: "bg-indigo-100 text-indigo-700 border border-indigo-200",
@@ -315,6 +334,8 @@
 //   if (!sub) return null;
 //   const scoreData = formatScore(sub.totalScore, assignment?.totalMarks);
 //   const annotationCount = sub.annotations?.length || 0;
+//   // ✅ treat AI-reviewed/approved the same as graded for display purposes
+//   const isGradedLike = ["graded", "ai_reviewed", "approved"].includes(sub.status);
 
 //   // Build reviewed-PDF download filename: [studentName]-[assignmentTitle]-reviewed.pdf
 //   const reviewedFilename = () => {
@@ -325,8 +346,18 @@
 
 //   return (
 //     <div className="space-y-4">
+//       {/* ✅ Module 8 — link to the full result page */}
+//       {["graded", "ai_reviewed", "approved"].includes(sub.status) && assignment?._id && (
+//         <Link
+//           to={`/student/assignments/${assignment._id}/result`}
+//           className="inline-flex items-center gap-1.5 text-sm text-indigo-600 hover:underline"
+//         >
+//           View Full Result →
+//         </Link>
+//       )}
+
 //       {/* Score */}
-//       {sub.status === "graded" && scoreData && (
+//       {isGradedLike && scoreData && (
 //         <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-white border border-slate-200">
 //           <ScoreRing pct={scoreData.pct} />
 //           <div className="flex-1">
@@ -393,7 +424,7 @@
 //       )}
 
 //       {/* Reviewed PDF download (only when graded AND submission file exists) */}
-//       {sub.status === "graded" && sub.submissionFile?.url && (
+//       {isGradedLike && sub.submissionFile?.url && (
 //         <button
 //           type="button"
 //           onClick={() => triggerDownload(sub.submissionFile.url, reviewedFilename())}
@@ -427,7 +458,7 @@
 //               <div
 //                 key={ans._id}
 //                 className={`rounded-xl border p-3 space-y-2 ${
-//                   sub.status === "graded"
+//                   isGradedLike
 //                     ? isCorrect === true
 //                       ? "border-emerald-200 bg-emerald-50"
 //                       : isCorrect === false
@@ -440,7 +471,7 @@
 //                   <p className="text-xs font-medium text-slate-600">
 //                     Q{i + 1}. {q?.prompt}
 //                   </p>
-//                   {sub.status === "graded" && awarded != null && (
+//                   {isGradedLike && awarded != null && (
 //                     <span className="text-xs font-semibold text-slate-500 shrink-0">
 //                       {awarded}/{q?.marks || "?"}
 //                     </span>
@@ -451,7 +482,7 @@
 //                     <span className="italic text-slate-400">No answer</span>
 //                   )}
 //                 </p>
-//                 {sub.status === "graded" && q?.correctAnswer && (
+//                 {isGradedLike && q?.correctAnswer && (
 //                   <p className="text-xs text-emerald-600">
 //                     ✓ Correct: {q.correctAnswer}
 //                   </p>
@@ -779,7 +810,9 @@
 //             const isOpen = expandedId === id;
 //             const sub = cached[id];
 //             const hasSubmission = a.submissionStatus !== "not_submitted";
-//             const isGraded = a.submissionStatus === "graded";
+//             const isGraded = ["graded", "ai_reviewed", "approved"].includes(
+//               a.submissionStatus,
+//             );
 //             const isPastDue = !!(a.dueDate && new Date() > new Date(a.dueDate));
 //             const scoreData = isGraded
 //               ? formatScore(sub?.totalScore, a.totalMarks)
@@ -1134,6 +1167,16 @@
 //     </MainLayout>
 //   );
 // }
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1662,6 +1705,30 @@ const ReplaceSubmissionPanel = ({
   const [showReplace, setShowReplace] = useState(false);
   const [busy, setBusy] = useState(false);
 
+  // ✅ FIX: Mirror the backend's resubmission gating (assignment.js
+  // service — allowResubmission / maxResubmissions) here so the
+  // "Replace Submission" button doesn't stay visible and clickable
+  // when a resubmission would just be rejected with a 403. Defaults
+  // match the backend's own defaults (maxResubmissions ?? 3).
+  const resubmissionCount = sub?.resubmissionCount || 0;
+  const maxResubmissions = Number(assignment?.maxResubmissions ?? 3);
+  const allowResubmission = assignment?.allowResubmission !== false;
+
+  const resubmissionBlocked =
+    (!allowResubmission && resubmissionCount > 0) ||
+    (maxResubmissions > 0 && resubmissionCount >= maxResubmissions);
+
+  if (resubmissionBlocked) {
+    return (
+      <div className="flex items-center gap-2 text-sm text-slate-500 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+        <Lock size={14} />
+        {!allowResubmission
+          ? "Resubmission is not allowed for this assignment."
+          : `Maximum number of resubmissions (${maxResubmissions}) reached.`}
+      </div>
+    );
+  }
+
   const submitReplace = async () => {
     if (!newFile) return;
     setBusy(true);
@@ -1790,6 +1857,10 @@ export default function Assignments() {
     if (cached[id] !== undefined) return; // already fetched
 
     try {
+      // getMySubmissionForAssignment already normalizes "no submission
+      // yet" (backend 200 + data:null) into a plain `null` — that is
+      // NOT an error, it's a legitimate cache value meaning "not
+      // submitted". Any exception here is a genuine fetch failure.
       const sub = await getMySubmissionForAssignment(id);
       setCached((p) => ({ ...p, [id]: sub }));
       if (sub?.status) {
@@ -1799,8 +1870,15 @@ export default function Assignments() {
           ),
         );
       }
-    } catch {
-      setCached((p) => ({ ...p, [id]: null }));
+    } catch (err) {
+      // Genuine failure (network/500/auth) — surface it instead of
+      // silently pretending there's no submission.
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to load submission details.";
+      setErrors((p) => ({ ...p, [id]: msg }));
+      setCached((p) => ({ ...p, [id]: undefined }));
     }
   };
 
@@ -2119,10 +2197,18 @@ export default function Assignments() {
                     {hasSubmission && (
                       <>
                         {/* Loading submission details */}
-                        {sub === undefined && (
+                        {sub === undefined && !localError && (
                           <div className="flex items-center gap-2 text-sm text-slate-400">
                             <Loader2 size={14} className="animate-spin" />
                             Loading submission…
+                          </div>
+                        )}
+
+                        {/* Genuine fetch failure — distinct from "no submission yet" */}
+                        {sub === undefined && localError && (
+                          <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2.5">
+                            <AlertTriangle size={14} />
+                            {localError}
                           </div>
                         )}
 
@@ -2173,8 +2259,9 @@ export default function Assignments() {
                           </div>
                         )}
 
-                        {/* Local error display */}
-                        {localError && (
+                        {/* Local error display (resubmit errors — the initial-fetch
+                            error case is already handled above when sub === undefined) */}
+                        {localError && sub !== undefined && (
                           <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
                             <AlertTriangle size={14} />
                             {localError}
