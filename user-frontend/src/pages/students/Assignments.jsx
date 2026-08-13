@@ -1,6 +1,3 @@
-
-
-
 // import { useEffect, useState, useRef, useCallback } from "react";
 // import { Link } from "react-router-dom";
 // import {
@@ -1168,18 +1165,6 @@
 //   );
 // }
 
-
-
-
-
-
-
-
-
-
-
-
-
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -1259,7 +1244,10 @@ const getScoreColor = (pct) => {
 
 // Sanitize a string for use as a filename
 const sanitizeForFilename = (s = "") =>
-  s.replace(/[\\/:*?"<>|]+/g, "").replace(/\s+/g, "_").trim() || "file";
+  s
+    .replace(/[\\/:*?"<>|]+/g, "")
+    .replace(/\s+/g, "_")
+    .trim() || "file";
 
 // Blob-forced download — preserves the original filename instead of cloudinary hash
 const triggerDownload = async (url, filename) => {
@@ -1514,7 +1502,9 @@ const SubmissionResult = ({ sub, assignment }) => {
   const scoreData = formatScore(sub.totalScore, assignment?.totalMarks);
   const annotationCount = sub.annotations?.length || 0;
   // ✅ treat AI-reviewed/approved the same as graded for display purposes
-  const isGradedLike = ["graded", "ai_reviewed", "approved"].includes(sub.status);
+  const isGradedLike = ["graded", "ai_reviewed", "approved"].includes(
+    sub.status,
+  );
 
   // Build reviewed-PDF download filename: [studentName]-[assignmentTitle]-reviewed.pdf
   const reviewedFilename = () => {
@@ -1526,14 +1516,15 @@ const SubmissionResult = ({ sub, assignment }) => {
   return (
     <div className="space-y-4">
       {/* ✅ Module 8 — link to the full result page */}
-      {["graded", "ai_reviewed", "approved"].includes(sub.status) && assignment?._id && (
-        <Link
-          to={`/student/assignments/${assignment._id}/result`}
-          className="inline-flex items-center gap-1.5 text-sm text-indigo-600 hover:underline"
-        >
-          View Full Result →
-        </Link>
-      )}
+      {["graded", "ai_reviewed", "approved"].includes(sub.status) &&
+        assignment?._id && (
+          <Link
+            to={`/student/assignments/${assignment._id}/result`}
+            className="inline-flex items-center gap-1.5 text-sm text-indigo-600 hover:underline"
+          >
+            View Full Result →
+          </Link>
+        )}
 
       {/* Score */}
       {isGradedLike && scoreData && (
@@ -1582,7 +1573,7 @@ const SubmissionResult = ({ sub, assignment }) => {
           onClick={() =>
             triggerDownload(
               sub.submissionFile.url,
-              sub.submissionFile.originalName || "my-submission.pdf"
+              sub.submissionFile.originalName || "my-submission.pdf",
             )
           }
           className="w-full text-left flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all group"
@@ -1606,7 +1597,9 @@ const SubmissionResult = ({ sub, assignment }) => {
       {isGradedLike && sub.submissionFile?.url && (
         <button
           type="button"
-          onClick={() => triggerDownload(sub.submissionFile.url, reviewedFilename())}
+          onClick={() =>
+            triggerDownload(sub.submissionFile.url, reviewedFilename())
+          }
           className="w-full text-left flex items-center gap-3 p-3 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 transition-all group"
         >
           <div className="w-9 h-9 rounded-lg bg-emerald-100 group-hover:bg-emerald-200 flex items-center justify-center transition-colors">
@@ -1947,8 +1940,8 @@ export default function Assignments() {
     setCached((p) => ({ ...p, [assignmentId]: updated }));
     setAssignments((prev) =>
       prev.map((x) =>
-        x._id === assignmentId ? { ...x, submissionStatus: "submitted" } : x
-      )
+        x._id === assignmentId ? { ...x, submissionStatus: "submitted" } : x,
+      ),
     );
     setSuccessId(assignmentId);
     setTimeout(() => setSuccessId(null), 4000);
@@ -2171,7 +2164,7 @@ export default function Assignments() {
                         onClick={() =>
                           triggerDownload(
                             a.file.url,
-                            a.file.originalName || "assignment.docx"
+                            a.file.originalName || "assignment.docx",
                           )
                         }
                         className="w-full text-left flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all group"
@@ -2184,7 +2177,8 @@ export default function Assignments() {
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="text-sm font-medium text-slate-700 truncate">
-                            Download Assignment ({a.file.originalName || "File"})
+                            Download Assignment ({a.file.originalName || "File"}
+                            )
                           </p>
                           <p className="text-xs text-indigo-500">
                             Download & complete →

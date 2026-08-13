@@ -20,6 +20,7 @@ const Contact = lazy(() => import("../pages/public/Contact"));
 const Courses = lazy(() => import("../pages/public/Courses"));
 const CourseDetails = lazy(() => import("../pages/public/CourseDetails"));
 const NotFound = lazy(() => import("../pages/public/NotFound"));
+const VerifyCertificate = lazy(() => import("../pages/public/VerifyCertificate"));
 
 // ─── Auth Pages ───────────────────────────────────────────────────────────────
 const Login = lazy(() => import("../pages/auth/Login"));
@@ -130,6 +131,10 @@ export default function AppRoutes() {
 
           {/* ---------Profiles--------------------------------------------- */}
           <Route path="/profile/ashish" element={<AshishVed />} />
+
+          {/* ── Public Certificate Verification (no login required) ────── */}
+          <Route path="/verify-certificate" element={<VerifyCertificate />} />
+          <Route path="/verify-certificate/:certificateNumber" element={<VerifyCertificate />} />
 
           {/* ── Auth ────────────────────────────────────────────────── */}
           <Route path="/login" element={<Login />} />

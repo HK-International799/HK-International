@@ -13,6 +13,55 @@ const certificateSchema = new mongoose.Schema(
     status: { type: String, enum: ["issued", "revoked"], default: "issued" },
     issuedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 
+    // ── Template system (additive) ──────────────────────────────────────────
+    // Which pluggable PDF template (server/src/services/certificateTemplates)
+    // was used to render this certificate. Existing certificates issued
+    // before this feature have no value stored, so the generator/controller
+    // treat a missing/unknown key as "classic" (the original hardcoded look).
+    templateKey: { type: String, default: "classic" },
+
+    // Cloudinary public_id for the generated PDF, stored alongside the
+    // existing `fileUrl`. Needed so a later regenerate can delete the old
+    // asset before uploading the new one. `fileUrl` itself was already part
+    // of the schema but unused by the issuance flow — see file-change map.
+    filePublicId: { type: String, default: "" },
+    lastRegeneratedAt: { type: Date, default: null },
+
+    // ── Expiry (additive, optional, default off) ────────────────────────────
+    // Expired/not-expired is intentionally NOT a stored boolean — it is
+    // computed at read time (verification + admin list) from expiryDate so
+    // it can never go stale. See certificateController.js computeDisplayStatus.
+    hasExpiry: { type: Boolean, default: false },
+    expiryDate: { type: Date, default: null },
+
+    // ── Structured revocation (additive) ────────────────────────────────────
+    // `status` continues to be the single source of truth read by the
+    // dispatch subsystem and everywhere else in the app — these fields only
+    // add detail around a revocation, they never replace `status`.
+    revokedAt: { type: Date, default: null },
+    revokedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+    revocationReason: { type: String, default: "" },
+
+    // ── Duplicate-issuance / reissue (additive) ─────────────────────────────
+    // See §3.4 decision: the {studentId, courseId} unique index is KEPT.
+    // A "reissue" updates this same document instead of creating a second
+    // one. This counter and history array exist purely for auditability.
+    reissueCount: { type: Number, default: 0 },
+    previousCertificateSnapshots: {
+      type: [
+        {
+          title: String,
+          grade: String,
+          score: Number,
+          issuedAt: Date,
+          status: String,
+          revocationReason: String,
+          replacedAt: { type: Date, default: Date.now },
+        },
+      ],
+      default: [],
+    },
+
     // ── Certificate Dispatch & Courier Management (additive) ───────────────
     // Optional/defaulted — existing certificate issuance/verification code
     // paths are completely unaffected. This certificate IS the dispatch

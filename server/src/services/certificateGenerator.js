@@ -1,7 +1,16 @@
 import PDFDocument from "pdfkit";
+import QRCode from "qrcode";
+import { getTemplate } from "./certificateTemplates/index.js";
+import fetchImageBuffer from "./certificateTemplates/fetchImageBuffer.js";
 
 /**
  * Generate a certificate PDF and return it as a Buffer.
+ *
+ * This is the single pluggable entry point for all certificate PDF
+ * rendering — issuance, regenerate, and download all call this. It owns
+ * fetching the QR code / logo assets and handing the drawing to the
+ * selected template (server/src/services/certificateTemplates/).
+ *
  * @param {Object} data
  * @param {string} data.studentName
  * @param {string} data.courseName
@@ -9,59 +18,65 @@ import PDFDocument from "pdfkit";
  * @param {string} data.issuedDate
  * @param {string} [data.grade]
  * @param {number} [data.score]
+ * @param {string} [data.templateKey] - "classic" | "modern" | "accredited"
+ * @param {string} [data.verifyUrl] - public verification URL to embed as a QR code
+ * @param {string} [data.hkLogoUrl] - org wordmark image URL (best-effort fetch)
+ * @param {string} [data.aoName] - resolved accrediting body name
+ * @param {string} [data.aoLogoUrl] - resolved accrediting body logo URL (best-effort fetch)
+ * @param {string} [data.courseCode]
+ * @param {string} [data.durationText]
+ * @param {boolean} [data.hasExpiry]
+ * @param {string} [data.expiryDateText]
+ * @param {boolean} [data.revoked]
  * @returns {Promise<Buffer>}
  */
-const generateCertificatePDF = (data) => {
+const generateCertificatePDF = async (data) => {
+  const template = getTemplate(data.templateKey);
+
+  // Best-effort asset fetches — never let a slow/broken logo URL fail
+  // certificate generation. Run in parallel.
+  const [qrImageBuffer, hkLogoBuffer, aoLogoBuffer, signatureImageBuffer] =
+    await Promise.all([
+      data.verifyUrl
+        ? QRCode.toBuffer(data.verifyUrl, {
+            margin: 1,
+            width: 240,
+          }).catch(() => null)
+        : Promise.resolve(null),
+
+      fetchImageBuffer(data.hkLogoUrl),
+
+      fetchImageBuffer(data.aoLogoUrl),
+
+      fetchImageBuffer(data.signatureUrl),
+    ]);
+
   return new Promise((resolve, reject) => {
     try {
-      const doc = new PDFDocument({ size: "A4", layout: "landscape", margin: 50 });
+      // Bottom margin kept small on purpose: templates place footer elements
+      // (signature line, QR code, accreditation strip) using absolute
+      // coordinates close to the page edge. PDFKit auto-inserts a new page
+      // if a text/image draw would cross the margin boundary, even when
+      // given explicit x/y — a larger bottom margin was silently producing
+      // blank trailing pages once QR/AO footer elements were added.
+      const doc = new PDFDocument({
+        size: "A4",
+        layout: "landscape",
+        margins: { top: 50, bottom: 18, left: 50, right: 50 },
+      });
       const buffers = [];
 
       doc.on("data", (chunk) => buffers.push(chunk));
       doc.on("end", () => resolve(Buffer.concat(buffers)));
       doc.on("error", reject);
 
-      // ── Border ──
-      doc.rect(20, 20, doc.page.width - 40, doc.page.height - 40).lineWidth(3).stroke("#1a237e");
-      doc.rect(30, 30, doc.page.width - 60, doc.page.height - 60).lineWidth(1).stroke("#90caf9");
-
-      // ── Header ──
-      doc.fontSize(14).fillColor("#666").text("1A HK International", 0, 60, { align: "center" });
-      doc.moveDown(0.5);
-      doc.fontSize(36).fillColor("#1a237e").text("Certificate of Completion", { align: "center" });
-
-      // ── Decorative line ──
-      doc.moveTo(200, 155).lineTo(doc.page.width - 200, 155).lineWidth(2).stroke("#ffc107");
-
-      // ── Body ──
-      doc.moveDown(1.5);
-      doc.fontSize(14).fillColor("#333").text("This is to certify that", { align: "center" });
-      doc.moveDown(0.5);
-      doc.fontSize(28).fillColor("#1a237e").text(data.studentName, { align: "center" });
-      doc.moveDown(0.5);
-      doc.fontSize(14).fillColor("#333").text("has successfully completed the course", { align: "center" });
-      doc.moveDown(0.5);
-      doc.fontSize(22).fillColor("#333").text(`"${data.courseName}"`, { align: "center" });
-
-      if (data.grade || data.score !== undefined) {
-        doc.moveDown(0.5);
-        const scoreText = data.grade
-          ? `Grade: ${data.grade}`
-          : `Score: ${data.score}%`;
-        doc.fontSize(16).fillColor("#666").text(scoreText, { align: "center" });
-      }
-
-      // ── Footer ──
-      doc.moveDown(2);
-      doc.fontSize(12).fillColor("#666").text(`Certificate No: ${data.certificateNumber}`, { align: "center" });
-      doc.moveDown(0.3);
-      doc.text(`Date of Issue: ${data.issuedDate}`, { align: "center" });
-
-      // ── Signature line ──
-      doc.moveDown(2);
-      const signY = doc.y;
-      doc.moveTo(doc.page.width / 2 - 100, signY).lineTo(doc.page.width / 2 + 100, signY).stroke("#333");
-      doc.fontSize(11).text("Authorized Signatory", doc.page.width / 2 - 100, signY + 5, { width: 200, align: "center" });
+      template.render(doc, {
+        ...data,
+        qrImageBuffer,
+        hkLogoBuffer,
+        aoLogoBuffer,
+        signatureImageBuffer,
+      });
 
       doc.end();
     } catch (err) {
