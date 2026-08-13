@@ -91,15 +91,15 @@ const navGroups = [
   //     { to: "/admin/orientation", label: "Orientation", icon: Presentation },
   //   ],
   // },
-  // {
-  //   label: "Management",
-  //   items: [
-  //     { to: "/admin/documents", label: "Document Review", icon: FileText },
-  //     { to: "/admin/feedback", label: "Feedback", icon: MessageSquare },
-  //     { to: "/admin/messages", label: "Messages", icon: MessageCircle },
-  //     { to: "/admin/certificates", label: "Certificates", icon: Award },
-  //   ],
-  // },
+  {
+    label: "Management",
+    items: [
+      // { to: "/admin/documents", label: "Document Review", icon: FileText },
+      // { to: "/admin/feedback", label: "Feedback", icon: MessageSquare },
+      // { to: "/admin/messages", label: "Messages", icon: MessageCircle },
+      { to: "/admin/certificates", label: "Certificates", icon: Award },
+    ],
+  },
   {
     label: "Finance",
     items: [
@@ -121,12 +121,28 @@ const navGroups = [
   {
     label: "Dispatch",
     items: [
-      { to: "/admin/dispatch/dashboard", label: "Dispatch Dashboard", icon: PackageOpen },
-      { to: "/admin/dispatch/certificates", label: "Certificates", icon: Award },
+      {
+        to: "/admin/dispatch/dashboard",
+        label: "Dispatch Dashboard",
+        icon: PackageOpen,
+      },
+      {
+        to: "/admin/dispatch/certificates",
+        label: "Certificates",
+        icon: Award,
+      },
       { to: "/admin/dispatch/batches", label: "Courier Batches", icon: Truck },
       { to: "/admin/dispatch/expenses", label: "Expenses", icon: Wallet },
-      { to: "/admin/dispatch/reports", label: "Dispatch Reports", icon: FileBarChart },
-      { to: "/admin/dispatch/sender", label: "Sender Settings", icon: Settings },
+      {
+        to: "/admin/dispatch/reports",
+        label: "Dispatch Reports",
+        icon: FileBarChart,
+      },
+      {
+        to: "/admin/dispatch/sender",
+        label: "Sender Settings",
+        icon: Settings,
+      },
     ],
   },
   {
