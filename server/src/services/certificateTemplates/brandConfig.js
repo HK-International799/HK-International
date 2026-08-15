@@ -12,7 +12,7 @@ export const BRAND = {
   orgName: "1A HK International",
   orgTagline: "UK-Accredited Health & Safety Training Provider",
   signatoryName: process.env.CERT_SIGNATORY_NAME || "Dr. Ashish M. Ved",
-  signatoryTitle: process.env.CERT_SIGNATORY_TITLE || "Director",
+  signatoryTitle: process.env.CERT_SIGNATORY_TITLE || "Founder & Director",
   primaryColor: "#1a237e",
   accentColor: "#ffc107",
 };
