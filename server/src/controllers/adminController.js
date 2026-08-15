@@ -149,7 +149,7 @@ export const getRecentActivity = asyncHandler(async (req, res) => {
 
 // ── Get All Users ──────────────────────────────────────────────────────
 export const getAllUsers = asyncHandler(async (req, res) => {
-  const { role, page = 1, limit = 50 } = req.query;
+  const { role, page = 1, limit = 1000 } = req.query;
   const filter = {};
   if (role) filter.role = role;
 
