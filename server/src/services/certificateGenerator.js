@@ -61,7 +61,7 @@ const generateCertificatePDF = async (data) => {
       // blank trailing pages once QR/AO footer elements were added.
       const doc = new PDFDocument({
         size: "A4",
-        layout: "landscape",
+        layout: "portrait",
         margins: { top: 50, bottom: 18, left: 50, right: 50 },
       });
       const buffers = [];
