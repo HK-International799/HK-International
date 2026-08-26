@@ -8,6 +8,8 @@ import ApiError from "../utils/ApiError.js";
 import emailService from "../services/emailService.js";
 import auditService from "../services/auditService.js";
 import notificationService from "../services/notificationService.js";
+import { deriveFullName, deriveFullAddress } from "../utils/nameUtils.js";
+import { toCsv } from "../utils/csvExport.js";
 
 // ── Create User (student/tutor) ────────────────────────────────────────
 export const createUser = asyncHandler(async (req, res) => {
@@ -226,18 +228,43 @@ export const getAllRegistrations = asyncHandler(async (req, res) => {
   if (paymentStatus) filter.paymentStatus = paymentStatus;
 
   const registrations = await Registration.find(filter)
-    .populate("student", "name email mobile")
+    .populate("student", "name email mobile firstName middleName lastName")
     .populate("course", "title")
     .populate("partnerInstitute", "name code")
     .populate("processedBy", "name")
+    .populate("requestedCourses.course", "title")
+    .populate("approvedCourses.course", "title")
+    .populate("rejectedCourses.course", "title")
     .sort({ createdAt: -1 })
     .skip((page - 1) * limit)
     .limit(Number(limit))
     .lean();
 
+  const formattedRegistrations = registrations.map((reg) => {
+    if (!reg.student) return reg;
+
+    const first = reg.student.firstName?.trim() || "";
+    const middle = reg.student.middleName?.trim() || "";
+    const last = reg.student.lastName?.trim() || "";
+
+    reg.student.displayName =
+      !first && !last
+        ? (reg.student.name || "").trim()
+        : [first, middle, last].filter(Boolean).join(" ");
+
+    return reg;
+  });
+
   const total = await Registration.countDocuments(filter);
 
-  res.json({ success: true, data: { registrations, total } });
+  // res.json({ success: true, data: { registrations, total } });
+  res.json({
+    success: true,
+    data: {
+      registrations: formattedRegistrations,
+      total,
+    },
+  });
 });
 
 // ── Approve / Reject Registration ──────────────────────────────────────
@@ -267,10 +294,17 @@ export const processRegistration = asyncHandler(async (req, res) => {
     registration.lmsAccessGranted = true;
     registration.lmsAccessGrantedAt = new Date();
 
-    // Auto-enroll student
-    await User.findByIdAndUpdate(registration.student._id, {
-      $addToSet: { enrolledCourses: registration.course._id },
-    });
+    // Enroll on both sides — User.enrolledCourses AND
+    // Course.enrolledStudents — so a course's roster always matches what
+    // each learner's own enrolledCourses list says.
+    await Promise.all([
+      User.findByIdAndUpdate(registration.student._id, {
+        $addToSet: { enrolledCourses: registration.course._id },
+      }),
+      Course.findByIdAndUpdate(registration.course._id, {
+        $addToSet: { enrolledStudents: registration.student._id },
+      }),
+    ]);
   }
 
   await registration.save();
@@ -363,7 +397,7 @@ export const getRegistrationById = asyncHandler(async (req, res) => {
   const registration = await Registration.findById(id)
     .populate(
       "student",
-      "name email mobile firstName lastName dateOfBirth address country",
+      "name email mobile firstName middleName lastName dateOfBirth address addressLine1 addressLine2 city state postalCode country",
     )
     .populate("course", "title")
     .populate("batch", "name startDate endDate")
@@ -371,7 +405,21 @@ export const getRegistrationById = asyncHandler(async (req, res) => {
     .populate("processedBy", "name")
     .populate("paymentVerifiedBy", "name")
     .populate("documents")
+    .populate("requestedCourses.course", "title")
+    .populate("approvedCourses.course", "title")
+    .populate("rejectedCourses.course", "title")
     .lean();
+
+  if (registration?.student) {
+    const first = registration.student.firstName?.trim() || "";
+    const middle = registration.student.middleName?.trim() || "";
+    const last = registration.student.lastName?.trim() || "";
+
+    registration.student.displayName =
+      !first && !last
+        ? (registration.student.name || "").trim()
+        : [first, middle, last].filter(Boolean).join(" ");
+  }
 
   if (!registration) throw new ApiError(404, "Registration not found");
 
@@ -454,9 +502,13 @@ export const confirmRegistrationPayment = asyncHandler(async (req, res) => {
 // ── Learner 360° Profile ─────────────────────────────────────────────────
 // Pure read-aggregation across existing collections. No writes, no schema
 // changes to Exam/Assignment/ScenarioExam/Certificate/Attendance models.
-export const getLearnerProfile = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-
+//
+// Refactored into a shared builder (`buildLearnerProfileData`) so the
+// on-screen 360° profile (`getLearnerProfile`) and the Complete Candidate
+// History Export (`exportLearnerHistory`) use exactly one aggregation —
+// no duplicated query logic, and the export can never drift from what the
+// dashboard shows.
+export const buildLearnerProfileData = async (id) => {
   const [
     { default: Batch },
     { default: ChapterProgress },
@@ -505,6 +557,9 @@ export const getLearnerProfile = asyncHandler(async (req, res) => {
     Registration.find({ student: id })
       .populate("course", "title")
       .populate("batch", "name startDate endDate")
+      .populate("requestedCourses.course", "title")
+      .populate("approvedCourses.course", "title")
+      .populate("rejectedCourses.course", "title")
       .lean(),
     Course.find({ _id: { $in: user.enrolledCourses || [] } })
       .select("title thumbnail status")
@@ -520,9 +575,12 @@ export const getLearnerProfile = asyncHandler(async (req, res) => {
       .lean(),
 
     Submission.find({ studentId: id })
-      .populate("assignmentId", "title totalMarks courseId assessmentType passingMarks")
+      .populate(
+        "assignmentId",
+        "title totalMarks courseId assessmentType passingMarks",
+      )
       .select(
-        "assignmentId totalScore feedback status passFail approvalStatus resubmissionCount aiDraft createdAt gradedAt approvedAt"
+        "assignmentId totalScore feedback status passFail approvalStatus resubmissionCount aiDraft createdAt gradedAt approvedAt",
       )
       .lean(),
     ExamAttempt.find({ studentId: id }).populate("examId", "title").lean(),
@@ -554,13 +612,48 @@ export const getLearnerProfile = asyncHandler(async (req, res) => {
     progress: progressByCourse[String(c._id)] || null,
   }));
 
-  // Payments summary
-  const totalPaid = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
-  const totalFee = payments.length ? payments[0].totalCourseFee : 0;
+  // ── Payments summary ────────────────────────────────────────────────────
+  // BUG FIX: this previously took `totalFee` from payments[0].totalCourseFee
+  // — i.e. whichever payment record happened to sort first — and compared
+  // it against the SUM of every payment across every course the learner is
+  // enrolled in. For a learner with more than one course, that mixes one
+  // course's fee baseline against a combined total-paid figure from all
+  // courses, producing an incorrect "pending" amount.
+  //
+  // Fix: group payments by courseId first (each course carries its own
+  // totalCourseFee baseline, per the LearnerPayment model's own doc-
+  // comment), compute totalFee/totalPaid/pending PER COURSE, then sum
+  // those per-course totals for the overall figures shown on the summary
+  // cards. Per-course breakdown is also exposed for the dashboard/export.
+  const paymentsByCourse = {};
+  for (const p of payments) {
+    const key = String(p.courseId);
+    if (!paymentsByCourse[key]) {
+      paymentsByCourse[key] = {
+        courseId: p.courseId,
+        totalFee: p.totalCourseFee || 0,
+        totalPaid: 0,
+        currency: p.currency,
+        installments: [],
+      };
+    }
+    // Use the most recent record's fee baseline for this course (payments
+    // are already sorted paymentDate: -1, so the first one seen per course
+    // is the most recent).
+    paymentsByCourse[key].totalPaid += p.amount || 0;
+    paymentsByCourse[key].installments.push(p);
+  }
+  const perCourse = Object.values(paymentsByCourse).map((c) => ({
+    ...c,
+    pending: Math.max(c.totalFee - c.totalPaid, 0),
+  }));
+  const totalFee = perCourse.reduce((sum, c) => sum + c.totalFee, 0);
+  const totalPaid = perCourse.reduce((sum, c) => sum + c.totalPaid, 0);
   const paymentsSummary = {
     totalFee,
     totalPaid,
     pending: Math.max(totalFee - totalPaid, 0),
+    perCourse,
     installments: payments,
   };
 
@@ -616,26 +709,224 @@ export const getLearnerProfile = asyncHandler(async (req, res) => {
     });
   timeline.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
 
-  res.json({
-    success: true,
-    data: {
-      profile: {
-        ...user,
-        registrationDate: user.createdAt,
-      },
-      registrations,
-      courses: coursesWithProgress,
-      batches,
-      payments: paymentsSummary,
-      assignments: submissions,
-      exams: examAttempts,
-      scenarioExams: scenarioAttempts,
-      certificates,
-      documents,
-      attendance,
-      activityTimeline: timeline,
-      auditLogs,
-      notifications,
+  return {
+    profile: {
+      ...user,
+      // Registration Requirement 1 / Enterprise Dashboard: correctly
+      // derived full name (never "John  Smith" / "John null Smith"),
+      // falling back to the legacy `name` field for pre-existing records.
+
+      // fullName: deriveFullName(user),
+
+      fullName:
+        !user.firstName && !user.lastName
+          ? user.name || ""
+          : [user.firstName, user.middleName, user.lastName]
+              .filter(Boolean)
+              .join(" "),
+      // Registration Requirement 2: complete postal address for display /
+      // certificate-dispatch traceability, falling back to the legacy
+      // single `address` string for pre-existing records.
+      fullAddress: deriveFullAddress(user),
+      registrationDate: user.createdAt,
     },
+    registrations,
+    courses: coursesWithProgress,
+    batches,
+    payments: paymentsSummary,
+    assignments: submissions,
+    exams: examAttempts,
+    scenarioExams: scenarioAttempts,
+    certificates,
+    documents,
+    attendance,
+    activityTimeline: timeline,
+    auditLogs,
+    notifications,
+  };
+};
+
+export const getLearnerProfile = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const data = await buildLearnerProfileData(id);
+  res.json({ success: true, data });
+});
+
+// ── Complete Candidate History Export ────────────────────────────────────
+// Registration Requirement / Enterprise Dashboard: "Export Candidate
+// Details" — everything about the candidate from registration to present,
+// as a CSV (reuses the same aggregation as the on-screen 360° profile, and
+// the same `json2csv`-based export approach already used elsewhere in this
+// codebase for registrations — see exportRegistrationsCSV above).
+//
+// Security: `buildLearnerProfileData` already excludes passwordHash via
+// `.select("-passwordHash")`; no tokens/secrets are ever part of the User
+// projection, so none can leak into this export.
+export const exportLearnerHistory = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const data = await buildLearnerProfileData(id);
+
+  const { profile } = data;
+  const sections = [];
+
+  sections.push({
+    title: "Candidate Information",
+    rows: [
+      {
+        "Candidate ID": profile._id,
+        "First Name": profile.firstName || "",
+        "Middle Name": profile.middleName || "",
+        "Last Name": profile.lastName || "",
+        "Full Name": profile.fullName || "",
+        Email: profile.email,
+        Mobile: profile.mobile,
+        "Date of Birth": profile.dateOfBirth || "",
+        Country: profile.country || "",
+        "Country Code": profile.countryCode || "",
+        "Postal Address": profile.fullAddress || "",
+        Role: profile.role,
+        "Account Status": profile.isFirstLogin ? "Not yet logged in" : "Active",
+        "Registration Source": profile.registeredVia || "",
+        "Created At": profile.createdAt,
+        "Updated At": profile.updatedAt,
+        "Last Login": profile.lastLoginAt || "",
+      },
+    ],
   });
+
+  sections.push({
+    title: "Registration History",
+    rows: data.registrations.map((r) => ({
+      "Registration ID": r._id,
+      Course: r.course?.title || "",
+      Status: r.status,
+      "Requested Courses": (r.requestedCourses || [])
+        .map((c) => c.course?.title || c.course)
+        .join("; "),
+      "Approved Courses": (r.approvedCourses || [])
+        .map((c) => c.course?.title || c.course)
+        .join("; "),
+      "Rejected Courses": (r.rejectedCourses || [])
+        .map((c) => c.course?.title || c.course)
+        .join("; "),
+      Batch: r.batch?.name || "",
+      "Payment Status": r.paymentStatus,
+      "LMS Access": r.lmsAccessGranted ? "Yes" : "No",
+      "Orientation Completed": r.orientationCompleted ? "Yes" : "No",
+      "Quiz Passed": r.quizPassed ? "Yes" : "No",
+      "Certificate Issued": r.certificateIssued ? "Yes" : "No",
+      Remarks: r.remarks || "",
+      "Registered At": r.createdAt,
+      "Processed At": r.processedAt || "",
+    })),
+  });
+
+  sections.push({
+    title: "Enrollment / Courses",
+    rows: data.courses.map((c) => ({
+      Course: c.title,
+      Status: c.status,
+      "Chapters Completed": c.progress?.completedChapters ?? "",
+    })),
+  });
+
+  sections.push({
+    title: "Payment History",
+    rows: data.payments.installments.map((p) => ({
+      "Total Course Fee": p.totalCourseFee,
+      Amount: p.amount,
+      Currency: p.currency,
+      "Payment Date": p.paymentDate,
+      "Payment Mode": p.paymentMode,
+      "Reference Number": p.referenceNumber || "",
+      Status: p.status,
+      Remarks: p.remarks || "",
+    })),
+  });
+
+  sections.push({
+    title: "Assignment History",
+    rows: data.assignments.map((a) => ({
+      Assignment: a.assignmentId?.title || "",
+      "Total Marks": a.assignmentId?.totalMarks ?? "",
+      "Obtained Marks": a.totalScore ?? "",
+      "Passing Marks": a.assignmentId?.passingMarks ?? "",
+      Result: a.passFail || "",
+      "Approval Status": a.approvalStatus || "",
+      "Submitted At": a.createdAt,
+      "Graded At": a.gradedAt || "",
+    })),
+  });
+
+  sections.push({
+    title: "Exam History",
+    rows: data.exams.map((e) => ({
+      Exam: e.examId?.title || "",
+      Status: e.status,
+      "Started At": e.startedAt || "",
+      "Submitted At": e.submittedAt || "",
+    })),
+  });
+
+  sections.push({
+    title: "Scenario Exam History",
+    rows: data.scenarioExams.map((s) => ({
+      Exam: s.examId?.title || "",
+      Status: s.status,
+      "Submitted At": s.createdAt,
+    })),
+  });
+
+  sections.push({
+    title: "Certificate History",
+    rows: data.certificates.map((c) => ({
+      "Certificate Number": c.certificateNumber,
+      Course: c.courseId?.title || "",
+      "Issue Date": c.issuedAt,
+      "Expiry Date": c.expiryDate || "",
+      Status: c.status,
+      "Dispatch Status": c.dispatchStatus || "",
+      "Tracking Number": c.trackingNumber || "",
+    })),
+  });
+
+  sections.push({
+    title: "Document History",
+    // Do NOT include fileUrl / storage paths in the export by default —
+    // referenced safely by title/status only, per export security rules.
+    rows: data.documents.map((d) => ({
+      Title: d.title || d.fileName,
+      "Original Filename": d.originalName || d.fileName,
+      Category: d.category || d.type,
+      Status: d.status,
+      "Uploaded At": d.createdAt,
+    })),
+  });
+
+  sections.push({
+    title: "Attendance History",
+    rows: data.attendance.map((a) => ({
+      Date: a.markedAt,
+      Status: a.status,
+      Source: a.source,
+    })),
+  });
+
+  sections.push({
+    title: "Activity Timeline",
+    rows: data.activityTimeline.map((t) => ({
+      Date: t.date,
+      Type: t.type,
+      Event: t.label,
+    })),
+  });
+
+  const csv = toCsv(sections);
+
+  res.setHeader("Content-Type", "text/csv");
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename=candidate-${id}-history.csv`,
+  );
+  res.send(csv);
 });

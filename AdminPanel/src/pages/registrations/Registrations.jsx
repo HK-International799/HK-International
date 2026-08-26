@@ -1,3 +1,5 @@
+
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../components/layout/AdminLayout";
@@ -17,6 +19,10 @@ import {
   exportRegistrationsCSV,
   confirmRegistrationPayment,
 } from "../../services/registrationService";
+import {
+  approveRequestedCourse,
+  rejectRequestedCourse,
+} from "../../services/learnerProfileService";
 import {
   ClipboardCheck,
   Search,
@@ -128,6 +134,39 @@ export default function Registrations() {
       alert(err.response?.data?.message || "Error");
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  // Registration Requirement 3 — per-course decision on a candidate's
+  // requested courses, independent of the overall registration approve/
+  // reject action above. Only relevant when a candidate selected more
+  // than one course at registration time.
+  const [courseActionId, setCourseActionId] = useState(null);
+  const handleApproveCourse = async (courseId) => {
+    if (!selected) return;
+    try {
+      setCourseActionId(courseId);
+      const updated = await approveRequestedCourse(selected._id, courseId);
+      setSelected(updated.registration || selected);
+      load();
+    } catch (err) {
+      alert(err.response?.data?.message || "Error approving course");
+    } finally {
+      setCourseActionId(null);
+    }
+  };
+  const handleRejectCourse = async (courseId) => {
+    if (!selected) return;
+    const reason = window.prompt("Reason for rejecting this course (optional):") || "";
+    try {
+      setCourseActionId(courseId);
+      const updated = await rejectRequestedCourse(selected._id, courseId, reason);
+      setSelected(updated || selected);
+      load();
+    } catch (err) {
+      alert(err.response?.data?.message || "Error rejecting course");
+    } finally {
+      setCourseActionId(null);
     }
   };
 
@@ -451,6 +490,59 @@ export default function Registrations() {
                     {selected.partnerInstitute?.name}
                   </p>
                 )}
+              </div>
+            )}
+
+            {/* Registration Requirement 3: when the candidate requested more
+                than one course, let the admin decide each one independently
+                — this never overwrites the original request. */}
+            {selected?.requestedCourses?.length > 1 && (
+              <div className="border border-gray-100 rounded-xl p-4 space-y-2">
+                <p className="text-sm font-semibold text-gray-700">
+                  Requested Courses ({selected.requestedCourses.length})
+                </p>
+                {selected.requestedCourses.map((rc) => {
+                  const courseId = rc.course?._id || rc.course;
+                  const courseTitle = rc.course?.title || String(courseId);
+                  const isApproved = selected.approvedCourses?.some(
+                    (ac) => String(ac.course?._id || ac.course) === String(courseId),
+                  );
+                  const isRejected = selected.rejectedCourses?.some(
+                    (rj) => String(rj.course?._id || rj.course) === String(courseId),
+                  );
+                  return (
+                    <div
+                      key={String(courseId)}
+                      className="flex items-center justify-between text-sm py-1.5 border-b border-gray-50 last:border-0"
+                    >
+                      <span>{courseTitle}</span>
+                      {isApproved ? (
+                        <Badge variant="success">Approved</Badge>
+                      ) : isRejected ? (
+                        <Badge variant="danger">Rejected</Badge>
+                      ) : (
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="success"
+                            loading={courseActionId === courseId}
+                            onClick={() => handleApproveCourse(courseId)}
+                          >
+                            Approve
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="danger"
+                            loading={courseActionId === courseId}
+                            onClick={() => handleRejectCourse(courseId)}
+                          >
+                            Reject
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
             <Textarea

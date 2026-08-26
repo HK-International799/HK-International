@@ -11,6 +11,8 @@ import CourseEnrollmentFee from "../models/CourseEnrollmentFee.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
 import { uploadPdfToCloudinary } from "../utils/cloudinaryPdf.js";
+import { buildFileMeta } from "../utils/fileMeta.js";
+import { deriveFullAddress } from "../utils/nameUtils.js";
 
 import emailService from "../services/emailService.js";
 import notificationService from "../services/notificationService.js";
@@ -19,17 +21,19 @@ import auditService from "../services/auditService.js";
 import {
   validatePersonalInfo,
   validateCourseSelection,
+  validateConfirmation,
+  getRequestedCourseIds,
 } from "../validators/registrationValidator.js";
 
-// ═══════════════════════════════════════════════════════════════════════
-//  PUBLIC SELF REGISTRATION  —  /api/registration/*
+// ===========================================================================
+//  PUBLIC SELF REGISTRATION  --  /api/registration/*
 //  No authentication. Mirrors the existing institute-registration flow
 //  (partnerInstituteController.createRegistration) but allows a brand-new
 //  learner to create both their User account and their Registration in
 //  one public flow. The existing institute flow is completely untouched.
-// ═══════════════════════════════════════════════════════════════════════
+// ===========================================================================
 
-// ── Step 2 data source: GET /api/registration/courses ─────────────────────
+// -- Step 2 data source: GET /api/registration/courses --------------------
 export const getRegistrationCourses = asyncHandler(async (req, res) => {
   const courses = await Course.find({ status: "published" })
     .select("title description thumbnail")
@@ -79,41 +83,57 @@ export const getRegistrationCourses = asyncHandler(async (req, res) => {
   res.json({ success: true, data });
 });
 
-// ── Step 4 submit: POST /api/registration ──────────────────────────────────
+// -- Step 4 submit: POST /api/registration ---------------------------------
 export const createRegistration = asyncHandler(async (req, res) => {
   const {
     firstName,
+    middleName,
     lastName,
     dob,
     email,
     countryCode,
     mobile,
     address,
+    addressLine1,
+    addressLine2,
+    city,
+    state,
+    postalCode,
     country,
-    courseId,
     batchId,
     preferredIntake,
   } = req.body;
 
   const personalErrors = validatePersonalInfo(req.body);
   const courseErrors = validateCourseSelection(req.body);
-  const errors = [...personalErrors, ...courseErrors];
+  const confirmationErrors = validateConfirmation(req.body);
+  const errors = [...personalErrors, ...courseErrors, ...confirmationErrors];
   if (errors.length) throw new ApiError(400, errors.join(". "));
+
+  // Registration Requirement 3: multiple course selection. First selected
+  // course becomes the primary/legacy `course` on this Registration; all
+  // selected courses are preserved in requestedCourses[].
+  const requestedCourseIds = getRequestedCourseIds(req.body);
+  const primaryCourseId = requestedCourseIds[0];
 
   const normalizedEmail = String(email).trim().toLowerCase();
   const normalizedMobile = String(mobile).trim();
 
-  const course = await Course.findById(courseId);
-  if (!course) throw new ApiError(404, "Selected course not found");
+  const courses = await Course.find({ _id: { $in: requestedCourseIds } });
+  if (courses.length !== requestedCourseIds.length) {
+    throw new ApiError(404, "One or more selected courses were not found");
+  }
+  const courseById = new Map(courses.map((c) => [String(c._id), c]));
+  const primaryCourse = courseById.get(String(primaryCourseId));
 
   let batch = null;
   if (batchId) {
-    batch = await Batch.findOne({ _id: batchId, courseId });
+    batch = await Batch.findOne({ _id: batchId, courseId: primaryCourseId });
     if (!batch)
       throw new ApiError(404, "Selected batch not found for this course");
   }
 
-  // ── Duplicate prevention ────────────────────────────────────────────────
+  // -- Duplicate prevention --------------------------------------------------
   let student = await User.findOne({
     $or: [{ email: normalizedEmail }, { mobile: normalizedMobile }],
   });
@@ -121,16 +141,31 @@ export const createRegistration = asyncHandler(async (req, res) => {
   let generatedPassword = null;
   let isNewUser = false;
 
+  // Registration Requirement 2: structured postal address, with a legacy
+  // single-string fallback kept in sync for any existing consumer that
+  // still reads `address`.
+  const addressFields = {
+    addressLine1: (addressLine1 || "").trim(),
+    addressLine2: (addressLine2 || "").trim(),
+    city: (city || "").trim(),
+    state: (state || "").trim(),
+    postalCode: (postalCode || "").trim(),
+  };
+  const legacyAddress =
+    (address || "").trim() ||
+    deriveFullAddress({ ...addressFields, country: (country || "").trim() });
+
   if (student) {
-    // Existing learner — make sure they're not duplicating the SAME course
-    const existingReg = await Registration.findOne({
+    // Existing learner -- make sure they're not duplicating any of the
+    // SAME requested courses.
+    const existingRegs = await Registration.find({
       student: student._id,
-      course: courseId,
-    });
-    if (existingReg) {
+      course: { $in: requestedCourseIds },
+    }).select("course");
+    if (existingRegs.length) {
       throw new ApiError(
         409,
-        "A registration for this course already exists for this email/mobile",
+        "A registration for one or more of these courses already exists for this email/mobile",
       );
     }
     if (student.email !== normalizedEmail) {
@@ -140,20 +175,25 @@ export const createRegistration = asyncHandler(async (req, res) => {
       );
     }
   } else {
-    // New learner — create the User account (the one structurally new piece
-    // versus the existing institute-only flow).
+    // New learner -- create the User account (the one structurally new
+    // piece versus the existing institute-only flow).
     generatedPassword = crypto.randomBytes(6).toString("hex");
     const passwordHash = await bcrypt.hash(generatedPassword, 10);
 
     student = await User.create({
-      name: `${firstName.trim()} ${lastName.trim()}`.trim(),
+      name: [firstName, middleName, lastName]
+        .map((p) => (p || "").trim())
+        .filter(Boolean)
+        .join(" "),
       firstName: firstName.trim(),
+      middleName: (middleName || "").trim(),
       lastName: lastName.trim(),
       email: normalizedEmail,
       mobile: normalizedMobile,
       countryCode: countryCode.trim(),
       dateOfBirth: new Date(dob),
-      address: address.trim(),
+      address: legacyAddress,
+      ...addressFields,
       country: country.trim(),
       passwordHash,
       role: "student",
@@ -163,9 +203,11 @@ export const createRegistration = asyncHandler(async (req, res) => {
     isNewUser = true;
   }
 
+  const now = new Date();
+
   const registration = await Registration.create({
     student: student._id,
-    course: course._id,
+    course: primaryCourseId,
     batch: batch ? batch._id : null,
     status: "pending",
     paymentStatus: "unpaid",
@@ -173,18 +215,25 @@ export const createRegistration = asyncHandler(async (req, res) => {
     defaultPassword: generatedPassword || "",
     defaultPasswordIssuedAt: generatedPassword ? new Date() : null,
     source: "self",
+    requestedCourses: requestedCourseIds.map((id) => ({
+      course: id,
+      selectedAt: now,
+    })),
+    confirmed: true,
+    confirmedAt: now,
   });
 
-  // ── Notifications / emails (non-blocking, reuse existing services) ─────
+  // -- Notifications / emails (non-blocking, reuse existing services) -----
   const admins = await User.find({ role: { $in: ["admin", "super_admin"] } })
     .select("_id")
     .lean();
+  const courseTitles = courses.map((c) => c.title).join(", ");
   await notificationService.createBulk(
     admins.map((a) => a._id),
     {
       type: "registration",
       title: "New Self-Registration",
-      body: `${student.name} submitted a registration for "${course.title}"`,
+      body: `${student.name} submitted a registration for "${courseTitles}"`,
       referenceId: registration._id,
     },
   );
@@ -197,7 +246,7 @@ export const createRegistration = asyncHandler(async (req, res) => {
       });
   }
   emailService
-    .sendRegistrationCreatedEmail(student.email, student.name, course.title)
+    .sendRegistrationCreatedEmail(student.email, student.name, courseTitles)
     .catch((err) => console.warn("Registration email failed:", err.message));
 
   await auditService.log({
@@ -205,7 +254,7 @@ export const createRegistration = asyncHandler(async (req, res) => {
     entity: "Registration",
     entityId: registration._id,
     performedBy: student._id,
-    details: `Self-registration created for ${student.email} on "${course.title}"`,
+    details: `Self-registration created for ${student.email} on "${courseTitles}"`,
   });
 
   res.status(201).json({
@@ -217,6 +266,7 @@ export const createRegistration = asyncHandler(async (req, res) => {
       studentId: student._id,
 
       status: registration.status,
+      requestedCourses: requestedCourseIds,
 
       isNewUser,
 
@@ -231,7 +281,7 @@ export const createRegistration = asyncHandler(async (req, res) => {
   });
 });
 
-// ── Step 3 document upload: POST /api/registration/:id/documents ──────────
+// -- Step 3 document upload: POST /api/registration/:id/documents -----------
 export const uploadRegistrationDocuments = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
@@ -253,6 +303,9 @@ export const uploadRegistrationDocuments = asyncHandler(async (req, res) => {
 
   const documentIds = [];
 
+  // Registration Requirement 4: preserve the user-provided document name
+  // and correct file metadata (original filename, extension, MIME type)
+  // so downloads later use the same filename/extension the user uploaded.
   async function saveDocument(file, type) {
     const upload = await uploadPdfToCloudinary(
       file.buffer,
@@ -260,16 +313,26 @@ export const uploadRegistrationDocuments = asyncHandler(async (req, res) => {
       "registrations/documents",
     );
 
+    const meta = buildFileMeta(file);
+
     const doc = await Document.create({
       registration: registration._id,
 
       type,
+      category: type,
 
-      fileName: file.originalname,
+      title: meta.title,
+      fileName: meta.fileName,
+      originalName: meta.originalName,
+      extension: meta.extension,
+      mimeType: meta.mimeType,
+      size: meta.size,
 
       fileUrl: upload.url,
+      storagePublicId: upload.public_id || "",
 
       uploadedBy: registration.student,
+      status: "pending",
     });
 
     documentIds.push(doc._id);
@@ -295,15 +358,25 @@ export const uploadRegistrationDocuments = asyncHandler(async (req, res) => {
   });
 });
 
-// ── Status / resume check: GET /api/registration/:id ───────────────────────
+// -- Status / resume check: GET /api/registration/:id -----------------------
 export const getRegistrationStatus = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
   const registration = await Registration.findById(id)
-    .populate("student", "name email mobile")
+    .populate("student", "name firstName middleName lastName email mobile")
     .populate("course", "title")
     .populate("batch", "name startDate endDate")
-    .populate("documents", "title category status fileUrl")
+    .populate("requestedCourses.course", "title")
+    .populate("approvedCourses.course", "title")
+    .populate("rejectedCourses.course", "title")
+    // FIX: previous populate selected "title category status fileUrl" --
+    // none of which existed on the Document schema actually in production
+    // (only registration/type/fileName/fileUrl/uploadedBy did), so those
+    // fields always came back undefined. The schema now has all of these.
+    .populate(
+      "documents",
+      "title fileName originalName extension category type status fileUrl",
+    )
     .lean();
 
   if (!registration) throw new ApiError(404, "Registration not found");
@@ -311,9 +384,156 @@ export const getRegistrationStatus = asyncHandler(async (req, res) => {
   res.json({ success: true, data: registration });
 });
 
+// ===========================================================================
+//  ADMIN COURSE-DECISION ENDPOINTS -- /api/admin/registrations/:id/courses/*
+//  Distinguishes "requested" (candidate's selection) from "approved"/
+//  "rejected" (admin's decision), per Registration Requirement 3. The
+//  original request is never overwritten.
+// ===========================================================================
+
+// PATCH /api/admin/registrations/:id/courses/approve  { courseId, batchId }
+export const approveRequestedCourse = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { courseId, batchId } = req.body;
+  if (!courseId) throw new ApiError(400, "courseId is required");
+
+  const registration = await Registration.findById(id);
+  if (!registration) throw new ApiError(404, "Registration not found");
+
+  const wasRequested = registration.requestedCourses.some(
+    (rc) => String(rc.course) === String(courseId),
+  );
+  if (!wasRequested) {
+    throw new ApiError(
+      400,
+      "This course was not part of the candidate's original request",
+    );
+  }
+
+  const alreadyApproved = registration.approvedCourses.some(
+    (ac) => String(ac.course) === String(courseId),
+  );
+  if (alreadyApproved) {
+    throw new ApiError(409, "This course has already been approved");
+  }
+
+  let targetRegistration = registration;
+
+  // If this IS the primary course on this Registration document, approve
+  // it in place. Otherwise, create a sibling Registration for it (reusing
+  // the exact same creation shape as the existing single-course flows) so
+  // downstream batch-assignment / LMS-access logic -- which all operate on
+  // one Registration = one course -- continues to work unmodified.
+  if (String(registration.course) !== String(courseId)) {
+    const existingSibling = await Registration.findOne({
+      student: registration.student,
+      course: courseId,
+    });
+    if (existingSibling) {
+      targetRegistration = existingSibling;
+    } else {
+      targetRegistration = await Registration.create({
+        student: registration.student,
+        course: courseId,
+        partnerInstitute: registration.partnerInstitute,
+        batch: batchId || null,
+        status: "pending",
+        paymentStatus: "unpaid",
+        source: registration.source,
+      });
+    }
+  }
+
+  targetRegistration.status = "approved";
+  if (batchId) targetRegistration.batch = batchId;
+  targetRegistration.processedBy = req.user?.id || null;
+  targetRegistration.processedAt = new Date();
+  // Mirrors adminController.processRegistration's single-course approve
+  // behavior, so a course approved via either path grants LMS access
+  // consistently.
+  targetRegistration.lmsAccessGranted = true;
+  targetRegistration.lmsAccessGrantedAt = new Date();
+  await targetRegistration.save();
+
+  registration.approvedCourses.push({
+    course: courseId,
+    approvedAt: new Date(),
+    approvedBy: req.user?.id || null,
+    batch: batchId || null,
+    registration: targetRegistration._id,
+  });
+  await registration.save();
+
+  // ── Enroll the learner in the approved course, both sides ──────────────
+  // User.enrolledCourses AND Course.enrolledStudents, kept in sync.
+  // $addToSet makes this idempotent — safe even on re-approval.
+  await Promise.all([
+    User.findByIdAndUpdate(registration.student, {
+      $addToSet: { enrolledCourses: courseId },
+    }),
+    Course.findByIdAndUpdate(courseId, {
+      $addToSet: { enrolledStudents: registration.student },
+    }),
+  ]);
+
+  await auditService.log({
+    action: "REGISTRATION_COURSE_APPROVED",
+    entity: "Registration",
+    entityId: registration._id,
+    performedBy: req.user?.id,
+    details: `Course ${courseId} approved for registration ${registration._id}`,
+  });
+
+  res.json({
+    success: true,
+    message: "Course approved",
+    data: { registration, targetRegistration },
+  });
+});
+
+// PATCH /api/admin/registrations/:id/courses/reject  { courseId, reason }
+export const rejectRequestedCourse = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { courseId, reason } = req.body;
+  if (!courseId) throw new ApiError(400, "courseId is required");
+
+  const registration = await Registration.findById(id);
+  if (!registration) throw new ApiError(404, "Registration not found");
+
+  const wasRequested = registration.requestedCourses.some(
+    (rc) => String(rc.course) === String(courseId),
+  );
+  if (!wasRequested) {
+    throw new ApiError(
+      400,
+      "This course was not part of the candidate's original request",
+    );
+  }
+
+  registration.rejectedCourses.push({
+    course: courseId,
+    rejectedAt: new Date(),
+    rejectedBy: req.user?.id || null,
+    reason: reason || "",
+  });
+  await registration.save();
+
+  await auditService.log({
+    action: "REGISTRATION_COURSE_REJECTED",
+    entity: "Registration",
+    entityId: registration._id,
+    performedBy: req.user?.id,
+    details: `Course ${courseId} rejected for registration ${registration._id}${reason ? `: ${reason}` : ""}`,
+  });
+
+  res.json({ success: true, message: "Course rejected", data: registration });
+});
+
 export default {
   getRegistrationCourses,
   createRegistration,
   uploadRegistrationDocuments,
   getRegistrationStatus,
+  approveRequestedCourse,
+  rejectRequestedCourse,
 };
