@@ -1,5 +1,6 @@
 
 
+
 // import { useEffect, useState, useRef } from "react";
 // import { useNavigate } from "react-router-dom";
 // import AdminLayout from "../../components/layout/AdminLayout";
@@ -49,9 +50,30 @@
 //   dueDate: "",
 //   totalMarks: "",
 //   isPublished: false,
+//   // ✅ Module 1 — Assessment Creation fields (additive)
+//   assessmentType: "general",
+//   instructions: "",
+//   passingMarks: "",
+//   maxAttempts: 1,
+//   allowResubmission: true,
+//   maxResubmissions: 3,
+//   requireAdminApproval: false,
+//   showCorrectAnswers: false,
+//   gradingPrompt: "",
+//   answerKey: "",
+//   useAnswerKeyForGrading: false,
+//   aiGradingEnabled: false,
 // };
 
-// const emptyQuestion = { type: "text", prompt: "", marks: 5, options: [] };
+// const emptyQuestion = {
+//   type: "short_answer",
+//   prompt: "",
+//   marks: 5,
+//   options: [],
+//   correctAnswer: "",
+//   correctAnswers: [],
+//   rubric: "",
+// };
 
 // export default function Assignments() {
 //   const navigate = useNavigate();
@@ -111,6 +133,18 @@
 //       dueDate: a.dueDate ? a.dueDate.slice(0, 10) : "",
 //       totalMarks: a.totalMarks ?? "",
 //       isPublished: a.isPublished || false,
+//       assessmentType: a.assessmentType || "general",
+//       instructions: a.instructions || "",
+//       passingMarks: a.passingMarks ?? "",
+//       maxAttempts: a.maxAttempts ?? 1,
+//       allowResubmission: a.allowResubmission ?? true,
+//       maxResubmissions: a.maxResubmissions ?? 3,
+//       requireAdminApproval: a.requireAdminApproval || false,
+//       showCorrectAnswers: a.showCorrectAnswers || false,
+//       gradingPrompt: a.gradingPrompt || "",
+//       answerKey: a.answerKey || "",
+//       useAnswerKeyForGrading: a.useAnswerKeyForGrading || false,
+//       aiGradingEnabled: a.aiGradingEnabled || false,
 //     });
 //     setQuestions(
 //       (a.questions || []).map((q) => ({
@@ -118,6 +152,9 @@
 //         prompt: q.prompt || "",
 //         marks: q.marks ?? 5,
 //         options: q.options || [],
+//         correctAnswer: q.correctAnswer || "",
+//         correctAnswers: q.correctAnswers || [],
+//         rubric: q.rubric || "",
 //       })),
 //     );
 //     setFile(null);
@@ -194,6 +231,20 @@
 //       if (questions.length > 0)
 //         fd.append("questions", JSON.stringify(questions));
 //       if (file) fd.append("file", file);
+
+//       // ✅ Module 1 — Assessment Creation fields
+//       fd.append("assessmentType", form.assessmentType || "general");
+//       fd.append("instructions", form.instructions || "");
+//       if (form.passingMarks !== "") fd.append("passingMarks", form.passingMarks);
+//       fd.append("maxAttempts", form.maxAttempts || 1);
+//       fd.append("allowResubmission", form.allowResubmission);
+//       fd.append("maxResubmissions", form.maxResubmissions ?? 3);
+//       fd.append("requireAdminApproval", form.requireAdminApproval);
+//       fd.append("showCorrectAnswers", form.showCorrectAnswers);
+//       fd.append("gradingPrompt", form.gradingPrompt || "");
+//       fd.append("answerKey", form.answerKey || "");
+//       fd.append("useAnswerKeyForGrading", form.useAnswerKeyForGrading);
+//       fd.append("aiGradingEnabled", form.aiGradingEnabled);
 
 //       if (editTarget) {
 //         await updateAssignment(editTarget._id, fd);
@@ -531,6 +582,125 @@
 //               />
 //             </div>
 
+//             {/* ✅ Module 1 — Assessment configuration */}
+//             <div className="border-t border-gray-100 pt-4">
+//               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+//                 Assessment Settings
+//               </p>
+//               <div className="grid md:grid-cols-2 gap-4">
+//                 <Select
+//                   label="Assessment Type"
+//                   value={form.assessmentType}
+//                   onChange={(e) => setForm({ ...form, assessmentType: e.target.value })}
+//                   options={[
+//                     { value: "general", label: "General" },
+//                     { value: "mcq_exam", label: "MCQ Exam (auto-graded)" },
+//                     { value: "written_assessment", label: "Written Assessment" },
+//                     { value: "project_submission", label: "Project Submission" },
+//                   ]}
+//                 />
+//                 <Input
+//                   label="Passing Marks"
+//                   type="number"
+//                   min={0}
+//                   value={form.passingMarks}
+//                   onChange={(e) => setForm({ ...form, passingMarks: e.target.value })}
+//                   placeholder="e.g. 40"
+//                 />
+//                 <Input
+//                   label="Max Attempts"
+//                   type="number"
+//                   min={1}
+//                   value={form.maxAttempts}
+//                   onChange={(e) => setForm({ ...form, maxAttempts: e.target.value })}
+//                 />
+//                 <Input
+//                   label="Max Resubmissions"
+//                   type="number"
+//                   min={0}
+//                   value={form.maxResubmissions}
+//                   onChange={(e) => setForm({ ...form, maxResubmissions: e.target.value })}
+//                 />
+//                 <Textarea
+//                   label="Instructions for Students"
+//                   value={form.instructions}
+//                   onChange={(e) => setForm({ ...form, instructions: e.target.value })}
+//                   className="md:col-span-2"
+//                   rows={2}
+//                 />
+//               </div>
+
+//               <div className="flex flex-wrap gap-5 mt-4">
+//                 <label className="flex items-center gap-2 text-sm text-gray-700">
+//                   <input
+//                     type="checkbox"
+//                     checked={form.allowResubmission}
+//                     onChange={(e) => setForm({ ...form, allowResubmission: e.target.checked })}
+//                   />
+//                   Allow resubmission
+//                 </label>
+//                 <label className="flex items-center gap-2 text-sm text-gray-700">
+//                   <input
+//                     type="checkbox"
+//                     checked={form.requireAdminApproval}
+//                     onChange={(e) => setForm({ ...form, requireAdminApproval: e.target.checked })}
+//                   />
+//                   Require admin approval before completion
+//                 </label>
+//                 <label className="flex items-center gap-2 text-sm text-gray-700">
+//                   <input
+//                     type="checkbox"
+//                     checked={form.showCorrectAnswers}
+//                     onChange={(e) => setForm({ ...form, showCorrectAnswers: e.target.checked })}
+//                   />
+//                   Show correct answers after grading
+//                 </label>
+//               </div>
+//             </div>
+
+//             {/* ✅ Module 5 — AI grading configuration (written_assessment / project_submission) */}
+//             {["written_assessment", "project_submission"].includes(form.assessmentType) && (
+//               <div className="border-t border-gray-100 pt-4">
+//                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+//                   AI Grading
+//                 </p>
+//                 <label className="flex items-center gap-2 text-sm text-gray-700 mb-3">
+//                   <input
+//                     type="checkbox"
+//                     checked={form.aiGradingEnabled}
+//                     onChange={(e) => setForm({ ...form, aiGradingEnabled: e.target.checked })}
+//                   />
+//                   Enable AI grading for this assessment
+//                 </label>
+//                 {form.aiGradingEnabled && (
+//                   <div className="space-y-3">
+//                     <Textarea
+//                       label="Grading Prompt (instructions for the AI grader)"
+//                       value={form.gradingPrompt}
+//                       onChange={(e) => setForm({ ...form, gradingPrompt: e.target.value })}
+//                       rows={2}
+//                     />
+//                     <label className="flex items-center gap-2 text-sm text-gray-700">
+//                       <input
+//                         type="checkbox"
+//                         checked={form.useAnswerKeyForGrading}
+//                         onChange={(e) =>
+//                           setForm({ ...form, useAnswerKeyForGrading: e.target.checked })
+//                         }
+//                       />
+//                       Use the answer key below as the authoritative reference
+//                     </label>
+//                     <Textarea
+//                       label="Answer Key / Model Solution"
+//                       value={form.answerKey}
+//                       onChange={(e) => setForm({ ...form, answerKey: e.target.value })}
+//                       rows={3}
+//                     />
+//                   </div>
+//                 )}
+//               </div>
+//             )}
+
 //             {/* File upload */}
 //             <div>
 //               <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -634,11 +804,19 @@
 //                           updateQuestion(i, "type", e.target.value)
 //                         }
 //                         options={[
-//                           { value: "text", label: "Text answer" },
-//                           { value: "mcq", label: "Multiple choice" },
-//                           { value: "file", label: "File upload" },
+//                           { value: "short_answer", label: "Short answer" },
+//                           { value: "long_answer", label: "Long answer" },
+//                           { value: "single_choice", label: "Single choice (MCQ)" },
+//                           { value: "multiple_choice", label: "Multiple choice" },
+//                           { value: "true_false", label: "True / False" },
+//                           { value: "file_upload", label: "File upload" },
+//                           // legacy values kept selectable so existing
+//                           // assignments edited in-place still render correctly
+//                           { value: "text", label: "Text answer (legacy)" },
+//                           { value: "mcq", label: "Multiple choice (legacy)" },
+//                           { value: "file", label: "File upload (legacy)" },
 //                         ]}
-//                         className="flex-shrink-0 w-40"
+//                         className="flex-shrink-0 w-48"
 //                       />
 //                       <Input
 //                         type="number"
@@ -666,33 +844,86 @@
 //                       placeholder="Question prompt..."
 //                     />
 
-//                     {q.type === "mcq" && (
+//                     {["mcq", "single_choice", "multiple_choice", "true_false"].includes(q.type) && (
 //                       <div className="space-y-2 ml-2">
-//                         {(q.options || []).map((opt, oi) => (
-//                           <div key={oi} className="flex items-center gap-2">
-//                             <input
-//                               value={opt}
-//                               onChange={(e) =>
-//                                 updateOption(i, oi, e.target.value)
-//                               }
-//                               placeholder={`Option ${oi + 1}`}
-//                               className="flex-1 px-3 py-1.5 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-200"
-//                             />
-//                             <button onClick={() => removeOption(i, oi)}>
-//                               <X
-//                                 size={13}
-//                                 className="text-gray-400 hover:text-red-400"
-//                               />
-//                             </button>
+//                         {/* True/False — fixed options, no editing needed */}
+//                         {q.type === "true_false" ? (
+//                           <div className="flex gap-4">
+//                             {["True", "False"].map((opt) => (
+//                               <label key={opt} className="flex items-center gap-1.5 text-sm text-gray-700">
+//                                 <input
+//                                   type="radio"
+//                                   name={`correct-${i}`}
+//                                   checked={q.correctAnswer === opt}
+//                                   onChange={() => updateQuestion(i, "correctAnswer", opt)}
+//                                 />
+//                                 {opt}
+//                               </label>
+//                             ))}
 //                           </div>
-//                         ))}
-//                         <button
-//                           onClick={() => addOption(i)}
-//                           className="text-xs text-indigo-600 hover:underline mt-1"
-//                         >
-//                           + Add option
-//                         </button>
+//                         ) : (
+//                           <>
+//                             {(q.options || []).map((opt, oi) => (
+//                               <div key={oi} className="flex items-center gap-2">
+//                                 {q.type === "multiple_choice" ? (
+//                                   <input
+//                                     type="checkbox"
+//                                     checked={(q.correctAnswers || []).includes(opt)}
+//                                     onChange={(e) => {
+//                                       const current = q.correctAnswers || [];
+//                                       const next = e.target.checked
+//                                         ? [...current, opt]
+//                                         : current.filter((c) => c !== opt);
+//                                       updateQuestion(i, "correctAnswers", next);
+//                                     }}
+//                                   />
+//                                 ) : (
+//                                   <input
+//                                     type="radio"
+//                                     name={`correct-${i}`}
+//                                     checked={q.correctAnswer === opt}
+//                                     onChange={() => updateQuestion(i, "correctAnswer", opt)}
+//                                   />
+//                                 )}
+//                                 <input
+//                                   value={opt}
+//                                   onChange={(e) =>
+//                                     updateOption(i, oi, e.target.value)
+//                                   }
+//                                   placeholder={`Option ${oi + 1}`}
+//                                   className="flex-1 px-3 py-1.5 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-200"
+//                                 />
+//                                 <button onClick={() => removeOption(i, oi)}>
+//                                   <X
+//                                     size={13}
+//                                     className="text-gray-400 hover:text-red-400"
+//                                   />
+//                                 </button>
+//                               </div>
+//                             ))}
+//                             <button
+//                               onClick={() => addOption(i)}
+//                               className="text-xs text-indigo-600 hover:underline mt-1"
+//                             >
+//                               + Add option
+//                             </button>
+//                             <p className="text-[11px] text-gray-400">
+//                               {q.type === "multiple_choice"
+//                                 ? "Tick every option that should count as correct."
+//                                 : "Select the radio button next to the correct option."}
+//                             </p>
+//                           </>
+//                         )}
 //                       </div>
+//                     )}
+
+//                     {["short_answer", "long_answer", "text"].includes(q.type) && (
+//                       <Textarea
+//                         value={q.rubric || ""}
+//                         onChange={(e) => updateQuestion(i, "rubric", e.target.value)}
+//                         placeholder="Optional rubric / grading guidance for this question (used by AI grading and manual reviewers)"
+//                         rows={2}
+//                       />
 //                     )}
 //                   </div>
 //                 ))}
@@ -863,6 +1094,9 @@
 
 
 
+
+
+
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../components/layout/AdminLayout";
@@ -900,10 +1134,47 @@ import {
   CheckCircle,
   Clock,
   Users,
-  ChevronDown,
-  ChevronUp,
   FileText,
+  ShieldCheck,
+  RefreshCw,
+  Sparkles,
+  Info,
 } from "lucide-react";
+
+// ── constants ──────────────────────────────────────────────────────────────
+// Centralizing "which question types behave like what" here means every part
+// of the component (form, detail view, validation) agrees on the rules —
+// previously the create form and the read-only detail view had drifted apart
+// (detail view only ever recognised the legacy "mcq" type).
+
+const OPTION_TYPES = ["mcq", "single_choice", "multiple_choice", "true_false"];
+const TEXT_TYPES = ["short_answer", "long_answer", "text"];
+const isOptionType = (t) => OPTION_TYPES.includes(t);
+const isTextType = (t) => TEXT_TYPES.includes(t);
+
+const QUESTION_TYPE_OPTIONS = [
+  { value: "short_answer", label: "Short answer" },
+  { value: "long_answer", label: "Long answer" },
+  { value: "single_choice", label: "Single choice (MCQ)" },
+  { value: "multiple_choice", label: "Multiple choice" },
+  { value: "true_false", label: "True / False" },
+  { value: "file_upload", label: "File upload" },
+  { value: "text", label: "Text answer (legacy)" },
+  { value: "mcq", label: "Multiple choice (legacy)" },
+  { value: "file", label: "File upload (legacy)" },
+];
+
+const ASSESSMENT_TYPE_OPTIONS = [
+  { value: "general", label: "General" },
+  { value: "mcq_exam", label: "MCQ Exam (auto-graded)" },
+  { value: "written_assessment", label: "Written Assessment" },
+  { value: "project_submission", label: "Project Submission" },
+];
+
+const ASSESSMENT_TYPE_LABEL = ASSESSMENT_TYPE_OPTIONS.reduce((acc, o) => {
+  acc[o.value] = o.label;
+  return acc;
+}, {});
 
 const emptyForm = {
   title: "",
@@ -912,7 +1183,7 @@ const emptyForm = {
   dueDate: "",
   totalMarks: "",
   isPublished: false,
-  // ✅ Module 1 — Assessment Creation fields (additive)
+  // Assessment configuration
   assessmentType: "general",
   instructions: "",
   passingMarks: "",
@@ -921,10 +1192,14 @@ const emptyForm = {
   maxResubmissions: 3,
   requireAdminApproval: false,
   showCorrectAnswers: false,
+  // AI grading
   gradingPrompt: "",
   answerKey: "",
   useAnswerKeyForGrading: false,
   aiGradingEnabled: false,
+  // Submission integrity — new: closes the "blank submission" gap
+  preventBlankSubmission: true,
+  unlimitedRetriesForBlank: true,
 };
 
 const emptyQuestion = {
@@ -965,9 +1240,7 @@ export default function Assignments() {
     setLoading(true);
     try {
       const [a, c] = await Promise.all([getAllAssignments(), getCourses()]);
-      // FIX: assignmentService returns res.data.data = { assignments, total, ... }
       setAssignments(a?.assignments || []);
-      // FIX: courseService returns the raw envelope; getCourses controller returns an array directly
       setCourses(Array.isArray(c) ? c : c?.courses || []);
     } catch (err) {
       setError("Failed to load assignments");
@@ -1007,10 +1280,12 @@ export default function Assignments() {
       answerKey: a.answerKey || "",
       useAnswerKeyForGrading: a.useAnswerKeyForGrading || false,
       aiGradingEnabled: a.aiGradingEnabled || false,
+      preventBlankSubmission: a.preventBlankSubmission ?? true,
+      unlimitedRetriesForBlank: a.unlimitedRetriesForBlank ?? true,
     });
     setQuestions(
       (a.questions || []).map((q) => ({
-        type: q.type || "text",
+        type: q.type || "short_answer",
         prompt: q.prompt || "",
         marks: q.marks ?? 5,
         options: q.options || [],
@@ -1048,6 +1323,33 @@ export default function Assignments() {
       return copy;
     });
 
+  // Switching a question's type used to leave stale options / correct-answer
+  // data behind (e.g. going multiple_choice -> short_answer kept the old
+  // options array around, and going true_false -> single_choice kept
+  // correctAnswer set to "True"/"False"). That stale data silently failed
+  // validation or, worse, saved as a "correct answer" that didn't match any
+  // visible option. Clear whatever no longer applies to the new type.
+  const updateQuestionType = (i, newType) =>
+    setQuestions((prev) => {
+      const copy = [...prev];
+      const q = { ...copy[i], type: newType };
+      if (!isOptionType(newType)) {
+        q.options = [];
+        q.correctAnswer = "";
+        q.correctAnswers = [];
+      } else if (newType === "true_false") {
+        q.options = [];
+        q.correctAnswers = [];
+        if (!["True", "False"].includes(q.correctAnswer)) q.correctAnswer = "";
+      } else if (newType === "multiple_choice") {
+        q.correctAnswer = "";
+      } else {
+        q.correctAnswers = [];
+      }
+      copy[i] = q;
+      return copy;
+    });
+
   const addOption = (i) =>
     setQuestions((prev) => {
       const copy = [...prev];
@@ -1059,27 +1361,90 @@ export default function Assignments() {
     setQuestions((prev) => {
       const copy = [...prev];
       const opts = [...copy[qi].options];
+      const oldVal = opts[oi];
       opts[oi] = val;
-      copy[qi] = { ...copy[qi], options: opts };
+      const q = { ...copy[qi], options: opts };
+      // Keep the marked correct answer(s) pointing at the edited option text
+      // rather than silently losing the "correct" flag when someone fixes a typo.
+      if (q.correctAnswer === oldVal) q.correctAnswer = val;
+      if (Array.isArray(q.correctAnswers) && q.correctAnswers.includes(oldVal)) {
+        q.correctAnswers = q.correctAnswers.map((c) => (c === oldVal ? val : c));
+      }
+      copy[qi] = q;
       return copy;
     });
 
   const removeOption = (qi, oi) =>
     setQuestions((prev) => {
       const copy = [...prev];
+      const removed = copy[qi].options[oi];
       copy[qi] = {
         ...copy[qi],
         options: copy[qi].options.filter((_, idx) => idx !== oi),
+        correctAnswer: copy[qi].correctAnswer === removed ? "" : copy[qi].correctAnswer,
+        correctAnswers: (copy[qi].correctAnswers || []).filter((c) => c !== removed),
       };
       return copy;
     });
+
+  // ── derived values ─────────────────────────────────────────────────────────
+
+  const computedMarks = questions.reduce((sum, q) => sum + (Number(q.marks) || 0), 0);
+
+  // ── validation ─────────────────────────────────────────────────────────────
+  // The old version only checked title + course. Adding a whole assessment
+  // configuration block (marks, attempts, AI grading, MCQ correctness) without
+  // matching validation is exactly the kind of gap that produces broken,
+  // half-configured assessments in production — this closes that gap.
+
+  const validate = () => {
+    if (!form.title.trim()) return "Title is required";
+    if (!form.courseId) return "Please select a course";
+
+    if (
+      form.passingMarks !== "" &&
+      form.totalMarks !== "" &&
+      Number(form.passingMarks) > Number(form.totalMarks)
+    ) {
+      return "Passing marks can't be higher than total marks";
+    }
+    if (Number(form.maxAttempts) < 1) return "Max attempts must be at least 1";
+
+    if (form.assessmentType === "mcq_exam" && questions.length === 0) {
+      return "An MCQ exam needs at least one question";
+    }
+
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i];
+      if (!q.prompt.trim()) return `Question ${i + 1} needs a prompt`;
+
+      if (q.type === "true_false") {
+        if (!q.correctAnswer) return `Question ${i + 1}: mark True or False as correct`;
+      } else if (isOptionType(q.type)) {
+        const opts = (q.options || []).map((o) => o.trim()).filter(Boolean);
+        if (opts.length < 2) return `Question ${i + 1} needs at least 2 options`;
+        if (q.type === "multiple_choice") {
+          if (!(q.correctAnswers || []).length)
+            return `Question ${i + 1}: mark at least one option as correct`;
+        } else if (!q.correctAnswer) {
+          return `Question ${i + 1}: select the correct option`;
+        }
+      }
+    }
+
+    if (form.aiGradingEnabled && !form.gradingPrompt.trim()) {
+      return "Add grading instructions for the AI grader, or turn AI grading off";
+    }
+
+    return "";
+  };
 
   // ── save ───────────────────────────────────────────────────────────────────
 
   const handleSave = async () => {
     setError("");
-    if (!form.title.trim()) return setError("Title is required");
-    if (!form.courseId) return setError("Please select a course");
+    const validationError = validate();
+    if (validationError) return setError(validationError);
 
     setSaving(true);
     try {
@@ -1094,7 +1459,7 @@ export default function Assignments() {
         fd.append("questions", JSON.stringify(questions));
       if (file) fd.append("file", file);
 
-      // ✅ Module 1 — Assessment Creation fields
+      // Assessment configuration
       fd.append("assessmentType", form.assessmentType || "general");
       fd.append("instructions", form.instructions || "");
       if (form.passingMarks !== "") fd.append("passingMarks", form.passingMarks);
@@ -1107,6 +1472,10 @@ export default function Assignments() {
       fd.append("answerKey", form.answerKey || "");
       fd.append("useAnswerKeyForGrading", form.useAnswerKeyForGrading);
       fd.append("aiGradingEnabled", form.aiGradingEnabled);
+
+      // Submission integrity
+      fd.append("preventBlankSubmission", form.preventBlankSubmission);
+      fd.append("unlimitedRetriesForBlank", form.unlimitedRetriesForBlank);
 
       if (editTarget) {
         await updateAssignment(editTarget._id, fd);
@@ -1169,6 +1538,11 @@ export default function Assignments() {
             <p className="font-medium text-gray-800">{r.title}</p>
             <p className="text-xs text-gray-400">
               {r.courseId?.title || "No course"}
+              {r.assessmentType && r.assessmentType !== "general" && (
+                <span className="ml-1.5 text-indigo-400">
+                  · {ASSESSMENT_TYPE_LABEL[r.assessmentType] || r.assessmentType}
+                </span>
+              )}
             </p>
           </div>
         </div>
@@ -1177,7 +1551,14 @@ export default function Assignments() {
     {
       key: "marks",
       label: "Marks",
-      render: (r) => <span className="font-medium">{r.totalMarks ?? "—"}</span>,
+      render: (r) => (
+        <span className="font-medium">
+          {r.totalMarks ?? "—"}
+          {r.passingMarks != null && (
+            <span className="text-xs text-gray-400 font-normal"> / pass {r.passingMarks}</span>
+          )}
+        </span>
+      ),
     },
     {
       key: "questions",
@@ -1207,13 +1588,29 @@ export default function Assignments() {
       key: "status",
       label: "Status",
       render: (r) => (
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5">
           <Badge variant={r.isPublished ? "success" : "warning"}>
             {r.isPublished ? "Published" : "Draft"}
           </Badge>
           {isOverdue(r) && <Badge variant="danger">Overdue</Badge>}
           {r.file?.url && (
             <FileText size={14} className="text-gray-400" title="Has file" />
+          )}
+          {r.aiGradingEnabled && (
+            <span
+              className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium rounded-full bg-violet-50 text-violet-600 border border-violet-100"
+              title="AI grading enabled"
+            >
+              <Sparkles size={10} /> AI graded
+            </span>
+          )}
+          {r.preventBlankSubmission !== false && (
+            <span
+              className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100"
+              title="Blank submissions are blocked for this assignment"
+            >
+              <ShieldCheck size={10} /> Guarded
+            </span>
           )}
         </div>
       ),
@@ -1406,16 +1803,27 @@ export default function Assignments() {
                   ...courses.map((c) => ({ value: c._id, label: c.title })),
                 ]}
               />
-              <Input
-                label="Total Marks"
-                type="number"
-                min={0}
-                value={form.totalMarks}
-                onChange={(e) =>
-                  setForm({ ...form, totalMarks: e.target.value })
-                }
-                placeholder="Auto-calculated from questions"
-              />
+              <div>
+                <Input
+                  label="Total Marks"
+                  type="number"
+                  min={0}
+                  value={form.totalMarks}
+                  onChange={(e) =>
+                    setForm({ ...form, totalMarks: e.target.value })
+                  }
+                  placeholder="Auto-calculated from questions"
+                />
+                {questions.length > 0 && Number(form.totalMarks) !== computedMarks && (
+                  <button
+                    type="button"
+                    onClick={() => setForm({ ...form, totalMarks: String(computedMarks) })}
+                    className="mt-1 text-xs text-indigo-600 hover:underline"
+                  >
+                    Questions add up to {computedMarks} — use this total
+                  </button>
+                )}
+              </div>
               <Input
                 label="Due Date"
                 type="datetime-local"
@@ -1444,7 +1852,7 @@ export default function Assignments() {
               />
             </div>
 
-            {/* ✅ Module 1 — Assessment configuration */}
+            {/* Assessment configuration */}
             <div className="border-t border-gray-100 pt-4">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
                 Assessment Settings
@@ -1454,12 +1862,7 @@ export default function Assignments() {
                   label="Assessment Type"
                   value={form.assessmentType}
                   onChange={(e) => setForm({ ...form, assessmentType: e.target.value })}
-                  options={[
-                    { value: "general", label: "General" },
-                    { value: "mcq_exam", label: "MCQ Exam (auto-graded)" },
-                    { value: "written_assessment", label: "Written Assessment" },
-                    { value: "project_submission", label: "Project Submission" },
-                  ]}
+                  options={ASSESSMENT_TYPE_OPTIONS}
                 />
                 <Input
                   label="Passing Marks"
@@ -1482,6 +1885,7 @@ export default function Assignments() {
                   min={0}
                   value={form.maxResubmissions}
                   onChange={(e) => setForm({ ...form, maxResubmissions: e.target.value })}
+                  disabled={!form.allowResubmission}
                 />
                 <Textarea
                   label="Instructions for Students"
@@ -1520,7 +1924,57 @@ export default function Assignments() {
               </div>
             </div>
 
-            {/* ✅ Module 5 — AI grading configuration (written_assessment / project_submission) */}
+            {/* Submission integrity — new section that directly targets the
+                "learner submits blank work and is then stuck" problem. These
+                flags need matching enforcement in the learner submission form
+                and the submission API (see note below the form). */}
+            <div className="border-t border-gray-100 pt-4">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                Submission Integrity
+              </p>
+              <div className="space-y-3">
+                <label className="flex items-start gap-2.5 text-sm text-gray-700 bg-emerald-50/60 border border-emerald-100 rounded-xl p-3">
+                  <input
+                    type="checkbox"
+                    className="mt-0.5"
+                    checked={form.preventBlankSubmission}
+                    onChange={(e) =>
+                      setForm({ ...form, preventBlankSubmission: e.target.checked })
+                    }
+                  />
+                  <span>
+                    <span className="font-medium text-gray-800 flex items-center gap-1.5">
+                      <ShieldCheck size={14} className="text-emerald-600" />
+                      Block empty submissions
+                    </span>
+                    <span className="text-gray-500 text-xs">
+                      Learners can't submit until at least one question is answered or a file is attached.
+                    </span>
+                  </span>
+                </label>
+                <label className="flex items-start gap-2.5 text-sm text-gray-700 bg-indigo-50/60 border border-indigo-100 rounded-xl p-3">
+                  <input
+                    type="checkbox"
+                    className="mt-0.5"
+                    checked={form.unlimitedRetriesForBlank}
+                    onChange={(e) =>
+                      setForm({ ...form, unlimitedRetriesForBlank: e.target.checked })
+                    }
+                  />
+                  <span>
+                    <span className="font-medium text-gray-800 flex items-center gap-1.5">
+                      <RefreshCw size={14} className="text-indigo-600" />
+                      Never lock out on a blank attempt
+                    </span>
+                    <span className="text-gray-500 text-xs">
+                      If a blank submission ever slips through, it won't count against "Max Resubmissions" above — the learner keeps a real attempt.
+                    </span>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            {/* AI grading configuration */}
             {["written_assessment", "project_submission"].includes(form.assessmentType) && (
               <div className="border-t border-gray-100 pt-4">
                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
@@ -1634,6 +2088,9 @@ export default function Assignments() {
               <div className="flex items-center justify-between mb-3">
                 <h4 className="text-sm font-semibold text-gray-800">
                   Questions ({questions.length})
+                  {questions.length > 0 && (
+                    <span className="text-gray-400 font-normal"> · {computedMarks} marks</span>
+                  )}
                 </h4>
                 <button
                   onClick={addQuestion}
@@ -1662,22 +2119,8 @@ export default function Assignments() {
                       </span>
                       <Select
                         value={q.type}
-                        onChange={(e) =>
-                          updateQuestion(i, "type", e.target.value)
-                        }
-                        options={[
-                          { value: "short_answer", label: "Short answer" },
-                          { value: "long_answer", label: "Long answer" },
-                          { value: "single_choice", label: "Single choice (MCQ)" },
-                          { value: "multiple_choice", label: "Multiple choice" },
-                          { value: "true_false", label: "True / False" },
-                          { value: "file_upload", label: "File upload" },
-                          // legacy values kept selectable so existing
-                          // assignments edited in-place still render correctly
-                          { value: "text", label: "Text answer (legacy)" },
-                          { value: "mcq", label: "Multiple choice (legacy)" },
-                          { value: "file", label: "File upload (legacy)" },
-                        ]}
+                        onChange={(e) => updateQuestionType(i, e.target.value)}
+                        options={QUESTION_TYPE_OPTIONS}
                         className="flex-shrink-0 w-48"
                       />
                       <Input
@@ -1706,9 +2149,8 @@ export default function Assignments() {
                       placeholder="Question prompt..."
                     />
 
-                    {["mcq", "single_choice", "multiple_choice", "true_false"].includes(q.type) && (
+                    {isOptionType(q.type) && (
                       <div className="space-y-2 ml-2">
-                        {/* True/False — fixed options, no editing needed */}
                         {q.type === "true_false" ? (
                           <div className="flex gap-4">
                             {["True", "False"].map((opt) => (
@@ -1779,7 +2221,7 @@ export default function Assignments() {
                       </div>
                     )}
 
-                    {["short_answer", "long_answer", "text"].includes(q.type) && (
+                    {isTextType(q.type) && (
                       <Textarea
                         value={q.rubric || ""}
                         onChange={(e) => updateQuestion(i, "rubric", e.target.value)}
@@ -1826,10 +2268,24 @@ export default function Assignments() {
                 </div>
               )}
 
+              {showDetail.instructions && (
+                <div>
+                  <p className="text-xs text-gray-400 mb-1">Instructions for Students</p>
+                  <p className="text-gray-700 text-sm whitespace-pre-wrap">
+                    {showDetail.instructions}
+                  </p>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {[
                   { label: "Course", value: showDetail.courseId?.title },
+                  {
+                    label: "Type",
+                    value: ASSESSMENT_TYPE_LABEL[showDetail.assessmentType] || "General",
+                  },
                   { label: "Total Marks", value: showDetail.totalMarks },
+                  { label: "Passing Marks", value: showDetail.passingMarks ?? "—" },
                   {
                     label: "Questions",
                     value: showDetail.questions?.length ?? 0,
@@ -1858,6 +2314,13 @@ export default function Assignments() {
                       <span className="text-gray-500 text-sm">No</span>
                     ),
                   },
+                  { label: "Max Attempts", value: showDetail.maxAttempts ?? 1 },
+                  {
+                    label: "Resubmissions",
+                    value: showDetail.allowResubmission
+                      ? `Allowed (up to ${showDetail.maxResubmissions ?? 3})`
+                      : "Not allowed",
+                  },
                 ].map(({ label, value }) => (
                   <div key={label}>
                     <p className="text-xs text-gray-400">{label}</p>
@@ -1867,6 +2330,39 @@ export default function Assignments() {
                   </div>
                 ))}
               </div>
+
+              {/* Submission integrity summary */}
+              <div className="flex flex-wrap gap-2">
+                {showDetail.preventBlankSubmission !== false && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100">
+                    <ShieldCheck size={13} /> Blank submissions blocked
+                  </span>
+                )}
+                {showDetail.unlimitedRetriesForBlank !== false && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-100">
+                    <RefreshCw size={13} /> Blank attempts don't cost a resubmission
+                  </span>
+                )}
+                {showDetail.requireAdminApproval && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-xl bg-amber-50 text-amber-700 border border-amber-100">
+                    <Info size={13} /> Needs admin approval to complete
+                  </span>
+                )}
+                {showDetail.aiGradingEnabled && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-xl bg-violet-50 text-violet-700 border border-violet-100">
+                    <Sparkles size={13} /> AI grading enabled
+                  </span>
+                )}
+              </div>
+
+              {showDetail.aiGradingEnabled && showDetail.gradingPrompt && (
+                <div>
+                  <p className="text-xs text-gray-400 mb-1">Grading Prompt</p>
+                  <p className="text-gray-700 text-sm bg-violet-50/50 border border-violet-100 rounded-xl px-3 py-2">
+                    {showDetail.gradingPrompt}
+                  </p>
+                </div>
+              )}
 
               {showDetail.file?.url && (
                 <div>
@@ -1905,17 +2401,44 @@ export default function Assignments() {
                             {q.marks} marks
                           </span>
                         </div>
-                        {q.type === "mcq" && q.options?.length > 0 && (
+
+                        {isOptionType(q.type) && q.type !== "true_false" && q.options?.length > 0 && (
                           <div className="flex flex-wrap gap-1.5 mt-2">
-                            {q.options.map((o, oi) => (
-                              <span
-                                key={oi}
-                                className="px-2.5 py-0.5 text-xs bg-white rounded-lg border border-gray-200 text-gray-600"
-                              >
-                                {o}
-                              </span>
-                            ))}
+                            {q.options.map((o, oi) => {
+                              const isCorrect =
+                                q.type === "multiple_choice"
+                                  ? (q.correctAnswers || []).includes(o)
+                                  : q.correctAnswer === o;
+                              return (
+                                <span
+                                  key={oi}
+                                  className={`px-2.5 py-0.5 text-xs rounded-lg border ${
+                                    isCorrect
+                                      ? "bg-emerald-50 border-emerald-200 text-emerald-700 font-medium"
+                                      : "bg-white border-gray-200 text-gray-600"
+                                  }`}
+                                >
+                                  {isCorrect && "✓ "}
+                                  {o}
+                                </span>
+                              );
+                            })}
                           </div>
+                        )}
+
+                        {q.type === "true_false" && (
+                          <p className="text-xs text-gray-500 mt-2">
+                            Correct answer:{" "}
+                            <span className="font-medium text-emerald-600">
+                              {q.correctAnswer || "Not set"}
+                            </span>
+                          </p>
+                        )}
+
+                        {isTextType(q.type) && q.rubric && (
+                          <p className="text-xs text-gray-500 mt-2 italic">
+                            Rubric: {q.rubric}
+                          </p>
                         )}
                       </div>
                     ))}

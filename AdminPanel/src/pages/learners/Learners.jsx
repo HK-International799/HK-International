@@ -168,7 +168,7 @@ export default function Learners() {
   return (
     <AdminLayout>
       <div className="animate-fadeIn">
-        <PageHeader
+        {/* <PageHeader
           title="Learners & Users"
           subtitle={`${users.length} total users`}
           actions={
@@ -177,7 +177,7 @@ export default function Learners() {
               Add User
             </Button>
           }
-        />
+        /> */}
 
         <div className="flex gap-3 mb-4">
           <Input

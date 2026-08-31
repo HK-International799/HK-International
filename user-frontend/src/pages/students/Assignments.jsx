@@ -1,3 +1,4 @@
+
 // import { useEffect, useState, useRef, useCallback } from "react";
 // import { Link } from "react-router-dom";
 // import {
@@ -77,7 +78,10 @@
 
 // // Sanitize a string for use as a filename
 // const sanitizeForFilename = (s = "") =>
-//   s.replace(/[\\/:*?"<>|]+/g, "").replace(/\s+/g, "_").trim() || "file";
+//   s
+//     .replace(/[\\/:*?"<>|]+/g, "")
+//     .replace(/\s+/g, "_")
+//     .trim() || "file";
 
 // // Blob-forced download — preserves the original filename instead of cloudinary hash
 // const triggerDownload = async (url, filename) => {
@@ -332,7 +336,9 @@
 //   const scoreData = formatScore(sub.totalScore, assignment?.totalMarks);
 //   const annotationCount = sub.annotations?.length || 0;
 //   // ✅ treat AI-reviewed/approved the same as graded for display purposes
-//   const isGradedLike = ["graded", "ai_reviewed", "approved"].includes(sub.status);
+//   const isGradedLike = ["graded", "ai_reviewed", "approved"].includes(
+//     sub.status,
+//   );
 
 //   // Build reviewed-PDF download filename: [studentName]-[assignmentTitle]-reviewed.pdf
 //   const reviewedFilename = () => {
@@ -344,14 +350,15 @@
 //   return (
 //     <div className="space-y-4">
 //       {/* ✅ Module 8 — link to the full result page */}
-//       {["graded", "ai_reviewed", "approved"].includes(sub.status) && assignment?._id && (
-//         <Link
-//           to={`/student/assignments/${assignment._id}/result`}
-//           className="inline-flex items-center gap-1.5 text-sm text-indigo-600 hover:underline"
-//         >
-//           View Full Result →
-//         </Link>
-//       )}
+//       {["graded", "ai_reviewed", "approved"].includes(sub.status) &&
+//         assignment?._id && (
+//           <Link
+//             to={`/student/assignments/${assignment._id}/result`}
+//             className="inline-flex items-center gap-1.5 text-sm text-indigo-600 hover:underline"
+//           >
+//             View Full Result →
+//           </Link>
+//         )}
 
 //       {/* Score */}
 //       {isGradedLike && scoreData && (
@@ -400,7 +407,7 @@
 //           onClick={() =>
 //             triggerDownload(
 //               sub.submissionFile.url,
-//               sub.submissionFile.originalName || "my-submission.pdf"
+//               sub.submissionFile.originalName || "my-submission.pdf",
 //             )
 //           }
 //           className="w-full text-left flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all group"
@@ -424,7 +431,9 @@
 //       {isGradedLike && sub.submissionFile?.url && (
 //         <button
 //           type="button"
-//           onClick={() => triggerDownload(sub.submissionFile.url, reviewedFilename())}
+//           onClick={() =>
+//             triggerDownload(sub.submissionFile.url, reviewedFilename())
+//           }
 //           className="w-full text-left flex items-center gap-3 p-3 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 transition-all group"
 //         >
 //           <div className="w-9 h-9 rounded-lg bg-emerald-100 group-hover:bg-emerald-200 flex items-center justify-center transition-colors">
@@ -522,6 +531,30 @@
 //   const [newFile, setNewFile] = useState(null);
 //   const [showReplace, setShowReplace] = useState(false);
 //   const [busy, setBusy] = useState(false);
+
+//   // ✅ FIX: Mirror the backend's resubmission gating (assignment.js
+//   // service — allowResubmission / maxResubmissions) here so the
+//   // "Replace Submission" button doesn't stay visible and clickable
+//   // when a resubmission would just be rejected with a 403. Defaults
+//   // match the backend's own defaults (maxResubmissions ?? 3).
+//   const resubmissionCount = sub?.resubmissionCount || 0;
+//   const maxResubmissions = Number(assignment?.maxResubmissions ?? 3);
+//   const allowResubmission = assignment?.allowResubmission !== false;
+
+//   const resubmissionBlocked =
+//     (!allowResubmission && resubmissionCount > 0) ||
+//     (maxResubmissions > 0 && resubmissionCount >= maxResubmissions);
+
+//   if (resubmissionBlocked) {
+//     return (
+//       <div className="flex items-center gap-2 text-sm text-slate-500 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+//         <Lock size={14} />
+//         {!allowResubmission
+//           ? "Resubmission is not allowed for this assignment."
+//           : `Maximum number of resubmissions (${maxResubmissions}) reached.`}
+//       </div>
+//     );
+//   }
 
 //   const submitReplace = async () => {
 //     if (!newFile) return;
@@ -651,6 +684,10 @@
 //     if (cached[id] !== undefined) return; // already fetched
 
 //     try {
+//       // getMySubmissionForAssignment already normalizes "no submission
+//       // yet" (backend 200 + data:null) into a plain `null` — that is
+//       // NOT an error, it's a legitimate cache value meaning "not
+//       // submitted". Any exception here is a genuine fetch failure.
 //       const sub = await getMySubmissionForAssignment(id);
 //       setCached((p) => ({ ...p, [id]: sub }));
 //       if (sub?.status) {
@@ -660,8 +697,15 @@
 //           ),
 //         );
 //       }
-//     } catch {
-//       setCached((p) => ({ ...p, [id]: null }));
+//     } catch (err) {
+//       // Genuine failure (network/500/auth) — surface it instead of
+//       // silently pretending there's no submission.
+//       const msg =
+//         err?.response?.data?.message ||
+//         err?.message ||
+//         "Failed to load submission details.";
+//       setErrors((p) => ({ ...p, [id]: msg }));
+//       setCached((p) => ({ ...p, [id]: undefined }));
 //     }
 //   };
 
@@ -730,8 +774,8 @@
 //     setCached((p) => ({ ...p, [assignmentId]: updated }));
 //     setAssignments((prev) =>
 //       prev.map((x) =>
-//         x._id === assignmentId ? { ...x, submissionStatus: "submitted" } : x
-//       )
+//         x._id === assignmentId ? { ...x, submissionStatus: "submitted" } : x,
+//       ),
 //     );
 //     setSuccessId(assignmentId);
 //     setTimeout(() => setSuccessId(null), 4000);
@@ -954,7 +998,7 @@
 //                         onClick={() =>
 //                           triggerDownload(
 //                             a.file.url,
-//                             a.file.originalName || "assignment.docx"
+//                             a.file.originalName || "assignment.docx",
 //                           )
 //                         }
 //                         className="w-full text-left flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all group"
@@ -967,7 +1011,8 @@
 //                         </div>
 //                         <div className="min-w-0 flex-1">
 //                           <p className="text-sm font-medium text-slate-700 truncate">
-//                             Download Assignment ({a.file.originalName || "File"})
+//                             Download Assignment ({a.file.originalName || "File"}
+//                             )
 //                           </p>
 //                           <p className="text-xs text-indigo-500">
 //                             Download & complete →
@@ -980,10 +1025,18 @@
 //                     {hasSubmission && (
 //                       <>
 //                         {/* Loading submission details */}
-//                         {sub === undefined && (
+//                         {sub === undefined && !localError && (
 //                           <div className="flex items-center gap-2 text-sm text-slate-400">
 //                             <Loader2 size={14} className="animate-spin" />
 //                             Loading submission…
+//                           </div>
+//                         )}
+
+//                         {/* Genuine fetch failure — distinct from "no submission yet" */}
+//                         {sub === undefined && localError && (
+//                           <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2.5">
+//                             <AlertTriangle size={14} />
+//                             {localError}
 //                           </div>
 //                         )}
 
@@ -1034,8 +1087,9 @@
 //                           </div>
 //                         )}
 
-//                         {/* Local error display */}
-//                         {localError && (
+//                         {/* Local error display (resubmit errors — the initial-fetch
+//                             error case is already handled above when sub === undefined) */}
+//                         {localError && sub !== undefined && (
 //                           <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
 //                             <AlertTriangle size={14} />
 //                             {localError}
@@ -1165,6 +1219,8 @@
 //   );
 // }
 
+
+
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -1186,7 +1242,6 @@ import {
   File,
   Star,
   RotateCcw,
-  Eye,
   Paperclip,
   CheckCheck,
   AlertTriangle,
@@ -1204,6 +1259,10 @@ import {
 } from "../../services/studentService";
 
 import MainLayout from "../../components/layout/MainLayout";
+
+// ─── CONSTANTS ──────────────────────────────────────────────────────────────
+
+const MAX_FILE_MB = 5;
 
 // ─── HELPERS ────────────────────────────────────────────────────────────────
 
@@ -1264,9 +1323,23 @@ const triggerDownload = async (url, filename) => {
     URL.revokeObjectURL(objectUrl);
   } catch (err) {
     console.error("Download failed:", err);
-    // Last-resort: open in new tab so the user can save it
     window.open(url, "_blank");
   }
+};
+
+// A file passed through drag-and-drop never goes through the <input accept="">
+// gate, so it needs the same check the file input relies on. This is what the
+// dropzone uses to reject non-PDFs / oversized files before they ever reach
+// component state — which is also what keeps the Submit button honestly
+// disabled (state only ever holds a file that has already passed this check).
+const validatePdf = (f) => {
+  if (!f) return "No file selected.";
+  const isPdf = f.type === "application/pdf" || /\.pdf$/i.test(f.name || "");
+  if (!isPdf) return "Only PDF files are accepted.";
+  if (f.size > MAX_FILE_MB * 1024 * 1024) {
+    return `File is larger than ${MAX_FILE_MB}MB.`;
+  }
+  return "";
 };
 
 // ─── STATUS BADGE ─────────────────────────────────────────────────────────────
@@ -1357,78 +1430,100 @@ const ScoreRing = ({ pct }) => {
 };
 
 // ─── FILE DROP ZONE (PDF ONLY) ─────────────────────────────────────────────
-// FIX: Restricted to PDF only for student submissions (FROM .pdf,.doc,.docx,.ppt,.pptx,.csv → TO .pdf)
 
-const FileDropZone = ({ file, onFile, onClear, assignmentId }) => {
+const FileDropZone = ({ file, onFile, onClear }) => {
   const inputRef = useRef();
   const [dragging, setDragging] = useState(false);
+  const [localError, setLocalError] = useState("");
+
+  // Every path a file can enter through — click-to-browse or drag-and-drop —
+  // funnels through here, so an invalid file never makes it into `files[id]`
+  // and the Submit button never has to guess whether what it's holding is
+  // actually valid.
+  const handleIncomingFile = (f) => {
+    if (!f) return;
+    const err = validatePdf(f);
+    if (err) {
+      setLocalError(err);
+      return;
+    }
+    setLocalError("");
+    onFile(f);
+  };
 
   const handleDrop = (e) => {
     e.preventDefault();
     setDragging(false);
-    const f = e.dataTransfer.files[0];
-    if (f) onFile(f);
+    handleIncomingFile(e.dataTransfer.files[0]);
   };
 
   return (
-    <div
-      onDragOver={(e) => {
-        e.preventDefault();
-        setDragging(true);
-      }}
-      onDragLeave={() => setDragging(false)}
-      onDrop={handleDrop}
-      onClick={() => !file && inputRef.current?.click()}
-      className={`
-        relative rounded-xl border-2 border-dashed p-6 text-center cursor-pointer transition-all
-        ${dragging ? "border-indigo-400 bg-indigo-50" : "border-slate-200 hover:border-indigo-300 hover:bg-slate-50"}
-        ${file ? "cursor-default" : ""}
-      `}
-    >
-      <input
-        ref={inputRef}
-        type="file"
-        className="hidden"
-        accept=".pdf,application/pdf"
-        onChange={(e) => onFile(e.target.files[0])}
-      />
+    <div>
+      <div
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragging(true);
+        }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={handleDrop}
+        onClick={() => !file && inputRef.current?.click()}
+        className={`
+          relative rounded-xl border-2 border-dashed p-6 text-center cursor-pointer transition-all
+          ${dragging ? "border-indigo-400 bg-indigo-50" : "border-slate-200 hover:border-indigo-300 hover:bg-slate-50"}
+          ${file ? "cursor-default" : ""}
+        `}
+      >
+        <input
+          ref={inputRef}
+          type="file"
+          className="hidden"
+          accept=".pdf,application/pdf"
+          onChange={(e) => handleIncomingFile(e.target.files[0])}
+        />
 
-      {file ? (
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center shrink-0">
-              <File size={18} className="text-indigo-600" />
+        {file ? (
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center shrink-0">
+                <File size={18} className="text-indigo-600" />
+              </div>
+              <div className="text-left min-w-0">
+                <p className="text-sm font-medium text-slate-700 truncate">
+                  {file.name}
+                </p>
+                <p className="text-xs text-slate-400">
+                  {(file.size / 1024 / 1024).toFixed(2)} MB
+                </p>
+              </div>
             </div>
-            <div className="text-left min-w-0">
-              <p className="text-sm font-medium text-slate-700 truncate">
-                {file.name}
-              </p>
-              <p className="text-xs text-slate-400">
-                {(file.size / 1024 / 1024).toFixed(2)} MB
-              </p>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setLocalError("");
+                onClear();
+              }}
+              className="p-1.5 rounded-lg hover:bg-red-100 text-slate-400 hover:text-red-500 transition-colors"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center mx-auto">
+              <Upload size={18} className="text-slate-400" />
             </div>
+            <p className="text-sm text-slate-500">
+              <span className="font-medium text-indigo-600">Click to upload</span>{" "}
+              or drag & drop
+            </p>
+            <p className="text-xs text-slate-400">PDF only — up to {MAX_FILE_MB}MB</p>
           </div>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onClear();
-            }}
-            className="p-1.5 rounded-lg hover:bg-red-100 text-slate-400 hover:text-red-500 transition-colors"
-          >
-            <X size={16} />
-          </button>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center mx-auto">
-            <Upload size={18} className="text-slate-400" />
-          </div>
-          <p className="text-sm text-slate-500">
-            <span className="font-medium text-indigo-600">Click to upload</span>{" "}
-            or drag & drop
-          </p>
-          <p className="text-xs text-slate-400">PDF only — up to 100MB</p>
-        </div>
+        )}
+      </div>
+      {localError && (
+        <p className="mt-2 flex items-center gap-1.5 text-xs text-red-500">
+          <AlertTriangle size={12} /> {localError}
+        </p>
       )}
     </div>
   );
@@ -1501,12 +1596,10 @@ const SubmissionResult = ({ sub, assignment }) => {
   if (!sub) return null;
   const scoreData = formatScore(sub.totalScore, assignment?.totalMarks);
   const annotationCount = sub.annotations?.length || 0;
-  // ✅ treat AI-reviewed/approved the same as graded for display purposes
   const isGradedLike = ["graded", "ai_reviewed", "approved"].includes(
     sub.status,
   );
 
-  // Build reviewed-PDF download filename: [studentName]-[assignmentTitle]-reviewed.pdf
   const reviewedFilename = () => {
     const student = sanitizeForFilename(sub.studentId?.name || "student");
     const title = sanitizeForFilename(assignment?.title || "assignment");
@@ -1515,7 +1608,6 @@ const SubmissionResult = ({ sub, assignment }) => {
 
   return (
     <div className="space-y-4">
-      {/* ✅ Module 8 — link to the full result page */}
       {["graded", "ai_reviewed", "approved"].includes(sub.status) &&
         assignment?._id && (
           <Link
@@ -1526,7 +1618,6 @@ const SubmissionResult = ({ sub, assignment }) => {
           </Link>
         )}
 
-      {/* Score */}
       {isGradedLike && scoreData && (
         <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-white border border-slate-200">
           <ScoreRing pct={scoreData.pct} />
@@ -1551,7 +1642,6 @@ const SubmissionResult = ({ sub, assignment }) => {
         </div>
       )}
 
-      {/* Feedback */}
       {sub.feedback && (
         <div className="rounded-xl border border-amber-100 bg-amber-50 p-4">
           <div className="flex items-center gap-2 mb-2">
@@ -1566,7 +1656,6 @@ const SubmissionResult = ({ sub, assignment }) => {
         </div>
       )}
 
-      {/* Submitted file — blob-forced download with originalName */}
       {sub.submissionFile?.url && (
         <button
           type="button"
@@ -1593,7 +1682,6 @@ const SubmissionResult = ({ sub, assignment }) => {
         </button>
       )}
 
-      {/* Reviewed PDF download (only when graded AND submission file exists) */}
       {isGradedLike && sub.submissionFile?.url && (
         <button
           type="button"
@@ -1616,7 +1704,6 @@ const SubmissionResult = ({ sub, assignment }) => {
         </button>
       )}
 
-      {/* Per-question results */}
       {sub.answers?.length > 0 && (
         <div className="space-y-3">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
@@ -1665,7 +1752,6 @@ const SubmissionResult = ({ sub, assignment }) => {
         </div>
       )}
 
-      {/* Review annotations */}
       {sub.reviewAnnotations?.length > 0 && (
         <div className="space-y-2">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
@@ -1687,7 +1773,7 @@ const SubmissionResult = ({ sub, assignment }) => {
 };
 
 // ─── REPLACE-SUBMISSION PANEL ────────────────────────────────────────────────
-// Shown for submitted-but-not-graded entries when due date has not passed.
+
 const ReplaceSubmissionPanel = ({
   sub,
   assignment,
@@ -1698,11 +1784,6 @@ const ReplaceSubmissionPanel = ({
   const [showReplace, setShowReplace] = useState(false);
   const [busy, setBusy] = useState(false);
 
-  // ✅ FIX: Mirror the backend's resubmission gating (assignment.js
-  // service — allowResubmission / maxResubmissions) here so the
-  // "Replace Submission" button doesn't stay visible and clickable
-  // when a resubmission would just be rejected with a 403. Defaults
-  // match the backend's own defaults (maxResubmissions ?? 3).
   const resubmissionCount = sub?.resubmissionCount || 0;
   const maxResubmissions = Number(assignment?.maxResubmissions ?? 3);
   const allowResubmission = assignment?.allowResubmission !== false;
@@ -1778,14 +1859,17 @@ const ReplaceSubmissionPanel = ({
         file={newFile}
         onFile={(f) => setNewFile(f)}
         onClear={() => setNewFile(null)}
-        assignmentId={assignment._id}
       />
 
       <button
         type="button"
         onClick={submitReplace}
         disabled={!newFile || busy}
-        className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 disabled:cursor-not-allowed text-white text-sm font-medium py-2.5 rounded-xl transition-colors"
+        className={`w-full flex items-center justify-center gap-2 text-sm font-medium py-2.5 rounded-xl transition-colors ${
+          !newFile || busy
+            ? "bg-indigo-200 text-indigo-500 cursor-not-allowed"
+            : "bg-indigo-600 hover:bg-indigo-700 text-white"
+        }`}
       >
         {busy ? (
           <>
@@ -1799,6 +1883,11 @@ const ReplaceSubmissionPanel = ({
           </>
         )}
       </button>
+      {!newFile && !busy && (
+        <p className="text-xs text-slate-400 flex items-center gap-1.5">
+          <Lock size={11} /> Select a PDF to enable replacing.
+        </p>
+      )}
     </div>
   );
 };
@@ -1817,6 +1906,10 @@ export default function Assignments() {
   const [errors, setErrors] = useState({});
   const [globalError, setGlobalError] = useState(null);
   const [successId, setSuccessId] = useState(null);
+  // Tracks assignments where the learner has tried to submit while
+  // incomplete, so unanswered questions can be quietly highlighted instead
+  // of just refusing the click with no explanation.
+  const [attempted, setAttempted] = useState({});
 
   // ── Load assignments ─────────────────────────────────────────────────────
 
@@ -1837,6 +1930,17 @@ export default function Assignments() {
     })();
   }, []);
 
+  // ── Mode helper ──────────────────────────────────────────────────────────
+  // An assignment with no questions has no valid "text" path at all, so
+  // defaulting every assignment to text mode (as the previous version did)
+  // silently steered file-only assignments toward a dead end where Submit
+  // would fire with an empty answers array. Default to whichever mode this
+  // assignment can actually satisfy.
+  const getMode = useCallback(
+    (a) => mode[a._id] || (a.questions?.length > 0 ? "text" : "file"),
+    [mode],
+  );
+
   // ── Toggle expand + fetch submission ────────────────────────────────────
 
   const toggleExpand = async (a) => {
@@ -1850,10 +1954,6 @@ export default function Assignments() {
     if (cached[id] !== undefined) return; // already fetched
 
     try {
-      // getMySubmissionForAssignment already normalizes "no submission
-      // yet" (backend 200 + data:null) into a plain `null` — that is
-      // NOT an error, it's a legitimate cache value meaning "not
-      // submitted". Any exception here is a genuine fetch failure.
       const sub = await getMySubmissionForAssignment(id);
       setCached((p) => ({ ...p, [id]: sub }));
       if (sub?.status) {
@@ -1864,8 +1964,6 @@ export default function Assignments() {
         );
       }
     } catch (err) {
-      // Genuine failure (network/500/auth) — surface it instead of
-      // silently pretending there's no submission.
       const msg =
         err?.response?.data?.message ||
         err?.message ||
@@ -1887,23 +1985,71 @@ export default function Assignments() {
     }));
   }, []);
 
+  // ── Submission readiness — the single source of truth ───────────────────
+  // Both the Submit button's `disabled` state and handleSubmit's own guard
+  // read from this, so there is exactly one definition of "blank" instead of
+  // two that can drift apart. This is what actually closes the gap that let
+  // learners submit an empty file-mode assignment (or an all-blank text
+  // assignment) and then have no clean way to fix it.
+  const getSubmissionReadiness = useCallback(
+    (a) => {
+      const id = a._id;
+      const currentMode = getMode(a);
+
+      if (currentMode === "file") {
+        return files[id]
+          ? { ready: true, reason: "" }
+          : { ready: false, reason: "Select a PDF to enable submission." };
+      }
+
+      if (!a.questions || a.questions.length === 0) {
+        return {
+          ready: false,
+          reason: "Switch to File upload — this assignment has no questions.",
+        };
+      }
+
+      const unanswered = a.questions.filter((q) => {
+        const ans = answers[id]?.[q._id];
+        if (!ans) return true;
+        return q.type === "mcq"
+          ? !ans.selectedOption
+          : !ans.textAnswer || !ans.textAnswer.trim();
+      }).length;
+
+      return {
+        ready: unanswered === 0,
+        reason:
+          unanswered > 0
+            ? `Answer all questions to submit — ${unanswered} remaining.`
+            : "",
+      };
+    },
+    [answers, files, getMode],
+  );
+
   // ── Submit ───────────────────────────────────────────────────────────────
 
   const handleSubmit = async (a) => {
     const id = a._id;
     setErrors((p) => ({ ...p, [id]: null }));
 
-    if (mode[id] === "file") {
-      if (!files[id]) {
-        setErrors((p) => ({ ...p, [id]: "Please select a file to upload." }));
-        return;
-      }
+    const { ready, reason } = getSubmissionReadiness(a);
+    if (!ready) {
+      // The button is disabled whenever this is false, so in normal use this
+      // only fires defensively — but it still needs to fail loudly rather
+      // than let an incomplete payload reach the server.
+      setAttempted((p) => ({ ...p, [id]: true }));
+      setErrors((p) => ({ ...p, [id]: reason }));
+      return;
     }
+
+    const currentMode = getMode(a);
 
     setSubmitting(id);
     try {
       let result;
-      if (mode[id] === "file") {
+      if (currentMode === "file") {
         const fd = new FormData();
         fd.append("file", files[id]);
         result = await submitAssignment(id, fd);
@@ -1912,7 +2058,6 @@ export default function Assignments() {
         result = await submitAssignment(id, { answers: ans });
       }
 
-      // Update local state
       setAssignments((prev) =>
         prev.map((x) =>
           x._id === id ? { ...x, submissionStatus: "submitted" } : x,
@@ -1934,7 +2079,6 @@ export default function Assignments() {
   };
 
   // ── Resubmit handler ─────────────────────────────────────────────────────
-  // Called from <ReplaceSubmissionPanel> with the updated submission payload.
 
   const handleResubmitDone = (assignmentId, updated) => {
     setCached((p) => ({ ...p, [assignmentId]: updated }));
@@ -1974,7 +2118,6 @@ export default function Assignments() {
             </div>
           </div>
 
-          {/* Global success toast */}
           {successId && (
             <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-sm">
               <CheckCircle2 size={16} />
@@ -1982,7 +2125,6 @@ export default function Assignments() {
             </div>
           )}
 
-          {/* Global error */}
           {globalError && (
             <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm">
               <AlertTriangle size={16} />
@@ -1990,7 +2132,6 @@ export default function Assignments() {
             </div>
           )}
 
-          {/* Loading */}
           {loading && (
             <div className="flex items-center justify-center py-20">
               <div className="flex items-center gap-3 text-slate-400">
@@ -2000,7 +2141,6 @@ export default function Assignments() {
             </div>
           )}
 
-          {/* Empty */}
           {!loading && assignments.length === 0 && (
             <div className="text-center py-20 space-y-3">
               <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto">
@@ -2010,7 +2150,6 @@ export default function Assignments() {
             </div>
           )}
 
-          {/* Assignment list */}
           {assignments.map((a) => {
             const id = a._id;
             const due = getDueDateInfo(a.dueDate);
@@ -2024,9 +2163,18 @@ export default function Assignments() {
             const scoreData = isGraded
               ? formatScore(sub?.totalScore, a.totalMarks)
               : null;
-            const localMode = mode[id] || "text";
+            const localMode = getMode(a);
             const localError = errors[id];
             const annotationCount = sub?.annotations?.length || 0;
+            const { ready: canSubmit, reason: blockedReason } =
+              getSubmissionReadiness(a);
+            const answeredCount = (a.questions || []).filter((q) => {
+              const ans = answers[id]?.[q._id];
+              if (!ans) return false;
+              return q.type === "mcq"
+                ? !!ans.selectedOption
+                : !!(ans.textAnswer && ans.textAnswer.trim());
+            }).length;
 
             return (
               <div
@@ -2042,7 +2190,6 @@ export default function Assignments() {
                   className="w-full text-left p-5 flex items-start gap-4"
                   onClick={() => toggleExpand(a)}
                 >
-                  {/* Icon */}
                   <div
                     className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
                       isGraded
@@ -2061,7 +2208,6 @@ export default function Assignments() {
                     )}
                   </div>
 
-                  {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
@@ -2087,7 +2233,6 @@ export default function Assignments() {
                       </div>
                     </div>
 
-                    {/* Meta row */}
                     <div className="flex items-center gap-4 mt-2 flex-wrap">
                       {due && (
                         <span
@@ -2150,14 +2295,12 @@ export default function Assignments() {
                 {/* ── Expanded body ── */}
                 {isOpen && (
                   <div className="border-t border-slate-100 p-5 space-y-5">
-                    {/* Description */}
                     {a.description && (
                       <p className="text-sm text-slate-600 leading-relaxed">
                         {a.description}
                       </p>
                     )}
 
-                    {/* Download assignment file (DOCX/PDF) — blob-forced, original filename */}
                     {a.file?.url && (
                       <button
                         type="button"
@@ -2190,7 +2333,6 @@ export default function Assignments() {
                     {/* ─── SUBMISSION VIEW (already submitted/graded) ─── */}
                     {hasSubmission && (
                       <>
-                        {/* Loading submission details */}
                         {sub === undefined && !localError && (
                           <div className="flex items-center gap-2 text-sm text-slate-400">
                             <Loader2 size={14} className="animate-spin" />
@@ -2198,7 +2340,6 @@ export default function Assignments() {
                           </div>
                         )}
 
-                        {/* Genuine fetch failure — distinct from "no submission yet" */}
                         {sub === undefined && localError && (
                           <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2.5">
                             <AlertTriangle size={14} />
@@ -2216,7 +2357,6 @@ export default function Assignments() {
                           </div>
                         )}
 
-                        {/* ─── REPLACE SUBMISSION (only file-based & not graded & before due) ─── */}
                         {sub &&
                           sub.submissionFile?.url &&
                           !isGraded &&
@@ -2233,7 +2373,6 @@ export default function Assignments() {
                             />
                           )}
 
-                        {/* ─── DUE DATE PASSED, still ungraded ─── */}
                         {sub &&
                           sub.submissionFile?.url &&
                           !isGraded &&
@@ -2245,7 +2384,6 @@ export default function Assignments() {
                             </div>
                           )}
 
-                        {/* ─── ALREADY GRADED ─── */}
                         {sub && isGraded && sub.submissionFile?.url && (
                           <div className="flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2.5">
                             <Lock size={14} />
@@ -2253,8 +2391,6 @@ export default function Assignments() {
                           </div>
                         )}
 
-                        {/* Local error display (resubmit errors — the initial-fetch
-                            error case is already handled above when sub === undefined) */}
                         {localError && sub !== undefined && (
                           <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
                             <AlertTriangle size={14} />
@@ -2267,65 +2403,98 @@ export default function Assignments() {
                     {/* ─── SUBMISSION FORM (not yet submitted) ─── */}
                     {!hasSubmission && (
                       <div className="space-y-4">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between flex-wrap gap-2">
                           <p className="text-sm font-semibold text-slate-700">
                             Your Submission
                           </p>
 
-                          {/* Mode toggle */}
-                          <div className="flex rounded-lg overflow-hidden border border-slate-200 text-xs">
-                            <button
-                              onClick={() =>
-                                setMode((p) => ({ ...p, [id]: "text" }))
-                              }
-                              className={`px-3 py-1.5 transition-colors ${
-                                localMode !== "file"
-                                  ? "bg-indigo-600 text-white"
-                                  : "bg-white text-slate-500 hover:bg-slate-50"
-                              }`}
-                            >
-                              <span className="flex items-center gap-1.5">
-                                <MessageSquare size={11} /> Text
+                          <div className="flex items-center gap-3">
+                            {localMode !== "file" && a.questions?.length > 0 && (
+                              <span
+                                className={`text-xs font-medium ${
+                                  answeredCount === a.questions.length
+                                    ? "text-emerald-600"
+                                    : "text-slate-400"
+                                }`}
+                              >
+                                {answeredCount}/{a.questions.length} answered
                               </span>
-                            </button>
-                            <button
-                              onClick={() =>
-                                setMode((p) => ({ ...p, [id]: "file" }))
-                              }
-                              className={`px-3 py-1.5 transition-colors ${
-                                localMode === "file"
-                                  ? "bg-indigo-600 text-white"
-                                  : "bg-white text-slate-500 hover:bg-slate-50"
-                              }`}
-                            >
-                              <span className="flex items-center gap-1.5">
-                                <Upload size={11} /> File
-                              </span>
-                            </button>
+                            )}
+
+                            {a.questions?.length > 0 && (
+                              <div className="flex rounded-lg overflow-hidden border border-slate-200 text-xs">
+                                <button
+                                  onClick={() =>
+                                    setMode((p) => ({ ...p, [id]: "text" }))
+                                  }
+                                  className={`px-3 py-1.5 transition-colors ${
+                                    localMode !== "file"
+                                      ? "bg-indigo-600 text-white"
+                                      : "bg-white text-slate-500 hover:bg-slate-50"
+                                  }`}
+                                >
+                                  <span className="flex items-center gap-1.5">
+                                    <MessageSquare size={11} /> Text
+                                  </span>
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    setMode((p) => ({ ...p, [id]: "file" }))
+                                  }
+                                  className={`px-3 py-1.5 transition-colors ${
+                                    localMode === "file"
+                                      ? "bg-indigo-600 text-white"
+                                      : "bg-white text-slate-500 hover:bg-slate-50"
+                                  }`}
+                                >
+                                  <span className="flex items-center gap-1.5">
+                                    <Upload size={11} /> File
+                                  </span>
+                                </button>
+                              </div>
+                            )}
                           </div>
                         </div>
 
                         {/* Text mode — questions */}
                         {localMode !== "file" && a.questions?.length > 0 && (
                           <div className="space-y-4">
-                            {a.questions.map((q, i) => (
-                              <div key={q._id} className="space-y-1">
-                                <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">
-                                  Question {i + 1}
-                                </p>
-                                <QuestionInput
-                                  question={q}
-                                  answer={answers[id]?.[q._id]}
-                                  onChange={(field, val) =>
-                                    handleAnswer(id, q._id, field, val)
-                                  }
-                                />
-                              </div>
-                            ))}
+                            {a.questions.map((q, i) => {
+                              const ans = answers[id]?.[q._id];
+                              const isAnswered =
+                                q.type === "mcq"
+                                  ? !!ans?.selectedOption
+                                  : !!(ans?.textAnswer && ans.textAnswer.trim());
+                              const flagged = attempted[id] && !isAnswered;
+                              return (
+                                <div
+                                  key={q._id}
+                                  className={`space-y-1 rounded-xl p-2 -m-2 transition-colors ${
+                                    flagged ? "ring-1 ring-red-200 bg-red-50/50" : ""
+                                  }`}
+                                >
+                                  <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">
+                                    Question {i + 1}
+                                    {flagged && (
+                                      <span className="text-red-500 normal-case font-normal ml-1.5">
+                                        · answer required
+                                      </span>
+                                    )}
+                                  </p>
+                                  <QuestionInput
+                                    question={q}
+                                    answer={ans}
+                                    onChange={(field, val) =>
+                                      handleAnswer(id, q._id, field, val)
+                                    }
+                                  />
+                                </div>
+                              );
+                            })}
                           </div>
                         )}
 
-                        {/* Text mode — no questions */}
+                        {/* Text mode — no questions (assignment is file-only) */}
                         {localMode !== "file" &&
                           (!a.questions || a.questions.length === 0) && (
                             <p className="text-xs text-slate-400 italic">
@@ -2342,11 +2511,9 @@ export default function Assignments() {
                             onClear={() =>
                               setFiles((p) => ({ ...p, [id]: null }))
                             }
-                            assignmentId={id}
                           />
                         )}
 
-                        {/* Error */}
                         {localError && (
                           <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
                             <AlertTriangle size={14} />
@@ -2354,11 +2521,20 @@ export default function Assignments() {
                           </div>
                         )}
 
-                        {/* Submit button */}
+                        {/* Submit button — disabled until the current mode
+                            actually has something to send. This is the fix:
+                            no file selected (or no questions answered) means
+                            no way to trigger a blank submission. */}
                         <button
                           onClick={() => handleSubmit(a)}
-                          disabled={submitting === id}
-                          className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white text-sm font-medium py-2.5 rounded-xl transition-colors"
+                          disabled={submitting === id || !canSubmit}
+                          className={`w-full flex items-center justify-center gap-2 text-sm font-medium py-2.5 rounded-xl transition-colors ${
+                            submitting === id
+                              ? "bg-indigo-400 text-white cursor-wait"
+                              : !canSubmit
+                                ? "bg-slate-200 text-slate-400 cursor-not-allowed"
+                                : "bg-indigo-600 hover:bg-indigo-700 text-white"
+                          }`}
                         >
                           {submitting === id ? (
                             <>
@@ -2372,6 +2548,11 @@ export default function Assignments() {
                             </>
                           )}
                         </button>
+                        {!canSubmit && submitting !== id && (
+                          <p className="text-xs text-slate-400 flex items-center gap-1.5 justify-center">
+                            <Lock size={11} /> {blockedReason}
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>
