@@ -1,4 +1,3 @@
-
 // import { useEffect, useState, useRef, useCallback } from "react";
 // import { Link } from "react-router-dom";
 // import {
@@ -1219,8 +1218,6 @@
 //   );
 // }
 
-
-
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -1513,10 +1510,14 @@ const FileDropZone = ({ file, onFile, onClear }) => {
               <Upload size={18} className="text-slate-400" />
             </div>
             <p className="text-sm text-slate-500">
-              <span className="font-medium text-indigo-600">Click to upload</span>{" "}
+              <span className="font-medium text-indigo-600">
+                Click to upload
+              </span>{" "}
               or drag & drop
             </p>
-            <p className="text-xs text-slate-400">PDF only — up to {MAX_FILE_MB}MB</p>
+            <p className="text-xs text-slate-400">
+              PDF only — up to {MAX_FILE_MB}MB
+            </p>
           </div>
         )}
       </div>
@@ -2118,6 +2119,25 @@ export default function Assignments() {
             </div>
           </div>
 
+          <div className="mt-4 flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
+            <AlertTriangle
+              size={18}
+              className="text-amber-500 mt-0.5 shrink-0"
+            />
+            <p className="text-sm text-amber-800 leading-relaxed">
+              <span className="font-semibold">Important:</span> Assignment PDFs
+              must be filled and edited using{" "}
+              <span className="font-semibold">Adobe Acrobat Reader</span>{" "}
+              (Desktop or Mobile app). If you're completing your assignment on a
+              phone, installing the{" "}
+              <span className="font-semibold">
+                Adobe Acrobat app is compulsory
+              </span>{" "}
+              — other apps and built-in phone viewers may not support editing
+              this form correctly.
+            </p>
+          </div>
+
           {successId && (
             <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-sm">
               <CheckCircle2 size={16} />
@@ -2409,17 +2429,18 @@ export default function Assignments() {
                           </p>
 
                           <div className="flex items-center gap-3">
-                            {localMode !== "file" && a.questions?.length > 0 && (
-                              <span
-                                className={`text-xs font-medium ${
-                                  answeredCount === a.questions.length
-                                    ? "text-emerald-600"
-                                    : "text-slate-400"
-                                }`}
-                              >
-                                {answeredCount}/{a.questions.length} answered
-                              </span>
-                            )}
+                            {localMode !== "file" &&
+                              a.questions?.length > 0 && (
+                                <span
+                                  className={`text-xs font-medium ${
+                                    answeredCount === a.questions.length
+                                      ? "text-emerald-600"
+                                      : "text-slate-400"
+                                  }`}
+                                >
+                                  {answeredCount}/{a.questions.length} answered
+                                </span>
+                              )}
 
                             {a.questions?.length > 0 && (
                               <div className="flex rounded-lg overflow-hidden border border-slate-200 text-xs">
@@ -2464,13 +2485,17 @@ export default function Assignments() {
                               const isAnswered =
                                 q.type === "mcq"
                                   ? !!ans?.selectedOption
-                                  : !!(ans?.textAnswer && ans.textAnswer.trim());
+                                  : !!(
+                                      ans?.textAnswer && ans.textAnswer.trim()
+                                    );
                               const flagged = attempted[id] && !isAnswered;
                               return (
                                 <div
                                   key={q._id}
                                   className={`space-y-1 rounded-xl p-2 -m-2 transition-colors ${
-                                    flagged ? "ring-1 ring-red-200 bg-red-50/50" : ""
+                                    flagged
+                                      ? "ring-1 ring-red-200 bg-red-50/50"
+                                      : ""
                                   }`}
                                 >
                                   <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">
