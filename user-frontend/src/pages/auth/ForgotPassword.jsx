@@ -33,11 +33,17 @@ export default function ForgotPassword() {
               </h2>
 
               <p className="text-gray-500 mt-2">
+                Please contact to the Developer <b>Anurag Pandey</b>
+                <br />
+                Email : anurag.p@hkinternational.uk <br />
+                Mo. : +91 - 7991845638
+              </p>
+              {/* <p className="text-gray-500 mt-2">
                 Enter your registered email and we'll send you a password reset
                 link.
-              </p>
+              </p> */}
 
-              <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+              {/* <form onSubmit={handleSubmit} className="mt-6 space-y-5">
                 <div>
                   <label className="text-sm font-medium text-gray-700">
                     Email Address
@@ -63,7 +69,7 @@ export default function ForgotPassword() {
                 <button className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition">
                   Send Reset Link
                 </button>
-              </form>
+              </form> */}
 
               <div className="mt-6 text-center">
                 <Link
