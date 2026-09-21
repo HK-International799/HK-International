@@ -236,9 +236,11 @@ export default function ForgotPassword() {
               </form>
 
               <p className="mt-4 text-xs text-gray-400 text-center">
-                Still can't access your account? Contact us at
+                Still can't access your account? Contact Our Developer at
                 <br />
-                info@hkinternational.uk
+                Email: anurag.p@hkinternational.uk
+                <br />
+                Phone: +91 - 7991845638
               </p>
 
               <div className="mt-6 text-center">
