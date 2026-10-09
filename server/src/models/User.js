@@ -1,3 +1,4 @@
+
 // import mongoose from "mongoose";
 
 // const userSchema = new mongoose.Schema(
@@ -81,12 +82,22 @@
 //       enum: ["self", "institute", "admin"],
 //       default: "admin",
 //     },
+
+//     // ── Forgot / Reset Password (additive) ────────────────────────────────
+//     // passwordResetToken holds the SHA-256 HASH of the emailed token — the
+//     // raw token is never stored. Both fields are `select: false` so they can
+//     // never leak through getMe, populate(), admin lists or any other query
+//     // that doesn't explicitly ask for them.
+//     passwordResetToken: { type: String, default: undefined, select: false },
+//     passwordResetExpires: { type: Date, default: undefined, select: false },
 //   },
 //   { timestamps: true },
 // );
 
 // userSchema.index({ role: 1 });
 // userSchema.index({ mobile: 1 });
+// // Fast lookup of a reset token hash (sparse: most users have none).
+// userSchema.index({ passwordResetToken: 1 }, { sparse: true });
 
 // // ── Registration Requirement 1: Full Name derivation ────────────────────
 // // Derived consistently from firstName/middleName/lastName when available
@@ -216,6 +227,18 @@ userSchema.index({ role: 1 });
 userSchema.index({ mobile: 1 });
 // Fast lookup of a reset token hash (sparse: most users have none).
 userSchema.index({ passwordResetToken: 1 }, { sparse: true });
+
+// ── Learners page: server-side filter / sort / stats (additive) ─────────
+// createdAt: default sort + registration-date range + "registered
+//   today/week/month/year" stat cards.
+// role + createdAt: the most common combination (role filter, newest first).
+// enrolledCourses (multikey): course filter and search-by-course-title.
+// dateOfBirth: DOB range filter / DOB sort.
+// Index builds are additive and non-blocking for existing queries.
+userSchema.index({ createdAt: -1 });
+userSchema.index({ role: 1, createdAt: -1 });
+userSchema.index({ enrolledCourses: 1 });
+userSchema.index({ dateOfBirth: 1 });
 
 // ── Registration Requirement 1: Full Name derivation ────────────────────
 // Derived consistently from firstName/middleName/lastName when available

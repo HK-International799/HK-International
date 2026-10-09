@@ -67,6 +67,27 @@ const sendMail = ({ to, subject, text, html }) =>
     html,
   });
 
+const getAdminRecipients = () =>
+  (process.env.ADMIN_NOTIFICATION_EMAIL || "info@hkinternational.uk")
+    .split(",")
+    .map((e) => e.trim())
+    .filter(Boolean);
+
+const formatInZone = (date, options) => {
+  const timeZone = process.env.ADMIN_NOTIFICATION_TIMEZONE || "Asia/Kolkata";
+  try {
+    return new Intl.DateTimeFormat("en-US", { timeZone, ...options }).format(
+      date,
+    );
+  } catch {
+    // Invalid timezone configured — fall back to UTC rather than failing.
+    return new Intl.DateTimeFormat("en-US", {
+      timeZone: "UTC",
+      ...options,
+    }).format(date);
+  }
+};
+
 /* ─────────────────────── signature (HTML + text) ───────────────────────── */
 
 const contactRow = (label, valueHtml) => `
@@ -124,13 +145,10 @@ const signatureHtml = () => {
                       ${escapeHtml(s.name)}
                     </a>
                   </div>
-                  <div style="font-size:11px;color:#6366f1;margin-top:2px;">
-                    Full Stack Developer
-                  </div>
-                  `
+                 `
                     : ""
                 }
-                ${s.designation ? `<div style="font-size:13px;color:#4b5563;">${escapeHtml(s.designation)}</div>` : ""}
+                ${s.designation ? `<div style="font-size:13px;color:#6366f1;">${escapeHtml(s.designation)}</div>` : ""}
               ${s.team ? `<div style="font-size:13px;font-weight:bold;color:${BRAND.primary};margin:2px 0 8px;">${escapeHtml(s.team)}</div>` : ""}
               ${rows.length ? `<table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">${rows.join("")}</table>` : ""}
             </td>
@@ -442,6 +460,83 @@ const emailService = {
       html,
     });
   },
+
+
+  sendAdminNewRegistrationEmail: async (details) => {
+
+    const recipients = getAdminRecipients();
+
+    if (!recipients.length) return;
+
+    const registeredAt = details.registeredAt || new Date();
+
+    const date = formatInZone(registeredAt,{
+        day:"2-digit",
+        month:"2-digit",
+        year:"numeric"
+    });
+
+    const time = formatInZone(registeredAt,{
+        hour:"2-digit",
+        minute:"2-digit",
+        hour12:true
+    });
+
+    const learnerUrl =
+        process.env.CLIENT_URL_ADMIN
+        ? `${process.env.CLIENT_URL_ADMIN}/admin/learners/${details.learnerId}`
+        : "";
+
+    const html = renderEmail({
+        preheader:"A new learner has registered.",
+        heading:"New LMS Registration",
+        bodyHtml:[
+            para("A learner has successfully registered from the public website."),
+
+            detailsBox([
+                ["Full Name", escapeHtml(details.fullName)],
+                ["Email", escapeHtml(details.email)],
+                ["Mobile", escapeHtml(details.mobile)],
+                ["Courses", escapeHtml(details.courses)],
+                ["Country", escapeHtml(details.country)],
+                ["Registration Date", date],
+                ["Registration Time", time],
+                ["Source", escapeHtml(details.source)],
+                ["User Type", details.isNewUser ? "New User" : "Existing User"]
+            ]),
+
+            learnerUrl
+                ? button("View Learner", learnerUrl)
+                : ""
+
+        ].join("")
+    });
+
+    const text = textEmail([
+        "A new learner has registered.",
+        "",
+        `Name: ${details.fullName}`,
+        `Email: ${details.email}`,
+        `Mobile: ${details.mobile}`,
+        `Courses: ${details.courses}`,
+        `Country: ${details.country}`,
+        `Date: ${date}`,
+        `Time: ${time}`,
+        `Source: ${details.source}`,
+        `User Type: ${details.isNewUser ? "New User" : "Existing User"}`
+    ]);
+
+    await sendMail({
+        to: recipients.join(","),
+        subject:"New LMS Registration",
+        html,
+        text
+    });
+
+},
+
+
+
 };
 
 export default emailService;

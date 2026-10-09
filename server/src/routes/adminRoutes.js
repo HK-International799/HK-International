@@ -7,7 +7,12 @@
 //   enrollStudent, getAllRegistrations, processRegistration,
 //   exportRegistrationsCSV,
 //   getRegistrationById, confirmRegistrationPayment, getLearnerProfile,
+//   exportLearnerHistory,
 // } from "../controllers/adminController.js";
+// import {
+//   approveRequestedCourse,
+//   rejectRequestedCourse,
+// } from "../controllers/registrationController.js";
 // import authMiddleware from "../middleware/authMiddleware.js";
 // import roleMiddleware from "../middleware/roleMiddleware.js";
 
@@ -36,10 +41,20 @@
 // router.patch("/registrations/:id", processRegistration);
 // router.patch("/registrations/:id/payment", confirmRegistrationPayment);
 
+// // Registration Requirement 3 — admin decides which requested course(s) a
+// // candidate is actually enrolled into; original request is preserved.
+// router.patch("/registrations/:id/courses/approve", approveRequestedCourse);
+// router.patch("/registrations/:id/courses/reject", rejectRequestedCourse);
+
 // // Learner 360° Profile
 // router.get("/learners/:id/profile", getLearnerProfile);
 
+// // Complete Candidate History Export
+// router.get("/learners/:id/export", exportLearnerHistory);
+
 // export default router;
+
+
 
 
 
@@ -51,6 +66,7 @@ import {
   exportRegistrationsCSV,
   getRegistrationById, confirmRegistrationPayment, getLearnerProfile,
   exportLearnerHistory,
+  getUserStats, getUserFilterMeta, exportUsersExcel,
 } from "../controllers/adminController.js";
 import {
   approveRequestedCourse,
@@ -68,6 +84,13 @@ router.get("/stats", getAdminStats);
 router.get("/activity", getRecentActivity);
 
 // Users
+// Learners page (additive): stat cards, filter/export metadata and the
+// Excel export. Declared before any "/users/:id" route so the literal
+// segments can never be captured as an :id.
+router.get("/users/stats", getUserStats);
+router.get("/users/meta", getUserFilterMeta);
+router.post("/users/export", exportUsersExcel);
+
 router.post("/users", createUser);
 router.get("/users", getAllUsers);
 router.put("/users/:id", updateUser);
