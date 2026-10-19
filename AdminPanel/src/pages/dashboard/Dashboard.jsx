@@ -320,9 +320,9 @@ export default function Dashboard() {
                 { l: "Add Course", t: "/admin/courses" },
                 { l: "Add Student", t: "/admin/learners" },
                 // { l: "Institutes", t: "/admin/institutes" },
-                // { l: "Registrations", t: "/admin/registrations" },
+                { l: "Registrations", t: "/admin/registrations" },
                 // { l: "Orientation", t: "/admin/orientation" },
-                // { l: "Certificates", t: "/admin/certificates" },
+                { l: "Certificates", t: "/admin/certificates" },
               ].map((a) => (
                 <>
                   <button

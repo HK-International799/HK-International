@@ -13,288 +13,78 @@ const questions = [
 {
   type: "mcq",
   prompt:
-    "Which ergonomic discipline primarily focuses on reducing musculoskeletal disorders caused by lifting, posture, and repetitive work?",
+    "Oil leaks from machinery onto the floor. Which action is a corrective action rather than a correction?",
   options: [
-    "Organisational ergonomics",
-    "Physical ergonomics",
-    "Cognitive ergonomics",
-    "Environmental ergonomics",
+    "Mopping up the oil",
+    "Placing a warning sign on the wet floor",
+    "Investigating why the leak occurred and addressing the cause, such as a worn seal or missed maintenance",
+    "Sending the injured worker for first aid",
   ],
-  correctAnswer: "Physical ergonomics",
-  marks: 2,
+  correctAnswer:
+    "Investigating why the leak occurred and addressing the cause, such as a worn seal or missed maintenance",
+  marks: 1,
 },
-
 {
   type: "mcq",
   prompt:
-    "What is a common consequence of poorly designed manual handling tasks?",
+    "A forklift strikes a rack and no one is injured. Investigation finds poor visibility, congested storage and weak supervision. What approach is appropriate?",
   options: [
-    "Improved productivity",
-    "Musculoskeletal disorders",
-    "Lower equipment costs",
-    "Reduced training needs",
+    "Focus only on the forklift operator",
+    "Close the case because nobody was hurt",
+    "Look at underlying system causes as well as the operator, to support learning and prevention rather than blame",
+    "Discipline the operator and the supervisor",
   ],
-  correctAnswer: "Musculoskeletal disorders",
-  marks: 2,
+  correctAnswer:
+    "Look at underlying system causes as well as the operator, to support learning and prevention rather than blame",
+  marks: 1,
 },
-
 {
   type: "mcq",
   prompt:
-    "Poor workstation design is most likely to result in:",
+    "Workers keep bypassing a newly installed safety device. Can the corrective action be considered effective?",
   options: [
-    "Higher employee motivation",
-    "Discomfort, fatigue, and chronic injury",
-    "Reduced maintenance costs",
-    "Improved production speed",
+    "Yes, because the device was installed",
+    "Yes, because the action log is closed",
+    "No, completing an action does not prove it works; effectiveness must be verified with evidence",
+    "No, but verification is optional",
   ],
-  correctAnswer: "Discomfort, fatigue, and chronic injury",
-  marks: 2,
+  correctAnswer:
+    "No, completing an action does not prove it works; effectiveness must be verified with evidence",
+  marks: 1,
 },
-
 {
   type: "mcq",
   prompt:
-    "Which control is most effective for reducing injuries caused by repetitive work?",
+    "The same incomplete risk assessments are found in audits two years running. What should the organisation do?",
   options: [
-    "Ignoring the issue",
-    "Task rotation, mechanisation, and redesign",
-    "Increasing overtime",
-    "Reducing break times",
+    "Ask HSE to update the documents again",
+    "Investigate underlying system weaknesses such as unclear responsibilities, insufficient training or inadequate resources",
+    "Reduce the number of audits",
+    "Accept the finding as normal",
   ],
-  correctAnswer: "Task rotation, mechanisation, and redesign",
-  marks: 2,
+  correctAnswer:
+    "Investigate underlying system weaknesses such as unclear responsibilities, insufficient training or inadequate resources",
+  marks: 1,
 },
-
 {
   type: "mcq",
   prompt:
-    "Cognitive ergonomics is mainly concerned with:",
+    "Which statement about new technology as an improvement opportunity is correct?",
   options: [
-    "Machine maintenance schedules",
-    "How people process information and make decisions",
-    "Fire evacuation procedures",
-    "Building construction methods",
+    "New technology is automatically safer",
+    "New technology should be evaluated for hazards it may introduce",
+    "New technology removes the need for risk assessment",
+    "New technology cannot be an improvement opportunity",
   ],
-  correctAnswer: "How people process information and make decisions",
-  marks: 2,
-},
-
-{
-  type: "mcq",
-  prompt:
-    "Poor cognitive design can lead to:",
-  options: [
-    "Improved concentration",
-    "Systematic human error",
-    "Reduced workload",
-    "Better communication",
-  ],
-  correctAnswer: "Systematic human error",
-  marks: 2,
-},
-
-{
-  type: "mcq",
-  prompt:
-    "According to cognitive ergonomics, human error is often caused by:",
-  options: [
-    "Worker laziness",
-    "Poorly designed systems",
-    "Excessive supervision",
-    "High salaries",
-  ],
-  correctAnswer: "Poorly designed systems",
-  marks: 2,
-},
-
-{
-  type: "mcq",
-  prompt:
-    "Which feature improves the usability of workplace controls?",
-  options: [
-    "Hidden labels",
-    "Clearly labelled and colour-coded controls",
-    "Complex operating procedures",
-    "Random control layouts",
-  ],
-  correctAnswer: "Clearly labelled and colour-coded controls",
-  marks: 2,
-},
-
-{
-  type: "mcq",
-  prompt:
-    "Safe work procedures should be:",
-  options: [
-    "Written in technical language only",
-    "Based on the logical sequence of the task",
-    "Created without consulting workers",
-    "Changed daily",
-  ],
-  correctAnswer: "Based on the logical sequence of the task",
-  marks: 2,
-},
-
-{
-  type: "mcq",
-  prompt:
-    "Accessible workplace information should be:",
-  options: [
-    "Available only in English",
-    "Suitable for workers' language and reading ability",
-    "Restricted to supervisors",
-    "Stored only electronically",
-  ],
-  correctAnswer: "Suitable for workers' language and reading ability",
-  marks: 2,
-},
-
-{
-  type: "mcq",
-  prompt:
-    "Effective ergonomic design recognises that workers differ in:",
-  options: [
-    "Body size, capability, language, and experience",
-    "Only their age",
-    "Only their physical strength",
-    "Only their qualifications",
-  ],
-  correctAnswer: "Body size, capability, language, and experience",
-  marks: 2,
-},
-
-{
-  type: "mcq",
-  prompt:
-    "Designing work for an 'average worker' may:",
-  options: [
-    "Improve safety for everyone",
-    "Exclude many members of the workforce",
-    "Eliminate all ergonomic risks",
-    "Reduce training requirements",
-  ],
-  correctAnswer: "Exclude many members of the workforce",
-  marks: 2,
-},
-
-{
-  type: "mcq",
-  prompt:
-    "In the manual handling example, what engineering solution provided the greatest improvement?",
-  options: [
-    "Additional lifting training",
-    "Mechanical handling equipment such as a lift table",
-    "Longer working hours",
-    "More warning signs",
-  ],
-  correctAnswer: "Mechanical handling equipment such as a lift table",
-  marks: 2,
-},
-
-{
-  type: "mcq",
-  prompt:
-    "Why is logistics safety important to an organisation?",
-  options: [
-    "It only protects warehouse workers",
-    "It supports customer satisfaction, business continuity, and reputation",
-    "It eliminates the need for transport planning",
-    "It only reduces insurance costs",
-  ],
-  correctAnswer: "It supports customer satisfaction, business continuity, and reputation",
-  marks: 2,
-},
-
-{
-  type: "mcq",
-  prompt:
-    "Which of the following is a common warehouse OSH risk?",
-  options: [
-    "Sunburn",
-    "Racking collapse and forklift interaction",
-    "Food contamination",
-    "Noise from aircraft",
-  ],
-  correctAnswer: "Racking collapse and forklift interaction",
-  marks: 2,
-},
-
-{
-  type: "mcq",
-  prompt:
-    "The supply chain includes:",
-  options: [
-    "Only the manufacturer",
-    "Every organisation contributing materials, products, or services",
-    "Only transport companies",
-    "Only suppliers within the same country",
-  ],
-  correctAnswer: "Every organisation contributing materials, products, or services",
-  marks: 2,
-},
-
-{
-  type: "mcq",
-  prompt:
-    "A serious incident at a key supplier may cause:",
-  options: [
-    "Improved productivity",
-    "Production interruption",
-    "Lower customer demand",
-    "Reduced legal obligations",
-  ],
-  correctAnswer: "Production interruption",
-  marks: 2,
-},
-
-{
-  type: "mcq",
-  prompt:
-    "When selecting a contractor, organisations should assess:",
-  options: [
-    "Only the lowest quotation",
-    "Competence, experience, OSH systems, and supervision",
-    "The contractor's office location only",
-    "How quickly the work can begin",
-  ],
-  correctAnswer: "Competence, experience, OSH systems, and supervision",
-  marks: 2,
-},
-
-{
-  type: "mcq",
-  prompt:
-    "Contractor management should be viewed as:",
-  options: [
-    "A one-time prequalification exercise",
-    "An ongoing process from selection to post-work review",
-    "Only a legal requirement before work starts",
-    "The contractor's responsibility only",
-  ],
-  correctAnswer: "An ongoing process from selection to post-work review",
-  marks: 2,
-},
-
-{
-  type: "mcq",
-  prompt:
-    "The level of supply-chain OSH control should be based on:",
-  options: [
-    "The contract value only",
-    "The level of risk involved",
-    "The supplier's location",
-    "The organisation's annual profit",
-  ],
-  correctAnswer: "The level of risk involved",
-  marks: 2,
+  correctAnswer: "New technology should be evaluated for hazards it may introduce",
+  marks: 1,
 },
 ];
 
 // ================= QUIZ ID =================
 
 // Existing quiz where questions should be inserted
-const QUIZ_ID = "6a5ca123697b98d1a5f9bd8f";
+const QUIZ_ID = "6ad660371716beaee2bbd692";
 
 // ================= SEED FUNCTION =================
 
