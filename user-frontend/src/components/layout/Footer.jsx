@@ -96,7 +96,8 @@ const ALL_COURSES = [
   },
   {
     id: "incident-investigation-corrective-action-audit-follow-up-training",
-    title: "Incident Investigation, Corrective Action and Audit Follow-up Training",
+    title:
+      "Incident Investigation, Corrective Action and Audit Follow-up Training",
   },
   {
     id: "occupational-health-safety-risk-management-audit-readiness",
@@ -162,8 +163,12 @@ export default function Footer() {
                 aria-hidden="true"
               />
               <span itemProp="streetAddress">
-                Office 108A, 182-184 High Street North, East Ham
+                1A HK INTERNATIONAL LTD. | Company Number: 17448649 <br />
+                128 City Road London United Kingdom EC1V 2NX
               </span>
+              {/* <span itemProp="streetAddress">
+                Office 108A, 182-184 High Street North, East Ham
+              </span> */}
               ,&nbsp;
               <span itemProp="addressLocality">London</span>&nbsp;
               <span itemProp="postalCode">E6 2JA</span>,&nbsp;
@@ -343,13 +348,17 @@ export default function Footer() {
           >
             <h5 className="text-white font-semibold mb-2">United Kingdom</h5>
             <span itemProp="streetAddress">
-              Office 108A, 182-184 High Street North, East Ham
+              1A HK INTERNATIONAL LTD. <br /> Company Number: 17448649 <br />
+              128 City Road London United Kingdom EC1V 2NX
             </span>
+            {/* <span itemProp="streetAddress">
+              Office 108A, 182-184 High Street North, East Ham
+            </span> */}
             <br />
             <span itemProp="addressLocality">London</span>{" "}
-            <span itemProp="postalCode">E6 2JA</span>
+            <span itemProp="postalCode">E6 2JA - United Kingdom</span>
             <br />
-            <span itemProp="addressCountry">United Kingdom</span>
+            {/* <span itemProp="addressCountry">United Kingdom</span> */}
           </address>
           <address
             itemScope
@@ -521,9 +530,6 @@ export default function Footer() {
           </div>
         </div>
       )} */}
-
-
-
 
       {activePolicy && (
         <div
@@ -761,13 +767,14 @@ export default function Footer() {
 
                   <h4 className="text-white font-medium">1. Introduction</h4>
                   <p>
-                    Welcome to HK International (“we”, “our”, “us”).<br/> These Terms
-                    and Conditions govern your use of our website
-                    hkinternational.uk and our training services, including
-                    online and classroom-based programmes in Occupational
-                    Health, Safety, Environment, Risk Management, and related
-                    professional fields. By accessing our website or enrolling
-                    in our courses, you agree to be bound by these Terms.
+                    Welcome to HK International (“we”, “our”, “us”).
+                    <br /> These Terms and Conditions govern your use of our
+                    website hkinternational.uk and our training services,
+                    including online and classroom-based programmes in
+                    Occupational Health, Safety, Environment, Risk Management,
+                    and related professional fields. By accessing our website or
+                    enrolling in our courses, you agree to be bound by these
+                    Terms.
                   </p>
 
                   <h4 className="text-white font-medium">2. About Us</h4>
@@ -989,8 +996,6 @@ export default function Footer() {
           </div>
         </div>
       )}
-
-
     </footer>
   );
 }
