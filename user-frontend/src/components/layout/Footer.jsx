@@ -57,7 +57,7 @@ const ALL_COURSES = [
     id: "esc-l7-d-psm",
     title: "ESC Level 7 Diploma in Process Safety Management",
   },
-  { id: "eosh-train-the-trainer", title: "EOSH Train the Trainer Certificate" },
+  // { id: "eosh-train-the-trainer", title: "EOSH Train the Trainer Certificate" },
   {
     id: "she-hse-plan-training",
     title: "SHE / HSE Plan Development & Implementation",
@@ -249,7 +249,7 @@ export default function Footer() {
               <li>OSHA (USA) Training</li>
               <li>CIEH (UK) Approved</li>
               <li>European Safety Council</li>
-              <li>EOSH (UK) Approved</li>
+            {/*<li>EOSH (UK) Approved</li> */}
             </ul>
           </div>
 

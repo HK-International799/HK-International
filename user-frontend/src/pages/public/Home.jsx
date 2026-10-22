@@ -187,13 +187,13 @@ export default function Home() {
       value: 78,
       logo: "/logos/6-esc.png",
     },
-    {
-      org: "EOSH",
-      country: "United Kingdom",
-      course: "Level 3 International OSH Certificate",
-      value: 73,
-      logo: "/logos/8-eosh.png",
-    },
+    // {
+    //   org: "EOSH",
+    //   country: "United Kingdom",
+    //   course: "Level 3 International OSH Certificate",
+    //   value: 73,
+    //   logo: "/logos/8-eosh.png",
+    // },
   ];
 
   const faqs = [

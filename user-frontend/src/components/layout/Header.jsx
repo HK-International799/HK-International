@@ -11,7 +11,7 @@ export default function Header() {
     "/logos/5-pecb.png",
     "/logos/6-esc.png",
     "/logos/7-proqual.png",
-    "/logos/8-eosh.png",
+    // "/logos/8-eosh.png",
     "/logos/9-ibsp.png",
   ];
 

@@ -90,15 +90,15 @@ const courseMenu = [
         },
       ],
     },
-    {
-      title: "EOSH UK",
-      courses: [
-        {
-          name: "EOSH Train The Trainer Certificate",
-          id: "eosh-train-the-trainer",
-        },
-      ],
-    },
+    // {
+    //   title: "EOSH UK",
+    //   courses: [
+    //     {
+    //       name: "EOSH Train The Trainer Certificate",
+    //       id: "eosh-train-the-trainer",
+    //     },
+    //   ],
+    // },
     {
       title: "HSE Training Courses",
       courses: [
