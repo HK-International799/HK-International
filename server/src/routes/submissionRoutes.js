@@ -1,5 +1,6 @@
 
 
+
 // import express from "express";
 // import authMiddleware from "../middleware/authMiddleware.js";
 // import roleMiddleware from "../middleware/roleMiddleware.js";
@@ -11,6 +12,11 @@
 //   getSubmissionById,
 //   gradeSubmission,
 //   saveAnnotations,
+//   aiGradeText,
+//   aiReviewProject,
+//   acceptAiDraft,
+//   approveSubmission,
+//   requestResubmission,
 // } from "../controllers/submissionController.js";
 
 // import upload from "../middleware/upload.js";
@@ -74,7 +80,57 @@
 //   saveAnnotations
 // );
 
+// // ─────────────────────────────────────────────
+// // 🤖 MODULE 5 — AI GRADING ENGINE (additive)
+// // ─────────────────────────────────────────────
+
+// // POST /api/submissions/:id/ai-grade-text
+// router.post(
+//   "/:id/ai-grade-text",
+//   authMiddleware,
+//   roleMiddleware(["tutor", "admin", "super_admin"]),
+//   aiGradeText
+// );
+
+// // POST /api/submissions/:id/ai-review-project
+// router.post(
+//   "/:id/ai-review-project",
+//   authMiddleware,
+//   roleMiddleware(["tutor", "admin", "super_admin"]),
+//   aiReviewProject
+// );
+
+// // ─────────────────────────────────────────────
+// // ✅ MODULE 6 — ADMIN SUBMISSION REVIEW (additive)
+// // ─────────────────────────────────────────────
+
+// // PATCH /api/submissions/:id/accept-ai-draft
+// router.patch(
+//   "/:id/accept-ai-draft",
+//   authMiddleware,
+//   roleMiddleware(["tutor", "admin", "super_admin"]),
+//   acceptAiDraft
+// );
+
+// // PATCH /api/submissions/:id/approve
+// router.patch(
+//   "/:id/approve",
+//   authMiddleware,
+//   roleMiddleware(["tutor", "admin", "super_admin"]),
+//   approveSubmission
+// );
+
+// // PATCH /api/submissions/:id/request-resubmission
+// router.patch(
+//   "/:id/request-resubmission",
+//   authMiddleware,
+//   roleMiddleware(["tutor", "admin", "super_admin"]),
+//   requestResubmission
+// );
+
 // export default router;
+
+
 
 
 
@@ -95,9 +151,13 @@ import {
   acceptAiDraft,
   approveSubmission,
   requestResubmission,
+  adminListEligibleLearners,
+  adminCreateSubmission,
+  adminUpdateSubmission,
+  adminDeleteSubmission,
 } from "../controllers/submissionController.js";
 
-import upload from "../middleware/upload.js";
+import upload, { uploadAdminSubmission } from "../middleware/upload.js";
 
 const router = express.Router();
 
@@ -125,6 +185,27 @@ router.get(
 // ─────────────────────────────────────────────
 // 👨‍🏫 ADMIN / TUTOR ROUTES
 // ─────────────────────────────────────────────
+
+// ── Admin management of learner submissions ─────────────────────────────
+// admin / super_admin ONLY (tutors and learners get 403 from the server even
+// if they call these URLs directly). Declared before "/:id" so the literal
+// "admin" segment is never captured as a submission id.
+const ADMIN_ONLY = [authMiddleware, roleMiddleware(["admin", "super_admin"])];
+
+router.get("/admin/eligible-learners", ...ADMIN_ONLY, adminListEligibleLearners);
+router.post(
+  "/admin",
+  ...ADMIN_ONLY,
+  uploadAdminSubmission.single("file"),
+  adminCreateSubmission
+);
+router.patch(
+  "/admin/:id",
+  ...ADMIN_ONLY,
+  uploadAdminSubmission.single("file"),
+  adminUpdateSubmission
+);
+router.delete("/admin/:id", ...ADMIN_ONLY, adminDeleteSubmission);
 
 // ✅ GET /api/submissions
 router.get(

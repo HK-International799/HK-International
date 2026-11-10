@@ -1,936 +1,3 @@
-// // import crypto from "crypto";
-// // import bcrypt from "bcryptjs";
-// // import User from "../models/User.js";
-// // import Course from "../models/Course.js";
-// // import Registration from "../models/Registration.js";
-// // import asyncHandler from "../utils/asyncHandler.js";
-// // import ApiError from "../utils/ApiError.js";
-// // import emailService from "../services/emailService.js";
-// // import auditService from "../services/auditService.js";
-// // import notificationService from "../services/notificationService.js";
-// // import { deriveFullName, deriveFullAddress } from "../utils/nameUtils.js";
-// // import { toCsv } from "../utils/csvExport.js";
-
-// // // ── Create User (student/tutor) ────────────────────────────────────────
-// // export const createUser = asyncHandler(async (req, res) => {
-// //   const { name, email, mobile, role } = req.body;
-
-// //   if (!name || !email || !mobile || !role) {
-// //     throw new ApiError(400, "All fields are required");
-// //   }
-
-// //   if (
-// //     ![
-// //       "student",
-// //       "tutor",
-// //       "admin",
-// //       "super_admin",
-// //       "partner_institute",
-// //       "ao",
-// //       "sales_agent",
-// //       "finance",
-// //     ].includes(role)
-// //   ) {
-// //     throw new ApiError(400, "Invalid role");
-// //   }
-
-// //   const existingUser = await User.findOne({
-// //     email: email.toLowerCase(),
-// //   });
-
-// //   if (existingUser) {
-// //     throw new ApiError(409, "User already exists");
-// //   }
-
-// //   /* Generate Password */
-
-// //   const randomPassword = crypto.randomBytes(6).toString("hex");
-
-// //   const passwordHash = await bcrypt.hash(randomPassword, 10);
-
-// //   const user = await User.create({
-// //     name,
-// //     email: email.toLowerCase(),
-// //     mobile,
-// //     passwordHash,
-// //     role,
-// //     isFirstLogin: true,
-// //   });
-
-// //   /* Send Email */
-
-// //   emailService
-// //     .sendWelcomeEmail(email, randomPassword)
-// //     .catch((err) => console.warn("Email failed:", err.message));
-
-// //   await auditService.log({
-// //     action: "CREATE_USER",
-// //     entity: "User",
-// //     entityId: user._id,
-// //     performedBy: req.user._id,
-// //     details: `Created ${role}: ${email}`,
-// //   });
-
-// //   res.status(201).json({
-// //     success: true,
-// //     message: "User created successfully",
-// //     data: {
-// //       user: {
-// //         id: user._id,
-// //         name: user.name,
-// //         email: user.email,
-// //         mobile: user.mobile,
-// //         role: user.role,
-// //       },
-// //       credentials: {
-// //         email: email,
-// //         password: randomPassword,
-// //       },
-// //     },
-// //   });
-// // });
-
-// // // ── Enroll Student ─────────────────────────────────────────────────────
-// // export const enrollStudent = asyncHandler(async (req, res) => {
-// //   const { studentId, courseId } = req.body;
-
-// //   const student = await User.findById(studentId);
-// //   const course = await Course.findById(courseId);
-
-// //   if (!student || !course)
-// //     throw new ApiError(404, "Student or course not found");
-
-// //   if (student.enrolledCourses.some((id) => id.toString() === courseId)) {
-// //     throw new ApiError(400, "Student already enrolled in this course");
-// //   }
-
-// //   student.enrolledCourses.push(course._id);
-// //   await student.save();
-
-// //   await auditService.log({
-// //     action: "ENROLL_STUDENT",
-// //     entity: "User",
-// //     entityId: student._id,
-// //     performedBy: req.user._id,
-// //     details: `Enrolled in course: ${course.title}`,
-// //   });
-
-// //   res.json({
-// //     success: true,
-// //     message: "Student enrolled successfully",
-// //     data: student,
-// //   });
-// // });
-
-// // // ── Admin Stats ────────────────────────────────────────────────────────
-// // export const getAdminStats = asyncHandler(async (req, res) => {
-// //   const [totalStudents, totalTutors, totalCourses, totalRegistrations] =
-// //     await Promise.all([
-// //       User.countDocuments({ role: "student" }),
-// //       User.countDocuments({ role: "tutor" }),
-// //       Course.countDocuments(),
-// //       Registration.countDocuments(),
-// //     ]);
-
-// //   res.json({
-// //     success: true,
-// //     data: { totalStudents, totalTutors, totalCourses, totalRegistrations },
-// //   });
-// // });
-
-// // // ── Recent Activity ────────────────────────────────────────────────────
-// // export const getRecentActivity = asyncHandler(async (req, res) => {
-// //   const { default: AuditLog } = await import("../models/AuditLog.js");
-// //   const logs = await AuditLog.find()
-// //     .sort({ createdAt: -1 })
-// //     .limit(20)
-// //     .populate("performedBy", "name email");
-
-// //   res.json({ success: true, data: logs });
-// // });
-
-// // // ── Get All Users ──────────────────────────────────────────────────────
-// // export const getAllUsers = asyncHandler(async (req, res) => {
-// //   const { role, page = 1, limit = 1000 } = req.query;
-// //   const filter = {};
-// //   if (role) filter.role = role;
-
-// //   const users = await User.find(filter)
-// //     .select("-passwordHash")
-// //     .sort({ createdAt: -1 })
-// //     .skip((page - 1) * limit)
-// //     .limit(Number(limit))
-// //     .lean();
-
-// //   const total = await User.countDocuments(filter);
-
-// //   res.json({
-// //     success: true,
-// //     data: { users, total, page: Number(page), limit: Number(limit) },
-// //   });
-// // });
-
-// // // ── Update User ────────────────────────────────────────────────────────
-// // export const updateUser = asyncHandler(async (req, res) => {
-// //   const { id } = req.params;
-// //   const allowedFields = ["name", "email", "mobile", "avatar"];
-// //   const updates = {};
-// //   for (const key of allowedFields) {
-// //     if (req.body[key] !== undefined) updates[key] = req.body[key];
-// //   }
-
-// //   const user = await User.findByIdAndUpdate(id, updates, {
-// //     new: true,
-// //     runValidators: true,
-// //   }).select("-passwordHash");
-// //   if (!user) throw new ApiError(404, "User not found");
-
-// //   res.json({ success: true, data: user });
-// // });
-
-// // // ── Delete User ────────────────────────────────────────────────────────
-// // export const deleteUser = asyncHandler(async (req, res) => {
-// //   const user = await User.findByIdAndDelete(req.params.id);
-// //   if (!user) throw new ApiError(404, "User not found");
-
-// //   await auditService.log({
-// //     action: "DELETE_USER",
-// //     entity: "User",
-// //     entityId: user._id,
-// //     performedBy: req.user._id,
-// //     details: `Deleted user: ${user.email}`,
-// //   });
-
-// //   res.json({ success: true, message: "User deleted" });
-// // });
-
-// // // ── Update User Role ───────────────────────────────────────────────────
-// // export const updateUserRole = asyncHandler(async (req, res) => {
-// //   const { role } = req.body;
-// //   if (!role) throw new ApiError(400, "Role is required");
-
-// //   const user = await User.findByIdAndUpdate(
-// //     req.params.id,
-// //     { role },
-// //     { new: true, runValidators: true },
-// //   ).select("-passwordHash");
-
-// //   if (!user) throw new ApiError(404, "User not found");
-
-// //   res.json({ success: true, data: user });
-// // });
-
-// // // ── View All Registrations ─────────────────────────────────────────────
-// // export const getAllRegistrations = asyncHandler(async (req, res) => {
-// //   const { status, paymentStatus, page = 1, limit = 50 } = req.query;
-// //   const filter = {};
-// //   if (status) filter.status = status;
-// //   if (paymentStatus) filter.paymentStatus = paymentStatus;
-
-// //   const registrations = await Registration.find(filter)
-// //     .populate("student", "name email mobile firstName middleName lastName")
-// //     .populate("course", "title")
-// //     .populate("partnerInstitute", "name code")
-// //     .populate("processedBy", "name")
-// //     .populate("requestedCourses.course", "title")
-// //     .populate("approvedCourses.course", "title")
-// //     .populate("rejectedCourses.course", "title")
-// //     .sort({ createdAt: -1 })
-// //     .skip((page - 1) * limit)
-// //     .limit(Number(limit))
-// //     .lean();
-
-// //   const formattedRegistrations = registrations.map((reg) => {
-// //     if (!reg.student) return reg;
-
-// //     const first = reg.student.firstName?.trim() || "";
-// //     const middle = reg.student.middleName?.trim() || "";
-// //     const last = reg.student.lastName?.trim() || "";
-
-// //     reg.student.displayName =
-// //       !first && !last
-// //         ? (reg.student.name || "").trim()
-// //         : [first, middle, last].filter(Boolean).join(" ");
-
-// //     return reg;
-// //   });
-
-// //   const total = await Registration.countDocuments(filter);
-
-// //   // res.json({ success: true, data: { registrations, total } });
-// //   res.json({
-// //     success: true,
-// //     data: {
-// //       registrations: formattedRegistrations,
-// //       total,
-// //     },
-// //   });
-// // });
-
-// // // ── Approve / Reject Registration ──────────────────────────────────────
-// // export const processRegistration = asyncHandler(async (req, res) => {
-// //   const { id } = req.params;
-// //   const { status, remarks } = req.body;
-
-// //   if (!["approved", "rejected"].includes(status)) {
-// //     throw new ApiError(400, "Status must be approved or rejected");
-// //   }
-
-// //   const registration = await Registration.findById(id)
-// //     .populate("student", "name email")
-// //     .populate("course", "title");
-
-// //   if (!registration) throw new ApiError(404, "Registration not found");
-// //   if (registration.status !== "pending") {
-// //     throw new ApiError(400, `Registration already ${registration.status}`);
-// //   }
-
-// //   registration.status = status;
-// //   registration.remarks = remarks || "";
-// //   registration.processedBy = req.user._id;
-// //   registration.processedAt = new Date();
-
-// //   if (status === "approved") {
-// //     registration.lmsAccessGranted = true;
-// //     registration.lmsAccessGrantedAt = new Date();
-
-// //     // Enroll on both sides — User.enrolledCourses AND
-// //     // Course.enrolledStudents — so a course's roster always matches what
-// //     // each learner's own enrolledCourses list says.
-// //     await Promise.all([
-// //       User.findByIdAndUpdate(registration.student._id, {
-// //         $addToSet: { enrolledCourses: registration.course._id },
-// //       }),
-// //       Course.findByIdAndUpdate(registration.course._id, {
-// //         $addToSet: { enrolledStudents: registration.student._id },
-// //       }),
-// //     ]);
-// //   }
-
-// //   await registration.save();
-
-// //   // Notification
-// //   await notificationService.create({
-// //     userId: registration.student._id,
-// //     type: "info",
-// //     title: `Registration ${status}`,
-// //     body: `Your registration for "${registration.course.title}" has been ${status}.`,
-// //     referenceId: registration._id,
-// //   });
-
-// //   // Email (non-blocking)
-// //   emailService
-// //     .sendRegistrationStatusEmail(
-// //       registration.student.email,
-// //       registration.student.name,
-// //       registration.course.title,
-// //       status,
-// //       remarks,
-// //     )
-// //     .catch((err) => console.warn("Status email failed:", err.message));
-
-// //   await auditService.log({
-// //     action: `REGISTRATION_${status.toUpperCase()}`,
-// //     entity: "Registration",
-// //     entityId: registration._id,
-// //     performedBy: req.user._id,
-// //     details: `${status} registration for ${registration.student.email}`,
-// //   });
-
-// //   res.json({
-// //     success: true,
-// //     message: `Registration ${status}`,
-// //     data: registration,
-// //   });
-// // });
-
-// // // ── Export Registrations CSV ───────────────────────────────────────────
-// // export const exportRegistrationsCSV = asyncHandler(async (req, res) => {
-// //   const registrations = await Registration.find()
-// //     .populate("student", "name email mobile")
-// //     .populate("course", "title")
-// //     .populate("partnerInstitute", "name code")
-// //     .lean();
-
-// //   const rows = registrations.map((r) => ({
-// //     StudentName: r.student?.name || "",
-// //     StudentEmail: r.student?.email || "",
-// //     Mobile: r.student?.mobile || "",
-// //     Course: r.course?.title || "",
-// //     Institute: r.partnerInstitute?.name || "Direct",
-// //     Status: r.status,
-// //     LMSAccess: r.lmsAccessGranted ? "Yes" : "No",
-// //     CreatedAt: r.createdAt?.toISOString() || "",
-// //   }));
-
-// //   if (rows.length === 0) {
-// //     return res.json({
-// //       success: true,
-// //       message: "No registrations found",
-// //       data: [],
-// //     });
-// //   }
-
-// //   const headers = Object.keys(rows[0]).join(",");
-// //   const csv = [headers, ...rows.map((r) => Object.values(r).join(","))].join(
-// //     "\n",
-// //   );
-
-// //   res.setHeader("Content-Type", "text/csv");
-// //   res.setHeader(
-// //     "Content-Disposition",
-// //     "attachment; filename=registrations.csv",
-// //   );
-// //   res.send(csv);
-// // });
-
-// // // ═══════════════════════════════════════════════════════════════════════
-// // //  ADDITIVE — Payment Verification, Single Registration View,
-// // //             Learner 360° Profile Aggregation
-// // //  Nothing above this line was modified.
-// // // ═══════════════════════════════════════════════════════════════════════
-
-// // // ── View Single Registration ────────────────────────────────────────────
-// // export const getRegistrationById = asyncHandler(async (req, res) => {
-// //   const { id } = req.params;
-
-// //   const registration = await Registration.findById(id)
-// //     .populate(
-// //       "student",
-// //       "name email mobile firstName middleName lastName dateOfBirth address addressLine1 addressLine2 city state postalCode country",
-// //     )
-// //     .populate("course", "title")
-// //     .populate("batch", "name startDate endDate")
-// //     .populate("partnerInstitute", "name code")
-// //     .populate("processedBy", "name")
-// //     .populate("paymentVerifiedBy", "name")
-// //     .populate("documents")
-// //     .populate("requestedCourses.course", "title")
-// //     .populate("approvedCourses.course", "title")
-// //     .populate("rejectedCourses.course", "title")
-// //     .lean();
-
-// //   if (registration?.student) {
-// //     const first = registration.student.firstName?.trim() || "";
-// //     const middle = registration.student.middleName?.trim() || "";
-// //     const last = registration.student.lastName?.trim() || "";
-
-// //     registration.student.displayName =
-// //       !first && !last
-// //         ? (registration.student.name || "").trim()
-// //         : [first, middle, last].filter(Boolean).join(" ");
-// //   }
-
-// //   if (!registration) throw new ApiError(404, "Registration not found");
-
-// //   res.json({ success: true, data: registration });
-// // });
-
-// // // ── Confirm / Verify Payment for a Registration ─────────────────────────
-// // // This is a WORKFLOW GATE only (Registration.paymentStatus). It does not
-// // // replace or duplicate the LearnerPayment ledger — if `recordPayment` is
-// // // true, it ALSO writes a single LearnerPayment installment record, reusing
-// // // the existing finance model rather than introducing a parallel total.
-// // export const confirmRegistrationPayment = asyncHandler(async (req, res) => {
-// //   const { id } = req.params;
-// //   const {
-// //     paymentStatus,
-// //     notes,
-// //     recordPayment,
-// //     amount,
-// //     paymentMode,
-// //     referenceNumber,
-// //   } = req.body;
-
-// //   if (!["partial", "paid", "verified"].includes(paymentStatus)) {
-// //     throw new ApiError(400, "paymentStatus must be partial, paid, or verified");
-// //   }
-
-// //   const registration = await Registration.findById(id)
-// //     .populate("student", "name email")
-// //     .populate("course", "title");
-// //   if (!registration) throw new ApiError(404, "Registration not found");
-
-// //   registration.paymentStatus = paymentStatus;
-// //   registration.paymentNotes = notes || "";
-// //   registration.paymentVerifiedBy = req.user._id;
-// //   registration.paymentVerifiedAt = new Date();
-// //   await registration.save();
-
-// //   if (recordPayment && amount) {
-// //     const { default: LearnerPayment } =
-// //       await import("../models/LearnerPayment.js");
-// //     const { default: CourseEnrollmentFee } =
-// //       await import("../models/CourseEnrollmentFee.js");
-
-// //     const feeDoc = await CourseEnrollmentFee.findOne({
-// //       courseId: registration.course._id,
-// //     }).lean();
-// //     const totalCourseFee = feeDoc?.fee ?? Number(amount);
-
-// //     await LearnerPayment.create({
-// //       learnerId: registration.student._id,
-// //       courseId: registration.course._id,
-// //       totalCourseFee,
-// //       amount: Number(amount),
-// //       paymentMode: paymentMode || "other",
-// //       referenceNumber: referenceNumber || "",
-// //       remarks: `Recorded during registration payment verification (Registration ${registration._id})`,
-// //       status:
-// //         paymentStatus === "verified" || paymentStatus === "paid"
-// //           ? "fully_paid"
-// //           : "part_payment",
-// //       recordedBy: req.user._id,
-// //     });
-// //   }
-
-// //   await auditService.log({
-// //     action: "REGISTRATION_PAYMENT_" + paymentStatus.toUpperCase(),
-// //     entity: "Registration",
-// //     entityId: registration._id,
-// //     performedBy: req.user._id,
-// //     details: `Payment marked ${paymentStatus} for ${registration.student.email}`,
-// //   });
-
-// //   res.json({
-// //     success: true,
-// //     message: `Payment marked ${paymentStatus}`,
-// //     data: registration,
-// //   });
-// // });
-
-// // // ── Learner 360° Profile ─────────────────────────────────────────────────
-// // // Pure read-aggregation across existing collections. No writes, no schema
-// // // changes to Exam/Assignment/ScenarioExam/Certificate/Attendance models.
-// // //
-// // // Refactored into a shared builder (`buildLearnerProfileData`) so the
-// // // on-screen 360° profile (`getLearnerProfile`) and the Complete Candidate
-// // // History Export (`exportLearnerHistory`) use exactly one aggregation —
-// // // no duplicated query logic, and the export can never drift from what the
-// // // dashboard shows.
-// // export const buildLearnerProfileData = async (id) => {
-// //   const [
-// //     { default: Batch },
-// //     { default: ChapterProgress },
-// //     { default: LearnerPayment },
-// //     { default: Submission },
-// //     { default: Assignment },
-// //     { default: ExamAttempt },
-// //     { default: ScenarioExamAttempt },
-// //     { default: Certificate },
-// //     { default: Document },
-// //     { default: Attendance },
-// //     { default: AuditLog },
-// //     { default: Notification },
-// //   ] = await Promise.all([
-// //     import("../models/Batch.js"),
-// //     import("../models/ChapterProgress.js"),
-// //     import("../models/LearnerPayment.js"),
-// //     import("../models/Submission.js"),
-// //     import("../models/Assignment.js"),
-// //     import("../models/ExamAttempt.js"),
-// //     import("../models/ScenarioExamAttempt.js"),
-// //     import("../models/Certificate.js"),
-// //     import("../models/Document.js"),
-// //     import("../models/Attendance.js"),
-// //     import("../models/AuditLog.js"),
-// //     import("../models/Notification.js"),
-// //   ]);
-
-// //   const user = await User.findById(id).select("-passwordHash").lean();
-// //   if (!user) throw new ApiError(404, "Learner not found");
-
-// //   const [
-// //     registrations,
-// //     courses,
-// //     batches,
-// //     payments,
-// //     submissions,
-// //     examAttempts,
-// //     scenarioAttempts,
-// //     certificates,
-// //     documents,
-// //     attendance,
-// //     auditLogs,
-// //     notifications,
-// //   ] = await Promise.all([
-// //     Registration.find({ student: id })
-// //       .populate("course", "title")
-// //       .populate("batch", "name startDate endDate")
-// //       .populate("requestedCourses.course", "title")
-// //       .populate("approvedCourses.course", "title")
-// //       .populate("rejectedCourses.course", "title")
-// //       .lean(),
-// //     Course.find({ _id: { $in: user.enrolledCourses || [] } })
-// //       .select("title thumbnail status")
-// //       .lean(),
-// //     Batch.find({ students: id })
-// //       .select("name courseId startDate endDate status")
-// //       .lean(),
-// //     LearnerPayment.find({
-// //       isDeleted: { $ne: true },
-// //       $or: [{ learnerId: id }, { email: user.email }],
-// //     })
-// //       .sort({ paymentDate: -1 })
-// //       .lean(),
-
-// //     Submission.find({ studentId: id })
-// //       .populate(
-// //         "assignmentId",
-// //         "title totalMarks courseId assessmentType passingMarks",
-// //       )
-// //       .select(
-// //         "assignmentId totalScore feedback status passFail approvalStatus resubmissionCount aiDraft createdAt gradedAt approvedAt",
-// //       )
-// //       .lean(),
-// //     ExamAttempt.find({ studentId: id }).populate("examId", "title").lean(),
-// //     ScenarioExamAttempt.find({ studentId: id })
-// //       .populate("examId", "title")
-// //       .lean(),
-// //     Certificate.find({ studentId: id }).populate("courseId", "title").lean(),
-// //     Document.find({ uploadedBy: id }).lean(),
-// //     Attendance.find({ student: id }).lean(),
-// //     AuditLog.find({ $or: [{ performedBy: id }, { entityId: id }] })
-// //       .sort({ createdAt: -1 })
-// //       .limit(100)
-// //       .lean(),
-// //     Notification.find({ userId: id }).sort({ createdAt: -1 }).limit(50).lean(),
-// //   ]);
-
-// //   // Course progress (chapter completion) per enrolled course
-// //   const progressDocs = await ChapterProgress.find({ studentId: id }).lean();
-// //   const progressByCourse = {};
-// //   for (const p of progressDocs) {
-// //     progressByCourse[String(p.courseId)] = {
-// //       completedChapters: p.completedChapters?.length || 0,
-// //       chapterResults: p.chapterResults,
-// //     };
-// //   }
-
-// //   const coursesWithProgress = courses.map((c) => ({
-// //     ...c,
-// //     progress: progressByCourse[String(c._id)] || null,
-// //   }));
-
-// //   // ── Payments summary ────────────────────────────────────────────────────
-// //   // BUG FIX: this previously took `totalFee` from payments[0].totalCourseFee
-// //   // — i.e. whichever payment record happened to sort first — and compared
-// //   // it against the SUM of every payment across every course the learner is
-// //   // enrolled in. For a learner with more than one course, that mixes one
-// //   // course's fee baseline against a combined total-paid figure from all
-// //   // courses, producing an incorrect "pending" amount.
-// //   //
-// //   // Fix: group payments by courseId first (each course carries its own
-// //   // totalCourseFee baseline, per the LearnerPayment model's own doc-
-// //   // comment), compute totalFee/totalPaid/pending PER COURSE, then sum
-// //   // those per-course totals for the overall figures shown on the summary
-// //   // cards. Per-course breakdown is also exposed for the dashboard/export.
-// //   const paymentsByCourse = {};
-// //   for (const p of payments) {
-// //     const key = String(p.courseId);
-// //     if (!paymentsByCourse[key]) {
-// //       paymentsByCourse[key] = {
-// //         courseId: p.courseId,
-// //         totalFee: p.totalCourseFee || 0,
-// //         totalPaid: 0,
-// //         currency: p.currency,
-// //         installments: [],
-// //       };
-// //     }
-// //     // Use the most recent record's fee baseline for this course (payments
-// //     // are already sorted paymentDate: -1, so the first one seen per course
-// //     // is the most recent).
-// //     paymentsByCourse[key].totalPaid += p.amount || 0;
-// //     paymentsByCourse[key].installments.push(p);
-// //   }
-// //   const perCourse = Object.values(paymentsByCourse).map((c) => ({
-// //     ...c,
-// //     pending: Math.max(c.totalFee - c.totalPaid, 0),
-// //   }));
-// //   const totalFee = perCourse.reduce((sum, c) => sum + c.totalFee, 0);
-// //   const totalPaid = perCourse.reduce((sum, c) => sum + c.totalPaid, 0);
-// //   const paymentsSummary = {
-// //     totalFee,
-// //     totalPaid,
-// //     pending: Math.max(totalFee - totalPaid, 0),
-// //     perCourse,
-// //     installments: payments,
-// //   };
-
-// //   // Unified activity timeline (registration, payments, enrollment, exams,
-// //   // certificates, login) — sorted descending by date.
-// //   const timeline = [];
-// //   for (const r of registrations) {
-// //     timeline.push({
-// //       type: "registration",
-// //       date: r.createdAt,
-// //       label: `Registration (${r.status}) — ${r.course?.title || ""}`,
-// //     });
-// //     if (r.processedAt)
-// //       timeline.push({
-// //         type: "registration",
-// //         date: r.processedAt,
-// //         label: `Registration ${r.status}`,
-// //       });
-// //   }
-// //   for (const p of payments) {
-// //     timeline.push({
-// //       type: "payment",
-// //       date: p.paymentDate,
-// //       label: `Payment of ${p.amount} ${p.currency} (${p.paymentMode})`,
-// //     });
-// //   }
-// //   for (const e of examAttempts) {
-// //     timeline.push({
-// //       type: "exam",
-// //       date: e.submittedAt || e.startedAt,
-// //       label: `Exam attempt: ${e.examId?.title || ""} — ${e.status}`,
-// //     });
-// //   }
-// //   for (const s of scenarioAttempts) {
-// //     timeline.push({
-// //       type: "scenario_exam",
-// //       date: s.createdAt,
-// //       label: `Scenario exam attempt: ${s.examId?.title || ""}`,
-// //     });
-// //   }
-// //   for (const c of certificates) {
-// //     timeline.push({
-// //       type: "certificate",
-// //       date: c.issuedAt,
-// //       label: `Certificate issued: ${c.title}`,
-// //     });
-// //   }
-// //   if (user.lastLoginAt)
-// //     timeline.push({
-// //       type: "login",
-// //       date: user.lastLoginAt,
-// //       label: "Last login",
-// //     });
-// //   timeline.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
-
-// //   return {
-// //     profile: {
-// //       ...user,
-// //       // Registration Requirement 1 / Enterprise Dashboard: correctly
-// //       // derived full name (never "John  Smith" / "John null Smith"),
-// //       // falling back to the legacy `name` field for pre-existing records.
-
-// //       // fullName: deriveFullName(user),
-
-// //       fullName:
-// //         !user.firstName && !user.lastName
-// //           ? user.name || ""
-// //           : [user.firstName, user.middleName, user.lastName]
-// //               .filter(Boolean)
-// //               .join(" "),
-// //       // Registration Requirement 2: complete postal address for display /
-// //       // certificate-dispatch traceability, falling back to the legacy
-// //       // single `address` string for pre-existing records.
-// //       fullAddress: deriveFullAddress(user),
-// //       registrationDate: user.createdAt,
-// //     },
-// //     registrations,
-// //     courses: coursesWithProgress,
-// //     batches,
-// //     payments: paymentsSummary,
-// //     assignments: submissions,
-// //     exams: examAttempts,
-// //     scenarioExams: scenarioAttempts,
-// //     certificates,
-// //     documents,
-// //     attendance,
-// //     activityTimeline: timeline,
-// //     auditLogs,
-// //     notifications,
-// //   };
-// // };
-
-// // export const getLearnerProfile = asyncHandler(async (req, res) => {
-// //   const { id } = req.params;
-// //   const data = await buildLearnerProfileData(id);
-// //   res.json({ success: true, data });
-// // });
-
-// // // ── Complete Candidate History Export ────────────────────────────────────
-// // // Registration Requirement / Enterprise Dashboard: "Export Candidate
-// // // Details" — everything about the candidate from registration to present,
-// // // as a CSV (reuses the same aggregation as the on-screen 360° profile, and
-// // // the same `json2csv`-based export approach already used elsewhere in this
-// // // codebase for registrations — see exportRegistrationsCSV above).
-// // //
-// // // Security: `buildLearnerProfileData` already excludes passwordHash via
-// // // `.select("-passwordHash")`; no tokens/secrets are ever part of the User
-// // // projection, so none can leak into this export.
-// // export const exportLearnerHistory = asyncHandler(async (req, res) => {
-// //   const { id } = req.params;
-// //   const data = await buildLearnerProfileData(id);
-
-// //   const { profile } = data;
-// //   const sections = [];
-
-// //   sections.push({
-// //     title: "Candidate Information",
-// //     rows: [
-// //       {
-// //         "Candidate ID": profile._id,
-// //         "First Name": profile.firstName || "",
-// //         "Middle Name": profile.middleName || "",
-// //         "Last Name": profile.lastName || "",
-// //         "Full Name": profile.fullName || "",
-// //         Email: profile.email,
-// //         Mobile: profile.mobile,
-// //         "Date of Birth": profile.dateOfBirth || "",
-// //         Country: profile.country || "",
-// //         "Country Code": profile.countryCode || "",
-// //         "Postal Address": profile.fullAddress || "",
-// //         Role: profile.role,
-// //         "Account Status": profile.isFirstLogin ? "Not yet logged in" : "Active",
-// //         "Registration Source": profile.registeredVia || "",
-// //         "Created At": profile.createdAt,
-// //         "Updated At": profile.updatedAt,
-// //         "Last Login": profile.lastLoginAt || "",
-// //       },
-// //     ],
-// //   });
-
-// //   sections.push({
-// //     title: "Registration History",
-// //     rows: data.registrations.map((r) => ({
-// //       "Registration ID": r._id,
-// //       Course: r.course?.title || "",
-// //       Status: r.status,
-// //       "Requested Courses": (r.requestedCourses || [])
-// //         .map((c) => c.course?.title || c.course)
-// //         .join("; "),
-// //       "Approved Courses": (r.approvedCourses || [])
-// //         .map((c) => c.course?.title || c.course)
-// //         .join("; "),
-// //       "Rejected Courses": (r.rejectedCourses || [])
-// //         .map((c) => c.course?.title || c.course)
-// //         .join("; "),
-// //       Batch: r.batch?.name || "",
-// //       "Payment Status": r.paymentStatus,
-// //       "LMS Access": r.lmsAccessGranted ? "Yes" : "No",
-// //       "Orientation Completed": r.orientationCompleted ? "Yes" : "No",
-// //       "Quiz Passed": r.quizPassed ? "Yes" : "No",
-// //       "Certificate Issued": r.certificateIssued ? "Yes" : "No",
-// //       Remarks: r.remarks || "",
-// //       "Registered At": r.createdAt,
-// //       "Processed At": r.processedAt || "",
-// //     })),
-// //   });
-
-// //   sections.push({
-// //     title: "Enrollment / Courses",
-// //     rows: data.courses.map((c) => ({
-// //       Course: c.title,
-// //       Status: c.status,
-// //       "Chapters Completed": c.progress?.completedChapters ?? "",
-// //     })),
-// //   });
-
-// //   sections.push({
-// //     title: "Payment History",
-// //     rows: data.payments.installments.map((p) => ({
-// //       "Total Course Fee": p.totalCourseFee,
-// //       Amount: p.amount,
-// //       Currency: p.currency,
-// //       "Payment Date": p.paymentDate,
-// //       "Payment Mode": p.paymentMode,
-// //       "Reference Number": p.referenceNumber || "",
-// //       Status: p.status,
-// //       Remarks: p.remarks || "",
-// //     })),
-// //   });
-
-// //   sections.push({
-// //     title: "Assignment History",
-// //     rows: data.assignments.map((a) => ({
-// //       Assignment: a.assignmentId?.title || "",
-// //       "Total Marks": a.assignmentId?.totalMarks ?? "",
-// //       "Obtained Marks": a.totalScore ?? "",
-// //       "Passing Marks": a.assignmentId?.passingMarks ?? "",
-// //       Result: a.passFail || "",
-// //       "Approval Status": a.approvalStatus || "",
-// //       "Submitted At": a.createdAt,
-// //       "Graded At": a.gradedAt || "",
-// //     })),
-// //   });
-
-// //   sections.push({
-// //     title: "Exam History",
-// //     rows: data.exams.map((e) => ({
-// //       Exam: e.examId?.title || "",
-// //       Status: e.status,
-// //       "Started At": e.startedAt || "",
-// //       "Submitted At": e.submittedAt || "",
-// //     })),
-// //   });
-
-// //   sections.push({
-// //     title: "Scenario Exam History",
-// //     rows: data.scenarioExams.map((s) => ({
-// //       Exam: s.examId?.title || "",
-// //       Status: s.status,
-// //       "Submitted At": s.createdAt,
-// //     })),
-// //   });
-
-// //   sections.push({
-// //     title: "Certificate History",
-// //     rows: data.certificates.map((c) => ({
-// //       "Certificate Number": c.certificateNumber,
-// //       Course: c.courseId?.title || "",
-// //       "Issue Date": c.issuedAt,
-// //       "Expiry Date": c.expiryDate || "",
-// //       Status: c.status,
-// //       "Dispatch Status": c.dispatchStatus || "",
-// //       "Tracking Number": c.trackingNumber || "",
-// //     })),
-// //   });
-
-// //   sections.push({
-// //     title: "Document History",
-// //     // Do NOT include fileUrl / storage paths in the export by default —
-// //     // referenced safely by title/status only, per export security rules.
-// //     rows: data.documents.map((d) => ({
-// //       Title: d.title || d.fileName,
-// //       "Original Filename": d.originalName || d.fileName,
-// //       Category: d.category || d.type,
-// //       Status: d.status,
-// //       "Uploaded At": d.createdAt,
-// //     })),
-// //   });
-
-// //   sections.push({
-// //     title: "Attendance History",
-// //     rows: data.attendance.map((a) => ({
-// //       Date: a.markedAt,
-// //       Status: a.status,
-// //       Source: a.source,
-// //     })),
-// //   });
-
-// //   sections.push({
-// //     title: "Activity Timeline",
-// //     rows: data.activityTimeline.map((t) => ({
-// //       Date: t.date,
-// //       Type: t.type,
-// //       Event: t.label,
-// //     })),
-// //   });
-
-// //   const csv = toCsv(sections);
-
-// //   res.setHeader("Content-Type", "text/csv");
-// //   res.setHeader(
-// //     "Content-Disposition",
-// //     `attachment; filename=candidate-${id}-history.csv`,
-// //   );
-// //   res.send(csv);
-// // });
-
 
 // import crypto from "crypto";
 // import bcrypt from "bcryptjs";
@@ -959,7 +26,8 @@
 //   MAX_EXPORT_ROWS,
 //   getPublicExportColumns,
 //   getUnavailableExportColumns,
-//   resolveColumns,
+//   getAssessmentExportColumns,
+//   resolveExportColumns,
 //   countExportRows,
 //   buildLearnersWorkbook,
 //   buildExportFilename,
@@ -1260,7 +328,12 @@
 //         title: c.title,
 //         status: c.status,
 //       })),
-//       exportColumns: getPublicExportColumns(),
+//       // Static schema/derived columns + one column per Exam and Assignment
+//       // (each named after the assessment) so marks can be exported singly.
+//       exportColumns: [
+//         ...getPublicExportColumns(),
+//         ...(await getAssessmentExportColumns()),
+//       ],
 //       unavailableColumns: getUnavailableExportColumns(),
 //       maxExportRows: MAX_EXPORT_ROWS,
 //     },
@@ -1277,7 +350,7 @@
 //     body.filters && typeof body.filters === "object" ? body.filters : {};
 //   const tzOffset = parseTzOffset(filters.tzOffset ?? body.tzOffset);
 
-//   const columns = resolveColumns(body.columns);
+//   const columns = await resolveExportColumns(body.columns);
 //   if (!columns.length) {
 //     throw new ApiError(400, "Select at least one column to export");
 //   }
@@ -2095,8 +1168,6 @@
 
 
 
-
-
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
@@ -2120,6 +1191,20 @@ import {
   parseTzOffset,
   getPeriodBoundaries,
 } from "../utils/learnerFilters.js";
+import {
+  DEFAULT_PAGE_SIZE,
+  MAX_PAGE_SIZE,
+  MAX_EXPORT_ROWS as MAX_REGISTRATION_EXPORT_ROWS,
+  buildRegistrationFilter,
+  buildRegistrationSort,
+  getRegistrationStats,
+  withDisplayName,
+} from "../services/registrationQueryService.js";
+import {
+  OTHER_COURSE_FILTER,
+  getRegistrationCourseLabel,
+} from "../utils/registrationCourse.js";
+import { neutraliseFormula } from "../utils/textSanitize.js";
 import {
   MAX_EXPORT_ROWS,
   getPublicExportColumns,
@@ -2421,11 +1506,20 @@ export const getUserFilterMeta = asyncHandler(async (req, res) => {
     success: true,
     data: {
       roles: USER_ROLES,
-      courses: courses.map((c) => ({
-        _id: c._id,
-        title: c.title,
-        status: c.status,
-      })),
+      // The trailing pseudo-entry lets the Learners filter / export pick
+      // "learners who registered for a course outside the catalogue".
+      courses: [
+        ...courses.map((c) => ({
+          _id: c._id,
+          title: c.title,
+          status: c.status,
+        })),
+        {
+          _id: OTHER_COURSE_FILTER,
+          title: "OTHERS (course not in catalogue)",
+          status: "others",
+        },
+      ],
       // Static schema/derived columns + one column per Exam and Assignment
       // (each named after the assessment) so marks can be exported singly.
       exportColumns: [
@@ -2552,56 +1646,76 @@ export const updateUserRole = asyncHandler(async (req, res) => {
 });
 
 // ── View All Registrations ─────────────────────────────────────────────
+// Server-side search / filters / sort / pagination (see
+// services/registrationQueryService.js for the root-cause note). The
+// response keeps the original { registrations, total } shape and only ADDS
+// page / limit / totalPages / sortOrder / stats, so existing callers keep
+// working unchanged. Registrations whose course is missing, deleted or
+// OTHERS are never dropped — `course` simply comes back null and the
+// derived `courseLabel` explains why.
+const REGISTRATION_LIST_POPULATE = [
+  { path: "student", select: "name email mobile firstName middleName lastName" },
+  { path: "course", select: "title" },
+  { path: "partnerInstitute", select: "name code" },
+  { path: "processedBy", select: "name" },
+  { path: "requestedCourses.course", select: "title" },
+  { path: "approvedCourses.course", select: "title" },
+  { path: "rejectedCourses.course", select: "title" },
+];
+
+const decorateRegistration = (reg) => {
+  withDisplayName(reg);
+  reg.courseLabel = getRegistrationCourseLabel(reg);
+  reg.courseType = reg.course?.title
+    ? "catalogue"
+    : reg.isOtherCourse
+      ? "others"
+      : "unavailable";
+  return reg;
+};
+
 export const getAllRegistrations = asyncHandler(async (req, res) => {
-  const { status, paymentStatus, page = 1, limit = 50 } = req.query;
-  const filter = {};
-  if (status) filter.status = status;
-  if (paymentStatus) filter.paymentStatus = paymentStatus;
+  const limit = clampInt(req.query.limit, DEFAULT_PAGE_SIZE, 1, MAX_PAGE_SIZE);
+  const filter = await buildRegistrationFilter(req.query);
+  const { sort, sortOrder } = buildRegistrationSort(req.query.sortOrder);
+
+  const [total, stats] = await Promise.all([
+    Registration.countDocuments(filter),
+    getRegistrationStats(filter),
+  ]);
+  const totalPages = Math.max(Math.ceil(total / limit), 1);
+  // A page past the end (e.g. after records were removed) returns the
+  // real last page instead of an empty table.
+  const page = Math.min(clampInt(req.query.page, 1, 1, 1000000), totalPages);
 
   const registrations = await Registration.find(filter)
-    .populate("student", "name email mobile firstName middleName lastName")
-    .populate("course", "title")
-    .populate("partnerInstitute", "name code")
-    .populate("processedBy", "name")
-    .populate("requestedCourses.course", "title")
-    .populate("approvedCourses.course", "title")
-    .populate("rejectedCourses.course", "title")
-    .sort({ createdAt: -1 })
+    .populate(REGISTRATION_LIST_POPULATE)
+    .sort(sort)
     .skip((page - 1) * limit)
-    .limit(Number(limit))
+    .limit(limit)
     .lean();
 
-  const formattedRegistrations = registrations.map((reg) => {
-    if (!reg.student) return reg;
-
-    const first = reg.student.firstName?.trim() || "";
-    const middle = reg.student.middleName?.trim() || "";
-    const last = reg.student.lastName?.trim() || "";
-
-    reg.student.displayName =
-      !first && !last
-        ? (reg.student.name || "").trim()
-        : [first, middle, last].filter(Boolean).join(" ");
-
-    return reg;
-  });
-
-  const total = await Registration.countDocuments(filter);
-
-  // res.json({ success: true, data: { registrations, total } });
   res.json({
     success: true,
     data: {
-      registrations: formattedRegistrations,
+      registrations: registrations.map(decorateRegistration),
       total,
+      page,
+      limit,
+      totalPages,
+      sortOrder,
+      stats,
     },
   });
 });
 
 // ── Approve / Reject Registration ──────────────────────────────────────
+// `courseId` (optional, approve only): links a registration that has no
+// catalogue course (OTHERS, or a course that was deleted) to a real
+// catalogue course. The learner's original OTHERS text is preserved.
 export const processRegistration = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { status, remarks } = req.body;
+  const { status, remarks, courseId } = req.body;
 
   if (!["approved", "rejected"].includes(status)) {
     throw new ApiError(400, "Status must be approved or rejected");
@@ -2615,6 +1729,46 @@ export const processRegistration = asyncHandler(async (req, res) => {
   if (registration.status !== "pending") {
     throw new ApiError(400, `Registration already ${registration.status}`);
   }
+  if (!registration.student) {
+    throw new ApiError(
+      409,
+      "The learner account for this registration no longer exists",
+    );
+  }
+
+  if (courseId !== undefined && courseId !== null && courseId !== "") {
+    if (status !== "approved") {
+      throw new ApiError(400, "A course can only be linked when approving");
+    }
+    if (registration.course?._id) {
+      throw new ApiError(
+        400,
+        "This registration is already linked to a catalogue course",
+      );
+    }
+    if (typeof courseId !== "string" || !/^[a-f0-9]{24}$/i.test(courseId)) {
+      throw new ApiError(400, "Invalid course selected");
+    }
+    const linkCourse = await Course.findById(courseId).select("title");
+    if (!linkCourse) throw new ApiError(404, "Selected course not found");
+
+    const conflict = await Registration.exists({
+      _id: { $ne: registration._id },
+      student: registration.student._id,
+      course: linkCourse._id,
+    });
+    if (conflict) {
+      throw new ApiError(
+        409,
+        "This learner already has a registration for the selected course",
+      );
+    }
+    registration.course = linkCourse;
+    if (registration.isOtherCourse) {
+      registration.otherCourseLinkedAt = new Date();
+      registration.otherCourseLinkedBy = req.user._id;
+    }
+  }
 
   registration.status = status;
   registration.remarks = remarks || "";
@@ -2627,25 +1781,32 @@ export const processRegistration = asyncHandler(async (req, res) => {
 
     // Enroll on both sides — User.enrolledCourses AND
     // Course.enrolledStudents — so a course's roster always matches what
-    // each learner's own enrolledCourses list says.
-    await Promise.all([
-      User.findByIdAndUpdate(registration.student._id, {
-        $addToSet: { enrolledCourses: registration.course._id },
-      }),
-      Course.findByIdAndUpdate(registration.course._id, {
-        $addToSet: { enrolledStudents: registration.student._id },
-      }),
-    ]);
+    // each learner's own enrolledCourses list says. A registration with no
+    // catalogue course (OTHERS not yet linked) has nothing to enroll into.
+    if (registration.course?._id) {
+      await Promise.all([
+        User.findByIdAndUpdate(registration.student._id, {
+          $addToSet: { enrolledCourses: registration.course._id },
+        }),
+        Course.findByIdAndUpdate(registration.course._id, {
+          $addToSet: { enrolledStudents: registration.student._id },
+        }),
+      ]);
+    }
   }
 
   await registration.save();
+
+  const courseLabel = getRegistrationCourseLabel(registration, {
+    withOthersPrefix: false,
+  });
 
   // Notification
   await notificationService.create({
     userId: registration.student._id,
     type: "info",
     title: `Registration ${status}`,
-    body: `Your registration for "${registration.course.title}" has been ${status}.`,
+    body: `Your registration for "${courseLabel}" has been ${status}.`,
     referenceId: registration._id,
   });
 
@@ -2654,7 +1815,7 @@ export const processRegistration = asyncHandler(async (req, res) => {
     .sendRegistrationStatusEmail(
       registration.student.email,
       registration.student.name,
-      registration.course.title,
+      courseLabel,
       status,
       remarks,
     )
@@ -2665,7 +1826,11 @@ export const processRegistration = asyncHandler(async (req, res) => {
     entity: "Registration",
     entityId: registration._id,
     performedBy: req.user._id,
-    details: `${status} registration for ${registration.student.email}`,
+    details: `${status} registration for ${registration.student.email}${
+      registration.otherCourseLinkedAt && courseId
+        ? ` (OTHERS "${registration.otherCourseName}" linked to "${registration.course?.title}")`
+        : ""
+    }`,
   });
 
   res.json({
@@ -2676,43 +1841,94 @@ export const processRegistration = asyncHandler(async (req, res) => {
 });
 
 // ── Export Registrations CSV ───────────────────────────────────────────
+// Exports ALL registrations matching the filters/search sent as query
+// params (the same params as the list, minus page/limit) — never just the
+// visible page. With no params it exports everything, exactly as before.
+// The original columns keep their names and order; new columns are
+// appended. Values are CSV-escaped and protected against formula injection.
+const csvCell = (value) => {
+  const s = neutraliseFormula(value);
+  return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+};
+
 export const exportRegistrationsCSV = asyncHandler(async (req, res) => {
-  const registrations = await Registration.find()
+  const filter = await buildRegistrationFilter(req.query);
+  const { sort } = buildRegistrationSort(req.query.sortOrder);
+
+  const total = await Registration.countDocuments(filter);
+  if (total > MAX_REGISTRATION_EXPORT_ROWS) {
+    throw new ApiError(
+      413,
+      `This export would contain ${total.toLocaleString()} rows. Please narrow the filters to ${MAX_REGISTRATION_EXPORT_ROWS.toLocaleString()} rows or fewer.`,
+    );
+  }
+
+  const registrations = await Registration.find(filter)
     .populate("student", "name email mobile")
     .populate("course", "title")
     .populate("partnerInstitute", "name code")
+    .sort(sort)
     .lean();
 
-  const rows = registrations.map((r) => ({
-    StudentName: r.student?.name || "",
-    StudentEmail: r.student?.email || "",
-    Mobile: r.student?.mobile || "",
-    Course: r.course?.title || "",
-    Institute: r.partnerInstitute?.name || "Direct",
-    Status: r.status,
-    LMSAccess: r.lmsAccessGranted ? "Yes" : "No",
-    CreatedAt: r.createdAt?.toISOString() || "",
-  }));
+  const headers = [
+    "StudentName",
+    "StudentEmail",
+    "Mobile",
+    "Course",
+    "Institute",
+    "Status",
+    "LMSAccess",
+    "CreatedAt",
+    "RegistrationID",
+    "CourseType",
+    "OthersCourseName",
+    "OthersCourseDetails",
+    "PaymentStatus",
+    "Source",
+  ];
 
-  if (rows.length === 0) {
-    return res.json({
-      success: true,
-      message: "No registrations found",
-      data: [],
-    });
-  }
+  const rows = registrations.map((r) => [
+    r.student?.name || "",
+    r.student?.email || "",
+    r.student?.mobile || "",
+    getRegistrationCourseLabel(r),
+    r.partnerInstitute?.name || "Direct",
+    r.status || "",
+    r.lmsAccessGranted ? "Yes" : "No",
+    r.createdAt ? new Date(r.createdAt).toISOString() : "",
+    String(r._id),
+    r.course?.title ? "Catalogue" : r.isOtherCourse ? "OTHERS" : "Unavailable",
+    r.isOtherCourse ? r.otherCourseName || "" : "",
+    r.isOtherCourse ? r.otherCourseDetails || "" : "",
+    r.paymentStatus || "unpaid",
+    r.source || "",
+  ]);
 
-  const headers = Object.keys(rows[0]).join(",");
-  const csv = [headers, ...rows.map((r) => Object.values(r).join(","))].join(
-    "\n",
-  );
+  const csv = [headers, ...rows]
+    .map((row) => row.map(csvCell).join(","))
+    .join("\n");
 
-  res.setHeader("Content-Type", "text/csv");
+  auditService
+    .log({
+      action: "EXPORT_REGISTRATIONS",
+      entity: "Registration",
+      performedBy: req.user._id,
+      details: `Exported ${rows.length} registration(s)`,
+    })
+    .catch(() => {});
+
+  res.setHeader("Content-Type", "text/csv; charset=utf-8");
   res.setHeader(
     "Content-Disposition",
     "attachment; filename=registrations.csv",
   );
-  res.send(csv);
+  res.setHeader("X-Export-Row-Count", String(rows.length));
+  res.setHeader(
+    "Access-Control-Expose-Headers",
+    "Content-Disposition, X-Export-Row-Count",
+  );
+  // BOM so Excel opens UTF-8 names (e.g. "José", "राम") correctly.
+  res.send(`﻿${csv}`);
 });
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -2782,13 +1998,28 @@ export const confirmRegistrationPayment = asyncHandler(async (req, res) => {
     .populate("course", "title");
   if (!registration) throw new ApiError(404, "Registration not found");
 
+  // A payment ledger entry (LearnerPayment) always belongs to a real
+  // catalogue course. OTHERS / missing-course registrations can still have
+  // their payment STATUS confirmed, but not a ledger entry, until an admin
+  // links a catalogue course. Checked before anything is written.
+  const wantsLedgerEntry = Boolean(recordPayment && amount);
+  if (wantsLedgerEntry && !registration.course?._id) {
+    throw new ApiError(
+      400,
+      "This registration is not linked to a catalogue course, so a payment entry cannot be recorded. Confirm the payment status without an amount, or link a course first.",
+    );
+  }
+  if (wantsLedgerEntry && !registration.student?._id) {
+    throw new ApiError(409, "The learner account for this registration no longer exists");
+  }
+
   registration.paymentStatus = paymentStatus;
   registration.paymentNotes = notes || "";
   registration.paymentVerifiedBy = req.user._id;
   registration.paymentVerifiedAt = new Date();
   await registration.save();
 
-  if (recordPayment && amount) {
+  if (wantsLedgerEntry) {
     const { default: LearnerPayment } =
       await import("../models/LearnerPayment.js");
     const { default: CourseEnrollmentFee } =
@@ -2820,7 +2051,7 @@ export const confirmRegistrationPayment = asyncHandler(async (req, res) => {
     entity: "Registration",
     entityId: registration._id,
     performedBy: req.user._id,
-    details: `Payment marked ${paymentStatus} for ${registration.student.email}`,
+    details: `Payment marked ${paymentStatus} for ${registration.student?.email || "deleted learner"}`,
   });
 
   res.json({
@@ -2995,7 +2226,7 @@ export const buildLearnerProfileData = async (id) => {
     timeline.push({
       type: "registration",
       date: r.createdAt,
-      label: `Registration (${r.status}) — ${r.course?.title || ""}`,
+      label: `Registration (${r.status}) — ${getRegistrationCourseLabel(r)}`,
     });
     if (r.processedAt)
       timeline.push({
@@ -3129,7 +2360,14 @@ export const exportLearnerHistory = asyncHandler(async (req, res) => {
     title: "Registration History",
     rows: data.registrations.map((r) => ({
       "Registration ID": r._id,
-      Course: r.course?.title || "",
+      Course: getRegistrationCourseLabel(r),
+      "Course Type": r.course?.title
+        ? "Catalogue"
+        : r.isOtherCourse
+          ? "OTHERS (not in catalogue)"
+          : "Unavailable",
+      "OTHERS Course Name": r.isOtherCourse ? r.otherCourseName || "" : "",
+      "OTHERS Course Details": r.isOtherCourse ? r.otherCourseDetails || "" : "",
       Status: r.status,
       "Requested Courses": (r.requestedCourses || [])
         .map((c) => c.course?.title || c.course)

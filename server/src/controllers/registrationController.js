@@ -1,3 +1,6 @@
+
+
+
 // import bcrypt from "bcryptjs";
 // import crypto from "crypto";
 
@@ -24,6 +27,10 @@
 //   validateConfirmation,
 //   getRequestedCourseIds,
 // } from "../validators/registrationValidator.js";
+
+// // Upper bound on how long a registration response may wait for the admin
+// // alert email to finish sending (it never waits for failures/retries).
+// const ADMIN_ALERT_MAX_WAIT_MS = 4000;
 
 // // ===========================================================================
 // //  PUBLIC SELF REGISTRATION  --  /api/registration/*
@@ -249,6 +256,37 @@
 //     .sendRegistrationCreatedEmail(student.email, student.name, courseTitles)
 //     .catch((err) => console.warn("Registration email failed:", err.message));
 
+//   // -- Admin alert: "New LMS Registration" (additive) ------------------------
+//   // Exactly one send per successful registration request (this handler runs
+//   // once per POST and the Registration has already been persisted above).
+//   // Started now so it runs in parallel with the audit log; any failure is
+//   // logged and swallowed — it can never fail or roll back the registration.
+//   // The response waits at most ADMIN_ALERT_MAX_WAIT_MS for it to settle so
+//   // serverless hosts (Vercel) don't freeze the function mid-send.
+//   const adminAlert = emailService
+//     .sendAdminNewRegistrationEmail({
+//       fullName:
+//         [student.firstName, student.middleName, student.lastName]
+//           .map((p) => (p || "").trim())
+//           .filter(Boolean)
+//           .join(" ") || student.name,
+//       email: student.email,
+//       mobile: [student.countryCode, student.mobile]
+//         .map((p) => (p || "").trim())
+//         .filter(Boolean)
+//         .join(" "),
+//       courses: courseTitles,
+//       country: student.country || (country || "").trim(),
+//       source: "Public Registration Page (hkinternational.uk/register)",
+//       isNewUser,
+//       registeredAt: registration.createdAt || now,
+//       learnerId: student._id,
+//       registrationId: registration._id,
+//     })
+//     .catch((err) =>
+//       console.warn("Admin registration alert email failed:", err.message),
+//     );
+
 //   await auditService.log({
 //     action: "REGISTRATION_SELF_CREATED",
 //     entity: "Registration",
@@ -256,6 +294,15 @@
 //     performedBy: student._id,
 //     details: `Self-registration created for ${student.email} on "${courseTitles}"`,
 //   });
+
+//   let alertTimer;
+//   await Promise.race([
+//     adminAlert,
+//     new Promise((resolve) => {
+//       alertTimer = setTimeout(resolve, ADMIN_ALERT_MAX_WAIT_MS);
+//     }),
+//   ]);
+//   clearTimeout(alertTimer);
 
 //   res.status(201).json({
 //     success: true,
@@ -540,8 +587,6 @@
 
 
 
-
-
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 
@@ -567,7 +612,10 @@ import {
   validateCourseSelection,
   validateConfirmation,
   getRequestedCourseIds,
+  isOtherCourseRequested,
+  getOtherCourseInput,
 } from "../validators/registrationValidator.js";
+import { OTHER_COURSE_LABEL } from "../utils/registrationCourse.js";
 
 // Upper bound on how long a registration response may wait for the admin
 // alert email to finish sending (it never waits for failures/retries).
@@ -658,24 +706,40 @@ export const createRegistration = asyncHandler(async (req, res) => {
   const errors = [...personalErrors, ...courseErrors, ...confirmationErrors];
   if (errors.length) throw new ApiError(400, errors.join(". "));
 
+  // ── OTHERS course (course not in the normal catalogue) ────────────────
+  // Validation above already guarantees OTHERS is never combined with a
+  // listed course and that a Course Name is present. No catalogue Course is
+  // created for it — the learner-typed values live on the Registration.
+  const isOtherCourse = isOtherCourseRequested(req.body);
+  const otherCourse = isOtherCourse
+    ? getOtherCourseInput(req.body)
+    : { otherCourseName: "", otherCourseDetails: "" };
+
+  if (isOtherCourse && batchId) {
+    throw new ApiError(
+      400,
+      "A batch cannot be selected for a course outside the catalogue",
+    );
+  }
+
   // Registration Requirement 3: multiple course selection. First selected
   // course becomes the primary/legacy `course` on this Registration; all
   // selected courses are preserved in requestedCourses[].
-  const requestedCourseIds = getRequestedCourseIds(req.body);
-  const primaryCourseId = requestedCourseIds[0];
+  const requestedCourseIds = isOtherCourse ? [] : getRequestedCourseIds(req.body);
+  const primaryCourseId = isOtherCourse ? null : requestedCourseIds[0];
 
   const normalizedEmail = String(email).trim().toLowerCase();
   const normalizedMobile = String(mobile).trim();
 
-  const courses = await Course.find({ _id: { $in: requestedCourseIds } });
+  const courses = isOtherCourse
+    ? []
+    : await Course.find({ _id: { $in: requestedCourseIds } });
   if (courses.length !== requestedCourseIds.length) {
     throw new ApiError(404, "One or more selected courses were not found");
   }
-  const courseById = new Map(courses.map((c) => [String(c._id), c]));
-  const primaryCourse = courseById.get(String(primaryCourseId));
 
   let batch = null;
-  if (batchId) {
+  if (batchId && !isOtherCourse) {
     batch = await Batch.findOne({ _id: batchId, courseId: primaryCourseId });
     if (!batch)
       throw new ApiError(404, "Selected batch not found for this course");
@@ -706,15 +770,30 @@ export const createRegistration = asyncHandler(async (req, res) => {
   if (student) {
     // Existing learner -- make sure they're not duplicating any of the
     // SAME requested courses.
-    const existingRegs = await Registration.find({
-      student: student._id,
-      course: { $in: requestedCourseIds },
-    }).select("course");
-    if (existingRegs.length) {
-      throw new ApiError(
-        409,
-        "A registration for one or more of these courses already exists for this email/mobile",
-      );
+    if (isOtherCourse) {
+      // One open (not-yet-linked) OTHERS registration per learner: the
+      // {student, course} unique index treats course:null as a value.
+      const existingOther = await Registration.exists({
+        student: student._id,
+        course: null,
+      });
+      if (existingOther) {
+        throw new ApiError(
+          409,
+          "You already have a registration for a course outside our catalogue that is awaiting review. Please contact us to add another course.",
+        );
+      }
+    } else {
+      const existingRegs = await Registration.find({
+        student: student._id,
+        course: { $in: requestedCourseIds },
+      }).select("course");
+      if (existingRegs.length) {
+        throw new ApiError(
+          409,
+          "A registration for one or more of these courses already exists for this email/mobile",
+        );
+      }
     }
     if (student.email !== normalizedEmail) {
       throw new ApiError(
@@ -756,6 +835,9 @@ export const createRegistration = asyncHandler(async (req, res) => {
   const registration = await Registration.create({
     student: student._id,
     course: primaryCourseId,
+    isOtherCourse,
+    otherCourseName: otherCourse.otherCourseName,
+    otherCourseDetails: otherCourse.otherCourseDetails,
     batch: batch ? batch._id : null,
     status: "pending",
     paymentStatus: "unpaid",
@@ -775,7 +857,9 @@ export const createRegistration = asyncHandler(async (req, res) => {
   const admins = await User.find({ role: { $in: ["admin", "super_admin"] } })
     .select("_id")
     .lean();
-  const courseTitles = courses.map((c) => c.title).join(", ");
+  const courseTitles = isOtherCourse
+    ? `${OTHER_COURSE_LABEL} — ${otherCourse.otherCourseName}`
+    : courses.map((c) => c.title).join(", ");
   await notificationService.createBulk(
     admins.map((a) => a._id),
     {
@@ -855,6 +939,8 @@ export const createRegistration = asyncHandler(async (req, res) => {
 
       status: registration.status,
       requestedCourses: requestedCourseIds,
+      isOtherCourse,
+      otherCourseName: otherCourse.otherCourseName,
 
       isNewUser,
 
@@ -950,7 +1036,10 @@ export const uploadRegistrationDocuments = asyncHandler(async (req, res) => {
 export const getRegistrationStatus = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
+  // Public (unauthenticated) endpoint: never return the generated default
+  // password — it is only shown once, in the create response, and to admins.
   const registration = await Registration.findById(id)
+    .select("-defaultPassword")
     .populate("student", "name firstName middleName lastName email mobile")
     .populate("course", "title")
     .populate("batch", "name startDate endDate")

@@ -1,4 +1,5 @@
 
+
 // import { useEffect, useState } from "react";
 // import { useNavigate, useParams } from "react-router-dom";
 // import AdminLayout from "../../components/layout/AdminLayout";
@@ -25,6 +26,9 @@
 //   Users,
 //   TrendingUp,
 //   Award,
+//   Download,
+//   Sparkles,
+//   ShieldCheck,
 // } from "lucide-react";
 
 // // Blob-forced download — preserves original filename (avoids Cloudinary hash)
@@ -60,6 +64,8 @@
 //   const [assignment, setAssignment] = useState(null);
 //   const [loading, setLoading] = useState(false);
 //   const [statusFilter, setStatusFilter] = useState("");
+//   const [assessmentTypeFilter, setAssessmentTypeFilter] = useState("");
+//   const [exporting, setExporting] = useState(false);
 //   const [page, setPage] = useState(1);
 //   const [totalPages, setTotalPages] = useState(1);
 //   const [total, setTotal] = useState(0);
@@ -67,7 +73,7 @@
 
 //   useEffect(() => {
 //     load();
-//   }, [page, statusFilter, assignmentId]);
+//   }, [page, statusFilter, assessmentTypeFilter, assignmentId]);
 
 //   useEffect(() => {
 //     if (assignmentId) {
@@ -84,6 +90,7 @@
 //       const params = { page, limit: LIMIT };
 //       if (assignmentId) params.assignmentId = assignmentId;
 //       if (statusFilter) params.status = statusFilter;
+//       if (assessmentTypeFilter) params.assessmentType = assessmentTypeFilter;
 
 //       // FIX: getSubmissions returns res.data.data — the payload object directly.
 //       // Do NOT try to unwrap .data again — it will be undefined.
@@ -98,10 +105,95 @@
 //     }
 //   };
 
+//   // ✅ MODULE 7 — Export CSV. Reuses the existing GET /submissions list
+//   // endpoint with a high limit (no new backend endpoint), applying the
+//   // same filters currently active on screen.
+//   const escapeCsv = (val) => {
+//     const str = String(val ?? "");
+//     return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
+//   };
+
+//   const handleExportCsv = async () => {
+//     setExporting(true);
+//     try {
+//       const params = { page: 1, limit: 5000 };
+//       if (assignmentId) params.assignmentId = assignmentId;
+//       if (statusFilter) params.status = statusFilter;
+//       if (assessmentTypeFilter) params.assessmentType = assessmentTypeFilter;
+
+//       const d = await getSubmissions(params);
+//       const rows = Array.isArray(d?.submissions) ? d.submissions : [];
+
+//       const header = [
+//         "Student",
+//         "Email",
+//         "Assignment",
+//         "Assessment Type",
+//         "Score",
+//         "Pass/Fail",
+//         "Approval",
+//         "Status",
+//         "Submitted Date",
+//       ];
+
+//       const lines = [header.map(escapeCsv).join(",")];
+//       rows.forEach((r) => {
+//         lines.push(
+//           [
+//             r.studentId?.name || "",
+//             r.studentId?.email || "",
+//             r.assignmentId?.title || "",
+//             r.assignmentId?.assessmentType || "general",
+//             r.totalScore != null ? r.totalScore : "",
+//             r.passFail || "pending",
+//             r.approvalStatus || "not_required",
+//             r.status || "",
+//             r.createdAt ? new Date(r.createdAt).toISOString() : "",
+//           ]
+//             .map(escapeCsv)
+//             .join(","),
+//         );
+//       });
+
+//       const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+//       const url = URL.createObjectURL(blob);
+//       const a = document.createElement("a");
+//       a.href = url;
+//       a.download = `submissions-${new Date().toISOString().slice(0, 10)}.csv`;
+//       document.body.appendChild(a);
+//       a.click();
+//       document.body.removeChild(a);
+//       URL.revokeObjectURL(url);
+//     } catch (err) {
+//       console.error("Failed to export CSV:", err);
+//     } finally {
+//       setExporting(false);
+//     }
+//   };
+
 //   const getStatusBadge = (s) => {
-//     if (s === "graded") return <Badge variant="success">Graded</Badge>;
+//     if (["graded", "approved"].includes(s)) return <Badge variant="success">{s === "approved" ? "Approved" : "Graded"}</Badge>;
+//     if (s === "ai_reviewed") return <Badge variant="primary">AI Reviewed</Badge>;
+//     if (s === "resubmission_required") return <Badge variant="danger">Resubmission Required</Badge>;
 //     if (s === "submitted") return <Badge variant="primary">Submitted</Badge>;
 //     return <Badge variant="warning">Not Submitted</Badge>;
+//   };
+
+//   const getPassFailBadge = (s) => {
+//     if (s === "pass") return <Badge variant="success">Pass</Badge>;
+//     if (s === "fail") return <Badge variant="danger">Fail</Badge>;
+//     return <span className="text-gray-300 text-xs">—</span>;
+//   };
+
+//   const getApprovalBadge = (s) => {
+//     if (s === "approved")
+//       return (
+//         <Badge variant="success">
+//           <ShieldCheck size={10} className="inline mr-1" /> Approved
+//         </Badge>
+//       );
+//     if (s === "pending") return <Badge variant="warning">Pending</Badge>;
+//     return <span className="text-gray-300 text-xs">—</span>;
 //   };
 
 //   // Stats for the header summary row
@@ -118,10 +210,14 @@
 //       key: "student",
 //       label: "Student",
 //       render: (r) => (
-//         <div>
-//           <p className="font-medium text-gray-800">{r.studentId?.name || "—"}</p>
-//           <p className="text-xs text-gray-400">{r.studentId?.email}</p>
-//         </div>
+//         <p className="font-medium text-gray-800">{r.studentId?.name || "—"}</p>
+//       ),
+//     },
+//     {
+//       key: "email",
+//       label: "Email",
+//       render: (r) => (
+//         <p className="text-xs text-gray-500">{r.studentId?.email || "—"}</p>
 //       ),
 //     },
 //     {
@@ -204,9 +300,41 @@
 //         ),
 //     },
 //     {
+//       key: "assessmentType",
+//       label: "Type",
+//       render: (r) => (
+//         <Badge variant="default">
+//           {(r.assignmentId?.assessmentType || "general").replace(/_/g, " ")}
+//         </Badge>
+//       ),
+//     },
+//     {
 //       key: "status",
 //       label: "Status",
 //       render: (r) => getStatusBadge(r.status),
+//     },
+//     {
+//       key: "passFail",
+//       label: "Pass/Fail",
+//       render: (r) => getPassFailBadge(r.passFail),
+//     },
+//     {
+//       key: "approval",
+//       label: "Approval",
+//       render: (r) => getApprovalBadge(r.approvalStatus),
+//     },
+//     {
+//       key: "aiDraft",
+//       label: "AI Draft",
+//       render: (r) =>
+//         r.aiDraft?.generatedAt ? (
+//           <span className="inline-flex items-center gap-1 text-xs text-indigo-600">
+//             <Sparkles size={11} />
+//             {r.aiDraft.accepted ? "Accepted" : "Pending review"}
+//           </span>
+//         ) : (
+//           <span className="text-gray-300 text-xs">—</span>
+//         ),
 //     },
 //     {
 //       key: "actions",
@@ -220,7 +348,7 @@
 //           }}
 //         >
 //           <Eye size={14} />
-//           {r.status === "graded" ? "View" : "Review"}
+//           {["graded", "approved"].includes(r.status) ? "View" : "Review"}
 //         </Button>
 //       ),
 //     },
@@ -283,8 +411,8 @@
 //           </div>
 //         )}
 
-//         {/* Status filter tabs */}
-//         <div className="flex gap-2 mb-5">
+//         {/* Status filter tabs + Module 7 additions */}
+//         <div className="flex flex-wrap items-center gap-2 mb-5">
 //           {STATUS_TABS.map((t) => {
 //             const Icon = t.icon;
 //             return (
@@ -305,6 +433,33 @@
 //               </button>
 //             );
 //           })}
+
+//           {/* ✅ Module 7 — Assessment Type filter */}
+//           <select
+//             value={assessmentTypeFilter}
+//             onChange={(e) => {
+//               setAssessmentTypeFilter(e.target.value);
+//               setPage(1);
+//             }}
+//             className="px-3 py-2 rounded-xl text-sm border border-gray-200 bg-white text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+//           >
+//             <option value="">All Assessment Types</option>
+//             <option value="general">General</option>
+//             <option value="mcq_exam">MCQ Exam</option>
+//             <option value="written_assessment">Written Assessment</option>
+//             <option value="project_submission">Project Submission</option>
+//           </select>
+
+//           {/* ✅ Module 7 — Export CSV */}
+//           <Button
+//             variant="secondary"
+//             className="ml-auto"
+//             disabled={exporting}
+//             onClick={handleExportCsv}
+//           >
+//             <Download size={14} />
+//             {exporting ? "Exporting…" : "Export CSV"}
+//           </Button>
 //         </div>
 
 //         {loading ? (
@@ -353,6 +508,9 @@
 
 
 
+
+
+
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AdminLayout from "../../components/layout/AdminLayout";
@@ -382,7 +540,18 @@ import {
   Download,
   Sparkles,
   ShieldCheck,
+  Upload,
+  Pencil,
+  FileUp,
+  Trash2,
+  X,
 } from "lucide-react";
+import AdminSubmissionModal from "./components/AdminSubmissionModal";
+import DeleteSubmissionModal from "./components/DeleteSubmissionModal";
+import { useAdminAuth } from "../../contexts/AdminAuthContext";
+
+// Server allows these admin-only submission actions for these roles.
+const SUBMISSION_ADMIN_ROLES = ["admin", "super_admin"];
 
 // Blob-forced download — preserves original filename (avoids Cloudinary hash)
 const triggerDownload = async (url, filename) => {
@@ -423,6 +592,43 @@ export default function SubmissionsList() {
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const LIMIT = 15;
+
+  // ── Admin management of submissions ───────────────────────────────────
+  const { user } = useAdminAuth();
+  const canManage = SUBMISSION_ADMIN_ROLES.includes(user?.role);
+  const [manageModal, setManageModal] = useState(null); // { mode, submissionId?, focusFile? }
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [notice, setNotice] = useState("");
+
+  useEffect(() => {
+    if (!notice) return undefined;
+    const t = setTimeout(() => setNotice(""), 6000);
+    return () => clearTimeout(t);
+  }, [notice]);
+
+  const handleManageSaved = (result, kind) => {
+    setManageModal(null);
+    const who = result?.studentId?.name || "the learner";
+    const what = result?.assignmentId?.title ? ` on “${result.assignmentId.title}”` : "";
+    setNotice(
+      kind === "created"
+        ? `Submission uploaded for ${who}${what}.`
+        : kind === "replaced"
+          ? `Submission file replaced for ${who}${what}.`
+          : `Submission updated for ${who}${what}.`,
+    );
+    load();
+  };
+
+  const handleDeleted = (sub) => {
+    setDeleteTarget(null);
+    setNotice(
+      `Submission of ${sub?.studentId?.name || "the learner"} on “${sub?.assignmentId?.title || "the assessment"}” was deleted.`,
+    );
+    // Deleting the last row of a page → step back a page.
+    if (submissions.length === 1 && page > 1) setPage((p) => p - 1);
+    else load();
+  };
 
   useEffect(() => {
     load();
@@ -563,7 +769,28 @@ export default function SubmissionsList() {
       key: "student",
       label: "Student",
       render: (r) => (
-        <p className="font-medium text-gray-800">{r.studentId?.name || "—"}</p>
+        <div>
+          <p className="font-medium text-gray-800">{r.studentId?.name || "—"}</p>
+          {r.submittedByAdmin ? (
+            <span
+              className="inline-flex items-center gap-1 mt-1 text-[11px] font-medium text-indigo-700 bg-indigo-50 rounded-full px-2 py-0.5"
+              title={`Uploaded by ${r.adminSubmittedBy?.name || "an administrator"}${
+                r.adminSubmittedAt ? ` on ${new Date(r.adminSubmittedAt).toLocaleString("en-GB")}` : ""
+              }`}
+            >
+              <ShieldCheck size={10} /> Admin upload
+            </span>
+          ) : r.lastAdminModifiedAt ? (
+            <span
+              className="inline-flex items-center gap-1 mt-1 text-[11px] font-medium text-orange-700 bg-orange-50 rounded-full px-2 py-0.5"
+              title={`Last changed by ${r.lastAdminModifiedBy?.name || "an administrator"} on ${new Date(
+                r.lastAdminModifiedAt,
+              ).toLocaleString("en-GB")}`}
+            >
+              <Pencil size={10} /> Edited by admin
+            </span>
+          ) : null}
+        </div>
       ),
     },
     {
@@ -693,16 +920,49 @@ export default function SubmissionsList() {
       key: "actions",
       label: "",
       render: (r) => (
-        <Button
-          variant="secondary"
-          onClick={(e) => {
-            e.stopPropagation();
-            navigate(`/admin/submissions/${r._id}/review`);
-          }}
-        >
-          <Eye size={14} />
-          {["graded", "approved"].includes(r.status) ? "View" : "Review"}
-        </Button>
+        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+          <Button
+            variant="secondary"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/admin/submissions/${r._id}/review`);
+            }}
+          >
+            <Eye size={14} />
+            {["graded", "approved"].includes(r.status) ? "View" : "Review"}
+          </Button>
+          {canManage && (
+            <>
+              <button
+                type="button"
+                onClick={() => setManageModal({ mode: "edit", submissionId: r._id })}
+                className="p-1.5 rounded-lg hover:bg-indigo-50 text-indigo-600"
+                title="Edit submission"
+                aria-label="Edit submission"
+              >
+                <Pencil size={15} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setManageModal({ mode: "edit", submissionId: r._id, focusFile: true })}
+                className="p-1.5 rounded-lg hover:bg-indigo-50 text-indigo-600"
+                title={r.submissionFile?.url ? "Replace submission file" : "Attach a PDF"}
+                aria-label="Replace submission file"
+              >
+                <FileUp size={15} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(r)}
+                className="p-1.5 rounded-lg hover:bg-red-50 text-red-500"
+                title="Delete submission"
+                aria-label="Delete submission"
+              >
+                <Trash2 size={15} />
+              </button>
+            </>
+          )}
+        </div>
       ),
     },
   ];
@@ -714,13 +974,33 @@ export default function SubmissionsList() {
           title={assignment ? `Submissions — ${assignment.title}` : "All Submissions"}
           subtitle={`${total} total submission${total !== 1 ? "s" : ""}`}
           actions={
-            assignmentId ? (
-              <Button variant="secondary" onClick={() => navigate(-1)}>
-                <ArrowLeft size={15} /> Back
-              </Button>
+            assignmentId || canManage ? (
+              <>
+                {canManage && (
+                  <Button onClick={() => setManageModal({ mode: "create" })}>
+                    <Upload size={15} /> Upload Submission
+                  </Button>
+                )}
+                {assignmentId && (
+                  <Button variant="secondary" onClick={() => navigate(-1)}>
+                    <ArrowLeft size={15} /> Back
+                  </Button>
+                )}
+              </>
             ) : null
           }
         />
+
+        {notice && (
+          <div className="flex items-center justify-between gap-3 mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700" role="status">
+            <span className="flex items-center gap-2">
+              <CheckCircle size={16} /> {notice}
+            </span>
+            <button type="button" onClick={() => setNotice("")} className="p-1 text-emerald-600 hover:text-emerald-800" aria-label="Dismiss">
+              <X size={14} />
+            </button>
+          </div>
+        )}
 
         {/* Quick stats */}
         {submissions.length > 0 && (
@@ -849,6 +1129,26 @@ export default function SubmissionsList() {
                 </div>
               </div>
             )}
+          </>
+        )}
+
+        {canManage && (
+          <>
+            <AdminSubmissionModal
+              open={Boolean(manageModal)}
+              mode={manageModal?.mode}
+              submissionId={manageModal?.submissionId}
+              focusFile={manageModal?.focusFile}
+              defaultAssignmentId={assignmentId}
+              onClose={() => setManageModal(null)}
+              onSaved={handleManageSaved}
+            />
+            <DeleteSubmissionModal
+              open={Boolean(deleteTarget)}
+              submission={deleteTarget}
+              onClose={() => setDeleteTarget(null)}
+              onDeleted={handleDeleted}
+            />
           </>
         )}
       </div>

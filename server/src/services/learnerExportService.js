@@ -1,3 +1,4 @@
+
 // /**
 //  * learnerExportService
 //  *
@@ -11,6 +12,12 @@
 //  *    Attendance, Registration, PartnerInstitute, AwardingOrganisation).
 //  *    No schema is invented — fields that don't exist are reported back as
 //  *    `unavailableColumns` so the UI can say so explicitly.
+//  *
+//  *  - PER-ASSESSMENT MARKS: every Exam and every Assignment in the system is
+//  *    offered as its own column (named after the exam / assignment), so a
+//  *    learner's mark for one specific assessment can be exported on its own.
+//  *    These columns are dynamic (read from the Exam / Assignment collections
+//  *    at request time) and use keys `exam:<id>` / `assignment:<id>`.
 //  *
 //  *  - Related data is loaded in BATCHES keyed by user id ($in queries /
 //  *    $group aggregations), never one query per user (no N+1), and ONLY for
@@ -632,6 +639,128 @@
 //     (c) => !c.path || !User.schema.path(c.path),
 //   ).map((c) => c.label);
 
+// // ── Per-assessment (dynamic) columns ────────────────────────────────────
+// //
+// // One column per Exam and per Assignment, named after the assessment.
+// //   • Exam columns       → the learner's BEST submitted attempt, in %
+// //                          (Attempt.result.percentage — the only exam score
+// //                          that is stored on every attempt).
+// //   • Assignment columns → marks awarded (Submission.totalScore); the header
+// //                          carries the maximum, e.g. "Risk Assignment (/50)".
+// // Blank cell = learner has not attempted / not been graded yet.
+
+// const ASSESSMENT_KEY_RE = /^(exam|assignment):([0-9a-fA-F]{24})$/;
+// const EXAM_GROUP = "Exam Marks";
+// const ASSIGNMENT_GROUP = "Assignment Marks";
+
+// // Every item in the Assignment section (assignments, assessments, practicals,
+// // … whatever `Assignment.assessmentType` holds) is exported as its own
+// // column, grouped by that type in the picker.
+// const assignmentGroupFor = (type) => {
+//   const t = String(type || "").trim();
+//   return t ? `Assignment Section — ${humanize(t)}` : ASSIGNMENT_GROUP;
+// };
+
+// const cleanTitle = (t, fallback) =>
+//   String(t || "").replace(/\s+/g, " ").trim() || fallback;
+
+// // Two assessments with the same title would produce identical headers, so
+// // the later ones get a short id suffix to stay distinguishable.
+// const withUniqueTitles = (docs, fallback) => {
+//   const counts = new Map();
+//   for (const d of docs) {
+//     const t = cleanTitle(d.title, fallback);
+//     counts.set(t, (counts.get(t) || 0) + 1);
+//   }
+//   return docs.map((d) => {
+//     const t = cleanTitle(d.title, fallback);
+//     return {
+//       doc: d,
+//       title: counts.get(t) > 1 ? `${t} [${String(d._id).slice(-4)}]` : t,
+//     };
+//   });
+// };
+
+// const markKey = (studentId, kind, id) => `${studentId}:${kind}:${id}`;
+
+// /** All dynamic assessment columns (full definitions, incl. getters). */
+// const getAssessmentColumnDefs = async () => {
+//   // Each source fails independently: a problem reading exams must never hide
+//   // the assignment/assessment columns (and vice versa).
+//   const [examRes, assignRes] = await Promise.allSettled([
+//     (async () => Exam.find().select("title").sort({ title: 1 }).lean())(),
+//     (async () =>
+//       Assignment.find()
+//         .select("title totalMarks assessmentType")
+//         .sort({ title: 1 })
+//         .lean())(),
+//   ]);
+//   if (examRes.status === "rejected")
+//     console.warn("[learnerExport] exam columns unavailable:", examRes.reason?.message);
+//   if (assignRes.status === "rejected")
+//     console.warn("[learnerExport] assignment columns unavailable:", assignRes.reason?.message);
+
+//   const exams = examRes.status === "fulfilled" ? examRes.value : [];
+//   const assignments = assignRes.status === "fulfilled" ? assignRes.value : [];
+
+//   const cols = [];
+
+//   withUniqueTitles(exams, "Untitled Exam").forEach(({ doc, title }, i) => {
+//     const id = String(doc._id);
+//     cols.push({
+//       key: `exam:${id}`,
+//       label: `${title} (%)`,
+//       group: EXAM_GROUP,
+//       order: 700 + i,
+//       type: "percent",
+//       needs: ["assessmentMarks"],
+//       assessment: { kind: "exam", id },
+//       get: (u, ctx) =>
+//         ctx.data.assessmentMarks.get(markKey(u._id, "exam", id)) ?? null,
+//     });
+//   });
+
+//   // Sorted by type then title so each group lists neatly.
+//   const sortedAssignments = [...assignments].sort(
+//     (a, b) =>
+//       String(a.assessmentType || "").localeCompare(String(b.assessmentType || "")) ||
+//       String(a.title || "").localeCompare(String(b.title || "")),
+//   );
+//   withUniqueTitles(sortedAssignments, "Untitled Assignment").forEach(
+//     ({ doc, title }, i) => {
+//       const id = String(doc._id);
+//       const max = Number(doc.totalMarks);
+//       cols.push({
+//         key: `assignment:${id}`,
+//         label: Number.isFinite(max) && max > 0 ? `${title} (/${max})` : title,
+//         group: assignmentGroupFor(doc.assessmentType),
+//         order: 800 + i,
+//         type: "number",
+//         needs: ["assessmentMarks"],
+//         assessment: { kind: "assignment", id },
+//         get: (u, ctx) =>
+//           ctx.data.assessmentMarks.get(markKey(u._id, "assignment", id)) ??
+//           null,
+//       });
+//     },
+//   );
+
+//   return cols;
+// };
+
+// /** JSON-safe per-assessment columns for the column picker. */
+// export const getAssessmentExportColumns = async () => {
+//   try {
+//     return (await getAssessmentColumnDefs()).map(
+//       ({ key, label, group, type }) => ({ key, label, group, type }),
+//     );
+//   } catch (err) {
+//     // Never let a problem here take the whole export dialog down.
+//     console.warn("[learnerExport] assessment columns unavailable:", err.message);
+//     return [];
+//   }
+// };
+
 // // ═══════════════════════════════════════════════════════════════════════
 // //  2. Batch loaders (one round-trip per collection per batch of users)
 // // ═══════════════════════════════════════════════════════════════════════
@@ -805,6 +934,51 @@
 //     return out;
 //   },
 
+//   // Marks for ONLY the exams / assignments the admin ticked as columns.
+//   // `scope` = { examIds: string[], assignmentIds: string[] }.
+//   async assessmentMarks(users, scope = {}) {
+//     const out = new Map();
+//     const studentIds = toIds(users);
+//     const examIds = scope.examIds || [];
+//     const assignmentIds = scope.assignmentIds || [];
+
+//     if (examIds.length) {
+//       const attempts = await Attempt.find({
+//         studentId: { $in: studentIds },
+//         examId: { $in: examIds },
+//         status: { $in: ["submitted", "expired"] },
+//       })
+//         .select("studentId examId result.percentage")
+//         .lean();
+//       for (const a of attempts) {
+//         const pct = Number(a.result?.percentage);
+//         if (!Number.isFinite(pct)) continue;
+//         const k = markKey(a.studentId, "exam", a.examId);
+//         const prev = out.get(k);
+//         // Best attempt wins when a learner has retaken the exam.
+//         if (prev === undefined || pct > prev) out.set(k, round1(pct));
+//       }
+//     }
+
+//     if (assignmentIds.length) {
+//       const subs = await Submission.find({
+//         studentId: { $in: studentIds },
+//         assignmentId: { $in: assignmentIds },
+//         status: { $ne: "not_submitted" },
+//         totalScore: { $ne: null },
+//       })
+//         .select("studentId assignmentId totalScore")
+//         .sort({ _id: 1 }) // oldest → newest, so a resubmission overwrites
+//         .lean();
+//       for (const s of subs) {
+//         const score = Number(s.totalScore);
+//         if (!Number.isFinite(score)) continue;
+//         out.set(markKey(s.studentId, "assignment", s.assignmentId), score);
+//       }
+//     }
+//     return out;
+//   },
+
 //   async quizzes(users) {
 //     const rows = await QuizAttempt.aggregate([
 //       { $match: { studentId: { $in: toIds(users) } } },
@@ -905,6 +1079,7 @@
 //   "scenario",
 //   "certificates",
 //   "attendance",
+//   "assessmentMarks",
 //   "courses",
 // ];
 
@@ -918,7 +1093,7 @@
 //  * in this deployment) degrades to empty data for that group instead of
 //  * failing the whole export.
 //  */
-// const loadBatchData = async (users, needs) => {
+// const loadBatchData = async (users, needs, scope = {}) => {
 //   const data = {};
 //   for (const name of LOADER_ORDER) {
 //     if (!needs.has(name)) {
@@ -926,7 +1101,7 @@
 //       continue;
 //     }
 //     try {
-//       data[name] = await LOADERS[name].call(data, users);
+//       data[name] = await LOADERS[name].call(data, users, scope);
 //     } catch (err) {
 //       console.warn(`[learnerExport] "${name}" data unavailable:`, err.message);
 //       data[name] = EMPTY_FOR[name] ? EMPTY_FOR[name]() : new Map();
@@ -949,6 +1124,33 @@
 //     if (typeof k !== "string" || seen.has(k) || !byKey.has(k)) continue;
 //     seen.add(k);
 //     out.push(byKey.get(k));
+//   }
+//   return out;
+// };
+
+// /**
+//  * Async version of resolveColumns() that ALSO understands the dynamic
+//  * per-assessment keys (`exam:<id>`, `assignment:<id>`). Order is preserved;
+//  * unknown / deleted assessments are silently dropped (same as unknown keys).
+//  */
+// export const resolveExportColumns = async (keys) => {
+//   if (!Array.isArray(keys)) return [];
+//   const wantsAssessments = keys.some(
+//     (k) => typeof k === "string" && ASSESSMENT_KEY_RE.test(k),
+//   );
+//   const dynamic = wantsAssessments
+//     ? new Map((await getAssessmentColumnDefs()).map((c) => [c.key, c]))
+//     : new Map();
+//   const staticByKey = new Map(getExportColumnCatalog().map((c) => [c.key, c]));
+
+//   const seen = new Set();
+//   const out = [];
+//   for (const k of keys) {
+//     if (typeof k !== "string" || seen.has(k)) continue;
+//     const col = staticByKey.get(k) || dynamic.get(k);
+//     if (!col) continue;
+//     seen.add(k);
+//     out.push(col);
 //   }
 //   return out;
 // };
@@ -981,6 +1183,14 @@
 //   tzOffset = 0,
 // }) => {
 //   const needs = new Set(columns.flatMap((c) => c.needs || []));
+//   const scope = {
+//     examIds: columns
+//       .filter((c) => c.assessment?.kind === "exam")
+//       .map((c) => c.assessment.id),
+//     assignmentIds: columns
+//       .filter((c) => c.assessment?.kind === "assignment")
+//       .map((c) => c.assessment.id),
+//   };
 
 //   const projection = Object.fromEntries(SENSITIVE_USER_FIELDS.map((f) => [f, 0]));
 //   const pipeline = [{ $match: filter }];
@@ -1024,7 +1234,7 @@
 
 //   for (let i = 0; i < users.length; i += BATCH_SIZE) {
 //     const batch = users.slice(i, i + BATCH_SIZE);
-//     const data = await loadBatchData(batch, needs);
+//     const data = await loadBatchData(batch, needs, scope);
 //     const ctx = { data, tzOffset };
 
 //     for (const u of batch) {
@@ -1049,6 +1259,7 @@
 //     col.width = Math.min(Math.max(widths[idx] + 2, 10), 60);
 //     if (c.type === "date") col.numFmt = "mm/dd/yyyy";
 //     if (c.type === "percent") col.numFmt = "0.0";
+//     if (c.assessment) col.alignment = { horizontal: "center" };
 //     if (c.type === "string") col.alignment = { wrapText: false };
 //   });
 
@@ -1071,6 +1282,9 @@
 //   const yyyy = local.getUTCFullYear();
 //   return `Learners_${mm}-${dd}-${yyyy}.xlsx`;
 // };
+
+
+
 
 
 
@@ -1637,10 +1851,16 @@ const DERIVED_COLUMNS = [
           if (rc?.course) ids.add(String(rc.course));
         }
       }
-      return [...ids]
+      const titles = [...ids]
         .map((id) => ctx.data.courses.get(id))
-        .filter(Boolean)
-        .join("; ");
+        .filter(Boolean);
+      // OTHERS: course typed by the learner, not in the catalogue.
+      for (const r of regs) {
+        if (r.isOtherCourse && r.otherCourseName) {
+          titles.push(`OTHERS — ${r.otherCourseName}`);
+        }
+      }
+      return [...new Set(titles)].join("; ");
     },
   },
   {
@@ -2115,7 +2335,9 @@ const LOADERS = {
 
   async registrations(users) {
     const regs = await Registration.find({ student: { $in: toIds(users) } })
-      .select("student course requestedCourses status paymentStatus createdAt")
+      .select(
+        "student course requestedCourses status paymentStatus createdAt isOtherCourse otherCourseName",
+      )
       .sort({ createdAt: -1 })
       .lean();
     const out = new Map();

@@ -1,5 +1,6 @@
 
 
+
 // import express from "express";
 // import {
 //   createUser, getAdminStats, getRecentActivity,
@@ -8,6 +9,7 @@
 //   exportRegistrationsCSV,
 //   getRegistrationById, confirmRegistrationPayment, getLearnerProfile,
 //   exportLearnerHistory,
+//   getUserStats, getUserFilterMeta, exportUsersExcel,
 // } from "../controllers/adminController.js";
 // import {
 //   approveRequestedCourse,
@@ -25,6 +27,13 @@
 // router.get("/activity", getRecentActivity);
 
 // // Users
+// // Learners page (additive): stat cards, filter/export metadata and the
+// // Excel export. Declared before any "/users/:id" route so the literal
+// // segments can never be captured as an :id.
+// router.get("/users/stats", getUserStats);
+// router.get("/users/meta", getUserFilterMeta);
+// router.post("/users/export", exportUsersExcel);
+
 // router.post("/users", createUser);
 // router.get("/users", getAllUsers);
 // router.put("/users/:id", updateUser);
@@ -58,6 +67,7 @@
 
 
 
+
 import express from "express";
 import {
   createUser, getAdminStats, getRecentActivity,
@@ -72,6 +82,7 @@ import {
   approveRequestedCourse,
   rejectRequestedCourse,
 } from "../controllers/registrationController.js";
+import { searchLabelLearners } from "../controllers/labelPrinterController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import roleMiddleware from "../middleware/roleMiddleware.js";
 
@@ -81,6 +92,9 @@ router.use(authMiddleware, roleMiddleware(["admin", "super_admin"]));
 
 // Dashboard
 router.get("/stats", getAdminStats);
+
+// Label Printer (Auto mode) — paginated learner search, label fields only.
+router.get("/label-printer/learners", searchLabelLearners);
 router.get("/activity", getRecentActivity);
 
 // Users

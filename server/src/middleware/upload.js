@@ -1,5 +1,7 @@
 
 
+
+
 // import multer from "multer";
 
 // // ── Memory storage ─────────────────────────────
@@ -40,9 +42,35 @@
 //   },
 // });
 
-// export default upload;
-// export { uploadMemory };
+// // ── Registration KYC documents (images + PDF) ─────────────────────────────
+// // Additive: separate multer instance, does not touch the existing
+// // `upload` / `uploadMemory` exports or their filters/limits.
+// const registrationDocFileFilter = (req, file, cb) => {
+//   const allowedTypes = [
+//     "image/jpeg",
+//     "image/jpg",
+//     "image/png",
+//     "image/webp",
+//     "application/pdf",
+//   ];
 
+//   if (allowedTypes.includes(file.mimetype)) {
+//     cb(null, true);
+//   } else {
+//     cb(new Error("Only JPG, PNG, WEBP, and PDF files are allowed"), false);
+//   }
+// };
+
+// const uploadRegistrationDocs = multer({
+//   storage,
+//   fileFilter: registrationDocFileFilter,
+//   limits: {
+//     fileSize: 5 * 1024 * 1024, // 5MB, per spec
+//   },
+// });
+
+// export default upload;
+// export { uploadMemory, uploadRegistrationDocs };
 
 
 
@@ -116,5 +144,36 @@ const uploadRegistrationDocs = multer({
   },
 });
 
+// ── Admin-managed assessment submissions (PDF only) ──────────────────────
+// Additive: separate instance so the existing `upload` filter/limit used by
+// learner submissions is untouched. Learners submit assessment files as PDF
+// (student UI + resubmit service), so the admin path accepts exactly the
+// same format. The service additionally verifies the PDF signature bytes.
+const ADMIN_SUBMISSION_MAX_MB = Number(process.env.ADMIN_SUBMISSION_MAX_MB) || 10;
+
+const adminSubmissionFileFilter = (req, file, cb) => {
+  const isPdfMime = file.mimetype === "application/pdf";
+  const isPdfExt = /\.pdf$/i.test(file.originalname || "");
+  if (isPdfMime && isPdfExt) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only PDF files are accepted for assessment submissions"), false);
+  }
+};
+
+const uploadAdminSubmission = multer({
+  storage,
+  fileFilter: adminSubmissionFileFilter,
+  limits: {
+    fileSize: ADMIN_SUBMISSION_MAX_MB * 1024 * 1024,
+    files: 1,
+  },
+});
+
 export default upload;
-export { uploadMemory, uploadRegistrationDocs };
+export {
+  uploadMemory,
+  uploadRegistrationDocs,
+  uploadAdminSubmission,
+  ADMIN_SUBMISSION_MAX_MB,
+};
